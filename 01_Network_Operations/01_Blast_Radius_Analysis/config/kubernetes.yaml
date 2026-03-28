@@ -1,0 +1,165 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cmi-naap
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blast-radius-config
+  namespace: cmi-naap
+data:
+  LOG_LEVEL: "INFO"
+  SERVICE_PORT: "8001"
+  ENVIRONMENT: "staging"
+  MODEL_PATH: "/models"
+  PROMETHEUS_ENABLED: "true"
+  METRICS_PORT: "9090"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blast-radius-analysis
+  namespace: cmi-naap
+  labels:
+    app: blast-radius-analysis
+    component: ai-ml
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: blast-radius-analysis
+  template:
+    metadata:
+      labels:
+        app: blast-radius-analysis
+    spec:
+      containers:
+      - name: blast-radius-analysis
+        image: ghcr.io/cmi/blast-radius-analysis:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8001
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: blast-radius-config
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blast-radius-analysis
+  namespace: cmi-naap
+  labels:
+    app: blast-radius-analysis
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app: blast-radius-analysis
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: blast-radius-analysis-hpa
+  namespace: cmi-naap
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: blast-radius-analysis
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: blast-radius-network-policy
+  namespace: cmi-naap
+spec:
+  podSelector:
+    matchLabels:
+      app: blast-radius-analysis
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: cmi-naap
+    ports:
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: cmi-naap
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53

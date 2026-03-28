@@ -1,0 +1,168 @@
+# Correlation Rules Configuration
+# Rules for detecting related alarms and creating incidents
+
+rules:
+  - rule_id: "bgp_down_cascade"
+    enabled: true
+    priority: 100
+    description: "Detect BGP down cascading to reachability loss"
+
+    conditions:
+      - type: "alarm_type_match"
+        value: ["BGPDown"]
+        weight: 1.0
+      - type: "temporal_proximity"
+        time_window_seconds: 300
+        weight: 0.8
+
+    conditions_match: "all"
+    correlation_window_seconds: 300
+
+    actions:
+      - action: "group_incident"
+        severity: "CRITICAL"
+      - action: "set_root_cause"
+      - action: "notify"
+        channels: ["slack", "pagerduty"]
+
+  - rule_id: "interface_down_cascade"
+    enabled: true
+    priority: 95
+    description: "Detect interface down cascading to multiple failures"
+
+    conditions:
+      - type: "alarm_type_match"
+        value: ["LinkDown", "InterfaceDown"]
+        weight: 1.0
+      - type: "same_device_family"
+        weight: 0.6
+
+    conditions_match: "any"
+    correlation_window_seconds: 600
+
+    actions:
+      - action: "group_incident"
+        severity: "CRITICAL"
+
+  - rule_id: "cpu_memory_surge"
+    enabled: true
+    priority: 80
+    description: "Detect CPU and memory surges on same device"
+
+    conditions:
+      - type: "alarm_type_match"
+        value: ["CPUHigh", "MemoryHigh"]
+        weight: 1.0
+      - type: "same_device"
+        weight: 0.9
+
+    conditions_match: "all"
+    correlation_window_seconds: 300
+
+    actions:
+      - action: "group_incident"
+        severity: "MAJOR"
+
+  - rule_id: "redundancy_failure"
+    enabled: true
+    priority: 90
+    description: "Detect redundancy failures (primary and backup down)"
+
+    conditions:
+      - type: "alarm_type_match"
+        value: ["LinkDown", "BGPDown"]
+        weight: 1.0
+      - type: "same_service"
+        weight: 0.8
+      - type: "temporal_proximity"
+        time_window_seconds: 60
+        weight: 0.9
+
+    conditions_match: "all"
+    correlation_window_seconds: 300
+
+    actions:
+      - action: "group_incident"
+        severity: "CRITICAL"
+      - action: "escalate"
+        escalate_after_seconds: 300
+      - action: "notify"
+        channels: ["slack", "pagerduty"]
+
+  - rule_id: "disk_space_cascade"
+    enabled: true
+    priority: 70
+    description: "Detect disk space issues cascading to service failures"
+
+    conditions:
+      - type: "alarm_type_match"
+        value: ["DiskFull", "ServiceDown"]
+        weight: 1.0
+
+    conditions_match: "any"
+    correlation_window_seconds: 600
+
+    actions:
+      - action: "group_incident"
+        severity: "MAJOR"
+
+# Suppression Rules
+suppression_rules:
+  - rule_id: "interface_flap_suppression"
+    description: "Suppress brief interface flaps"
+
+    condition:
+      alarm_type: "LinkDown"
+      duration_seconds: "< 10"
+
+    action: "suppress"
+    enabled: true
+
+  - rule_id: "scheduled_maintenance"
+    description: "Suppress alarms during maintenance windows"
+
+    condition:
+      time_range: "22:00 to 06:00"
+      days: ["Saturday", "Sunday"]
+
+    action: "suppress"
+    enabled: false
+
+  - rule_id: "known_issue_suppression"
+    description: "Suppress alarms from devices with known issues"
+
+    condition:
+      device_id: "device_uuid_123"
+      alarm_type: "HighCPU"
+
+    action: "suppress"
+    until: "2026-04-01T00:00:00"
+    enabled: false
+
+# Enrichment Rules
+enrichment_rules:
+  - rule_id: "bgp_routes_down"
+    description: "Enrich BGP down with route information"
+
+    condition:
+      alarm_type: "BGPDown"
+
+    actions:
+      - action: "add_metadata"
+        metadata:
+          service_impacted: "WAN"
+          criticality: "CRITICAL"
+
+  - rule_id: "wan_link_down"
+    description: "Mark WAN link downs as critical"
+
+    condition:
+      alarm_type: "LinkDown"
+      interface_match: "eth0|eth1|eth2"
+
+    actions:
+      - action: "escalate_severity"
+        new_severity: "CRITICAL"
+      - action: "add_metadata"
+        metadata:
+          service_impacted: "WAN"

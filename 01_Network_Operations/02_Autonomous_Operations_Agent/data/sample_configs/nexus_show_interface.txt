@@ -1,0 +1,85 @@
+Ethernet1/1 is up
+  Hardware is Ethernet, address is aabb.cc00.0001
+  Internet Address is 10.0.0.1/30
+  MTU 1500 bytes, BW 10000000 Kbit/sec
+  encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Full-duplex, 10 Gb/s, media type is 10Gbase-LR
+  input flow-control is off, output flow-control is off
+  Rate limiting is not set
+  EtherChannel is off
+  Last link flapped 23:45:12 ago
+  Last clearing of "show interface" counters 5 days, 12:34:56 ago
+  Encapsulation Dot1q Virtual LAN, Dot1Q VLAN 10
+  Interface drops: 42 bytes 0 (0.001%)
+  Input queue:  size/max 0/256; total drops 12
+  Output queue: size/max 0/256; total drops 8
+  5 minute input rate 1234567 bits/sec, 156 packets/sec
+  5 minute output rate 987654 bits/sec, 123 packets/sec
+  Received 45678901 bytes, 1234567 unicast packets, 5678 multicast, 123 broadcast
+  Sent 34567890 bytes, 1234567 unicast packets, 234 multicast, 56 broadcast
+  Input errors: 0, CRC 3, frame 1, overrun 0, ignored 0, abort 0
+  Output errors: 0, collision 0, interface resets 1
+  Unknown protocol drops: 0
+  Last input never
+  Output hang never
+
+Ethernet1/2 is down (admin down)
+  Hardware is Ethernet, address is aabb.cc00.0002
+  Internet Address is unassigned
+  MTU 1500 bytes, BW 10000000 Kbit/sec
+  encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Full-duplex, 10 Gb/s, media type is 10Gbase-LR
+  input flow-control is off, output flow-control is off
+  Rate limiting is not set
+  EtherChannel is off
+  Last link flapped 1d:03:21:05 ago
+  Last clearing of "show interface" counters 12 hours, 05:23:12 ago
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+  Received 0 bytes, 0 unicast packets, 0 multicast, 0 broadcast
+  Sent 0 bytes, 0 unicast packets, 0 multicast, 0 broadcast
+  Input errors: 0, CRC 0, frame 0, overrun 0, ignored 0, abort 0
+  Output errors: 0, collision 0, interface resets 0
+
+Ethernet1/3 is up
+  Hardware is Ethernet, address is aabb.cc00.0003
+  Internet Address is 10.0.1.1/30
+  MTU 1500 bytes, BW 10000000 Kbit/sec
+  encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Full-duplex, 10 Gb/s, media type is 10Gbase-LR
+  input flow-control is off, output flow-control is off
+  Rate limiting is not set
+  EtherChannel is off
+  Last link flapped 45:30:12 ago
+  Last clearing of "show interface" counters 7 days, 02:11:23 ago
+  5 minute input rate 2345678 bits/sec, 234 packets/sec
+  5 minute output rate 1876543 bits/sec, 187 packets/sec
+  Received 98765432 bytes, 2345678 unicast packets, 12345 multicast, 678 broadcast
+  Sent 87654321 bytes, 2345678 unicast packets, 890 multicast, 234 broadcast
+  Input errors: 1, CRC 8, frame 2, overrun 1, ignored 0, abort 0
+  Output errors: 2, collision 0, interface resets 2
+  Unknown protocol drops: 0
+  Last input 00:00:03
+  Output hang never
+
+Ethernet1/4 is up
+  Hardware is Ethernet, address is aabb.cc00.0004
+  Internet Address is 10.0.2.1/30
+  MTU 1500 bytes, BW 40000000 Kbit/sec
+  encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Full-duplex, 40 Gb/s, media type is 40Gbase-SR4
+  input flow-control is off, output flow-control is off
+  Rate limiting is not set
+  EtherChannel is off
+  Last link flapped 89:12:45 ago
+  Last clearing of "show interface" counters 30 days, 14:22:33 ago
+  5 minute input rate 15234567 bits/sec, 1234 packets/sec
+  5 minute output rate 14987654 bits/sec, 1199 packets/sec
+  Received 445678901234 bytes, 15234567 unicast packets, 567890 multicast, 12345 broadcast
+  Sent 434567890123 bytes, 15234567 unicast packets, 234567 multicast, 45678 broadcast
+  Input errors: 0, CRC 0, frame 0, overrun 0, ignored 0, abort 0
+  Output errors: 0, collision 0, interface resets 0

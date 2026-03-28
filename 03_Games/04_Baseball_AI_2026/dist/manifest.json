@@ -1,0 +1,16 @@
+{
+  "name": "Baseball Pro Bot AI — Home Run Challenge",
+  "short_name": "Baseball Pro Bot AI",
+  "description": "AI-powered baseball game. 5 at-bats, balls/strikes system, power-ups, combo multipliers. Can you hit a home run?",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a1a",
+  "theme_color": "#FF6B35",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["games", "sports"],
+  "lang": "en"
+}

@@ -1,0 +1,871 @@
+---
+# CMI NaaP AI Network Intelligence Platform - Kubernetes Deployments
+# All 6 project deployments with auto-scaling and health checks
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-dashboard
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: master-dashboard
+    version: "1.0.0"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: master-dashboard
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: master-dashboard
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - cmi-naap
+                topologyKey: kubernetes.io/hostname
+
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: master-dashboard
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+              protocol: TCP
+          env:
+            - name: SERVICE_NAME
+              value: "master-dashboard"
+            - name: SERVICE_PORT
+              value: "8000"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: ENVIRONMENT
+            - name: WORKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: WORKERS
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+
+          volumeMounts:
+            - name: logs
+              mountPath: /logs
+            - name: config
+              mountPath: /config
+              readOnly: true
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+
+      volumes:
+        - name: logs
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: config
+          configMap:
+            name: cmi-naap-config
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Blast Radius Analysis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blast-radius-analysis
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: blast-radius-analysis
+    version: "1.0.0"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: blast-radius-analysis
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: blast-radius-analysis
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+    spec:
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: blast-radius-analysis
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          workingDir: /app/01_Blast_Radius_Analysis
+          command: ["python", "main.py"]
+          ports:
+            - containerPort: 8001
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: "blast-radius-analysis"
+            - name: SERVICE_PORT
+              value: "8001"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: WORKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: WORKERS
+            - name: BLAST_RADIUS_THRESHOLD
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: BLAST_RADIUS_THRESHOLD
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8001
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1.5Gi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: logs
+              mountPath: /logs
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: cmi-naap-models
+        - name: data
+          persistentVolumeClaim:
+            claimName: cmi-naap-data
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Autonomous Operations Agent Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autonomous-ops-agent
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: autonomous-ops-agent
+    version: "1.0.0"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: autonomous-ops-agent
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: autonomous-ops-agent
+    spec:
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: autonomous-ops-agent
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          workingDir: /app/02_Autonomous_Operations_Agent
+          command: ["python", "main.py"]
+          ports:
+            - containerPort: 8002
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: "autonomous-ops-agent"
+            - name: SERVICE_PORT
+              value: "8002"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: WORKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: WORKERS
+            - name: RL_GAMMA
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: RL_GAMMA
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8002
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8002
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1.5Gi
+            limits:
+              cpu: 1500m
+              memory: 1.5Gi
+
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: logs
+              mountPath: /logs
+
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: cmi-naap-models
+        - name: data
+          persistentVolumeClaim:
+            claimName: cmi-naap-data
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Self-Healing Network Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: self-healing-network
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: self-healing-network
+    version: "1.0.0"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: self-healing-network
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: self-healing-network
+    spec:
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: self-healing-network
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          workingDir: /app/03_Self_Healing_Network
+          command: ["python", "main.py"]
+          ports:
+            - containerPort: 8003
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: "self-healing-network"
+            - name: SERVICE_PORT
+              value: "8003"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: ANOMALY_THRESHOLD
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: ANOMALY_THRESHOLD
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8003
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8003
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 1500m
+              memory: 2Gi
+            limits:
+              cpu: 2000m
+              memory: 2.5Gi
+
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: logs
+              mountPath: /logs
+
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: cmi-naap-models
+        - name: data
+          persistentVolumeClaim:
+            claimName: cmi-naap-data
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Predictive Capacity Intelligence Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predictive-capacity
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: predictive-capacity
+    version: "1.0.0"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: predictive-capacity
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: predictive-capacity
+    spec:
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: predictive-capacity
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          workingDir: /app/04_Predictive_Capacity_Intelligence
+          command: ["python", "main.py"]
+          ports:
+            - containerPort: 8004
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: "predictive-capacity"
+            - name: SERVICE_PORT
+              value: "8004"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: FORECAST_HORIZON
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: FORECAST_HORIZON
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8004
+            initialDelaySeconds: 50
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8004
+            initialDelaySeconds: 25
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 1500m
+              memory: 2.5Gi
+            limits:
+              cpu: 2000m
+              memory: 3Gi
+
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: logs
+              mountPath: /logs
+
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: cmi-naap-models
+        - name: data
+          persistentVolumeClaim:
+            claimName: cmi-naap-data
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Incident Correlation & RCA Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: incident-correlation
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: incident-correlation
+    version: "1.0.0"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: incident-correlation
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: incident-correlation
+    spec:
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: incident-correlation
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          workingDir: /app/05_Incident_Correlation_RCA
+          command: ["python", "main.py"]
+          ports:
+            - containerPort: 8005
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: "incident-correlation"
+            - name: SERVICE_PORT
+              value: "8005"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: CORRELATION_THRESHOLD
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: CORRELATION_THRESHOLD
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8005
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8005
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 1500m
+              memory: 2.5Gi
+            limits:
+              cpu: 2500m
+              memory: 3.5Gi
+
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: logs
+              mountPath: /logs
+
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: cmi-naap-models
+        - name: data
+          persistentVolumeClaim:
+            claimName: cmi-naap-data
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Network Knowledge Assistant Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: knowledge-assistant
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: knowledge-assistant
+    version: "1.0.0"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cmi-naap
+      component: knowledge-assistant
+  template:
+    metadata:
+      labels:
+        app: cmi-naap
+        component: knowledge-assistant
+    spec:
+      serviceAccountName: cmi-naap-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: knowledge-assistant
+          image: cmi-naap:latest
+          imagePullPolicy: Always
+          workingDir: /app/06_Network_Knowledge_Assistant
+          command: ["python", "main.py"]
+          ports:
+            - containerPort: 8006
+              name: http
+          env:
+            - name: SERVICE_NAME
+              value: "knowledge-assistant"
+            - name: SERVICE_PORT
+              value: "8006"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LOG_LEVEL
+            - name: EMBEDDING_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: EMBEDDING_MODEL
+            - name: LLM_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cmi-naap-config
+                  key: LLM_MODEL
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8006
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8006
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 3Gi
+            limits:
+              cpu: 3000m
+              memory: 4Gi
+
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: logs
+              mountPath: /logs
+            - name: knowledge-base
+              mountPath: /kb
+
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: cmi-naap-models
+        - name: data
+          persistentVolumeClaim:
+            claimName: cmi-naap-data
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: knowledge-base
+          persistentVolumeClaim:
+            claimName: cmi-naap-knowledge-base
+
+      terminationGracePeriodSeconds: 30
+
+---
+# Horizontal Pod Autoscaler for Load Balancing
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cmi-naap-hpa
+  namespace: cmi-naap
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: blast-radius-analysis
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+
+---
+# Service Account and RBAC
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cmi-naap-sa
+  namespace: cmi-naap
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cmi-naap-role
+  namespace: cmi-naap
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cmi-naap-rolebinding
+  namespace: cmi-naap
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cmi-naap-role
+subjects:
+  - kind: ServiceAccount
+    name: cmi-naap-sa
+    namespace: cmi-naap

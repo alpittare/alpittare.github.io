@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "generated_at": "2026-03-21T21:06:22.829695",
+    "total_alarms": 151,
+    "deduplicated_alarms": 121,
+    "incidents": 56,
+    "system_config": {
+      "dbscan_eps": 0.5,
+      "dbscan_min_pts": 3,
+      "kmeans_k": 2,
+      "correlation_window_sec": 300
+    }
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-15",
+      "alarm_count": 10,
+      "affected_devices": [
+        "ACC-2",
+        "DIST-1"
+      ],
+      "confidence_score": 0.8988333333333334,
+      "start_time": "2026-03-21T20:02:14.633215",
+      "end_time": "2026-03-21T20:06:28.633215",
+      "duration_seconds": 254.0,
+      "severity_distribution": {
+        "CRITICAL": 2,
+        "ERROR": 7,
+        "WARNING": 0,
+        "NOTICE": 1,
+        "INFO": 0
+      },
+      "root_causes": [
+        {
+          "alarm_type": "MEMORY_WARNING",
+          "device_id": "ACC-2",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device ACC-2 had MEMORY_WARNING",
+            "Time offset: 244.0s before current alarm"
+          ]
+        },
+        {
+          "alarm_type": "INTERFACE_ERROR",
+          "device_id": "DIST-1",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device DIST-1 had INTERFACE_ERROR",
+            "Time offset: 5.0s before current alarm"
+          ]
+        },
+        {
+          "alarm_type": "MODULE_FAILURE",
+          "device_id": "DIST-1",
+          "score": 0.7250000000000001,
+          "evidence": [
+            "Upstream device DIST-1 had MODULE_FAILURE",
+            "Time offset: 7.0s before current alarm"
+          ]
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-39",
+      "alarm_count": 7,
+      "affected_devices": [
+        "ACC-3",
+        "DIST-2",
+        "CORE-1"
+      ],
+      "confidence_score": 0.7031428571428572,
+      "start_time": "2026-03-21T21:01:38.633215",
+      "end_time": "2026-03-21T21:06:26.633215",
+      "duration_seconds": 288.0,
+      "severity_distribution": {
+        "CRITICAL": 0,
+        "ERROR": 1,
+        "WARNING": 4,
+        "NOTICE": 1,
+        "INFO": 1
+      },
+      "root_causes": [
+        {
+          "alarm_type": "MEMORY_WARNING",
+          "device_id": "CORE-1",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device CORE-1 had MEMORY_WARNING",
+            "Time offset: 280.0s before current alarm"
+          ]
+        },
+        {
+          "alarm_type": "LINK_UP",
+          "device_id": "CORE-1",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device CORE-1 had LINK_UP",
+            "Time offset: 167.0s before current alarm"
+          ]
+        },
+        {
+          "alarm_type": "STP_TOPOLOGY_CHANGE",
+          "device_id": "DIST-2",
+          "score": 0.73,
+          "evidence": [
+            "Upstream device DIST-2 had STP_TOPOLOGY_CHANGE",
+            "Time offset: 5.0s before current alarm"
+          ]
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-0",
+      "alarm_count": 6,
+      "affected_devices": [
+        "DIST-2",
+        "CORE-1",
+        "DIST-1"
+      ],
+      "confidence_score": 0.8391666666666666,
+      "start_time": "2026-03-21T19:06:18.633215",
+      "end_time": "2026-03-21T19:06:28.633215",
+      "duration_seconds": 10.0,
+      "severity_distribution": {
+        "CRITICAL": 3,
+        "ERROR": 3,
+        "WARNING": 0,
+        "NOTICE": 0,
+        "INFO": 0
+      },
+      "root_causes": [
+        {
+          "alarm_type": "POWER_SUPPLY_FAILURE",
+          "device_id": "CORE-1",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device CORE-1 had POWER_SUPPLY_FAILURE",
+            "Time offset: 10.0s before current alarm"
+          ]
+        },
+        {
+          "alarm_type": "TEMPERATURE_CRITICAL",
+          "device_id": "CORE-1",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device CORE-1 had TEMPERATURE_CRITICAL",
+            "Time offset: 8.0s before current alarm"
+          ]
+        },
+        {
+          "alarm_type": "BGP_SESSION_DOWN",
+          "device_id": "CORE-1",
+          "score": 1.0,
+          "evidence": [
+            "Upstream device CORE-1 had BGP_SESSION_DOWN",
+            "Time offset: 5.0s before current alarm"
+          ]
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-12",
+      "alarm_count": 4,
+      "affected_devices": [
+        "CORE-2",
+        "DIST-2",
+        "DIST-1"
+      ],
+      "confidence_score": 0.5195,
+      "start_time": "2026-03-21T19:50:56.633215",
+      "end_time": "2026-03-21T19:55:02.633215",
+      "duration_seconds": 246.0,
+      "severity_distribution": {
+        "CRITICAL": 0,
+        "ERROR": 0,
+        "WARNING": 0,
+        "NOTICE": 2,
+        "INFO": 2
+      },
+      "root_causes": []
+    },
+    {
+      "incident_id": "INC-40",
+      "alarm_count": 4,
+      "affected_devices": [
+        "CORE-2",
+        "CORE-1",
+        "DIST-1"
+      ],
+      "confidence_score": 0.625,
+      "start_time": "2026-03-21T21:07:45.633215",
+      "end_time": "2026-03-21T21:10:45.633215",
+      "duration_seconds": 180.0,
+      "severity_distribution": {
+        "CRITICAL": 0,
+        "ERROR": 0,
+        "WARNING": 3,
+        "NOTICE": 1,
+        "INFO": 0
+      },
+      "root_causes": []
+    }
+  ]
+}

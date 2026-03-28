@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2E75B6"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#548235"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1000" height="600" fill="#FAFAFA" rx="8"/>
+  
+  <!-- Title -->
+  <text x="500" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#1F3864">InterAS Option B - Network Topology</text>
+  <text x="500" y="55" text-anchor="middle" font-size="12" fill="#666">MPLS VPN Inter-AS Connectivity (RFC 3107)</text>
+  
+  <!-- AS 100 Cloud -->
+  <ellipse cx="250" cy="300" rx="210" ry="220" fill="#E2EFDA" stroke="#548235" stroke-width="2" stroke-dasharray="8,4" opacity="0.5"/>
+  <text x="250" y="100" text-anchor="middle" font-size="16" font-weight="bold" fill="#548235">AS 100 (DC1)</text>
+  
+  <!-- AS 200 Cloud -->
+  <ellipse cx="750" cy="300" rx="210" ry="220" fill="#D6E4F0" stroke="#2E75B6" stroke-width="2" stroke-dasharray="8,4" opacity="0.5"/>
+  <text x="750" y="100" text-anchor="middle" font-size="16" font-weight="bold" fill="#2E75B6">AS 200 (DC2)</text>
+  
+  <!-- PE1 Router -->
+  <rect x="80" y="170" width="120" height="50" rx="6" fill="#548235" stroke="#3B5E25" stroke-width="1.5"/>
+  <text x="140" y="200" text-anchor="middle" font-size="13" fill="white" font-weight="bold">PE1</text>
+  <text x="140" y="235" text-anchor="middle" font-size="10" fill="#333">DC Edge Router</text>
+  <text x="140" y="248" text-anchor="middle" font-size="9" fill="#666">Loopback: 1.1.1.1</text>
+  
+  <!-- ASBR1 Router -->
+  <rect x="280" y="260" width="130" height="55" rx="6" fill="#BF8F00" stroke="#8B6508" stroke-width="1.5"/>
+  <text x="345" y="285" text-anchor="middle" font-size="13" fill="white" font-weight="bold">ASBR1</text>
+  <text x="345" y="300" text-anchor="middle" font-size="10" fill="white">10.1.1.1</text>
+  <text x="345" y="330" text-anchor="middle" font-size="10" fill="#333">Border Router</text>
+  
+  <!-- ASBR2 Router -->
+  <rect x="590" y="260" width="130" height="55" rx="6" fill="#BF8F00" stroke="#8B6508" stroke-width="1.5"/>
+  <text x="655" y="285" text-anchor="middle" font-size="13" fill="white" font-weight="bold">ASBR2</text>
+  <text x="655" y="300" text-anchor="middle" font-size="10" fill="white">10.1.1.2</text>
+  <text x="655" y="330" text-anchor="middle" font-size="10" fill="#333">Border Router</text>
+  
+  <!-- PE2 Router -->
+  <rect x="800" y="170" width="120" height="50" rx="6" fill="#2E75B6" stroke="#1B4F80" stroke-width="1.5"/>
+  <text x="860" y="200" text-anchor="middle" font-size="13" fill="white" font-weight="bold">PE2</text>
+  <text x="860" y="235" text-anchor="middle" font-size="10" fill="#333">DC Edge Router</text>
+  <text x="860" y="248" text-anchor="middle" font-size="9" fill="#666">Loopback: 2.2.2.2</text>
+  
+  <!-- CE1 Router -->
+  <rect x="100" y="400" width="100" height="45" rx="6" fill="#7F7F7F" stroke="#555" stroke-width="1.5"/>
+  <text x="150" y="428" text-anchor="middle" font-size="12" fill="white" font-weight="bold">CE1</text>
+  <text x="150" y="460" text-anchor="middle" font-size="9" fill="#666">VRF: VPN1</text>
+  
+  <!-- CE2 Router -->
+  <rect x="800" y="400" width="100" height="45" rx="6" fill="#7F7F7F" stroke="#555" stroke-width="1.5"/>
+  <text x="850" y="428" text-anchor="middle" font-size="12" fill="white" font-weight="bold">CE2</text>
+  <text x="850" y="460" text-anchor="middle" font-size="9" fill="#666">VRF: VPN1</text>
+  
+  <!-- PE1 to ASBR1 Link (iBGP + IGP/LDP) -->
+  <line x1="200" y1="210" x2="290" y2="265" stroke="#548235" stroke-width="2" marker-end="url(#arrowhead-green)"/>
+  <text x="220" y="225" font-size="9" fill="#548235" transform="rotate(-20,220,225)">iBGP VPNv4/v6</text>
+  <text x="225" y="240" font-size="8" fill="#888" transform="rotate(-20,225,240)">IGP + MPLS LDP</text>
+  
+  <!-- ASBR1 to ASBR2 Link (eBGP) -->
+  <line x1="410" y1="280" x2="588" y2="280" stroke="#C00000" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <line x1="588" y1="295" x2="410" y2="295" stroke="#C00000" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <rect x="430" y="258" width="140" height="50" rx="4" fill="white" stroke="#C00000" stroke-width="1"/>
+  <text x="500" y="275" text-anchor="middle" font-size="10" font-weight="bold" fill="#C00000">MP-eBGP</text>
+  <text x="500" y="289" text-anchor="middle" font-size="9" fill="#C00000">VPNv4/VPNv6</text>
+  <text x="500" y="302" text-anchor="middle" font-size="9" fill="#C00000">Label Exchange</text>
+  
+  <!-- ASBR2 to PE2 Link -->
+  <line x1="720" y1="265" x2="810" y2="210" stroke="#2E75B6" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="780" y="225" font-size="9" fill="#2E75B6" transform="rotate(20,780,225)">iBGP VPNv4/v6</text>
+  <text x="775" y="240" font-size="8" fill="#888" transform="rotate(20,775,240)">IGP + MPLS LDP</text>
+  
+  <!-- CE1 to PE1 -->
+  <line x1="150" y1="400" x2="140" y2="220" stroke="#7F7F7F" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="120" y="320" font-size="9" fill="#7F7F7F">PE-CE</text>
+  
+  <!-- CE2 to PE2 -->
+  <line x1="850" y1="400" x2="860" y2="220" stroke="#7F7F7F" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="875" y="320" font-size="9" fill="#7F7F7F">PE-CE</text>
+  
+  <!-- Label Stack Legend -->
+  <rect x="50" y="510" width="900" height="75" rx="6" fill="white" stroke="#CCC" stroke-width="1"/>
+  <text x="70" y="532" font-size="12" font-weight="bold" fill="#333">Label Stack:</text>
+  
+  <!-- IGP Label -->
+  <rect x="180" y="518" width="90" height="24" rx="3" fill="#548235"/>
+  <text x="225" y="534" text-anchor="middle" font-size="10" fill="white">IGP Label</text>
+  <text x="225" y="555" text-anchor="middle" font-size="9" fill="#666">Directs to ASBR</text>
+  
+  <!-- VPN Label -->
+  <rect x="290" y="518" width="90" height="24" rx="3" fill="#2E75B6"/>
+  <text x="335" y="534" text-anchor="middle" font-size="10" fill="white">VPN Label</text>
+  <text x="335" y="555" text-anchor="middle" font-size="9" fill="#666">Directs to VRF</text>
+  
+  <!-- Separator -->
+  <line x1="420" y1="515" x2="420" y2="575" stroke="#DDD" stroke-width="1"/>
+  
+  <!-- RFC 3107 Note -->
+  <text x="440" y="532" font-size="11" font-weight="bold" fill="#BF8F00">RFC 3107:</text>
+  <text x="440" y="548" font-size="10" fill="#666">BGP carries labels for ASBR loopbacks</text>
+  <text x="440" y="564" font-size="10" fill="#666">No IGP/LDP needed between ASBRs</text>
+  
+  <!-- Separator -->
+  <line x1="700" y1="515" x2="700" y2="575" stroke="#DDD" stroke-width="1"/>
+  
+  <text x="720" y="532" font-size="11" font-weight="bold" fill="#333">Platform:</text>
+  <text x="720" y="548" font-size="10" fill="#666">Cisco Nexus 7000/7700</text>
+  <text x="720" y="564" font-size="10" fill="#666">NX-OS 7.2(0)D1(1)+</text>
+</svg>

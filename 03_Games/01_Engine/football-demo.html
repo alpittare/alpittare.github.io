@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Engine — Football Physics Demo</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0e1a; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    canvas { display: block; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script src="core.js"></script>
+<script src="physics.js"></script>
+<script src="football-physics.js"></script>
+<script>
+'use strict';
+
+// --- Bootstrap ---------------------------------------------------------------
+const engine = new GameEngine('gameCanvas', 414, 832);
+engine.debug = true;
+
+// --- Football Systems --------------------------------------------------------
+const ball = new Football();
+const keeper = new Goalkeeper();
+const keeperAI = new KeeperAI('medium');
+const aim = new AimSystem();
+const power = new PowerGauge();
+const match = new MatchManager('medium');
+
+engine.addEntity(ball);
+engine.addEntity(keeper);
+
+// --- State tracking ----------------------------------------------------------
+let phase = 'aim';        // aim | power | flight | result
+let resultText = '';
+let resultColor = '#fff';
+let resultTimer = 0;
+let reactionTimer = 0;    // ms until keeper dives
+let diveDecision = null;
+
+// --- Shoot -------------------------------------------------------------------
+function shoot() {
+    const cfg = FootballConfig;
+    const angle = FBUtils.angle(cfg.kicker.x, cfg.kicker.y, aim.x, aim.y);
+    const pwr = power.clampedPower;
+
+    ball.reset();
+    ball.x = cfg.kicker.x;
+    ball.y = cfg.kicker.y;
+    ball.shoot(angle, pwr, 0);
+
+    // Classify direction for AI
+    const goalCX = cfg.field.goalCenterX;
+    const dir = aim.x < goalCX - 30 ? 'left' : (aim.x > goalCX + 30 ? 'right' : 'center');
+    keeperAI.recordShot(dir);
+
+    // Compute keeper dive
+    diveDecision = keeperAI.computeDive(aim.x, aim.y);
+    reactionTimer = diveDecision.reactionDelay;
+
+    // Set keeper save reach
+    keeper.saveReachMultiplier = keeperAI.config.saveReach;
+    keeper.earlyDiveBonus = keeperAI.config.earlyDiveBonus;
+
+    phase = 'flight';
+}
+
+// --- Handle result -----------------------------------------------------------
+function handleResult(res) {
+    phase = 'result';
+    ball.active = false;
+
+    const resultMap = {
+        goal:  { text: 'GOAL!',   color: '#00ff88' },
+        save:  { text: 'SAVED!',  color: '#ff6600' },
+        post:  { text: 'POST!',   color: '#ffcc00' },
+        over:  { text: 'OVER!',   color: '#aaa' },
+        miss:  { text: 'MISS!',   color: '#888' },
+    };
+
+    const info = resultMap[res.result] || resultMap.miss;
+    resultText = info.text;
+    resultColor = info.color;
+    resultTimer = 90;
+
+    match.recordResult(res.result);
+    keeperAI.adjustDifficulty(res.result);
+}
+
+// --- Game state ---------------------------------------------------------------
+engine.registerState('playing', {
+    enter() {
+        match.reset();
+        keeperAI.adaptiveBias = 0;
+        _resetRound();
+    },
+    fixedUpdate(dt) {
+        if (phase === 'flight') {
+            // Keeper reaction delay
+            if (reactionTimer > 0) {
+                reactionTimer -= 16.67; // ~1 frame at 60fps
+                if (reactionTimer <= 0 && diveDecision) {
+                    keeper.dive(diveDecision.targetX, diveDecision.diveSpeed, diveDecision.willMiss);
+                }
+            }
+
+            // Check goal
+            const res = GoalDetector.check(ball, keeper);
+            if (res) {
+                handleResult(res);
+            }
+
+            // Ball stopped or way off
+            if (ball.active && (ball.speed < 0.5 || ball.y > engine.HEIGHT + 50 || ball.y < -100)) {
+                handleResult({ result: 'miss', saved: false });
+            }
+        }
+    },
+    update(dt) {
+        if (phase === 'aim') {
+            aim.update();
+        } else if (phase === 'power') {
+            power.update();
+        }
+
+        // Result countdown
+        if (phase === 'result' && resultTimer > 0) {
+            resultTimer--;
+            if (resultTimer === 0) {
+                if (match.round >= match.maxRounds) {
+                    phase = 'gameover';
+                } else {
+                    _resetRound();
+                }
+            }
+        }
+    },
+    render(ctx) {
+        const cfg = FootballConfig.field;
+
+        // --- Background: football pitch ---
+        const grad = ctx.createLinearGradient(0, 0, 0, engine.HEIGHT);
+        grad.addColorStop(0, '#0d3d0d');
+        grad.addColorStop(0.5, '#1a5a1a');
+        grad.addColorStop(1, '#0d3d0d');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, engine.WIDTH, engine.HEIGHT);
+
+        // Pitch lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(20, cfg.top, engine.WIDTH - 40, cfg.bottom - cfg.top);
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(engine.WIDTH / 2, (cfg.top + cfg.bottom) / 2, 60, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Penalty box
+        ctx.strokeRect(engine.WIDTH / 2 - 120, cfg.top, 240, 100);
+
+        // --- Goal ---
+        const goalLeft = cfg.goalCenterX - cfg.goalWidth / 2;
+        const goalRight = cfg.goalCenterX + cfg.goalWidth / 2;
+
+        // Goal net (subtle)
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        ctx.fillRect(goalLeft, cfg.crossbarY, cfg.goalWidth, cfg.goalLineY - cfg.crossbarY);
+
+        // Net lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        for (let x = goalLeft; x <= goalRight; x += 15) {
+            ctx.beginPath(); ctx.moveTo(x, cfg.crossbarY); ctx.lineTo(x, cfg.goalLineY); ctx.stroke();
+        }
+        for (let y = cfg.crossbarY; y <= cfg.goalLineY; y += 10) {
+            ctx.beginPath(); ctx.moveTo(goalLeft, y); ctx.lineTo(goalRight, y); ctx.stroke();
+        }
+
+        // Posts
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(goalLeft - 2, cfg.crossbarY, cfg.goalPostWidth, cfg.goalLineY - cfg.crossbarY + 4);
+        ctx.fillRect(goalRight - cfg.goalPostWidth + 2, cfg.crossbarY, cfg.goalPostWidth, cfg.goalLineY - cfg.crossbarY + 4);
+        // Crossbar
+        ctx.fillRect(goalLeft - 2, cfg.crossbarY - 3, cfg.goalWidth + 4, 6);
+
+        // --- Kicker ---
+        if (phase !== 'flight') {
+            ctx.fillStyle = '#3366ff';
+            ctx.fillRect(FootballConfig.kicker.x - 12, FootballConfig.kicker.y - 20, 24, 40);
+            // Head
+            ctx.fillStyle = '#ffcc88';
+            ctx.beginPath();
+            ctx.arc(FootballConfig.kicker.x, FootballConfig.kicker.y - 28, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // --- Aim crosshair ---
+        if (phase === 'aim') {
+            ctx.strokeStyle = '#ff3333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(aim.x - 12, aim.y); ctx.lineTo(aim.x + 12, aim.y);
+            ctx.moveTo(aim.x, aim.y - 12); ctx.lineTo(aim.x, aim.y + 12);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(aim.x, aim.y, 8, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Aim line
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = 'rgba(255,100,100,0.3)';
+            ctx.beginPath();
+            ctx.moveTo(FootballConfig.kicker.x, FootballConfig.kicker.y);
+            ctx.lineTo(aim.x, aim.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // --- Power gauge ---
+        if (phase === 'power' || phase === 'aim') {
+            const barX = engine.WIDTH - 40;
+            const barY = 200;
+            const barH = 300;
+            const barW = 20;
+
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4);
+
+            // Gradient fill
+            const pgGrad = ctx.createLinearGradient(0, barY + barH, 0, barY);
+            pgGrad.addColorStop(0, '#00cc44');
+            pgGrad.addColorStop(0.5, '#ffcc00');
+            pgGrad.addColorStop(1, '#ff3333');
+            ctx.fillStyle = pgGrad;
+            ctx.fillRect(barX, barY + barH - barH * power.power, barW, barH * power.power);
+
+            // Power label
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${Math.round(power.power * 100)}%`, barX + barW / 2, barY - 8);
+            ctx.textAlign = 'left';
+        }
+
+        // --- Scoreboard ---
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(0, engine.HEIGHT - 55, engine.WIDTH, 55);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 22px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(match.scoreString, engine.WIDTH / 2, engine.HEIGHT - 28);
+
+        ctx.font = '12px monospace';
+        ctx.fillStyle = '#aaa';
+        ctx.fillText(`Round ${match.round}/${match.maxRounds}  |  Streak: ${match.streak}`, engine.WIDTH / 2, engine.HEIGHT - 10);
+
+        // --- Result popup ---
+        if (phase === 'result' && resultTimer > 0) {
+            const alpha = Math.min(1, resultTimer / 20);
+            ctx.globalAlpha = alpha;
+            ctx.font = 'bold 52px monospace';
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillText(resultText, engine.WIDTH / 2 + 2, 402);
+            ctx.fillStyle = resultColor;
+            ctx.fillText(resultText, engine.WIDTH / 2, 400);
+            ctx.globalAlpha = 1;
+        }
+
+        // --- Game over ---
+        if (phase === 'gameover') {
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.fillRect(0, 300, engine.WIDTH, 180);
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 30px monospace';
+            ctx.fillText('MATCH OVER', engine.WIDTH / 2, 350);
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px monospace';
+            ctx.fillText(`You ${match.playerScore > match.keeperScore ? 'WIN' : (match.playerScore < match.keeperScore ? 'LOSE' : 'DRAW')}!`, engine.WIDTH / 2, 390);
+            ctx.fillText(match.scoreString, engine.WIDTH / 2, 420);
+            ctx.fillStyle = '#aaa';
+            ctx.font = '14px monospace';
+            ctx.fillText(`Best streak: ${match.bestStreak}`, engine.WIDTH / 2, 450);
+            ctx.fillText('Tap to restart', engine.WIDTH / 2, 475);
+        }
+
+        ctx.textAlign = 'left';
+
+        // --- Instructions ---
+        if (phase === 'aim') {
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('TAP to lock aim', engine.WIDTH / 2, engine.HEIGHT - 70);
+            ctx.textAlign = 'left';
+        } else if (phase === 'power') {
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('TAP to shoot!', engine.WIDTH / 2, engine.HEIGHT - 70);
+            ctx.textAlign = 'left';
+        }
+
+        // Debug
+        if (engine.debug) {
+            ctx.fillStyle = '#0f0';
+            ctx.font = '10px monospace';
+            ctx.fillText(`phase: ${phase}  keeper: ${keeper.state}  adapt: ${keeperAI.adaptiveBias.toFixed(2)}`, 8, engine.HEIGHT - 60);
+            if (diveDecision) {
+                ctx.fillText(`pred: ${diveDecision.predictedDir}  conf: ${diveDecision.confidence.toFixed(2)}  miss: ${diveDecision.willMiss}`, 8, engine.HEIGHT - 74);
+            }
+        }
+    }
+});
+
+// --- Round reset --------------------------------------------------------------
+function _resetRound() {
+    phase = 'aim';
+    ball.reset();
+    keeper.reset();
+    aim.reset();
+    power.reset();
+    diveDecision = null;
+    reactionTimer = 0;
+}
+
+// --- Input -------------------------------------------------------------------
+engine.canvas.addEventListener('click', () => {
+    if (phase === 'aim') {
+        aim.lock();
+        power.startCharge();
+        phase = 'power';
+    } else if (phase === 'power') {
+        power.lock();
+        shoot();
+    } else if (phase === 'gameover') {
+        engine.switchState('playing');
+    }
+});
+
+// Toggle debug
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Backquote') engine.debug = !engine.debug;
+});
+
+// --- Start -------------------------------------------------------------------
+engine.switchState('playing');
+engine.start();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+groups:
+  - name: blast_radius_analysis
+    interval: 30s
+    rules:
+      # Service Health Alerts
+      - alert: BlastRadiusServiceDown
+        expr: up{job="blast-radius"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: service
+        annotations:
+          summary: "Blast Radius Analysis service is down"
+          description: "{{ $labels.instance }} has been unreachable for 2 minutes"
+
+      - alert: BlastRadiusResponseTimeHigh
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="blast-radius"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "Blast Radius response time exceeds threshold"
+          description: "P95 latency is {{ $value }}s (threshold: 2s)"
+
+      # Resource Alerts
+      - alert: BlastRadiusCPUHigh
+        expr: rate(process_cpu_seconds_total{job="blast-radius"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Blast Radius CPU usage high"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+
+      - alert: BlastRadiusMemoryHigh
+        expr: process_resident_memory_bytes{job="blast-radius"} / 1e9 > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Blast Radius memory usage high"
+          description: "Memory usage is {{ $value }}GB (threshold: 0.85GB)"
+
+      - alert: BlastRadiusDiskHigh
+        expr: node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"} < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Blast Radius disk space low"
+          description: "Disk usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+
+      # ML-Specific Alerts
+      - alert: BlastRadiusModelDriftDetected
+        expr: increase(model_drift_detected_total{job="blast-radius"}[1h]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Blast Radius model drift detected"
+          description: "Model distribution has shifted significantly"
+
+      - alert: BlastRadiusPredictionLatencyHigh
+        expr: histogram_quantile(0.99, rate(prediction_latency_seconds_bucket{job="blast-radius"}[5m])) > 1.5
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Blast Radius prediction latency exceeds SLA"
+          description: "P99 latency is {{ $value }}s (SLA: 1.5s)"
+
+      - alert: BlastRadiusAccuracyDegraded
+        expr: model_accuracy{job="blast-radius"} < 0.85
+        for: 10m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Blast Radius model accuracy degraded"
+          description: "Current accuracy is {{ $value }} (baseline: 0.85)"
+
+      # Business Logic Alerts - UC1 Specific
+      - alert: BlastRadiusComputationTimeout
+        expr: increase(blast_radius_computation_timeout_total{job="blast-radius"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: business_logic
+        annotations:
+          summary: "Blast radius computation timeouts detected"
+          description: "{{ $value }} timeouts in last 5 minutes (threshold: 5)"
+
+      - alert: BlastRadiusGraphTraversalFailure
+        expr: increase(graph_traversal_failure_total{job="blast-radius"}[5m]) > 3
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "Graph traversal failure rate high"
+          description: "{{ $value }} graph traversal failures (threshold: 3)"
+
+      - alert: BlastRadiusRiskScoreAnomaly
+        expr: rate(blast_radius_risk_score_anomalies_total{job="blast-radius"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: business_logic
+        annotations:
+          summary: "Anomalous risk scores detected"
+          description: "Anomaly rate is {{ $value }}/sec"

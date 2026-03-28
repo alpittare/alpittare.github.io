@@ -1,0 +1,25 @@
+BGP router identifier 10.0.0.1, local AS number 65001
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.0.2       4 65002   54321   54287   1256843    0    0 12d:03h:22m   850
+10.0.1.2       4 65003   43210   43198   1256843    0    0 9d:15h:11m    1205
+10.0.2.2       4 65004   12345   12334   1256843    0    0 3d:08h:45m    342
+10.0.3.2       4 65005      0      0        0    0    0 never        Down
+172.16.0.2     4 65006   89765   89743   1256843    0    1 25d:02h:15m   2345
+172.16.1.2     4 65007   23456   23445   1256843    0    0 7d:12h:34m    567
+
+BGP route-map statistics:
+Route-map: RM_IMPORT_v4, Invoked: 15678, Permit: 15678, Deny: 0, Unsupported: 0
+Route-map: RM_EXPORT_v4, Invoked: 14532, Permit: 14532, Deny: 0, Unsupported: 0
+
+BGP Prefix statistics:
+Total prefixes: 5162
+Total prefixes installed: 5162
+Installed prefixes from neighbors:
+  10.0.0.2: 850
+  10.0.1.2: 1205
+  10.0.2.2: 342
+  10.0.3.2: 0
+  172.16.0.2: 2345
+  172.16.1.2: 567
+  Local: 253

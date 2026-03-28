@@ -1,0 +1,137 @@
+groups:
+  - name: autonomous_operations_agent
+    interval: 30s
+    rules:
+      # Service Health Alerts
+      - alert: AutoOpsAgentServiceDown
+        expr: up{job="autonomous-ops"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: service
+        annotations:
+          summary: "Autonomous Operations Agent service is down"
+          description: "{{ $labels.instance }} has been unreachable for 2 minutes"
+
+      - alert: AutoOpsAgentResponseTimeHigh
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="autonomous-ops"}[5m])) > 3
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "Autonomous Ops response time exceeds threshold"
+          description: "P95 latency is {{ $value }}s (threshold: 3s)"
+
+      # Resource Alerts
+      - alert: AutoOpsAgentCPUHigh
+        expr: rate(process_cpu_seconds_total{job="autonomous-ops"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Autonomous Ops CPU usage high"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+
+      - alert: AutoOpsAgentMemoryHigh
+        expr: process_resident_memory_bytes{job="autonomous-ops"} / 1e9 > 1.5
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Autonomous Ops memory usage high"
+          description: "Memory usage is {{ $value }}GB (threshold: 1.5GB)"
+
+      - alert: AutoOpsAgentDiskHigh
+        expr: node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"} < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Autonomous Ops disk space low"
+          description: "Disk usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+
+      # ML-Specific Alerts
+      - alert: AutoOpsAnomalyDetectionRateSpike
+        expr: increase(anomaly_detections_total{job="autonomous-ops"}[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Anomaly detection rate spike detected"
+          description: "{{ $value }} anomalies detected in 5 minutes (normal: <20)"
+
+      - alert: AutoOpsKafkaConsumerLagHigh
+        expr: kafka_consumer_lag_sum{job="autonomous-ops"} > 10000
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Kafka consumer lag high"
+          description: "Consumer lag is {{ $value }} messages (threshold: 10000)"
+
+      - alert: AutoOpsAutoencoderLossSpiked
+        expr: increase(autoencoder_loss_sum{job="autonomous-ops"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Autoencoder loss spike detected"
+          description: "Loss increase is {{ $value }} (threshold: 5)"
+
+      - alert: AutoOpsPredictionLatencyHigh
+        expr: histogram_quantile(0.99, rate(prediction_latency_seconds_bucket{job="autonomous-ops"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Prediction latency exceeds SLA"
+          description: "P99 latency is {{ $value }}s (SLA: 2s)"
+
+      - alert: AutoOpsModelDriftDetected
+        expr: increase(model_drift_detected_total{job="autonomous-ops"}[1h]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Model drift detected"
+          description: "Model distribution has shifted significantly"
+
+      # Business Logic Alerts - UC2 Specific
+      - alert: AutoOpsAnomalyRateCritical
+        expr: rate(anomaly_detections_total{job="autonomous-ops"}[1m]) > 2
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "Anomaly detection rate critical"
+          description: "Rate is {{ $value }}/sec (threshold: 2/sec)"
+
+      - alert: AutoOpsKafkaConsumerLagCritical
+        expr: kafka_consumer_lag_sum{job="autonomous-ops"} > 50000
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "Kafka consumer lag critical"
+          description: "Consumer lag is {{ $value }} messages"
+
+      - alert: AutoOpsAutoencoderLossCritical
+        expr: autoencoder_loss{job="autonomous-ops"} > 1.0
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "Autoencoder loss critical"
+          description: "Current loss is {{ $value }} (threshold: 1.0)"

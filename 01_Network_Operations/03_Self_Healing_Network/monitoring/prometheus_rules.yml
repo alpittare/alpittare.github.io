@@ -1,0 +1,127 @@
+groups:
+  - name: self_healing_network
+    interval: 30s
+    rules:
+      # Service Health Alerts
+      - alert: SelfHealingNetworkServiceDown
+        expr: up{job="self-healing"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: service
+        annotations:
+          summary: "Self-Healing Network service is down"
+          description: "{{ $labels.instance }} has been unreachable for 2 minutes"
+
+      - alert: SelfHealingResponseTimeHigh
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="self-healing"}[5m])) > 1.5
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "Self-Healing response time exceeds threshold"
+          description: "P95 latency is {{ $value }}s (threshold: 1.5s)"
+
+      # Resource Alerts
+      - alert: SelfHealingCPUHigh
+        expr: rate(process_cpu_seconds_total{job="self-healing"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Self-Healing CPU usage high"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+
+      - alert: SelfHealingMemoryHigh
+        expr: process_resident_memory_bytes{job="self-healing"} / 1e9 > 2.0
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Self-Healing memory usage high"
+          description: "Memory usage is {{ $value }}GB (threshold: 2.0GB)"
+
+      - alert: SelfHealingDiskHigh
+        expr: node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"} < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: resource
+        annotations:
+          summary: "Self-Healing disk space low"
+          description: "Disk usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+
+      # ML-Specific Alerts
+      - alert: SelfHealingPredictionLatencyHigh
+        expr: histogram_quantile(0.99, rate(prediction_latency_seconds_bucket{job="self-healing"}[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Prediction latency exceeds SLA"
+          description: "P99 latency is {{ $value }}s (SLA: 1.0s)"
+
+      - alert: SelfHealingModelDriftDetected
+        expr: increase(model_drift_detected_total{job="self-healing"}[1h]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Model drift detected"
+          description: "Model distribution has shifted significantly"
+
+      - alert: SelfHealingAccuracyDegraded
+        expr: model_accuracy{job="self-healing"} < 0.9
+        for: 10m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Model accuracy degraded"
+          description: "Current accuracy is {{ $value }} (baseline: 0.9)"
+
+      # Business Logic Alerts - UC3 Specific
+      - alert: SelfHealingRemediationFailureRate
+        expr: rate(remediation_failures_total{job="self-healing"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "Remediation failure rate high"
+          description: "Failure rate is {{ $value }}/sec (threshold: 0.05/sec)"
+
+      - alert: SelfHealingGuardrailBreach
+        expr: increase(guardrail_breaches_total{job="self-healing"}[5m]) > 3
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "Guardrail breach detected"
+          description: "{{ $value }} guardrail breaches in 5 minutes"
+
+      - alert: SelfHealingHealthScoreCritical
+        expr: health_score{job="self-healing"} < 0.6
+        for: 5m
+        labels:
+          severity: critical
+          component: business_logic
+        annotations:
+          summary: "System health score critical"
+          description: "Health score is {{ $value }} (threshold: 0.6)"
+
+      - alert: SelfHealingClosedLoopTimeout
+        expr: increase(closed_loop_timeout_total{job="self-healing"}[5m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: business_logic
+        annotations:
+          summary: "Closed-loop healing timeout detected"
+          description: "{{ $value }} timeouts in 5 minutes (threshold: 2)"

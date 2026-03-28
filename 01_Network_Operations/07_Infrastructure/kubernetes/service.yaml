@@ -1,0 +1,263 @@
+---
+# CMI NaaP AI Network Intelligence Platform - Kubernetes Services
+# ClusterIP services for internal communication and external access
+
+# Master Dashboard Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: master-dashboard
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: master-dashboard
+  annotations:
+    description: "Central control and monitoring interface"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: master-dashboard
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
+
+---
+# Blast Radius Analysis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: blast-radius-analysis
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: blast-radius-analysis
+  annotations:
+    description: "Network failure impact assessment service"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8001
+      targetPort: 8001
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: blast-radius-analysis
+  sessionAffinity: ClientIP
+
+---
+# Autonomous Operations Agent Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: autonomous-ops-agent
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: autonomous-ops-agent
+  annotations:
+    description: "Automated remediation and configuration management service"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8002
+      targetPort: 8002
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: autonomous-ops-agent
+  sessionAffinity: ClientIP
+
+---
+# Self-Healing Network Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: self-healing-network
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: self-healing-network
+  annotations:
+    description: "Real-time anomaly detection and automated fault correction service"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8003
+      targetPort: 8003
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: self-healing-network
+  sessionAffinity: ClientIP
+
+---
+# Predictive Capacity Intelligence Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: predictive-capacity
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: predictive-capacity
+  annotations:
+    description: "Network capacity forecasting and planning service"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8004
+      targetPort: 8004
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: predictive-capacity
+  sessionAffinity: ClientIP
+
+---
+# Incident Correlation & RCA Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: incident-correlation
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: incident-correlation
+  annotations:
+    description: "Multi-domain event correlation and root cause analysis service"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8005
+      targetPort: 8005
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: incident-correlation
+  sessionAffinity: ClientIP
+
+---
+# Network Knowledge Assistant Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: knowledge-assistant
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: knowledge-assistant
+  annotations:
+    description: "Natural language Q&A over network operational knowledge service"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8006
+      targetPort: 8006
+      protocol: TCP
+  selector:
+    app: cmi-naap
+    component: knowledge-assistant
+  sessionAffinity: ClientIP
+
+---
+# Headless Service for StatefulSet DNS Resolution
+apiVersion: v1
+kind: Service
+metadata:
+  name: cmi-naap-headless
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+spec:
+  clusterIP: None
+  selector:
+    app: cmi-naap
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+
+---
+# Persistent Volume Claims for Shared Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cmi-naap-models
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    type: models
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cmi-naap-data
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    type: data
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cmi-naap-knowledge-base
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    type: knowledge-base
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+# Service Monitor for Prometheus (if using Prometheus Operator)
+apiVersion: v1
+kind: Service
+metadata:
+  name: cmi-naap-metrics
+  namespace: cmi-naap
+  labels:
+    app: cmi-naap
+    component: metrics
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+  selector:
+    app: cmi-naap
