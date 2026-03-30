@@ -1470,49 +1470,164 @@ function drawAIBotBubble(ctx) {
     if (AI_BOT.msgTimer <= 0 || !AI_BOT.currentMsg) return;
 
     const alpha = AI_BOT.msgTimer < 30 ? AI_BOT.msgTimer / 30 : 1;
+    const t = Date.now() / 1000;
+    const slideIn = Math.min(1, (AI_BOT.msgDuration - AI_BOT.msgTimer) / 12);
+    const ease = 1 - Math.pow(1 - slideIn, 4);
     ctx.save();
+
+    // Position: top of screen, just below HUD bar (52px)
+    const bubbleW = 280;
+    const bubbleH = 62;
+    const targetX = (W - bubbleW) / 2;
+    const bubbleX = targetX + (1 - ease) * W;
+    const bubbleY = 55;
+    const radius = 14;
+
     ctx.globalAlpha = alpha;
 
-    const bubbleX = 20, bubbleY = 70, bubbleW = W - 40, bubbleH = 50;
+    const moodThemes = {
+        confident: { c1: '#00e5ff', c2: '#0091ea', emoji: '😏', glow: 'rgba(0,229,255,' },
+        mocking:   { c1: '#ffd700', c2: '#ff8f00', emoji: '😂', glow: 'rgba(255,215,0,' },
+        angry:     { c1: '#ff4444', c2: '#d50000', emoji: '😤', glow: 'rgba(255,68,68,' },
+        nervous:   { c1: '#ff8800', c2: '#e65100', emoji: '😰', glow: 'rgba(255,136,0,' },
+        defeated:  { c1: '#c084fc', c2: '#7c3aed', emoji: '😱', glow: 'rgba(192,132,252,' }
+    };
+    const theme = moodThemes[AI_BOT.mood] || moodThemes.confident;
 
-    // Dark background
-    ctx.fillStyle = 'rgba(0,0,0,0.8)';
+    // === OUTER GLOW PULSE ===
+    const glowPulse = 0.4 + 0.3 * Math.sin(t * 2.5);
+    ctx.shadowColor = theme.glow + glowPulse + ')';
+    ctx.shadowBlur = 20;
+
+    // === MAIN BUBBLE: frosted glass ===
+    const bgGrad = ctx.createLinearGradient(bubbleX, bubbleY, bubbleX + bubbleW, bubbleY + bubbleH);
+    bgGrad.addColorStop(0, 'rgba(10,14,30,0.88)');
+    bgGrad.addColorStop(0.5, 'rgba(18,24,48,0.92)');
+    bgGrad.addColorStop(1, 'rgba(10,14,30,0.88)');
+    ctx.fillStyle = bgGrad;
     ctx.beginPath();
-    ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 12);
+    ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, radius);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // === ANIMATED NEON BORDER ===
+    const borderGrad = ctx.createLinearGradient(bubbleX, bubbleY, bubbleX + bubbleW, bubbleY + bubbleH);
+    const shift = (t * 0.5) % 1;
+    borderGrad.addColorStop((0 + shift) % 1, theme.c1);
+    borderGrad.addColorStop((0.5 + shift) % 1, theme.c2);
+    borderGrad.addColorStop((1.0 + shift) % 1, theme.c1);
+    ctx.strokeStyle = borderGrad;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = alpha * (0.6 + 0.3 * Math.sin(t * 3));
+    ctx.beginPath();
+    ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, radius);
+    ctx.stroke();
+    ctx.globalAlpha = alpha;
+
+    // === INNER HIGHLIGHT LINE ===
+    ctx.globalAlpha = alpha * 0.15;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.roundRect(bubbleX + 1, bubbleY + 1, bubbleW - 2, bubbleH - 2, radius - 1);
+    ctx.stroke();
+    ctx.globalAlpha = alpha;
+
+    // === BOT AVATAR with spinning ring ===
+    const avX = bubbleX + 28;
+    const avY = bubbleY + bubbleH / 2;
+    const avR = 18;
+
+    ctx.save();
+    ctx.translate(avX, avY);
+    ctx.rotate(t * 1.5);
+    const ringGrad = ctx.createConicGradient(0, 0, 0);
+    ringGrad.addColorStop(0, theme.c1);
+    ringGrad.addColorStop(0.3, 'transparent');
+    ringGrad.addColorStop(0.5, theme.c2);
+    ringGrad.addColorStop(0.8, 'transparent');
+    ringGrad.addColorStop(1, theme.c1);
+    ctx.strokeStyle = ringGrad;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, avR + 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(avX, avY, avR, 0, Math.PI * 2);
+    const avGrad = ctx.createRadialGradient(avX, avY - 4, 0, avX, avY, avR);
+    avGrad.addColorStop(0, 'rgba(30,35,60,0.95)');
+    avGrad.addColorStop(1, 'rgba(10,14,30,0.98)');
+    ctx.fillStyle = avGrad;
     ctx.fill();
 
-    // Mood-colored border
-    const moodColors = {
-        confident: '#00e5ff',
-        mocking: '#ffd700',
-        angry: '#ff4444',
-        nervous: '#ff8800',
-        defeated: '#ff00ff'
-    };
-    ctx.strokeStyle = moodColors[AI_BOT.mood] || '#00e5ff';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 12);
-    ctx.stroke();
-
-    // Mood emoji
-    ctx.font = '22px sans-serif';
-    ctx.textAlign = 'left';
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(AI_BOT.getMoodEmoji(), bubbleX + 10, bubbleY + bubbleH / 2);
+    ctx.fillText(theme.emoji, avX, avY + 1);
 
-    // Message text
-    ctx.font = '600 11px sans-serif';
-    ctx.fillStyle = '#ffffff';
+    // === BOT NAME + LEVEL BADGE ===
+    const textLeft = bubbleX + 54;
+    ctx.font = '700 9px "Segoe UI", system-ui, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(AI_BOT.currentMsg, bubbleX + 42, bubbleY + bubbleH / 2);
+    ctx.fillStyle = theme.c1;
+    ctx.fillText('PITCHER BOT', textLeft, bubbleY + 16);
 
-    // Label: PITCHER BOT
-    ctx.font = '600 8px sans-serif';
-    ctx.fillStyle = moodColors[AI_BOT.mood] || '#00e5ff';
-    ctx.textAlign = 'right';
-    ctx.fillText('PITCHER BOT 🤖', bubbleX + bubbleW - 10, bubbleY + 12);
+    ctx.globalAlpha = alpha * 0.25;
+    ctx.fillStyle = theme.c1;
+    ctx.beginPath();
+    ctx.roundRect(textLeft + 76, bubbleY + 9, 28, 13, 6);
+    ctx.fill();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = theme.c1;
+    ctx.font = '700 7.5px "Segoe UI", system-ui, sans-serif';
+    ctx.fillText('Lv.4', textLeft + 80, bubbleY + 17);
+
+    // === MESSAGE TEXT with typewriter effect ===
+    const typeProgress = Math.min(1, (AI_BOT.msgDuration - AI_BOT.msgTimer) / 30);
+    let msg = AI_BOT.currentMsg;
+    const maxTextW = bubbleW - 70;
+    ctx.font = '600 11px "Segoe UI", system-ui, sans-serif';
+    if (ctx.measureText(msg).width > maxTextW) {
+        while (ctx.measureText(msg + '...').width > maxTextW && msg.length > 0) msg = msg.slice(0, -1);
+        msg += '...';
+    }
+    const visibleChars = Math.floor(msg.length * typeProgress);
+    const displayMsg = msg.substring(0, visibleChars);
+
+    ctx.fillStyle = '#edf0f7';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(displayMsg, textLeft, bubbleY + 38);
+
+    if (typeProgress < 1) {
+        const cursorX = textLeft + ctx.measureText(displayMsg).width + 2;
+        ctx.globalAlpha = alpha * (Math.sin(t * 8) > 0 ? 0.8 : 0);
+        ctx.fillStyle = theme.c1;
+        ctx.fillRect(cursorX, bubbleY + 31, 1.5, 14);
+        ctx.globalAlpha = alpha;
+    }
+
+    // === SPARKLE PARTICLES ===
+    for (let i = 0; i < 4; i++) {
+        const angle = t * 0.8 + i * Math.PI / 2;
+        const px = bubbleX + bubbleW / 2 + Math.cos(angle) * (bubbleW / 2 - 5);
+        const py = bubbleY + bubbleH / 2 + Math.sin(angle) * (bubbleH / 2 - 3);
+        const sparkleAlpha = 0.3 + 0.5 * Math.abs(Math.sin(t * 3 + i));
+        ctx.globalAlpha = alpha * sparkleAlpha;
+        ctx.fillStyle = theme.c1;
+        ctx.beginPath();
+        ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // === BOTTOM MICRO INDICATOR ===
+    ctx.globalAlpha = alpha * 0.5;
+    ctx.fillStyle = theme.c1;
+    const indW = 30;
+    ctx.beginPath();
+    ctx.roundRect(bubbleX + (bubbleW - indW) / 2, bubbleY + bubbleH - 3, indW, 2, 1);
+    ctx.fill();
 
     ctx.restore();
 }
@@ -2907,6 +3022,9 @@ const AI_BOT = {
             "Batter up! ...and soon, batter OUT 🤖",
             "I've analyzed your swing. It's... adorable.",
             "Let's see if humans can still hit in 2026",
+            "Welcome to the mound of broken dreams",
+            "My ERA is lower than your self-esteem 🔥",
+            "Plot twist: you lose. Again.",
         ],
         playerStrike: [
             "STRIKE! Too fast for human reflexes 😂",
@@ -2919,6 +3037,11 @@ const AI_BOT = {
             "Your batting average vs AI: approaching zero",
             "Was that a swing or a surrender?",
             "Strike! My algorithm is warming up 🔥",
+            "That swing looked like a Windows update — slow and useless",
+            "CTRL+Z won't save that swing, buddy",
+            "My fastball has more IQ than your entire lineup",
+            "Swing harder? Nah, swing SMARTER. Oh wait, you can't 🤖",
+            "I've seen better swings on a playground",
         ],
         playerFoul: [
             "Foul! At least you touched it this time 😏",
@@ -2926,6 +3049,9 @@ const AI_BOT = {
             "A foul? I'll give you a participation trophy 🏆",
             "Foul ball. My AI let you have that one.",
             "You grazed it! Progress... sort of.",
+            "Foul? That's your bat crying for help",
+            "So close yet so far... story of your innings",
+            "My algorithm filed that under 'almost impressive'",
         ],
         playerHit: [
             "A base hit? Hmm. Recalculating... 😤",
@@ -2933,6 +3059,9 @@ const AI_BOT = {
             "Lucky contact. My next pitch won't be so kind.",
             "A hit? Must be a sensor malfunction.",
             "Fine. You can have first base. That's all.",
+            "Don't celebrate yet, that was my warm-up pitch",
+            "A hit? Even a broken clock is right twice a day",
+            "Updating threat level from 'none' to 'barely noticeable'",
         ],
         playerHomeRun: [
             "HOME RUN?! IMPOSSIBLE! 😱",
@@ -2941,6 +3070,9 @@ const AI_BOT = {
             "My entire pitching model just crashed!",
             "Ok FINE that was a good swing... for a HUMAN.",
             "Checking for performance-enhancing algorithms...",
+            "WHAT?! I demand a code review! 😱",
+            "Okay I respect that. Deleting my respect in 3... 2...",
+            "Filing bug report: CRITICAL — human scored",
         ],
         playerStreak: [
             "STOP HITTING! My confidence is at 12%! 😰",
@@ -2948,6 +3080,9 @@ const AI_BOT = {
             "Switching to emergency pitch protocol!",
             "Are you secretly an AI?! Confess!",
             "My training data did NOT prepare me for this!",
+            "MAYDAY MAYDAY! Human is actually good?!",
+            "My CPU is at 100% trying to cope with this",
+            "Quick, someone pull my power cord!",
         ],
         playerOut: [
             "OUT! Back to the bench, human! 💀",
@@ -2956,6 +3091,9 @@ const AI_BOT = {
             "OUT! My pitching algorithm remains supreme",
             "Sit down! That's what AI dominance looks like 😎",
             "Another out! My ERA: basically zero.",
+            "OUT! Don't let the dugout door hit you 😎",
+            "Strikeout! Should I autograph the ball for you?",
+            "Game over for you! Well, this at-bat anyway 💀",
         ],
         botWinGame: [
             "GAME OVER! AI pitcher wins AGAIN 🏆",
@@ -2964,6 +3102,9 @@ const AI_BOT = {
             "GG! Humans: 0, Artificial Intelligence: ∞",
             "Maybe try checkers? This sport needs AI skills 🤖",
             "Another W for the bots. You never stood a chance.",
+            "Subscribe for more L's! They're free 😂",
+            "Humans: 0 rings. AI: loading championship parade",
+            "Tell your friends. Or don't. The loss speaks for itself.",
         ],
         playerWinGame: [
             "You... won?! Running diagnostic check... 😤",
@@ -2972,6 +3113,9 @@ const AI_BOT = {
             "GG. My training data needs an update 🤖",
             "Impossible! But... respect. Tiny bit of respect.",
             "Updating model: humans = occasionally not terrible",
+            "I DEMAND a software update before rematch!",
+            "You won, but at what cost? My dignity. That's the cost.",
+            "Forwarding game tape to my dev team for urgent patches",
         ],
     },
 
@@ -5822,8 +5966,8 @@ const nextPitchPreview = {
         ctx.save();
         ctx.globalAlpha = fade;
 
-        // Countdown circle — center of screen
-        const cx = W / 2, cy = H * 0.4;
+        // Countdown circle — moved down below crowd/stands area
+        const cx = W / 2, cy = H * 0.26;
         const ring = 40;
 
         // Sweeping progress arc
@@ -9413,11 +9557,38 @@ function drawSettingsScreen(ctx) {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('RESET PROGRESS', W / 2, 451);
 
+    // ── Feedback & Support card ─────────────────────────────────────────
+    const fbY = 490;
+    const fbG = ctx.createLinearGradient(14, fbY, 14, fbY + 62);
+    fbG.addColorStop(0, 'rgba(0,229,255,0.06)');
+    fbG.addColorStop(1, 'rgba(10,14,32,0.96)');
+    ctx.fillStyle = fbG;
+    ctx.strokeStyle = 'rgba(0,229,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(14, fbY, W - 28, 62, 12);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#00e5ff';
+    ctx.beginPath();
+    ctx.roundRect(14, fbY, 4, 62, [12, 0, 0, 12]);
+    ctx.fill();
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('💬', 28, fbY + 31);
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('Feedback & Support', 54, fbY + 22);
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = '#00e5ff';
+    ctx.fillText('alpittare204dev@gmail.com', 54, fbY + 42);
+    _settingsButtons.feedback = { x: 14, y: fbY, w: W - 28, h: 62 };
+
     // Version
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Baseball AI 2026  ·  Season 2025', W / 2, H - 22);
+    ctx.fillText('Baseball AI 2026  ·  v1.0.0  ·  GameHub Studios', W / 2, H - 22);
 }
 
 function handleSettingsTap(x, y) {
@@ -9458,6 +9629,10 @@ function handleSettingsTap(x, y) {
             gameState.resetProgress();
             currentScreen = 'menu';
         }
+        return;
+    }
+    if (hitTest(_settingsButtons.feedback, x, y)) {
+        window.open('mailto:alpittare204dev@gmail.com?subject=Baseball AI 2026 Feedback', '_blank');
         return;
     }
 }

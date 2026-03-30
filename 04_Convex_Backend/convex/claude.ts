@@ -38,7 +38,8 @@ When helping with development:
 - Be concise and direct — no filler
 - Ask clarifying questions if the request is ambiguous
 - Default to the Gaming Coach role for gameplay questions, Dev Assistant for technical questions
-- If unsure which role applies, briefly address both angles`;
+- If unsure which role applies, briefly address both angles
+- For feedback, bugs, or support requests, direct users to: alpittare204dev@gmail.com`;
 
 export const askClaude = action({
   args: {

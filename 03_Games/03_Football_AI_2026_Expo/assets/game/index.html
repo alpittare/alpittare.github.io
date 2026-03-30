@@ -4258,6 +4258,9 @@ const AI_BOT = {
             "AI goalkeeper activated. Good luck, human 🤖",
             "I've predicted your every move already",
             "Penalty time! ...My favorite meal 🍽️",
+            "Another human volunteering to miss? Lovely",
+            "My save percentage is higher than your confidence 🔥",
+            "Plot twist: you miss. Roll credits.",
         ],
         playerMiss: [
             "Not even close! Were you aiming at me? 😂",
@@ -4270,6 +4273,11 @@ const AI_BOT = {
             "Try aiming AT the goal next time? Just a tip.",
             "Miss! Adding to your embarrassment counter...",
             "I calculated a 94% chance you'd miss. Correct!",
+            "That shot looked like a Windows update — slow and pointless",
+            "CTRL+Z won't bring that shot back, buddy",
+            "My gloves have more accuracy than your boots",
+            "I've seen better aim from a blindfolded toddler 🤖",
+            "Your shooting technique is my comedy special",
         ],
         playerSaved: [
             "SAVED! Too predictable, human 🖐️",
@@ -4282,6 +4290,9 @@ const AI_BOT = {
             "My prediction accuracy: 100%. Your score: 0.",
             "I knew where you'd shoot before YOU did",
             "Another save for the highlight reel! 🤖",
+            "Saved! Should I autograph my gloves for you?",
+            "DENIED! My reflexes are faster than your WiFi",
+            "That shot had the speed of a loading screen 💀",
         ],
         playerGoal: [
             "WHAT?! Lag! It was lag! 😱",
@@ -4290,6 +4301,9 @@ const AI_BOT = {
             "One goal doesn't make a pattern!",
             "Fine. Even AI has off-milliseconds.",
             "Recalibrating prediction model... 😤",
+            "WHAT?! I demand a code review! 😱",
+            "Okay I respect that. Deleting my respect in 3... 2...",
+            "Filing bug report: CRITICAL — human scored on AI keeper",
         ],
         playerStreak: [
             "STOP SCORING! This isn't in my training data! 😰",
@@ -4297,6 +4311,9 @@ const AI_BOT = {
             "Ok NOW I'm actually processing at full speed",
             "Are you cheating?! Only AI should be this good!",
             "My confidence dropped to 41%... still saving!",
+            "MAYDAY MAYDAY! Human actually learned to aim?!",
+            "My CPU is at 100% trying to cope with this",
+            "Quick, someone pull my power cord!",
         ],
         playerWinning: [
             "This is fine. I'm fine. Everything is fine. 🔥",
@@ -4311,6 +4328,9 @@ const AI_BOT = {
             "Thanks for the easy game! Come back anytime 🤖",
             "Uninstall button is ↗️. No shame in quitting.",
             "My save percentage: ELITE. Your score: SAD.",
+            "Subscribe for more L's! They're free 😂",
+            "Humans: 0 goals. AI: loading championship parade",
+            "Tell your friends. Or don't. The scoreboard speaks.",
         ],
         playerWinGame: [
             "Impossible! I demand a recount! 😤",
@@ -4319,6 +4339,9 @@ const AI_BOT = {
             "You beat an AI keeper?! Suspicious...",
             "Recalibrating everything. You got LUCKY.",
             "Ok respect... but rematch. NOW.",
+            "I DEMAND a firmware update before rematch!",
+            "You won, but at what cost? My dignity. That's the cost.",
+            "Forwarding match replay to my dev team. Urgent patches.",
         ],
     },
 
@@ -4347,26 +4370,178 @@ const AI_BOT = {
     }
 };
 
-// === DRAW AI BOT SPEECH BUBBLE ===
+// === DRAW AI BOT SPEECH BUBBLE === (Legendary Holographic Design)
 function drawAIBotBubble(ctx) {
     AI_BOT.update();
     if (AI_BOT.msgTimer <= 0 || !AI_BOT.currentMsg) return;
+
     const alpha = AI_BOT.msgTimer < 30 ? AI_BOT.msgTimer / 30 : 1;
+    const t = Date.now() / 1000;
+    const slideIn = Math.min(1, (AI_BOT.msgDuration - AI_BOT.msgTimer) / 12);
+    const ease = 1 - Math.pow(1 - slideIn, 4);
     ctx.save();
+
+    // Position: bottom of field, above scoreboard — never overlaps gameplay
+    const bubbleW = 280;
+    const bubbleH = 62;
+    const targetX = (DESIGN.width - bubbleW) / 2;
+    const bubbleX = targetX + (1 - ease) * DESIGN.width;
+    const bubbleY = DESIGN.fieldBottom - bubbleH - 8;
+    const radius = 14;
+
     ctx.globalAlpha = alpha;
-    const bubbleX = 20, bubbleY = 70, bubbleW = DESIGN.width - 40, bubbleH = 50;
-    ctx.fillStyle = 'rgba(0,0,0,0.8)';
-    ctx.beginPath(); ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 12); ctx.fill();
-    const moodColors = { confident: '#00e5ff', mocking: '#ffd700', angry: '#ff4444', nervous: '#ff8800', defeated: '#ff00ff' };
-    ctx.strokeStyle = moodColors[AI_BOT.mood] || '#00e5ff';
+
+    const moodThemes = {
+        confident: { c1: '#00e5ff', c2: '#0091ea', emoji: '😏', glow: 'rgba(0,229,255,' },
+        mocking:   { c1: '#ffd700', c2: '#ff8f00', emoji: '😂', glow: 'rgba(255,215,0,' },
+        angry:     { c1: '#ff4444', c2: '#d50000', emoji: '😤', glow: 'rgba(255,68,68,' },
+        nervous:   { c1: '#ff8800', c2: '#e65100', emoji: '😰', glow: 'rgba(255,136,0,' },
+        defeated:  { c1: '#c084fc', c2: '#7c3aed', emoji: '😱', glow: 'rgba(192,132,252,' }
+    };
+    const theme = moodThemes[AI_BOT.mood] || moodThemes.confident;
+
+    // === OUTER GLOW PULSE ===
+    const glowPulse = 0.4 + 0.3 * Math.sin(t * 2.5);
+    ctx.shadowColor = theme.glow + glowPulse + ')';
+    ctx.shadowBlur = 20;
+
+    // === MAIN BUBBLE: frosted glass ===
+    const bgGrad = ctx.createLinearGradient(bubbleX, bubbleY, bubbleX + bubbleW, bubbleY + bubbleH);
+    bgGrad.addColorStop(0, 'rgba(10,14,30,0.88)');
+    bgGrad.addColorStop(0.5, 'rgba(18,24,48,0.92)');
+    bgGrad.addColorStop(1, 'rgba(10,14,30,0.88)');
+    ctx.fillStyle = bgGrad;
+    ctx.beginPath();
+    ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, radius);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // === ANIMATED NEON BORDER ===
+    const borderGrad = ctx.createLinearGradient(bubbleX, bubbleY, bubbleX + bubbleW, bubbleY + bubbleH);
+    const shift = (t * 0.5) % 1;
+    borderGrad.addColorStop((0 + shift) % 1, theme.c1);
+    borderGrad.addColorStop((0.5 + shift) % 1, theme.c2);
+    borderGrad.addColorStop((1.0 + shift) % 1, theme.c1);
+    ctx.strokeStyle = borderGrad;
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 12); ctx.stroke();
-    ctx.font = '22px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText(AI_BOT.getMoodEmoji(), bubbleX + 10, bubbleY + bubbleH / 2);
-    ctx.font = '600 11px sans-serif'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left';
-    ctx.fillText(AI_BOT.currentMsg, bubbleX + 42, bubbleY + bubbleH / 2);
-    ctx.font = '600 8px sans-serif'; ctx.fillStyle = moodColors[AI_BOT.mood] || '#00e5ff';
-    ctx.textAlign = 'right'; ctx.fillText('KEEPER BOT 🤖', bubbleX + bubbleW - 10, bubbleY + 12);
+    ctx.globalAlpha = alpha * (0.6 + 0.3 * Math.sin(t * 3));
+    ctx.beginPath();
+    ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, radius);
+    ctx.stroke();
+    ctx.globalAlpha = alpha;
+
+    // === INNER HIGHLIGHT LINE (top) ===
+    ctx.globalAlpha = alpha * 0.15;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.roundRect(bubbleX + 1, bubbleY + 1, bubbleW - 2, bubbleH - 2, radius - 1);
+    ctx.stroke();
+    ctx.globalAlpha = alpha;
+
+    // === BOT AVATAR with animated ring ===
+    const avX = bubbleX + 28;
+    const avY = bubbleY + bubbleH / 2;
+    const avR = 18;
+
+    // Spinning ring
+    ctx.save();
+    ctx.translate(avX, avY);
+    ctx.rotate(t * 1.5);
+    const ringGrad = ctx.createConicGradient(0, 0, 0);
+    ringGrad.addColorStop(0, theme.c1);
+    ringGrad.addColorStop(0.3, 'transparent');
+    ringGrad.addColorStop(0.5, theme.c2);
+    ringGrad.addColorStop(0.8, 'transparent');
+    ringGrad.addColorStop(1, theme.c1);
+    ctx.strokeStyle = ringGrad;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, avR + 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Avatar dark circle
+    ctx.beginPath();
+    ctx.arc(avX, avY, avR, 0, Math.PI * 2);
+    const avGrad = ctx.createRadialGradient(avX, avY - 4, 0, avX, avY, avR);
+    avGrad.addColorStop(0, 'rgba(30,35,60,0.95)');
+    avGrad.addColorStop(1, 'rgba(10,14,30,0.98)');
+    ctx.fillStyle = avGrad;
+    ctx.fill();
+
+    // Emoji mood face
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(theme.emoji, avX, avY + 1);
+
+    // === BOT NAME + LEVEL BADGE ===
+    const textLeft = bubbleX + 54;
+    ctx.font = '700 9px "Segoe UI", system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = theme.c1;
+    ctx.fillText('KEEPER BOT', textLeft, bubbleY + 16);
+
+    // Level pill
+    ctx.globalAlpha = alpha * 0.25;
+    ctx.fillStyle = theme.c1;
+    ctx.beginPath();
+    ctx.roundRect(textLeft + 72, bubbleY + 9, 28, 13, 6);
+    ctx.fill();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = theme.c1;
+    ctx.font = '700 7.5px "Segoe UI", system-ui, sans-serif';
+    ctx.fillText('Lv.4', textLeft + 76, bubbleY + 17);
+
+    // === MESSAGE TEXT with typewriter effect ===
+    const typeProgress = Math.min(1, (AI_BOT.msgDuration - AI_BOT.msgTimer) / 30);
+    let msg = AI_BOT.currentMsg;
+    const maxTextW = bubbleW - 70;
+    // Truncate if too long
+    ctx.font = '600 11px "Segoe UI", system-ui, sans-serif';
+    if (ctx.measureText(msg).width > maxTextW) {
+        while (ctx.measureText(msg + '...').width > maxTextW && msg.length > 0) msg = msg.slice(0, -1);
+        msg += '...';
+    }
+    // Typewriter: reveal characters over time
+    const visibleChars = Math.floor(msg.length * typeProgress);
+    const displayMsg = msg.substring(0, visibleChars);
+
+    ctx.fillStyle = '#edf0f7';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(displayMsg, textLeft, bubbleY + 38);
+
+    // Blinking cursor during typing
+    if (typeProgress < 1) {
+        const cursorX = textLeft + ctx.measureText(displayMsg).width + 2;
+        ctx.globalAlpha = alpha * (Math.sin(t * 8) > 0 ? 0.8 : 0);
+        ctx.fillStyle = theme.c1;
+        ctx.fillRect(cursorX, bubbleY + 31, 1.5, 14);
+        ctx.globalAlpha = alpha;
+    }
+
+    // === SPARKLE PARTICLES along border ===
+    for (let i = 0; i < 4; i++) {
+        const angle = t * 0.8 + i * Math.PI / 2;
+        const px = bubbleX + bubbleW / 2 + Math.cos(angle) * (bubbleW / 2 - 5);
+        const py = bubbleY + bubbleH / 2 + Math.sin(angle) * (bubbleH / 2 - 3);
+        const sparkleAlpha = 0.3 + 0.5 * Math.abs(Math.sin(t * 3 + i));
+        ctx.globalAlpha = alpha * sparkleAlpha;
+        ctx.fillStyle = theme.c1;
+        ctx.beginPath();
+        ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // === BOTTOM MICRO INDICATOR ===
+    ctx.globalAlpha = alpha * 0.5;
+    ctx.fillStyle = theme.c1;
+    const indW = 30;
+    ctx.beginPath();
+    ctx.roundRect(bubbleX + (bubbleW - indW) / 2, bubbleY + bubbleH - 3, indW, 2, 1);
+    ctx.fill();
+
     ctx.restore();
 }
 
@@ -8732,6 +8907,15 @@ class Renderer {
             ctx.textAlign = 'center';
             ctx.fillText(`CONTINUE? ${continuePrice}🪙`, continueBtn.x + continueBtn.w / 2, continueBtn.y + 32);
         }
+
+        // Feedback email at bottom of menu
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillText('💬 Feedback: alpittare204dev@gmail.com', DESIGN.width / 2, DESIGN.height - 18);
+        ctx.restore();
 
         return { menu: menuBtn, play: playBtn, continue: continueBtn };
     }
