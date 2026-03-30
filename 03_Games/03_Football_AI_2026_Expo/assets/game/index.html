@@ -8709,6 +8709,17 @@ class Renderer {
         ctx.font = '9px -apple-system, Arial';
         ctx.fillText('\uD83E\uDDE0 Powered by TensorFlow.js', cx, badgeY + 10);
 
+        // Feedback & version footer
+        ctx.fillStyle = '#00e5ff';
+        ctx.globalAlpha = 0.5;
+        ctx.font = '9px -apple-system, sans-serif';
+        ctx.fillText('\uD83D\uDCAC alpittare204dev@gmail.com', cx, badgeY + 26);
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '7px -apple-system, sans-serif';
+        ctx.fillText('v1.0.0 \u2022 GameHub Studios', cx, badgeY + 38);
+        ctx.globalAlpha = 1;
+
         // Sound toggle — cyan circle (min 44px touch target)
         ctx.fillStyle = 'rgba(0,255,240,0.08)';
         ctx.beginPath();
