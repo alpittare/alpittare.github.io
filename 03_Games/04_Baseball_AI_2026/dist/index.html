@@ -44,6 +44,20 @@ const ctx = canvas.getContext('2d');
 // Player swipes horizontally to swing the bat
 // ============================================================================
 
+// ── APP VERSION CONFIG ─────────────────────────────────────────────────────
+// Bump these before each App Store / OTA update
+const APP_CONFIG = {
+    name: 'Baseball AI 2026',
+    version: '1.0.0',
+    build: '1',
+    studio: 'GameHub Studios',
+    developer: 'Alpit Tare',
+    support: 'alpittare204dev@gmail.com',
+    bundleId: 'com.alpittare.basehit',
+    releaseDate: '2026-03-30',
+};
+// ───────────────────────────────────────────────────────────────────────────
+
 // Canvas constants - game resolution
 const W = 390, H = 844;
 let _scale = 1;
@@ -9581,14 +9595,14 @@ function drawSettingsScreen(ctx) {
     ctx.fillText('Feedback & Support', 54, fbY + 22);
     ctx.font = '10px sans-serif';
     ctx.fillStyle = '#00e5ff';
-    ctx.fillText('alpittare204dev@gmail.com', 54, fbY + 42);
+    ctx.fillText(APP_CONFIG.support, 54, fbY + 42);
     _settingsButtons.feedback = { x: 14, y: fbY, w: W - 28, h: 62 };
 
     // Version
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Baseball AI 2026  ·  v1.0.0  ·  GameHub Studios', W / 2, H - 22);
+    ctx.fillText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version + '  ·  ' + APP_CONFIG.studio, W / 2, H - 22);
 }
 
 function handleSettingsTap(x, y) {
@@ -9632,7 +9646,7 @@ function handleSettingsTap(x, y) {
         return;
     }
     if (hitTest(_settingsButtons.feedback, x, y)) {
-        window.open('mailto:alpittare204dev@gmail.com?subject=Baseball AI 2026 Feedback', '_blank');
+        window.open('mailto:' + APP_CONFIG.support + '?subject=' + APP_CONFIG.name + ' v' + APP_CONFIG.version + ' Feedback', '_blank');
         return;
     }
 }

@@ -3858,6 +3858,20 @@ window.FOOTBALL_LEVELS = FOOTBALL_LEVELS;
 // GOALBOT GAME CODE STARTS HERE
 // ============================================================================
 
+// ── APP VERSION CONFIG ─────────────────────────────────────────────────────
+// Bump these before each App Store / OTA update
+const APP_CONFIG = {
+    name: 'Football AI 2026',
+    version: '1.0.0',
+    build: '1',
+    studio: 'GameHub Studios',
+    developer: 'Alpit Tare',
+    support: 'alpittare204dev@gmail.com',
+    bundleId: 'com.footballprobotai.app',
+    releaseDate: '2026-03-30',
+};
+// ───────────────────────────────────────────────────────────────────────────
+
 // ============================================================================
 // UTILS — Core math, helpers, and constants
 // ============================================================================
@@ -8713,11 +8727,11 @@ class Renderer {
         ctx.fillStyle = '#00e5ff';
         ctx.globalAlpha = 0.5;
         ctx.font = '9px -apple-system, sans-serif';
-        ctx.fillText('\uD83D\uDCAC alpittare204dev@gmail.com', cx, badgeY + 26);
+        ctx.fillText('\uD83D\uDCAC ' + APP_CONFIG.support, cx, badgeY + 26);
         ctx.globalAlpha = 0.2;
         ctx.fillStyle = '#ffffff';
         ctx.font = '7px -apple-system, sans-serif';
-        ctx.fillText('v1.0.0 \u2022 GameHub Studios', cx, badgeY + 38);
+        ctx.fillText('v' + APP_CONFIG.version + ' \u2022 ' + APP_CONFIG.studio, cx, badgeY + 38);
         ctx.globalAlpha = 1;
 
         // Sound toggle — cyan circle (min 44px touch target)
@@ -8925,11 +8939,11 @@ class Renderer {
         ctx.font = '9px -apple-system, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#00e5ff';
-        ctx.fillText('💬 alpittare204dev@gmail.com', DESIGN.width / 2, DESIGN.height - 10);
+        ctx.fillText('\uD83D\uDCAC ' + APP_CONFIG.support, DESIGN.width / 2, DESIGN.height - 10);
         ctx.globalAlpha = 0.25;
         ctx.fillStyle = '#ffffff';
         ctx.font = '7px -apple-system, sans-serif';
-        ctx.fillText('v1.0.0 • GameHub Studios', DESIGN.width / 2, DESIGN.height - 24);
+        ctx.fillText('v' + APP_CONFIG.version + ' \u2022 ' + APP_CONFIG.studio, DESIGN.width / 2, DESIGN.height - 24);
         ctx.restore();
 
         return { menu: menuBtn, play: playBtn, continue: continueBtn };

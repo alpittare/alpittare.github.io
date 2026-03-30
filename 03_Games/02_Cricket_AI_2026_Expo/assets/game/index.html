@@ -3671,6 +3671,20 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
         // CRICKBOT - PREMIUM CRICKET BATTING GAME (COMPLETE REWRITE)
         // ============================================================================
 
+        // ── APP VERSION CONFIG ─────────────────────────────────────────────
+        // Bump these before each App Store / OTA update
+        const APP_CONFIG = {
+            name: 'Cricket AI 2026',
+            version: '1.0.0',
+            build: '1',
+            studio: 'GameHub Studios',
+            developer: 'Alpit Tare',
+            support: 'alpittare204dev@gmail.com',
+            bundleId: 'com.cricketprobotai.app',
+            releaseDate: '2026-03-30',
+        };
+        // ───────────────────────────────────────────────────────────────────
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -9219,7 +9233,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillStyle = '#00e5ff';
-            ctx.fillText('💬 Feedback: alpittare204dev@gmail.com', DESIGN.width / 2, fbY);
+            ctx.fillText('💬 Feedback: ' + APP_CONFIG.support, DESIGN.width / 2, fbY);
             ctx.globalAlpha = 1;
         }
 
@@ -10906,7 +10920,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.font = 'normal 9px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'bottom';
-            ctx.fillText('💬 alpittare204dev@gmail.com', 10, DESIGN.height - 8);
+            ctx.fillText('💬 ' + APP_CONFIG.support, 10, DESIGN.height - 8);
             ctx.restore();
 
             // === VERSION WATERMARK (bottom-right corner) ===
@@ -10915,7 +10929,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.font = 'normal 7px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
-            ctx.fillText('v2.0 • GameHub Studios', DESIGN.width - 10, DESIGN.height - 8);
+            ctx.fillText('v' + APP_CONFIG.version + ' • ' + APP_CONFIG.studio, DESIGN.width - 10, DESIGN.height - 8);
             ctx.restore();
         }
 
