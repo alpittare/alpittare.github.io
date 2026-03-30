@@ -10899,6 +10899,16 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.stroke();
             ctx.restore();
 
+            // === FEEDBACK & SUPPORT (bottom-left) ===
+            ctx.save();
+            ctx.fillStyle = '#00e5ff';
+            ctx.globalAlpha = 0.5;
+            ctx.font = 'normal 9px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('💬 alpittare204dev@gmail.com', 10, DESIGN.height - 8);
+            ctx.restore();
+
             // === VERSION WATERMARK (bottom-right corner) ===
             ctx.save();
             ctx.fillStyle = 'rgba(100,150,200,0.2)';

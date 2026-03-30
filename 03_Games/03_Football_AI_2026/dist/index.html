@@ -8908,13 +8908,17 @@ class Renderer {
             ctx.fillText(`CONTINUE? ${continuePrice}🪙`, continueBtn.x + continueBtn.w / 2, continueBtn.y + 32);
         }
 
-        // Feedback email at bottom of menu
+        // Feedback & Support at bottom of menu
         ctx.save();
-        ctx.globalAlpha = 0.5;
-        ctx.font = '10px -apple-system, sans-serif';
+        ctx.globalAlpha = 0.6;
+        ctx.font = '9px -apple-system, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#00e5ff';
-        ctx.fillText('💬 Feedback: alpittare204dev@gmail.com', DESIGN.width / 2, DESIGN.height - 18);
+        ctx.fillText('💬 alpittare204dev@gmail.com', DESIGN.width / 2, DESIGN.height - 10);
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '7px -apple-system, sans-serif';
+        ctx.fillText('v1.0.0 • GameHub Studios', DESIGN.width / 2, DESIGN.height - 24);
         ctx.restore();
 
         return { menu: menuBtn, play: playBtn, continue: continueBtn };
