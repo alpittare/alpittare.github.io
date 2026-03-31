@@ -1552,20 +1552,23 @@ function drawAIBotBubble(ctx) {
     const avY = bubbleY + bubbleH / 2;
     const avR = 18;
 
+    // Spinning ring using arc segments (WebView compatible - no createConicGradient)
     ctx.save();
-    ctx.translate(avX, avY);
-    ctx.rotate(t * 1.5);
-    const ringGrad = ctx.createConicGradient(0, 0, 0);
-    ringGrad.addColorStop(0, theme.c1);
-    ringGrad.addColorStop(0.3, 'transparent');
-    ringGrad.addColorStop(0.5, theme.c2);
-    ringGrad.addColorStop(0.8, 'transparent');
-    ringGrad.addColorStop(1, theme.c1);
-    ctx.strokeStyle = ringGrad;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(0, 0, avR + 3, 0, Math.PI * 2);
-    ctx.stroke();
+    const ringR = avR + 3;
+    const segments = 4;
+    const segAngle = Math.PI * 2 / segments;
+    const rotAngle = t * 1.5;
+    for (let i = 0; i < segments; i++) {
+        const startA = rotAngle + i * segAngle;
+        const endA = startA + segAngle * 0.6;
+        ctx.strokeStyle = i % 2 === 0 ? theme.c1 : theme.c2;
+        ctx.globalAlpha = alpha * (0.5 + 0.5 * Math.sin(t * 3 + i));
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(avX, avY, ringR, startA, endA);
+        ctx.stroke();
+    }
+    ctx.globalAlpha = alpha;
     ctx.restore();
 
     ctx.beginPath();
@@ -7469,6 +7472,7 @@ let _activeEasyMode = false;
 let _showVIPPopup = false;
 const _vipBuyBtn = {};
 const _vipDismissBtn = {};
+let _vipCloseBtn = {};
 
 function drawGameOverScreen(ctx) {
     if (!currentGame) return;
@@ -7874,6 +7878,16 @@ function drawVIPPopup(ctx) {
     ctx.beginPath();
     ctx.roundRect(cardX, cardY, cardW, cardH, 20);
     ctx.stroke();
+
+    // ✕ Close button (top-right)
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath(); ctx.arc(cardX + cardW - 22, cardY + 22, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '700 16px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('✕', cardX + cardW - 22, cardY + 22);
+    ctx.textBaseline = 'alphabetic';
+    _vipCloseBtn = { x: cardX + cardW - 36, y: cardY + 8, w: 28, h: 28 };
 
     // Crown emoji
     ctx.font = '48px sans-serif';
@@ -10193,6 +10207,12 @@ function handleTap(x, y) {
                 showToast('Welcome to VIP! Enjoy 2x coins & rewards! 👑', '#FFD700', 3);
                 audio.play('levelup');
             }
+            return;
+        }
+        // Check if tapped ✕ close button
+        if (_vipCloseBtn && x >= _vipCloseBtn.x && x <= _vipCloseBtn.x + _vipCloseBtn.w &&
+            y >= _vipCloseBtn.y && y <= _vipCloseBtn.y + _vipCloseBtn.h) {
+            _showVIPPopup = false;
             return;
         }
         // Check if tapped "No thanks" dismiss area

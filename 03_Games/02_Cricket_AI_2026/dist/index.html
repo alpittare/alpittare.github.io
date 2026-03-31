@@ -6642,20 +6642,23 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             const avY = bubbleY + bubbleH / 2;
             const avR = 18;
 
+            // Spinning ring using arc segments (WebView compatible - no createConicGradient)
             ctx.save();
-            ctx.translate(avX, avY);
-            ctx.rotate(t * 1.5);
-            const ringGrad = ctx.createConicGradient(0, 0, 0);
-            ringGrad.addColorStop(0, theme.c1);
-            ringGrad.addColorStop(0.3, 'transparent');
-            ringGrad.addColorStop(0.5, theme.c2);
-            ringGrad.addColorStop(0.8, 'transparent');
-            ringGrad.addColorStop(1, theme.c1);
-            ctx.strokeStyle = ringGrad;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(0, 0, avR + 3, 0, Math.PI * 2);
-            ctx.stroke();
+            const ringR = avR + 3;
+            const segments = 4;
+            const segAngle = Math.PI * 2 / segments;
+            const rotAngle = t * 1.5;
+            for (let i = 0; i < segments; i++) {
+                const startA = rotAngle + i * segAngle;
+                const endA = startA + segAngle * 0.6;
+                ctx.strokeStyle = i % 2 === 0 ? theme.c1 : theme.c2;
+                ctx.globalAlpha = alpha * (0.5 + 0.5 * Math.sin(t * 3 + i));
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(avX, avY, ringR, startA, endA);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = alpha;
             ctx.restore();
 
             ctx.beginPath();
@@ -10837,25 +10840,51 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             drawText('▶ PLAY', playX + playW / 2, playY + playH / 2, 18, '#ffffff', 'bold', false);
             ctx.restore();
 
+            // === CAMPAIGN BUTTON (full-width, purple gradient like Baseball) ===
+            const campaignBtnY = playY + playH + 10;
+            const campaignBtnH = 38;
+            const campaignBtnW = 220;
+            const campaignBtnX = DESIGN.width / 2 - campaignBtnW / 2;
+            const campGrad = ctx.createLinearGradient(campaignBtnX, campaignBtnY, campaignBtnX, campaignBtnY + campaignBtnH);
+            campGrad.addColorStop(0, '#AB47BC');
+            campGrad.addColorStop(0.5, '#9C27B0');
+            campGrad.addColorStop(1, '#7B1FA2');
+            drawRoundedRect(campaignBtnX, campaignBtnY, campaignBtnW, campaignBtnH, 19, campGrad);
+            // Shine overlay
+            ctx.save();
+            ctx.globalAlpha = 0.12;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(campaignBtnX + 2, campaignBtnY + 1, campaignBtnW - 4, campaignBtnH * 0.38, [17,17,0,0]);
+            ctx.fill();
+            ctx.restore();
+            // Neon border
+            ctx.save();
+            ctx.shadowColor = '#cc44ff';
+            ctx.shadowBlur = 12 + Math.sin(menuAnimPhase * 2) * 5;
+            drawRoundedRect(campaignBtnX, campaignBtnY, campaignBtnW, campaignBtnH, 19, null, 'rgba(204,68,255,0.3)', 1.5);
+            ctx.restore();
+            drawText('📊  CAMPAIGN (Lv' + gameState.campaignLevel + ')', DESIGN.width / 2, campaignBtnY + campaignBtnH / 2, 13, '#ffffff', 'bold', false);
+
             // === PREMIUM SHOP & LEVELS BUTTONS ===
-            const shopY = playY + playH + 15;
+            const shopY = campaignBtnY + campaignBtnH + 10;
             const shopW = 75;
-            const campaignW = 75;
+            const levelsW = 75;
             const shopX = DESIGN.width / 2 - shopW - 10;
-            const campaignX = DESIGN.width / 2 + 10;
+            const levelsX = DESIGN.width / 2 + 10;
 
             // LEVELS button with purple gradient
-            const lvlGrad = ctx.createLinearGradient(campaignX, shopY, campaignX, shopY + 45);
+            const lvlGrad = ctx.createLinearGradient(levelsX, shopY, levelsX, shopY + 45);
             lvlGrad.addColorStop(0, '#cc44ff');
             lvlGrad.addColorStop(1, '#7c4dff');
-            drawRoundedRect(campaignX, shopY, campaignW, 45, 22, lvlGrad);
+            drawRoundedRect(levelsX, shopY, levelsW, 45, 22, lvlGrad);
             ctx.save();
             ctx.shadowColor = '#cc44ff';
             ctx.shadowBlur = 15;
-            drawRoundedRect(campaignX, shopY, campaignW, 45, 22, null, '#cc44ff', 2);
+            drawRoundedRect(levelsX, shopY, levelsW, 45, 22, null, '#cc44ff', 2);
             ctx.restore();
-            drawText('🏆', campaignX + campaignW / 2, shopY + 12, 16, '#ffffff', 'normal', false);
-            drawText('LEVELS', campaignX + campaignW / 2, shopY + 30, 9, '#ffffff', 'bold', false);
+            drawText('🏆', levelsX + levelsW / 2, shopY + 12, 16, '#ffffff', 'normal', false);
+            drawText('LEVELS', levelsX + levelsW / 2, shopY + 30, 9, '#ffffff', 'bold', false);
 
             // SHOP button with golden gradient
             const shopGrad = ctx.createLinearGradient(shopX, shopY, shopX, shopY + 45);
@@ -10884,6 +10913,18 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             drawRoundedRect(mpBtnX, mpBtnY, mpBtnW, 38, 19, null, '#ffd700', 1.5);
             ctx.restore();
             drawText('⚔️ MULTIPLAYER', DESIGN.width / 2, mpBtnY + 19, 11, '#ffffff', 'bold', false);
+
+            // === SETTINGS GEAR (top-left corner) ===
+            const gearX = 32;
+            const gearY = 15;
+            const gearR = 18;
+            drawRoundedRect(gearX - gearR, gearY - gearR, gearR * 2, gearR * 2, gearR, 'rgba(0,0,0,0.5)');
+            ctx.save();
+            ctx.shadowColor = '#00e5ff';
+            ctx.shadowBlur = 10 + Math.sin(menuAnimPhase * 1.8) * 3;
+            drawRoundedRect(gearX - gearR, gearY - gearR, gearR * 2, gearR * 2, gearR, null, '#00e5ff', 1.5);
+            ctx.restore();
+            drawText('⚙️', gearX, gearY, 16, '#ffffff', 'normal', false);
 
             // === PREMIUM MUTE TOGGLE (top-right corner) ===
             const muteX = DESIGN.width - 50;
@@ -11213,18 +11254,18 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 }
                 ctx.restore();
 
-                // Radar sweep beam (rotating pie slice)
+                // Radar sweep beam (WebView compatible - no createConicGradient)
                 ctx.save();
                 const sweepAngle = t * 2.5;
                 const sweepSpan = Math.PI * 0.4;
-                const sweepGrad = ctx.createConicGradient(sweepAngle - sweepSpan, radarCX, radarCY);
-                sweepGrad.addColorStop(0, 'transparent');
-                sweepGrad.addColorStop(0.5, glowColor + '0.25)');
-                sweepGrad.addColorStop(1, 'transparent');
                 ctx.beginPath();
                 ctx.moveTo(radarCX, radarCY);
                 ctx.arc(radarCX, radarCY, radarR - 2, sweepAngle - sweepSpan, sweepAngle + sweepSpan);
                 ctx.closePath();
+                const sweepGrad = ctx.createRadialGradient(radarCX, radarCY, 0, radarCX, radarCY, radarR - 2);
+                sweepGrad.addColorStop(0, 'transparent');
+                sweepGrad.addColorStop(0.5, glowColor + '0.15)');
+                sweepGrad.addColorStop(1, glowColor + '0.25)');
                 ctx.fillStyle = sweepGrad;
                 ctx.fill();
                 ctx.restore();
@@ -12527,6 +12568,135 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             }
         }
 
+        // ============================================================================
+        // SETTINGS SCREEN
+        // ============================================================================
+        const _settingsButtons = {};
+
+        function drawSettingsScreen() {
+            const W = DESIGN.width, H = DESIGN.height;
+            const T = Date.now();
+
+            // Background
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+            bgGrad.addColorStop(0, '#050810');
+            bgGrad.addColorStop(0.5, '#0a1628');
+            bgGrad.addColorStop(1, '#0d1a2d');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Back button
+            _settingsButtons.back = { x: 12, y: 16, w: 40, h: 40 };
+            drawGlassCard(12, 16, 40, 40, 10, 'rgba(0,229,255,0.2)', 0.3, '#00e5ff', 4);
+            drawText('←', 32, 36, 18, 'rgba(255,255,255,0.6)', '500', false);
+
+            // Title
+            drawText('SETTINGS', W / 2, 36, 22, '#ffffff', 'bold', false);
+
+            // === AUDIO TOGGLE ===
+            const audioY = 72;
+            drawGlassCard(14, audioY, W - 28, 58, 12, 'rgba(0,229,255,0.1)', 0.5, '#00e5ff', 2);
+            ctx.fillStyle = !audio.muted ? '#4caf50' : 'rgba(100,100,120,0.5)';
+            ctx.beginPath(); ctx.roundRect(14, audioY, 4, 58, [12, 0, 0, 12]); ctx.fill();
+            drawText('🔊', 36, audioY + 29, 20, '#ffffff', 'normal', false);
+            drawText('Audio Effects', 100, audioY + 22, 13, '#ffffff', 'bold', false);
+            drawText('Sound FX and music', 100, audioY + 40, 10, 'rgba(255,255,255,0.4)', 'normal', false);
+            // Toggle pill
+            const audioOn = !audio.muted;
+            const atx = W - 90, aty = audioY + 15;
+            ctx.fillStyle = audioOn ? '#4caf50' : 'rgba(60,60,80,0.9)';
+            ctx.beginPath(); ctx.roundRect(atx, aty, 68, 28, 14); ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(audioOn ? atx + 68 - 16 : atx + 12, aty + 14, 10, 0, Math.PI * 2); ctx.fill();
+            drawText(audioOn ? 'ON' : 'OFF', atx + (audioOn ? 22 : 46), aty + 14, 9, 'rgba(255,255,255,0.5)', 'bold', false);
+            _settingsButtons.audioToggle = { x: atx, y: aty, w: 68, h: 28 };
+
+            // === HAPTICS TOGGLE ===
+            const hapY = 140;
+            const hapticsOn = !(gameState.settings && gameState.settings.hapticsDisabled);
+            drawGlassCard(14, hapY, W - 28, 58, 12, 'rgba(0,229,255,0.1)', 0.5, '#00e5ff', 2);
+            ctx.fillStyle = hapticsOn ? '#4caf50' : 'rgba(100,100,120,0.5)';
+            ctx.beginPath(); ctx.roundRect(14, hapY, 4, 58, [12, 0, 0, 12]); ctx.fill();
+            drawText('📳', 36, hapY + 29, 20, '#ffffff', 'normal', false);
+            drawText('Haptics / Vibration', 100, hapY + 22, 13, '#ffffff', 'bold', false);
+            drawText('Tactile feedback on shots', 100, hapY + 40, 10, 'rgba(255,255,255,0.4)', 'normal', false);
+            const htx = W - 90, hty = hapY + 15;
+            ctx.fillStyle = hapticsOn ? '#4caf50' : 'rgba(60,60,80,0.9)';
+            ctx.beginPath(); ctx.roundRect(htx, hty, 68, 28, 14); ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(hapticsOn ? htx + 68 - 16 : htx + 12, hty + 14, 10, 0, Math.PI * 2); ctx.fill();
+            drawText(hapticsOn ? 'ON' : 'OFF', htx + (hapticsOn ? 22 : 46), hty + 14, 9, 'rgba(255,255,255,0.5)', 'bold', false);
+            _settingsButtons.hapticsToggle = { x: htx, y: hty, w: 68, h: 28 };
+
+            // === PLAYER PROFILE ===
+            const profY = 216;
+            drawGlassCard(14, profY, W - 28, 72, 12, 'rgba(0,229,255,0.1)', 0.5, '#00e5ff', 2);
+            ctx.fillStyle = 'rgba(0,229,255,0.3)';
+            ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2;
+            ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 8;
+            ctx.beginPath(); ctx.arc(44, profY + 36, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.shadowBlur = 0;
+            drawText('🏏', 44, profY + 36, 18, '#ffffff', 'normal', false);
+            drawText('PLAYER', 74, profY + 24, 13, '#ffffff', 'bold', false);
+            drawText('Level ' + gameState.level + '  ·  ' + gameState.coins.toLocaleString() + ' coins', 74, profY + 42, 10, 'rgba(255,255,255,0.5)', 'normal', false);
+            drawText('Games: ' + gameState.gamesPlayed + '  ·  Best: ' + gameState.bestScore, 74, profY + 56, 10, 'rgba(255,255,255,0.5)', 'normal', false);
+
+            // === RESET PROGRESS ===
+            const resetY = 306;
+            _settingsButtons.reset = { x: W / 2 - 100, y: resetY, w: 200, h: 46 };
+            ctx.fillStyle = 'rgba(255,50,50,0.15)';
+            ctx.beginPath(); ctx.roundRect(W / 2 - 100, resetY, 200, 46, 12); ctx.fill();
+            ctx.strokeStyle = 'rgba(255,80,80,0.3)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(W / 2 - 100, resetY, 200, 46, 12); ctx.stroke();
+            drawText('RESET PROGRESS', W / 2, resetY + 23, 13, '#ff6666', '600', false);
+            drawText('This will erase all saved data', W / 2, resetY + 58, 9, 'rgba(255,255,255,0.3)', 'normal', false);
+
+            // === FEEDBACK & SUPPORT ===
+            const fbY = 380;
+            _settingsButtons.feedback = { x: 14, y: fbY, w: W - 28, h: 62 };
+            drawGlassCard(14, fbY, W - 28, 62, 12, 'rgba(0,229,255,0.06)', 0.5, '#00e5ff', 2);
+            ctx.fillStyle = '#00e5ff';
+            ctx.beginPath(); ctx.roundRect(14, fbY, 4, 62, [12, 0, 0, 12]); ctx.fill();
+            drawText('💬', 36, fbY + 31, 20, '#ffffff', 'normal', false);
+            drawText('Feedback & Support', 62, fbY + 22, 12, '#ffffff', 'bold', false);
+            drawText(APP_CONFIG.support, 62, fbY + 42, 10, '#00e5ff', 'normal', false);
+
+            // === VERSION ===
+            drawText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version + '  ·  ' + APP_CONFIG.studio, W / 2, H - 22, 10, 'rgba(255,255,255,0.2)', 'normal', false);
+        }
+
+        function handleSettingsTap(x, y) {
+            if (_settingsButtons.back && x >= _settingsButtons.back.x && x < _settingsButtons.back.x + _settingsButtons.back.w &&
+                y >= _settingsButtons.back.y && y < _settingsButtons.back.y + _settingsButtons.back.h) {
+                audio.play('click'); gameState.screen = 'menu'; return true;
+            }
+            if (_settingsButtons.audioToggle && x >= _settingsButtons.audioToggle.x && x < _settingsButtons.audioToggle.x + _settingsButtons.audioToggle.w &&
+                y >= _settingsButtons.audioToggle.y && y < _settingsButtons.audioToggle.y + _settingsButtons.audioToggle.h) {
+                audio.muted = !audio.muted;
+                gameState.saveToStorage(); return true;
+            }
+            if (_settingsButtons.hapticsToggle && x >= _settingsButtons.hapticsToggle.x && x < _settingsButtons.hapticsToggle.x + _settingsButtons.hapticsToggle.w &&
+                y >= _settingsButtons.hapticsToggle.y && y < _settingsButtons.hapticsToggle.y + _settingsButtons.hapticsToggle.h) {
+                if (!gameState.settings) gameState.settings = {};
+                gameState.settings.hapticsDisabled = !gameState.settings.hapticsDisabled;
+                gameState.saveToStorage(); return true;
+            }
+            if (_settingsButtons.reset && x >= _settingsButtons.reset.x && x < _settingsButtons.reset.x + _settingsButtons.reset.w &&
+                y >= _settingsButtons.reset.y && y < _settingsButtons.reset.y + _settingsButtons.reset.h) {
+                if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                    localStorage.removeItem('crickbot_save');
+                    location.reload();
+                }
+                return true;
+            }
+            if (_settingsButtons.feedback && x >= _settingsButtons.feedback.x && x < _settingsButtons.feedback.x + _settingsButtons.feedback.w &&
+                y >= _settingsButtons.feedback.y && y < _settingsButtons.feedback.y + _settingsButtons.feedback.h) {
+                window.open('mailto:' + APP_CONFIG.support + '?subject=' + APP_CONFIG.name + ' v' + APP_CONFIG.version + ' Feedback', '_blank');
+                return true;
+            }
+            return false;
+        }
+
         function drawGameOverScreen() {
             const W = DESIGN.width, H = DESIGN.height;
             const won = gameState.score >= gameState.target;
@@ -13689,6 +13859,16 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.roundRect(cardX, cardY, cardW, cardH, 16);
             ctx.stroke();
 
+            // ✕ Close button (top-right)
+            ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            ctx.beginPath(); ctx.arc(cardX + cardW - 22, cardY + 22, 14, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '700 16px sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('✕', cardX + cardW - 22, cardY + 22);
+            ctx.textBaseline = 'alphabetic';
+            window._vipCloseBtn = { x: cardX + cardW - 36, y: cardY + 8, w: 28, h: 28 };
+
             // Crown emoji
             ctx.font = '40px sans-serif';
             ctx.textAlign = 'center';
@@ -13947,6 +14127,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
 
             } else if (gameState.screen === 'menu') {
                 drawMenuScreen();
+            } else if (gameState.screen === 'settings') {
+                drawSettingsScreen();
             } else if (gameState.screen === 'levels') {
                 drawLevelSelectScreen();
             } else if (gameState.screen === 'shop') {
@@ -14012,6 +14194,14 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                         return;
                     }
                 }
+                if (window._vipCloseBtn) {
+                    const btn = window._vipCloseBtn;
+                    if (x >= btn.x && x < btn.x + btn.w && y >= btn.y && y < btn.y + btn.h) {
+                        _showVIPPopup = false;
+                        audio.play('click');
+                        return;
+                    }
+                }
                 if (window._vipDismissBtn) {
                     const btn = window._vipDismissBtn;
                     if (x >= btn.x && x < btn.x + btn.w && y >= btn.y && y < btn.y + btn.h) {
@@ -14023,7 +14213,17 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 return; // Block all other taps while popup is showing
             }
 
+            // Settings screen handler
+            if (gameState.screen === 'settings') {
+                if (handleSettingsTap(x, y)) return;
+                return; // Block other taps on settings screen
+            }
+
             if (gameState.screen === 'menu') {
+                // Settings gear (top-left)
+                if (x >= 14 && x <= 50 && y >= -3 && y <= 33) {
+                    audio.play('click'); gameState.screen = 'settings'; return;
+                }
                 // Stats button
                 const navBtnY = 218, navBtnH = 40;
                 const navBtnW = (DESIGN.width - 50) / 2;
@@ -14081,11 +14281,22 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     return;
                 }
 
-                // Campaign/Levels button
-                const mCampaignY = mPlayY + 56 + 15;
-                const mCampaignW = 75;
-                const mCampaignX = DESIGN.width / 2 + 8;
-                if (x >= mCampaignX && x < mCampaignX + mCampaignW && y >= mCampaignY && y < mCampaignY + 45) {
+                // Campaign button (full-width, above shop/levels)
+                const mCampaignBtnY = mPlayY + 56 + 10;
+                const mCampaignBtnW = 220;
+                const mCampaignBtnX = DESIGN.width / 2 - mCampaignBtnW / 2;
+                if (x >= mCampaignBtnX && x < mCampaignBtnX + mCampaignBtnW && y >= mCampaignBtnY && y < mCampaignBtnY + 38) {
+                    audio.play('click');
+                    gameState.screen = 'levels';
+                    levelSelectScrollY = 0;
+                    return;
+                }
+
+                // Levels button (small, right side)
+                const mLevelsY = mCampaignBtnY + 38 + 10;
+                const mLevelsW = 75;
+                const mLevelsX = DESIGN.width / 2 + 10;
+                if (x >= mLevelsX && x < mLevelsX + mLevelsW && y >= mLevelsY && y < mLevelsY + 45) {
                     audio.play('click');
                     gameState.screen = 'levels';
                     levelSelectScrollY = 0;
@@ -14093,9 +14304,9 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 }
 
                 // Shop button
-                const mShopY = mPlayY + 56 + 15;
+                const mShopY = mCampaignBtnY + 38 + 10;
                 const mShopW = 75;
-                const mShopX = DESIGN.width / 2 - mShopW - 8;
+                const mShopX = DESIGN.width / 2 - mShopW - 10;
                 if (x >= mShopX && x < mShopX + mShopW && y >= mShopY && y < mShopY + 45) {
                     audio.play('click');
                     gameState.screen = 'shop';
