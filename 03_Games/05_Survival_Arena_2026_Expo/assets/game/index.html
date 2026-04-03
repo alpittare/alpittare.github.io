@@ -39,12 +39,52 @@ const GAME_CONFIG = {
     physics: { gravity: 0, friction: 0.95, baseSpeed: 6 },
 };
 
+// === ARENA THEMES & WEATHER (Phase 6) ===
+const ARENA_THEMES = {
+    neon: {
+        name: 'Neon City', icon: '🌃',
+        arenaStroke: '#c8a0e8', arenaBg: 'rgba(12,12,30,0.9)',
+        gridColor: 'rgba(200,160,232,0.06)', skyColor1: '#080812', skyColor2: '#1a1a3e',
+        description: 'Classic neon battlefield',
+    },
+    fire: {
+        name: 'Inferno', icon: '🔥',
+        arenaStroke: '#ff4400', arenaBg: 'rgba(30,8,0,0.9)',
+        gridColor: 'rgba(255,68,0,0.06)', skyColor1: '#1a0500', skyColor2: '#3a1000',
+        description: 'Scorched volcanic arena',
+    },
+    ice: {
+        name: 'Frozen Realm', icon: '❄️',
+        arenaStroke: '#00ccff', arenaBg: 'rgba(0,15,30,0.9)',
+        gridColor: 'rgba(0,204,255,0.06)', skyColor1: '#000a14', skyColor2: '#0a2040',
+        description: 'Sub-zero combat zone',
+    },
+    shadow: {
+        name: 'Void', icon: '🌑',
+        arenaStroke: '#8844cc', arenaBg: 'rgba(8,0,20,0.95)',
+        gridColor: 'rgba(136,68,204,0.05)', skyColor1: '#050010', skyColor2: '#150030',
+        description: 'Realm of darkness',
+    },
+};
+
+const WEATHER_EFFECTS = {
+    none: { name: 'Clear', particles: 0 },
+    rain: { name: 'Rain', particles: 40, color: '#4488cc', speed: 400, size: 1.5, angle: 0.15 },
+    storm: { name: 'Storm', particles: 60, color: '#6699dd', speed: 550, size: 2, angle: 0.2, flashChance: 0.002 },
+    snow: { name: 'Snow', particles: 30, color: '#ddeeff', speed: 60, size: 2.5, angle: 0, drift: 0.5 },
+    embers: { name: 'Embers', particles: 25, color: '#ff6600', speed: -40, size: 2, angle: 0, drift: 0.8 },
+};
+
+let weatherParticles = [];
+let weatherFlashTimer = 0;
+let currentWeather = 'none';
+
 // === APP CONFIG (version & support) ===
 const APP_CONFIG = {
     name: 'Survival Arena 2026',
     version: '1.0.0',
     build: '1',
-    studio: 'GameHub Studios',
+    studio: '',
     developer: 'Alpit Tare',
     support: 'alpittare204dev@gmail.com',
     bundleId: 'com.alpittare.survivalarena',
@@ -172,6 +212,9 @@ const gameState = {
     equippedSkin: 'default',
     unlockedThemes: ['neon'],
     equippedTheme: 'neon',
+    selectedWeapon: 'katana',
+    selectedAbility: 'shockwave', // default ability
+    selectedTheme: 'neon',    // default theme (Phase 6)
     // Daily
     lastDailyReward: null,
     dailyStreak: 0,
@@ -234,6 +277,13 @@ const gameState = {
     currentLTM: null,
     // Onboarding
     onboardingStep: 0,     // 0=not started, 1=movement, 2=combat, 3=powerups, 4=done
+    // Prestige System (Phase 7)
+    prestigeLevel: 0,
+    // Daily/Weekly Challenges (Phase 7)
+    dailyChallenges: [],
+    weeklyChallenges: [],
+    lastDailyRefresh: null,
+    lastWeeklyRefresh: null,
 
     addCoins(amount) {
         const mult = this._coinMultiplier || 1;
@@ -244,7 +294,12 @@ const gameState = {
         return false;
     },
     addXP(amount) {
-        const xmult = this._xpMultiplier || 1;
+        let xmult = this._xpMultiplier || 1;
+        // Apply prestige bonus multiplier
+        if (this.prestigeLevel > 0) {
+            const prestigeBonus = PRESTIGE_CONFIG.rewards[this.prestigeLevel - 1];
+            if (prestigeBonus) xmult *= prestigeBonus.xpMultiplier;
+        }
         this.xp += Math.floor(amount * xmult);
         while (this.xp >= this.xpToNext) {
             this.xp -= this.xpToNext;
@@ -266,6 +321,9 @@ const gameState = {
                 currentPhase: this.currentPhase,
                 unlockedSkins: this.unlockedSkins, equippedSkin: this.equippedSkin,
                 unlockedThemes: this.unlockedThemes, equippedTheme: this.equippedTheme,
+                selectedWeapon: this.selectedWeapon,
+                selectedAbility: this.selectedAbility,
+                selectedTheme: this.selectedTheme,
                 lastDailyReward: this.lastDailyReward, dailyStreak: this.dailyStreak,
                 achievements: this.achievements,
                 missionsCompleted: this.missionsCompleted,
@@ -289,6 +347,12 @@ const gameState = {
                 referralRewardsClaimed: this.referralRewardsClaimed,
                 // Onboarding
                 onboardingStep: this.onboardingStep,
+                // Prestige & Challenges (Phase 7)
+                prestigeLevel: this.prestigeLevel,
+                dailyChallenges: this.dailyChallenges,
+                weeklyChallenges: this.weeklyChallenges,
+                lastDailyRefresh: this.lastDailyRefresh,
+                lastWeeklyRefresh: this.lastWeeklyRefresh,
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         } catch(e) { console.error('Save failed:', e); }
@@ -307,6 +371,75 @@ const gameState = {
 };
 
 gameState.loadFromStorage();
+// refreshChallenges() moved below CHALLENGE_POOL definition (Phase 7 fix)
+
+// === PRESTIGE SYSTEM FUNCTIONS (Phase 7) ===
+function canPrestige() {
+    return gameState.level >= PRESTIGE_CONFIG.maxLevel && gameState.prestigeLevel < PRESTIGE_CONFIG.maxPrestige;
+}
+
+function activatePrestige() {
+    if (!canPrestige()) return;
+    gameState.prestigeLevel++;
+    const reward = PRESTIGE_CONFIG.rewards[gameState.prestigeLevel - 1];
+    gameState.addCoins(reward.coinBonus);
+    gameState.level = 1;
+    gameState.xp = 0;
+    gameState.saveToStorage();
+    showToast(`${reward.name}! Prestige ${gameState.prestigeLevel}`, PRESTIGE_CONFIG.colors[gameState.prestigeLevel - 1], 3);
+}
+
+// === CHALLENGE FUNCTIONS (Phase 7) ===
+function getWeekStart() {
+    const d = new Date();
+    d.setDate(d.getDate() - d.getDay());
+    return d.toISOString().split('T')[0];
+}
+
+function refreshChallenges() {
+    const today = new Date().toISOString().split('T')[0];
+    const weekStart = getWeekStart();
+
+    // Refresh daily challenges (pick 3 random from pool)
+    if (gameState.lastDailyRefresh !== today) {
+        const shuffled = [...CHALLENGE_POOL.daily].sort(() => Math.random() - 0.5);
+        gameState.dailyChallenges = shuffled.slice(0, 3).map(c => ({ ...c, progress: 0, completed: false }));
+        gameState.lastDailyRefresh = today;
+    }
+
+    // Refresh weekly challenges (pick 2 random from pool)
+    if (gameState.lastWeeklyRefresh !== weekStart) {
+        const shuffled = [...CHALLENGE_POOL.weekly].sort(() => Math.random() - 0.5);
+        gameState.weeklyChallenges = shuffled.slice(0, 2).map(c => ({ ...c, progress: 0, completed: false }));
+        gameState.lastWeeklyRefresh = weekStart;
+    }
+
+    gameState.saveToStorage();
+}
+
+function updateChallengeProgress(matchData) {
+    // matchData = { kills, won, streak, combo, powerupsCollected, difficulty, hpPercent }
+    const allChallenges = [...gameState.dailyChallenges, ...gameState.weeklyChallenges];
+    for (const c of allChallenges) {
+        if (c.completed) continue;
+        switch (c.type) {
+            case 'kills_single': if (matchData.kills >= c.target) { c.progress = c.target; } break;
+            case 'wins': if (matchData.won) c.progress++; break;
+            case 'combo': if (matchData.combo >= c.target) c.progress = c.target; break;
+            case 'powerups': if (matchData.powerupsCollected >= c.target) c.progress = c.target; break;
+            case 'healthy_win': if (matchData.won && matchData.hpPercent > 50) c.progress = 1; break;
+            case 'streak': if (matchData.streak >= c.target) c.progress = c.target; break;
+            case 'kills_total': c.progress += matchData.kills; break;
+            case 'legend_win': if (matchData.won && matchData.difficulty === 'legend') c.progress = 1; break;
+        }
+        if (c.progress >= c.target && !c.completed) {
+            c.completed = true;
+            gameState.addCoins(c.reward);
+            showToast(`✅ ${c.name} complete! +${c.reward}🪙`, '#00ff88', 2.5);
+        }
+    }
+    gameState.saveToStorage();
+}
 
 // === BUTTON HELPER ===
 function hitTest(tap, x, y, w, h) {
@@ -438,33 +571,63 @@ function drawWavePattern(ctx) {
 
 // === VIGNETTE BACKGROUND (JAPANESE) ===
 function drawBackground(ctx) {
+    // During gameplay, use selectedTheme; on menu, use equippedTheme
+    const themeKey = gameState.screen === 'playing' ? gameState.selectedTheme : gameState.equippedTheme;
+    const arenaTheme = ARENA_THEMES[themeKey];
     const theme = THEME_MAP[gameState.equippedTheme] || THEME_MAP['neon'];
-    // Gradient base from theme
-    const bg = ctx.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, theme.bg[0]);
-    bg.addColorStop(0.5, theme.bg[1]);
-    bg.addColorStop(1, theme.bg[2]);
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-    // Wave overlay (optional per theme)
-    if (theme.wave) drawWavePattern(ctx);
-    // Grid with theme-tinted color
-    ctx.strokeStyle = theme.grid;
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x < W; x += 50) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+
+    // Use arena theme colors if available, otherwise fall back to THEME_MAP
+    let bg;
+    if (arenaTheme) {
+        bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, arenaTheme.skyColor1);
+        bg.addColorStop(0.5, arenaTheme.skyColor2);
+        bg.addColorStop(1, arenaTheme.skyColor1);
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+        // Grid from arena theme
+        ctx.strokeStyle = arenaTheme.gridColor;
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 50) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        // Vignette
+        const vg = ctx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H*0.65);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, 'rgba(0,0,0,0.6)');
+        ctx.fillStyle = vg;
+        ctx.fillRect(0, 0, W, H);
+    } else {
+        // Fallback to original THEME_MAP logic
+        bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, theme.bg[0]);
+        bg.addColorStop(0.5, theme.bg[1]);
+        bg.addColorStop(1, theme.bg[2]);
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+        // Wave overlay (optional per theme)
+        if (theme.wave) drawWavePattern(ctx);
+        // Grid with theme-tinted color
+        ctx.strokeStyle = theme.grid;
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 50) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        // Sakura petals (optional per theme)
+        if (theme.petals) drawSakuraPetals(ctx);
+        // Vignette
+        const vg = ctx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H*0.65);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, theme.vignette);
+        ctx.fillStyle = vg;
+        ctx.fillRect(0, 0, W, H);
     }
-    for (let y = 0; y < H; y += 50) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-    // Sakura petals (optional per theme)
-    if (theme.petals) drawSakuraPetals(ctx);
-    // Vignette
-    const vg = ctx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H*0.65);
-    vg.addColorStop(0, 'rgba(0,0,0,0)');
-    vg.addColorStop(1, theme.vignette);
-    ctx.fillStyle = vg;
-    ctx.fillRect(0, 0, W, H);
 }
 
 // === MENU AMBIENT VFX SYSTEM ===
@@ -480,6 +643,75 @@ const MENU_PETAL_COLORS = [
     { fill: '#00ff88', glow: 'rgba(0,255,136,0.3)' },     // neon green
     { fill: '#ffcc00', glow: 'rgba(255,204,0,0.25)' },    // gold
 ];
+
+// === WEATHER FUNCTIONS (Phase 6) ===
+function initWeatherParticles(weatherType) {
+    weatherParticles = [];
+    const cfg = WEATHER_EFFECTS[weatherType];
+    if (!cfg || cfg.particles === 0) return;
+    for (let i = 0; i < cfg.particles; i++) {
+        weatherParticles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            speed: cfg.speed * (0.7 + Math.random() * 0.6),
+            size: cfg.size * (0.5 + Math.random()),
+            drift: (cfg.drift || 0) * (Math.random() - 0.5),
+        });
+    }
+}
+
+function updateWeather(dt, weatherType) {
+    const cfg = WEATHER_EFFECTS[weatherType];
+    if (!cfg || cfg.particles === 0) return;
+    // Storm lightning flash
+    if (cfg.flashChance && Math.random() < cfg.flashChance) {
+        weatherFlashTimer = 0.1;
+    }
+    if (weatherFlashTimer > 0) weatherFlashTimer -= dt;
+    for (const p of weatherParticles) {
+        p.y += p.speed * dt;
+        p.x += (cfg.angle || 0) * p.speed * dt + (p.drift || 0) * Math.sin(p.y * 0.02) * dt * 30;
+        // Wrap around
+        if (p.speed > 0 && p.y > H) { p.y = -5; p.x = Math.random() * W; }
+        if (p.speed < 0 && p.y < 0) { p.y = H + 5; p.x = Math.random() * W; }
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+    }
+}
+
+function drawWeather(ctx, weatherType) {
+    const cfg = WEATHER_EFFECTS[weatherType];
+    if (!cfg || cfg.particles === 0) return;
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    // Storm flash
+    if (weatherFlashTimer > 0) {
+        ctx.globalAlpha = weatherFlashTimer * 3;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalAlpha = 0.6;
+    }
+    for (const p of weatherParticles) {
+        ctx.fillStyle = cfg.color;
+        if (weatherType === 'rain' || weatherType === 'storm') {
+            // Rain as angled lines
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x + cfg.angle * 8, p.y + 8);
+            ctx.strokeStyle = cfg.color;
+            ctx.lineWidth = p.size * 0.5;
+            ctx.globalAlpha = 0.4;
+            ctx.stroke();
+        } else {
+            // Snow/embers as circles
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    ctx.restore();
+}
+
 function initMenuPetals() {
     _menuPetals.length = 0;
     for (let i = 0; i < MENU_PETAL_COUNT; i++) {
@@ -715,24 +947,44 @@ function drawMenuSparkles(ctx, t) {
 
 // === SCREEN: MENU ===
 // Menu layout: compact, polished, fits 414×896 mobile screen
-const _mx = 20, _mw = W - 40; // menu margins
+const _mx = 16, _mw = W - 32; // menu margins — wider usable area
+// === MENU LAYOUT Y-POSITIONS (redesigned to spread across full screen height 896px) ===
+const _menuLayout = {
+    titleText: 52,      // "SURVIVOR ARENA" title (no logo icon above it)
+    subtitle: 72,       // "AI Battle Royale"
+    underline: 80,      // animated underline
+    card: 100,          // player stats card
+    cardH: 75,          // slightly taller card
+    loadoutLabel: 195,  // "LOADOUT" section label
+    weaponY: 212,       // weapon selector row
+    abilityY: 256,      // ability selector row
+    themeY: 300,        // theme selector row
+    playLabel: 355,     // "QUICK PLAY" label
+    diffY1: 375,        // difficulty row 1 (easy/medium)
+    diffY2: 430,        // difficulty row 2 (hard/legend) - bigger gap
+    modesLabel: 500,    // "GAME MODES" label
+    modesY: 520,        // game modes row
+    extraLabel: 600,    // "MORE" label
+    extraY1: 620,       // first extra row (PASS + RANKINGS)
+    extraY2: 680,       // second extra row (SHOP + STATS)
+};
+const ML = _menuLayout;
 const MENU_BUTTONS = [
-    // Row 1: Quick Play difficulty (2×2 compact grid)
-    { id: 'easy',   label: 'EASY',   x: _mx,          y: 250, w: _mw/2 - 4, h: 38, color: '#22cc66' },
-    { id: 'medium', label: 'MEDIUM', x: _mx+_mw/2+4,  y: 250, w: _mw/2 - 4, h: 38, color: '#ffaa00' },
-    { id: 'hard',   label: 'HARD',   x: _mx,          y: 294, w: _mw/2 - 4, h: 38, color: '#ff5544' },
-    { id: 'legend', label: 'LEGEND', x: _mx+_mw/2+4,  y: 294, w: _mw/2 - 4, h: 38, color: '#cc44ff' },
-    // Row 2: Game Modes (3 columns)
-    { id: 'campaign',    label: '⚔ CAMPAIGN',    x: _mx,              y: 354, w: _mw/3 - 4, h: 50, color: '#00ccff' },
-    { id: 'multiplayer', label: '🌐 MULTIPLAYER', x: _mx+_mw/3+2,     y: 354, w: _mw/3 - 4, h: 50, color: '#e8a0bf' },
-    { id: 'ltm',         label: '🎲 EVENT',      x: _mx+_mw*2/3+4,   y: 354, w: _mw/3 - 4, h: 50, color: '#ff6633' },
-    // Row 3: Progression (2 columns)
-    { id: 'battlepass',  label: '🎖 BATTLE PASS',  x: _mx,            y: 420, w: _mw/2 - 4, h: 46, color: '#d4a574' },
-    { id: 'leaderboard', label: '🏆 RANKINGS',     x: _mx+_mw/2+4,   y: 420, w: _mw/2 - 4, h: 46, color: '#ffcc00' },
-    // Row 4: Utilities (3 columns)
-    { id: 'shop',     label: '🛒 SHOP',   x: _mx,              y: 480, w: _mw/3 - 4, h: 42, color: '#ff8800' },
-    { id: 'stats',    label: '📊 STATS',  x: _mx+_mw/3+2,     y: 480, w: _mw/3 - 4, h: 42, color: '#8888ff' },
-    { id: 'referral', label: '🎁 INVITE', x: _mx+_mw*2/3+4,   y: 480, w: _mw/3 - 4, h: 42, color: '#00ff88' },
+    // Quick Play difficulty (2×2 grid) — heights 48px with 7px gap for better spacing
+    { id: 'easy',   label: 'EASY',   x: _mx,          y: ML.diffY1, w: _mw/2 - 4, h: 48, color: '#22cc66' },
+    { id: 'medium', label: 'MEDIUM', x: _mx+_mw/2+4,  y: ML.diffY1, w: _mw/2 - 4, h: 48, color: '#ffaa00' },
+    { id: 'hard',   label: 'HARD',   x: _mx,          y: ML.diffY2, w: _mw/2 - 4, h: 48, color: '#ff5544' },
+    { id: 'legend', label: 'LEGEND', x: _mx+_mw/2+4,  y: ML.diffY2, w: _mw/2 - 4, h: 48, color: '#cc44ff' },
+    // Game Modes (3 columns) — heights 55px
+    { id: 'campaign',    label: '⚔ CAMPAIGN',    x: _mx,              y: ML.modesY, w: _mw/3 - 4, h: 55, color: '#00ccff' },
+    { id: 'multiplayer', label: '🌐 ONLINE',     x: _mx+_mw/3+2,     y: ML.modesY, w: _mw/3 - 4, h: 55, color: '#e8a0bf' },
+    { id: 'ltm',         label: '🎲 EVENT',      x: _mx+_mw*2/3+4,   y: ML.modesY, w: _mw/3 - 4, h: 55, color: '#ff6633' },
+    // More utilities (2 columns) — heights 48px (PASS + RANKINGS on first row)
+    { id: 'battlepass',  label: '🎖 PASS',       x: _mx,            y: ML.extraY1, w: _mw/2 - 4, h: 48, color: '#d4a574' },
+    { id: 'leaderboard', label: '🏆 RANKINGS',   x: _mx+_mw/2+4,   y: ML.extraY1, w: _mw/2 - 4, h: 48, color: '#ffcc00' },
+    // More utilities (2 columns) — heights 48px (SHOP + STATS on second row)
+    { id: 'shop',     label: '🛒 SHOP',   x: _mx,              y: ML.extraY2, w: _mw/2 - 4, h: 48, color: '#ff8800' },
+    { id: 'stats',    label: '📊 STATS',  x: _mx+_mw/2+4,     y: ML.extraY2, w: _mw/2 - 4, h: 48, color: '#8888ff' },
 ];
 
 function updateMenu(dt) {
@@ -760,10 +1012,43 @@ function updateMenu(dt) {
         gameState.screen = 'settings';
         return;
     }
-    // Daily reward button (bottom bar)
-    if (hitTest(tap, _mx, 540, 50, 42)) {
+    // Daily reward button (bottom area — Y=750)
+    if (hitTest(tap, _mx, 750, 50, 42)) {
         gameState.screen = 'daily';
         return;
+    }
+    // Weapon selector (3 cards) — 34px height
+    const weaponY = ML.weaponY, weaponW = (_mw - 8) / 3;
+    const weaponKeys = Object.keys(WEAPONS);
+    for (let i = 0; i < weaponKeys.length; i++) {
+        const wx = _mx + i * (weaponW + 4);
+        if (hitTest(tap, wx, weaponY, weaponW, 34)) {
+            gameState.selectedWeapon = weaponKeys[i];
+            gameState.saveToStorage();
+            return;
+        }
+    }
+    // Ability selector (4 cards) — 34px height
+    const abilityY = ML.abilityY, abilityW = (_mw - 9) / 4;
+    const abilityKeys = Object.keys(ABILITIES);
+    for (let i = 0; i < abilityKeys.length; i++) {
+        const ax = _mx + i * (abilityW + 3);
+        if (hitTest(tap, ax, abilityY, abilityW, 34)) {
+            gameState.selectedAbility = abilityKeys[i];
+            gameState.saveToStorage();
+            return;
+        }
+    }
+    // Theme selector (4 cards) — 34px height
+    const themeY = ML.themeY, themeW = (_mw - 9) / 4;
+    const themeKeys = Object.keys(ARENA_THEMES);
+    for (let i = 0; i < themeKeys.length; i++) {
+        const tx = _mx + i * (themeW + 3);
+        if (hitTest(tap, tx, themeY, themeW, 34)) {
+            gameState.selectedTheme = themeKeys[i];
+            gameState.saveToStorage();
+            return;
+        }
     }
     for (let i = 0; i < MENU_BUTTONS.length; i++) {
         const b = MENU_BUTTONS[i];
@@ -789,12 +1074,6 @@ function updateMenu(dt) {
                 gameState.screen = 'battlepass';
             } else if (b.id === 'ltm') {
                 gameState.screen = 'ltm_select';
-            } else if (b.id === 'referral') {
-                gameState.screen = 'referral';
-                if (!gameState.referralCode) {
-                    gameState.referralCode = 'SA-' + Math.random().toString(36).slice(2,7).toUpperCase();
-                    gameState.saveToStorage();
-                }
             }
             break;
         }
@@ -819,158 +1098,174 @@ function drawMenu(ctx) {
     updateMenuPetals(0.016);
     drawMenuPetals(ctx);
 
-    // === Title with animated glow + stroke outline ===
-    const glowSize = 14 + Math.sin(pTime * 2) * 8;
-    const breathe = 1 + 0.02 * Math.sin(pTime * 1.5); // subtle scale pulse
+    // === TITLE TEXT (no logo icon — title is the logo) ===
     ctx.save(); ctx.textAlign = 'center';
-
-    // Radial light burst behind title
-    const burstGrad = ctx.createRadialGradient(W / 2, 75, 10, W / 2, 75, 160);
-    burstGrad.addColorStop(0, `rgba(0,255,136,${0.08 + 0.04 * Math.sin(pTime * 1.2)})`);
-    burstGrad.addColorStop(0.4, `rgba(0,204,255,${0.04 + 0.02 * Math.sin(pTime * 1.5)})`);
-    burstGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = burstGrad;
-    ctx.fillRect(0, 0, W, 180);
-
-    // "SURVIVOR" — large, with triple glow layers
-    ctx.font = `bold ${Math.round(40 * breathe)}px 'Segoe UI', Arial`;
-    // Outer deep glow
-    ctx.shadowColor = '#00ff88'; ctx.shadowBlur = glowSize + 16;
-    ctx.strokeStyle = '#003322'; ctx.lineWidth = 5;
-    ctx.strokeText('SURVIVOR', W / 2, 58);
-    // Mid glow
-    ctx.shadowBlur = glowSize + 6;
-    ctx.strokeStyle = '#005533'; ctx.lineWidth = 3;
-    ctx.strokeText('SURVIVOR', W / 2, 58);
-    // Main text
-    ctx.shadowBlur = glowSize;
-    ctx.fillStyle = '#00ff88';
-    ctx.fillText('SURVIVOR', W / 2, 58);
-    // Inner white highlight pass
-    ctx.shadowBlur = 0; ctx.globalAlpha = 0.2;
+    ctx.font = 'bold 32px "Segoe UI", Arial';
+    ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 20;
     ctx.fillStyle = '#ffffff';
-    ctx.fillText('SURVIVOR', W / 2, 57);
-    ctx.globalAlpha = 1;
-
-    // "ARENA" — slightly different color with matching depth
-    ctx.font = `bold ${Math.round(34 * breathe)}px 'Segoe UI', Arial`;
-    ctx.shadowColor = '#00ccff'; ctx.shadowBlur = glowSize + 12;
-    ctx.strokeStyle = '#002244'; ctx.lineWidth = 4;
-    ctx.strokeText('ARENA', W / 2, 98);
-    ctx.shadowBlur = glowSize + 4;
-    ctx.strokeStyle = '#003355'; ctx.lineWidth = 2.5;
-    ctx.strokeText('ARENA', W / 2, 98);
-    ctx.shadowBlur = glowSize;
-    ctx.fillStyle = '#00ffcc';
-    ctx.fillText('ARENA', W / 2, 98);
-    ctx.shadowBlur = 0; ctx.globalAlpha = 0.15;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('ARENA', W / 2, 97);
+    ctx.fillText('SURVIVOR ARENA', W / 2, ML.titleText);
+    ctx.shadowBlur = 0;
+    // Subtitle
+    ctx.font = '10px "Segoe UI", Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText('AI Battle Royale', W / 2, ML.subtitle);
+    // Animated underline
+    const ulW = 100 + Math.sin(pTime * 1.5) * 20;
+    ctx.strokeStyle = `rgba(0,255,136,${0.3 + 0.15 * Math.sin(pTime * 2)})`;
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.moveTo(W/2 - ulW/2, ML.underline); ctx.lineTo(W/2 + ulW/2, ML.underline); ctx.stroke();
     ctx.restore();
 
-    // AI-Powered tagline with animated glow
+    // === Player Card (compact) ===
+    const cardY = ML.card, cardH = ML.cardH;
+    // Card background
     ctx.save();
-    ctx.font = '11px "Segoe UI", Arial'; ctx.textAlign = 'center';
-    const tagGlow = 4 + 3 * Math.sin(pTime * 2.5);
-    ctx.shadowColor = 'rgba(0,255,136,0.5)'; ctx.shadowBlur = tagGlow;
-    ctx.fillStyle = `rgba(255,255,255,${0.45 + 0.15 * Math.sin(pTime * 2)})`;
-    ctx.fillText('AI-Powered Battle Royale', W / 2, 120);
-    // Decorative side accents
-    const tagW = ctx.measureText('AI-Powered Battle Royale').width;
-    ctx.strokeStyle = `rgba(0,255,136,${0.15 + 0.1 * Math.sin(pTime * 2)})`;
-    ctx.lineWidth = 0.5;
-    ctx.beginPath();
-    ctx.moveTo(W / 2 - tagW / 2 - 20, 117); ctx.lineTo(W / 2 - tagW / 2 - 5, 117);
-    ctx.moveTo(W / 2 + tagW / 2 + 5, 117); ctx.lineTo(W / 2 + tagW / 2 + 20, 117);
-    ctx.stroke();
-    ctx.restore();
-
-    // === Player Card (compact, with depth) ===
-    const cardY = 135, cardH = 80;
-    // Card shadow
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 4;
+    ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 3;
     ctx.fillStyle = 'rgba(8,8,20,0.85)';
-    drawRoundRect(ctx, _mx, cardY, _mw, cardH, 14); ctx.fill();
+    drawRoundRect(ctx, _mx, cardY, _mw, cardH, 12); ctx.fill();
     ctx.restore();
-    // Card body with subtle gradient
     const cardGrad = ctx.createLinearGradient(_mx, cardY, _mx, cardY + cardH);
     cardGrad.addColorStop(0, 'rgba(25,25,50,0.9)');
     cardGrad.addColorStop(1, 'rgba(10,10,25,0.95)');
     ctx.fillStyle = cardGrad;
-    drawRoundRect(ctx, _mx, cardY, _mw, cardH, 14); ctx.fill();
-    // Animated accent border — color cycles subtly
-    const borderHue = 0.2 + 0.1 * Math.sin(pTime * 0.8);
+    drawRoundRect(ctx, _mx, cardY, _mw, cardH, 12); ctx.fill();
     const borderAlpha = 0.2 + 0.08 * Math.sin(pTime * 1.5);
     const cardBorderGrad = ctx.createLinearGradient(_mx, cardY, _mx + _mw, cardY + cardH);
     cardBorderGrad.addColorStop(0, `rgba(0,255,136,${borderAlpha})`);
     cardBorderGrad.addColorStop(0.5, `rgba(0,204,255,${borderAlpha * 0.8})`);
     cardBorderGrad.addColorStop(1, `rgba(200,160,232,${borderAlpha * 0.6})`);
-    ctx.strokeStyle = cardBorderGrad; ctx.lineWidth = 1.2;
-    drawRoundRect(ctx, _mx, cardY, _mw, cardH, 14); ctx.stroke();
-    // Inner top highlight — glass reflection
-    ctx.save(); ctx.globalAlpha = 0.08;
-    const cardShine = ctx.createLinearGradient(_mx, cardY, _mx, cardY + cardH * 0.5);
-    cardShine.addColorStop(0, '#ffffff');
-    cardShine.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = cardShine;
-    drawRoundRect(ctx, _mx + 2, cardY + 1, _mw - 4, cardH * 0.4, 12); ctx.fill();
-    ctx.restore();
+    ctx.strokeStyle = cardBorderGrad; ctx.lineWidth = 1;
+    drawRoundRect(ctx, _mx, cardY, _mw, cardH, 12); ctx.stroke();
 
     // Skin preview (left)
     const skin = SKINS[gameState.equippedSkin] || SKINS.default;
-    ctx.beginPath(); ctx.arc(_mx + 32, cardY + 30, 18, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(_mx + 28, cardY + 25, 16, 0, Math.PI * 2);
     ctx.fillStyle = skin.body; ctx.fill();
     ctx.strokeStyle = skin.outline; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.fillStyle = skin.eye;
-    ctx.beginPath(); ctx.arc(_mx + 26, cardY + 27, 3.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(_mx + 38, cardY + 27, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(_mx + 23, cardY + 22, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(_mx + 33, cardY + 22, 3, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#111';
-    ctx.beginPath(); ctx.arc(_mx + 27, cardY + 27, 1.8, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(_mx + 39, cardY + 27, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(_mx + 24, cardY + 22, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(_mx + 34, cardY + 22, 1.5, 0, Math.PI * 2); ctx.fill();
 
     // Level + XP
     ctx.fillStyle = 'rgba(0,255,136,0.12)';
-    drawRoundRect(ctx, _mx + 58, cardY + 10, 55, 22, 11); ctx.fill();
-    ctx.font = 'bold 12px "Segoe UI", Arial'; ctx.textAlign = 'center';
+    drawRoundRect(ctx, _mx + 52, cardY + 8, 50, 20, 10); ctx.fill();
+    ctx.font = 'bold 11px "Segoe UI", Arial'; ctx.textAlign = 'center';
     ctx.fillStyle = '#00ff88';
-    ctx.fillText(`LV ${gameState.level}`, _mx + 85, cardY + 26);
-    // XP bar
+    ctx.fillText(`LV ${gameState.level}`, _mx + 77, cardY + 22);
     const xpPct = gameState.xp / gameState.xpToNext;
-    const xpBarX = _mx + 120, xpBarW = 80;
+    const xpBarX = _mx + 110, xpBarW = 70;
     ctx.fillStyle = 'rgba(255,255,255,0.07)';
-    drawRoundRect(ctx, xpBarX, cardY + 17, xpBarW, 6, 3); ctx.fill();
+    drawRoundRect(ctx, xpBarX, cardY + 14, xpBarW, 5, 2); ctx.fill();
     ctx.fillStyle = '#00ff88';
-    drawRoundRect(ctx, xpBarX, cardY + 17, Math.max(3, xpBarW * xpPct), 6, 3); ctx.fill();
-    ctx.font = '8px Arial'; ctx.textAlign = 'left'; ctx.fillStyle = '#555';
-    ctx.fillText(`${gameState.xp}/${gameState.xpToNext}`, xpBarX, cardY + 35);
+    drawRoundRect(ctx, xpBarX, cardY + 14, Math.max(2, xpBarW * xpPct), 5, 2); ctx.fill();
 
     // Coins (right)
     ctx.fillStyle = 'rgba(255,204,0,0.1)';
-    drawRoundRect(ctx, W - _mx - 100, cardY + 10, 80, 22, 11); ctx.fill();
-    ctx.font = 'bold 12px "Segoe UI", Arial'; ctx.textAlign = 'center';
+    drawRoundRect(ctx, W - _mx - 90, cardY + 8, 74, 20, 10); ctx.fill();
+    ctx.font = 'bold 11px "Segoe UI", Arial'; ctx.textAlign = 'center';
     ctx.fillStyle = '#ffcc00';
     const coinStr = gameState.coins >= 10000 ? (gameState.coins / 1000).toFixed(1) + 'K' : `${gameState.coins}`;
-    ctx.fillText(`🪙 ${coinStr}`, W - _mx - 60, cardY + 26);
+    ctx.fillText(`🪙 ${coinStr}`, W - _mx - 53, cardY + 22);
 
-    // Stats row
-    ctx.font = '11px "Segoe UI", Arial';
-    const statY = cardY + 58;
+    // Stats row (bottom of card)
+    const statY = cardY + 48;
     const statItems = [
-        { icon: '🏆', val: gameState.wins, label: 'Wins', color: '#00ccff' },
-        { icon: '💀', val: gameState.bestKills, label: 'Best', color: '#ff3355' },
-        { icon: '⭐', val: gameState.bestScore, label: 'Score', color: '#ffcc00' },
-        { icon: '🎖', val: `T${gameState.bpTier}`, label: 'Pass', color: '#d4a574' },
+        { icon: '🏆', val: gameState.wins, color: '#00ccff' },
+        { icon: '💀', val: gameState.bestKills, color: '#ff3355' },
+        { icon: '⭐', val: gameState.bestScore, color: '#ffcc00' },
+        { icon: '🎖', val: `T${gameState.bpTier}`, color: '#d4a574' },
     ];
     const statW = _mw / 4;
     for (let i = 0; i < statItems.length; i++) {
         const s = statItems[i];
         const sx = _mx + i * statW + statW / 2;
         ctx.textAlign = 'center';
-        ctx.fillStyle = s.color; ctx.font = 'bold 11px Arial';
+        ctx.fillStyle = s.color; ctx.font = 'bold 10px Arial';
         ctx.fillText(`${s.icon} ${s.val}`, sx, statY);
-        ctx.fillStyle = '#555'; ctx.font = '8px Arial';
-        ctx.fillText(s.label, sx, statY + 12);
+    }
+
+    // === LOADOUT SELECTORS ===
+    // Weapon row (34px height for better spacing)
+    const weaponY = ML.weaponY;
+    const weaponW = (_mw - 8) / 3;
+    const weaponKeys = Object.keys(WEAPONS);
+    for (let i = 0; i < weaponKeys.length; i++) {
+        const wkey = weaponKeys[i];
+        const wstats = WEAPONS[wkey];
+        const isSelected = gameState.selectedWeapon === wkey;
+        const wx = _mx + i * (weaponW + 4);
+        ctx.save();
+        ctx.fillStyle = isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)';
+        drawRoundRect(ctx, wx, weaponY, weaponW, 34, 8); ctx.fill();
+        if (isSelected) {
+            ctx.strokeStyle = wstats.color; ctx.lineWidth = 2;
+            ctx.shadowColor = wstats.color; ctx.shadowBlur = 8;
+        } else {
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+        }
+        drawRoundRect(ctx, wx, weaponY, weaponW, 34, 8); ctx.stroke();
+        ctx.restore();
+        ctx.font = 'bold 12px Arial'; ctx.textAlign = 'center';
+        ctx.fillStyle = isSelected ? wstats.color : '#888';
+        ctx.fillText(`${wstats.icon} ${wstats.name}`, wx + weaponW / 2, weaponY + 22);
+    }
+
+    // Ability row (34px height for better spacing)
+    const abilityY = ML.abilityY;
+    const abilityW = (_mw - 9) / 4;
+    const abilityKeys = Object.keys(ABILITIES);
+    for (let i = 0; i < abilityKeys.length; i++) {
+        const akey = abilityKeys[i];
+        const astats = ABILITIES[akey];
+        const isSelected = gameState.selectedAbility === akey;
+        const ax = _mx + i * (abilityW + 3);
+        ctx.save();
+        ctx.fillStyle = isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)';
+        drawRoundRect(ctx, ax, abilityY, abilityW, 34, 8); ctx.fill();
+        if (isSelected) {
+            ctx.strokeStyle = astats.color; ctx.lineWidth = 2;
+            ctx.shadowColor = astats.color; ctx.shadowBlur = 8;
+        } else {
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+        }
+        drawRoundRect(ctx, ax, abilityY, abilityW, 34, 8); ctx.stroke();
+        ctx.restore();
+        ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+        ctx.fillStyle = isSelected ? astats.color : '#888';
+        ctx.fillText(astats.icon, ax + abilityW / 2, abilityY + 14);
+        ctx.font = '7px Arial'; ctx.fillStyle = '#777';
+        ctx.fillText(astats.name, ax + abilityW / 2, abilityY + 28);
+    }
+
+    // Theme row (34px height for better spacing)
+    const themeY = ML.themeY;
+    const themeW = (_mw - 9) / 4;
+    const themeKeys = Object.keys(ARENA_THEMES);
+    for (let i = 0; i < themeKeys.length; i++) {
+        const tkey = themeKeys[i];
+        const tdata = ARENA_THEMES[tkey];
+        const isSelected = gameState.selectedTheme === tkey;
+        const tx = _mx + i * (themeW + 3);
+        ctx.save();
+        ctx.fillStyle = isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)';
+        drawRoundRect(ctx, tx, themeY, themeW, 34, 8); ctx.fill();
+        if (isSelected) {
+            ctx.strokeStyle = tdata.arenaStroke; ctx.lineWidth = 2;
+            ctx.shadowColor = tdata.arenaStroke; ctx.shadowBlur = 8;
+        } else {
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+        }
+        drawRoundRect(ctx, tx, themeY, themeW, 34, 8); ctx.stroke();
+        ctx.restore();
+        ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+        ctx.fillStyle = isSelected ? tdata.arenaStroke : '#888';
+        ctx.fillText(tdata.icon, tx + themeW / 2, themeY + 14);
+        ctx.font = '7px Arial'; ctx.fillStyle = '#777';
+        ctx.fillText(tdata.name, tx + themeW / 2, themeY + 28);
     }
 
     // === Section labels with accent line ===
@@ -982,7 +1277,6 @@ function drawMenu(ctx) {
         ctx.fillStyle = 'rgba(180,200,220,0.6)';
         ctx.fillText(label, lx + 2, ly);
         ctx.shadowBlur = 0;
-        // Gradient accent line after text
         const tw = ctx.measureText(label).width;
         const lineGrad = ctx.createLinearGradient(lx + tw + 10, 0, _mx + _mw, 0);
         lineGrad.addColorStop(0, 'rgba(0,255,136,0.15)');
@@ -992,9 +1286,10 @@ function drawMenu(ctx) {
         ctx.beginPath(); ctx.moveTo(lx + tw + 10, ly - 3); ctx.lineTo(_mx + _mw, ly - 3); ctx.stroke();
         ctx.restore();
     };
-    _drawSectionLabel('QUICK PLAY', _mx, 244);
-    _drawSectionLabel('GAME MODES', _mx, 348);
-    _drawSectionLabel('PROGRESSION', _mx, 414);
+    _drawSectionLabel('LOADOUT', _mx, ML.loadoutLabel);
+    _drawSectionLabel('QUICK PLAY', _mx, ML.playLabel);
+    _drawSectionLabel('GAME MODES', _mx, ML.modesLabel);
+    _drawSectionLabel('MORE', _mx, ML.extraLabel);
 
     // === All buttons (game-style 3D with bevel, glow, and shine) ===
     for (const b of MENU_BUTTONS) {
@@ -1070,7 +1365,7 @@ function drawMenu(ctx) {
     ctx.fillText('⚙', W - 28, 28); ctx.textBaseline = 'alphabetic';
 
     // === Bottom bar: Daily + Season info ===
-    const bottomY = 540;
+    const bottomY = 750;
     // Daily reward
     const dailyAvail = checkDailyReward();
     ctx.fillStyle = dailyAvail ? 'rgba(255,204,0,0.15)' : 'rgba(255,255,255,0.03)';
@@ -1101,12 +1396,13 @@ function drawMenu(ctx) {
 
     // Onboarding indicator
     if (gameState.onboardingStep > 0 && gameState.onboardingStep < 4) {
-        drawGlassCard(ctx, _mx, bottomY + 50, _mw, 30, 8, 0.08);
+        const onboardY = 810;
+        drawGlassCard(ctx, _mx, onboardY, _mw, 30, 8, 0.08);
         ctx.strokeStyle = '#00ff8840'; ctx.lineWidth = 1;
-        drawRoundRect(ctx, _mx, bottomY + 50, _mw, 30, 8); ctx.stroke();
+        drawRoundRect(ctx, _mx, onboardY, _mw, 30, 8); ctx.stroke();
         ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = '#00ff88';
         const stepName = ONBOARDING_STEPS[gameState.onboardingStep - 1]?.title || '';
-        ctx.fillText(`🎓 Tutorial ${gameState.onboardingStep}/3: ${stepName} — Play EASY to continue!`, W / 2, bottomY + 69);
+        ctx.fillText(`🎓 Tutorial ${gameState.onboardingStep}/3: ${stepName} — Play EASY to continue!`, W / 2, onboardY + 19);
     }
 
     // === Bottom ambient fog ===
@@ -1602,9 +1898,297 @@ function drawKanjiVFX(ctx) {
     }
 }
 
-// === SLOW MOTION ===
+// === ENVIRONMENTAL HAZARDS (Phase 3) ===
+const HAZARD_TYPES = {
+    lava: { name: 'Lava Pool', color: '#ff4400', glowColor: 'rgba(255,68,0,0.25)', radius: 35, damage: 5, interval: 0.5, duration: 12, spawnAfter: 15, warningTime: 2.0 },
+    lightning: { name: 'Lightning', color: '#ffff00', glowColor: 'rgba(255,255,0,0.25)', radius: 40, damage: 25, duration: 0.3, spawnAfter: 25, warningTime: 1.5, stunDuration: 1.0 },
+    poison: { name: 'Poison Cloud', color: '#88ff00', glowColor: 'rgba(136,255,0,0.15)', radius: 50, damage: 3, interval: 0.3, duration: 8, spawnAfter: 20, warningTime: 1.0, slowFactor: 0.5 },
+};
+let activeHazards = [];
+let hazardSpawnTimer = 10;
+
+function spawnHazard() {
+    // Pick a hazard type based on game time
+    const eligible = Object.entries(HAZARD_TYPES).filter(([k, v]) => gameTimer >= v.spawnAfter);
+    if (eligible.length === 0 || activeHazards.length >= 3) return;
+    const [key, cfg] = eligible[Math.floor(Math.random() * eligible.length)];
+    const x = arena.x + 30 + Math.random() * (arena.w - 60);
+    const y = arena.y + 30 + Math.random() * (arena.h - 60);
+    activeHazards.push({
+        type: key, x, y, ...cfg,
+        timer: cfg.warningTime + cfg.duration,
+        warningTimer: cfg.warningTime,
+        active: false,
+        damageTickTimer: 0,
+        opacity: 0,
+        hasStruck: false, // for lightning (one-shot)
+    });
+    showToast(key === 'lava' ? '🔥 LAVA POOL!' : key === 'lightning' ? '⚡ LIGHTNING INCOMING!' : '☠ POISON CLOUD!', cfg.color, 1.5);
+}
+
+function updateHazards(dt) {
+    for (let i = activeHazards.length - 1; i >= 0; i--) {
+        const h = activeHazards[i];
+        h.timer -= dt;
+        // Warning phase
+        if (h.warningTimer > 0) {
+            h.warningTimer -= dt;
+            if (h.warningTimer <= 0) {
+                h.active = true;
+                h.opacity = 1;
+            }
+            activeHazards[i] = h;
+            continue;
+        }
+        // Active phase — check collisions with ALL entities
+        if (h.active) {
+            h.opacity = Math.min(1, h.timer / 1.0); // fade out in last second
+            const allEntities = [player, ...bots].filter(e => e && e.alive);
+            for (const entity of allEntities) {
+                const dx = entity.x - h.x, dy = entity.y - h.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > h.radius) continue;
+
+                if (h.type === 'lightning' && !h.hasStruck) {
+                    // One-shot burst damage + stun
+                    entity.hp -= h.damage;
+                    entity.hitFlash = 0.2;
+                    if (entity.isPlayer) spawnDmgNum(entity.x, entity.y - 25, `-${h.damage}`, '#ffff00', true);
+                    // Stun: freeze movement briefly
+                    entity.frozen = true;
+                    entity.effectTimers.freeze = h.stunDuration || 1.0;
+                    cameraShake(10, 0.3);
+                    // Check for death
+                    if (entity.hp <= 0 && entity.alive) {
+                        entity.alive = false;
+                        aliveCount--;
+                        playDeathFX(entity);
+                        if (!entity.isPlayer) {
+                            addKillFeed('⚡ ' + h.name, entity.nameTag);
+                        }
+                    }
+                } else if (h.type === 'lava' || h.type === 'poison') {
+                    // Tick damage
+                    h.damageTickTimer -= dt;
+                    if (h.damageTickTimer <= 0) {
+                        h.damageTickTimer = h.interval;
+                        entity.hp -= h.damage;
+                        entity.hitFlash = 0.1;
+                        if (entity.isPlayer) spawnDmgNum(entity.x, entity.y - 20, `-${h.damage}`, h.color, false);
+                        // Check for death
+                        if (entity.hp <= 0 && entity.alive) {
+                            entity.alive = false;
+                            aliveCount--;
+                            playDeathFX(entity);
+                            if (!entity.isPlayer) {
+                                const hazardIcon = h.type === 'lava' ? '🔥' : '☠';
+                                addKillFeed(hazardIcon + ' ' + h.name, entity.nameTag);
+                            }
+                        }
+                    }
+                    // Poison slow
+                    if (h.type === 'poison' && !entity.frozen) {
+                        entity._poisonSlow = true;
+                    }
+                }
+            }
+            if (h.type === 'lightning' && !h.hasStruck) h.hasStruck = true;
+        }
+        // Remove expired or out-of-arena hazards
+        if (h.timer <= 0 || h.x < arena.x || h.x > arena.x + arena.w || h.y < arena.y || h.y > arena.y + arena.h) {
+            activeHazards.splice(i, 1);
+        }
+    }
+}
+
+function drawHazards(ctx) {
+    for (const h of activeHazards) {
+        ctx.save();
+        if (!h.active) {
+            // Warning phase: pulsing dashed circle
+            const pulse = 0.4 + 0.4 * Math.sin(Date.now() / 150);
+            ctx.globalAlpha = pulse;
+            ctx.beginPath();
+            ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ff3355';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 4]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // Warning text
+            ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#ff3355';
+            ctx.fillText('⚠', h.x, h.y + 4);
+        } else {
+            ctx.globalAlpha = h.opacity * 0.7;
+            if (h.type === 'lava') {
+                // Orange-red glowing circle with bubble animation
+                const grad = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, h.radius);
+                grad.addColorStop(0, 'rgba(255,100,0,0.8)');
+                grad.addColorStop(0.6, 'rgba(255,50,0,0.5)');
+                grad.addColorStop(1, 'rgba(255,30,0,0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2); ctx.fill();
+                // Bubbles
+                ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 10;
+                for (let b = 0; b < 4; b++) {
+                    const bx = h.x + Math.cos(Date.now() / 300 + b * 1.5) * h.radius * 0.5;
+                    const by = h.y + Math.sin(Date.now() / 250 + b * 2) * h.radius * 0.4;
+                    ctx.beginPath(); ctx.arc(bx, by, 2 + Math.sin(Date.now()/200 + b) * 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,200,50,0.6)'; ctx.fill();
+                }
+            } else if (h.type === 'lightning') {
+                // Bright flash with jagged lines
+                ctx.shadowColor = '#ffff00'; ctx.shadowBlur = 20;
+                ctx.beginPath(); ctx.arc(h.x, h.y, h.radius * 0.8, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,100,0.6)'; ctx.fill();
+                // Jagged lines
+                ctx.strokeStyle = '#ffff88'; ctx.lineWidth = 2;
+                for (let l = 0; l < 6; l++) {
+                    const a = (l / 6) * Math.PI * 2;
+                    ctx.beginPath(); ctx.moveTo(h.x, h.y);
+                    let px = h.x, py = h.y;
+                    for (let s = 0; s < 3; s++) {
+                        px += Math.cos(a) * 12 + (Math.random() - 0.5) * 10;
+                        py += Math.sin(a) * 12 + (Math.random() - 0.5) * 10;
+                        ctx.lineTo(px, py);
+                    }
+                    ctx.stroke();
+                }
+            } else if (h.type === 'poison') {
+                // Green translucent cloud with swirling particles
+                const grad = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, h.radius);
+                grad.addColorStop(0, 'rgba(100,255,0,0.4)');
+                grad.addColorStop(0.7, 'rgba(80,200,0,0.2)');
+                grad.addColorStop(1, 'rgba(60,150,0,0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2); ctx.fill();
+                // Swirl particles
+                ctx.shadowColor = '#88ff00'; ctx.shadowBlur = 6;
+                for (let p = 0; p < 5; p++) {
+                    const pa = Date.now() / 500 + p * 1.3;
+                    const pr = h.radius * 0.3 + Math.sin(pa * 2) * h.radius * 0.2;
+                    const px = h.x + Math.cos(pa) * pr;
+                    const py = h.y + Math.sin(pa) * pr;
+                    ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(150,255,50,0.5)'; ctx.fill();
+                }
+            }
+        }
+        ctx.restore();
+    }
+}
+
+// === SLOW MOTION & CINEMATIC KILL CAM ===
 let slowMoTimer = 0;
 const SLOW_MO_SCALE = 0.3;
+// Kill cam state
+let killCamActive = false;
+let killCamTimer = 0;
+let killCamLabel = '';       // 'FINAL KILL' or 'RAGE KILL'
+let killCamTargetPos = null; // {x,y} of the killed entity
+let killCamLetterbox = 0;    // animated letterbox height 0→30
+// Screen flash for crits
+let screenFlashAlpha = 0;
+let screenFlashColor = '#ffffff';
+// Hit spark pool
+const _hitSparks = [];
+// Elimination ring effect pool
+const _elimRings = [];
+// Kill streak VFX state
+let killStreakGlowTimer = 0;
+let killStreakGlowIntensity = 0;
+
+// === HIT SPARK SYSTEM ===
+function spawnHitSparks(attackerX, attackerY, targetX, targetY, count, isCrit) {
+    const angle = Math.atan2(targetY - attackerY, targetX - attackerX);
+    const sparkCount = isCrit ? count * 2 : count;
+    for (let i = 0; i < sparkCount; i++) {
+        const spread = (Math.random() - 0.5) * 1.2;
+        const spd = 150 + Math.random() * 150;
+        const life = 0.2 + Math.random() * 0.2;
+        _hitSparks.push({
+            x: targetX, y: targetY,
+            vx: Math.cos(angle + spread) * spd,
+            vy: Math.sin(angle + spread) * spd,
+            life, maxLife: life,
+            size: isCrit ? 3 + Math.random() * 2 : 2 + Math.random() * 2,
+            isCrit,
+        });
+    }
+    if (_hitSparks.length > 60) _hitSparks.splice(0, _hitSparks.length - 60);
+}
+function updateHitSparks(dt) {
+    for (let i = _hitSparks.length - 1; i >= 0; i--) {
+        const s = _hitSparks[i];
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        s.vx *= 0.92; s.vy *= 0.92;
+        s.life -= dt;
+        if (s.life <= 0) _hitSparks.splice(i, 1);
+    }
+}
+function drawHitSparks(ctx) {
+    for (const s of _hitSparks) {
+        const t = s.life / s.maxLife;
+        ctx.save();
+        ctx.globalAlpha = t;
+        // Color gradient: white→yellow→orange over lifetime
+        if (t > 0.6) ctx.fillStyle = '#ffffff';
+        else if (t > 0.3) ctx.fillStyle = '#ffdd44';
+        else ctx.fillStyle = '#ff8800';
+        if (s.isCrit) { ctx.shadowColor = '#ffcc00'; ctx.shadowBlur = 8; }
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size * t, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+// === ELIMINATION RING EFFECT ===
+function spawnElimRing(x, y, color) {
+    _elimRings.push({ x, y, radius: 10, maxRadius: 80, alpha: 0.8, color, timer: 0.6, maxTimer: 0.6 });
+}
+function updateElimRings(dt) {
+    for (let i = _elimRings.length - 1; i >= 0; i--) {
+        const r = _elimRings[i];
+        r.timer -= dt;
+        const progress = 1 - (r.timer / r.maxTimer);
+        r.radius = 10 + (r.maxRadius - 10) * progress;
+        r.alpha = 0.8 * (1 - progress);
+        if (r.timer <= 0) _elimRings.splice(i, 1);
+    }
+}
+function drawElimRings(ctx) {
+    for (const r of _elimRings) {
+        ctx.save();
+        ctx.globalAlpha = r.alpha;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = r.color;
+        ctx.lineWidth = 3 * r.alpha;
+        ctx.shadowColor = r.color;
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+// === SCREEN FLASH ===
+function triggerScreenFlash(color, intensity) {
+    screenFlashAlpha = intensity || 0.3;
+    screenFlashColor = color || '#ffffff';
+}
+
+// === KILL CAM ACTIVATION ===
+function activateKillCam(label, targetX, targetY, duration) {
+    killCamActive = true;
+    killCamTimer = duration || 1.5;
+    killCamLabel = label || 'FINAL KILL';
+    killCamTargetPos = { x: targetX, y: targetY };
+    killCamLetterbox = 0;
+    slowMoTimer = duration || 1.5;
+}
 
 // === TOAST SYSTEM ===
 const _toasts = [];
@@ -1661,6 +2245,88 @@ const POWERUP_TYPES = [
 const POWERUP_MAP = {};
 for (const pt of POWERUP_TYPES) POWERUP_MAP[pt.type] = pt;
 
+// === WEAPON SYSTEM ===
+const WEAPONS = {
+    katana: {
+        name: 'Katana', icon: '⚔️', color: '#ff6b9d',
+        damage: 8, range: 55, attackSpeed: 0.35, knockback: 15,
+        description: 'Fast strikes, short range',
+        swingArc: Math.PI * 0.6,
+    },
+    spear: {
+        name: 'Spear', icon: '🔱', color: '#00ccff',
+        damage: 12, range: 80, attackSpeed: 0.5, knockback: 20,
+        description: 'Balanced range and power',
+        swingArc: Math.PI * 0.3,
+    },
+    hammer: {
+        name: 'Hammer', icon: '🔨', color: '#ffaa00',
+        damage: 20, range: 65, attackSpeed: 0.8, knockback: 35,
+        description: 'Devastating but slow',
+        swingArc: Math.PI * 0.8,
+    }
+};
+
+// === ABILITY SYSTEM (Phase 5) ===
+const ABILITIES = {
+    shockwave: {
+        name: 'Shockwave', icon: '💥', color: '#ff6600',
+        cooldown: 12, radius: 100, damage: 15, knockbackForce: 40,
+        description: 'Blast all nearby enemies away',
+    },
+    teleport: {
+        name: 'Teleport', icon: '⚡', color: '#aa00ff',
+        cooldown: 10, range: 150,
+        description: 'Blink to a random safe spot',
+    },
+    healBurst: {
+        name: 'Heal Burst', icon: '💚', color: '#00ff88',
+        cooldown: 15, healAmount: 35,
+        description: 'Restore 35 HP instantly',
+    },
+    shadowClone: {
+        name: 'Shadow Clone', icon: '👤', color: '#6644cc',
+        cooldown: 18, duration: 4, cloneCount: 2,
+        description: 'Spawn decoy clones that confuse bots',
+    },
+};
+let abilityClones = []; // for shadow clone decoys
+
+// === PRESTIGE SYSTEM (Phase 7) ===
+const PRESTIGE_CONFIG = {
+    maxLevel: 50,
+    rewards: [
+        { level: 1, name: 'Bronze Star', coinBonus: 100, xpMultiplier: 1.1 },
+        { level: 2, name: 'Silver Star', coinBonus: 250, xpMultiplier: 1.2 },
+        { level: 3, name: 'Gold Star', coinBonus: 500, xpMultiplier: 1.35 },
+        { level: 4, name: 'Platinum Star', coinBonus: 1000, xpMultiplier: 1.5 },
+        { level: 5, name: 'Diamond Star', coinBonus: 2000, xpMultiplier: 1.75 },
+    ],
+    maxPrestige: 5,
+    colors: ['#cd7f32', '#c0c0c0', '#ffd700', '#e5e4e2', '#b9f2ff'],
+    icons: ['⭐', '🌟', '💫', '✨', '👑'],
+};
+
+// === DAILY/WEEKLY CHALLENGES (Phase 7) ===
+const CHALLENGE_POOL = {
+    daily: [
+        { id: 'd1', name: 'Quick Killer', desc: 'Get 5 kills in one match', target: 5, type: 'kills_single', reward: 50 },
+        { id: 'd2', name: 'Survivor', desc: 'Win a match', target: 1, type: 'wins', reward: 75 },
+        { id: 'd3', name: 'Combo Master', desc: 'Reach a 5x combo', target: 5, type: 'combo', reward: 60 },
+        { id: 'd4', name: 'Power Collector', desc: 'Pick up 3 power-ups in one match', target: 3, type: 'powerups', reward: 40 },
+        { id: 'd5', name: 'Untouchable', desc: 'Win with over 50% HP', target: 1, type: 'healthy_win', reward: 100 },
+        { id: 'd6', name: 'Streak Hunter', desc: 'Get a 3-kill streak', target: 3, type: 'streak', reward: 55 },
+    ],
+    weekly: [
+        { id: 'w1', name: 'Veteran', desc: 'Win 5 matches this week', target: 5, type: 'wins', reward: 300 },
+        { id: 'w2', name: 'Slayer', desc: 'Get 30 total kills', target: 30, type: 'kills_total', reward: 250 },
+        { id: 'w3', name: 'Legend Runner', desc: 'Win on Legend difficulty', target: 1, type: 'legend_win', reward: 400 },
+    ],
+};
+
+// Now that CHALLENGE_POOL is defined, refresh challenges
+refreshChallenges();
+
 // === SKIN DEFINITIONS ===
 const SKINS = {
     default: { body: '#00ff88', eye: '#fff', outline: '#009955' },
@@ -1689,6 +2355,8 @@ let commentaryText = '';
 let commentaryTimer = 0;
 let aliveCount = 0;
 let totalBots = 0;
+let maxComboThisGame = 0;  // track best combo for this match
+let powerupsCollectedThisMatch = 0;  // track power-ups collected for challenges
 
 // HP scaling per difficulty — harder bots are tankier so games last longer
 const HP_SCALE = { easy: 100, medium: 100, hard: 140, legend: 180 };
@@ -1712,18 +2380,24 @@ function createEntity(x, y, isPlayer, difficulty, skinId, personalityOverride) {
         };
     }
     const botName = isPlayer ? 'YOU' : generateBotName();
+    const weaponKey = isPlayer ? gameState.selectedWeapon : Object.keys(WEAPONS)[Math.floor(Math.random() * Object.keys(WEAPONS).length)];
+    const weaponStats = WEAPONS[weaponKey];
     return {
         x, y, vx: 0, vy: 0,
         radius: 18,
         hp: botHp, maxHp: botHp,
-        damage: 10,
+        damage: weaponStats.damage,
         speed: isPlayer ? GAME_CONFIG.physics.baseSpeed : (aiCfg ? aiCfg.speed : 3),
         isPlayer,
         alive: true,
         attackCooldown: 0,
-        attackRange: 60,
-        attackSpeed: isPlayer ? 0.5 : (aiCfg ? 0.3 + aiCfg.reactionTime * 0.5 : 0.6),
+        attackRange: weaponStats.range,
+        attackSpeed: weaponStats.attackSpeed,
+        weapon: weaponKey,
+        knockback: weaponStats.knockback,
         skin,
+        attackSwingTimer: 0,
+        lastAttackAngle: 0,
         // AI fields
         aiCfg,
         aiTarget: null,
@@ -1744,11 +2418,24 @@ function createEntity(x, y, isPlayer, difficulty, skinId, personalityOverride) {
         // Dash
         dashCooldown: 0,
         dashTimer: 0,
+        // Combo system (player only)
+        comboCount: 0,
+        comboTimer: 0,
+        comboDamageBonus: 0,
+        maxCombo: 0,
+        comboPulse: 0,
+        // Dodge system (enhanced dash with i-frames)
+        isInvulnerable: false,
+        dodgeDirection: { x: 0, y: 0 },
+        dodgeAfterimages: [],
         // Trail
         trailTimer: 0,
         // Visual
         pulseTimer: 0,
         hitFlash: 0,
+        // Ability system
+        abilityCooldown: isPlayer ? 0 : (3 + Math.random() * 5), // bots start with partial cooldown
+        botAbility: isPlayer ? null : Object.keys(ABILITIES)[Math.floor(Math.random() * Object.keys(ABILITIES).length)],
         nameTag: personality ? `${personality.emoji} ${botName}` : botName,
     };
 }
@@ -1768,6 +2455,8 @@ function initGameEntities() {
     const cx = arena.x + arena.w / 2;
     const cy = arena.y + arena.h / 2;
     player = createEntity(cx, cy + 200, true, null, gameState.equippedSkin);
+    // Reset match-level counters
+    powerupsCollectedThisMatch = 0;
     // === CONSUME POWER-UPS ===
     let _puCoinMult = 1, _puXpMult = 1;
     if (gameState.powerUps.extraHP > 0) {
@@ -1827,6 +2516,15 @@ function initGameEntities() {
     isPaused = false;
     commentaryText = ''; commentaryTimer = 0;
     aliveCount = totalBots + 1;
+    maxComboThisGame = 0;  // reset combo tracker
+    // Reset Phase 4 VFX state
+    killCamActive = false; killCamTimer = 0; killCamLabel = '';
+    killCamTargetPos = null; killCamLetterbox = 0;
+    screenFlashAlpha = 0;
+    _hitSparks.length = 0; _elimRings.length = 0;
+    killStreakGlowTimer = 0; killStreakGlowIntensity = 0;
+    // Reset Phase 3 environmental hazards
+    activeHazards = []; hazardSpawnTimer = 10;
     // Reset emotional triggers
     gameState._lastStandTriggered = false;
     gameState._finalTwoTriggered = false;
@@ -1834,6 +2532,13 @@ function initGameEntities() {
     gameState._comebackKills = 0;
     // Reset narrator state
     resetNarratorState();
+    // Reset ability state (Phase 5)
+    if (player) player.abilityCooldown = 0;
+    abilityClones = [];
+    // === PHASE 6: Initialize weather based on selected theme ===
+    const themeWeatherMap = { neon: 'none', fire: 'embers', ice: 'snow', shadow: 'rain' };
+    currentWeather = themeWeatherMap[gameState.selectedTheme] || 'none';
+    initWeatherParticles(currentWeather);
 }
 
 // === POWER-UP SPAWNING ===
@@ -1874,6 +2579,12 @@ function findNearest(entity, targets) {
 function applyDamage(attacker, target) {
     if (!target.alive) return;
     if (target.frozen) return; // frozen targets immune momentarily
+    // Check dodge invulnerability
+    if (target.isInvulnerable) {
+        showToast('DODGE!', '#00ffcc', 0.6);
+        spawnDmgNum(target.x, target.y - target.radius - 10, 'DODGE!', '#00ffcc', false);
+        return;
+    }
     if (target.shieldActive) {
         showToast('BLOCKED!', '#ffcc00', 0.8);
         spawnDmgNum(target.x, target.y - target.radius, 'BLOCK', '#ffcc00', false);
@@ -1892,6 +2603,26 @@ function applyDamage(attacker, target) {
         cameraShake(6, 0.15);
     }
     dmg = Math.floor(dmg);
+    // === COMBO SYSTEM ===
+    if (attacker.isPlayer) {
+        // Increment combo and reset timer
+        attacker.comboCount++;
+        attacker.comboTimer = 3.0;
+        // Calculate damage bonus: 10% per combo hit, max 80%
+        attacker.comboDamageBonus = Math.min(attacker.comboCount * 0.1, 0.8);
+        dmg = Math.floor(dmg * (1 + attacker.comboDamageBonus));
+        // Track max combo
+        if (attacker.comboCount > attacker.maxCombo) {
+            attacker.maxCombo = attacker.comboCount;
+            maxComboThisGame = attacker.maxCombo;
+        }
+        // Combo pulse animation
+        attacker.comboPulse = 0.15;
+        // Floating combo text on hits
+        if (attacker.comboCount > 1) {
+            spawnDmgNum(target.x, target.y + target.radius + 10, `+${attacker.comboCount - 1}`, '#ffaa00', false);
+        }
+    }
     target.hp -= dmg;
     target.hitFlash = 0.15;
     // Floating damage number
@@ -1901,9 +2632,16 @@ function applyDamage(attacker, target) {
     const kbDx = target.x - attacker.x;
     const kbDy = target.y - attacker.y;
     const kbLen = Math.sqrt(kbDx * kbDx + kbDy * kbDy) || 1;
-    const kbForce = isCrit ? 12 : 6;
+    const baseKbForce = attacker.knockback || 20;
+    const kbForce = isCrit ? baseKbForce * 1.5 : baseKbForce * 0.5;
     target.vx += (kbDx / kbLen) * kbForce;
     target.vy += (kbDy / kbLen) * kbForce;
+    // === HIT SPARKS (Phase 4) ===
+    spawnHitSparks(attacker.x, attacker.y, target.x, target.y, 6, isCrit);
+    if (isCrit && attacker.isPlayer) {
+        triggerScreenFlash('#ffcc00', 0.25);
+        spawnDmgNum(target.x + 15, target.y - target.radius - 18, 'CRIT!', '#ffff00', true);
+    }
     if (attacker.isPlayer) {
         surgeMeter = Math.min(100, surgeMeter + 5);
         updateCrowd('damage');
@@ -1915,10 +2653,15 @@ function applyDamage(attacker, target) {
     if (target.hp <= 0) {
         target.alive = false;
         aliveCount--;
+        // Elimination ring effect (Phase 4)
+        spawnElimRing(target.x, target.y, target.skin.body);
+        cameraShake(6, 0.2);
         // Death FX (custom or default)
         playDeathFX(target);
-        // Kill FX
+        // Kill FX — upgraded with more particles
         playKillFX(attacker, target);
+        // Extra burst particles for eliminations
+        particles.burst(target.x, target.y, 18, { speed: 130, life: 0.5, size: 3, color: target.skin.body, gravity: 150, shrink: true });
         if (attacker.isPlayer) {
             gameState.kills++;
             gameState.score += GAME_CONFIG.scoring.killPoints;
@@ -1933,11 +2676,29 @@ function applyDamage(attacker, target) {
             showToast(getCommentary('kill'), '#ff3355', 1.5);
             addKillFeed('YOU', target.nameTag);
             spawnKanjiVFX(target.x, target.y, 'kill');
-            slowMoTimer = 0.25; // slow-mo on kill
+            // === KILL CAM LOGIC (Phase 4) ===
+            const aliveBotsAfterKill = bots.filter(b => b.alive).length;
+            if (aliveBotsAfterKill === 0) {
+                // Last kill — cinematic final kill cam
+                activateKillCam('FINAL KILL', target.x, target.y, 1.8);
+                triggerScreenFlash('#ffffff', 0.4);
+                cameraShake(15, 0.6);
+            } else if (rageMode) {
+                // Rage kill — shorter kill cam
+                activateKillCam('RAGE KILL', target.x, target.y, 0.8);
+                triggerScreenFlash('#ff3355', 0.2);
+            } else {
+                slowMoTimer = 0.25; // normal kill slow-mo
+            }
             logEvent('kill', { kills: gameState.kills, streak });
+            // Kill streak VFX escalation (Phase 4)
+            if (streak >= 5) {
+                killStreakGlowTimer = 3.0;
+                killStreakGlowIntensity = Math.min(0.4, 0.15 + streak * 0.03);
+            }
             if (streak >= 3) {
                 spawnKanjiVFX(player.x, player.y - 30, 'streak');
-                showToast(getCommentary('streak'), '#ffcc00', 2);
+                showToast(streak >= 5 ? '🔥 UNSTOPPABLE! x' + streak : getCommentary('streak'), '#ffcc00', 2);
                 updateCrowd('streak');
                 haptics.fire('heavy');
                 audio.play('streak');
@@ -2083,6 +2844,7 @@ function collectPowerUp(entity, pu) {
     }
     pu.alive = false;
     if (entity.isPlayer) {
+        powerupsCollectedThisMatch++;
         showToast(getCommentary('powerup'), pu.color, 1.5);
         triggerNarrator('player_powerup', { type: pu.effect || pu.type || 'Power' }, 1);
         haptics.fire('light');
@@ -2217,7 +2979,7 @@ function updateAI(bot, dt) {
     }
 
     // Execute behavior
-    const spd = bot.speed * (bot.speedBoost ? 2 : 1);
+    const spd = bot.speed * (bot.speedBoost ? 2 : 1) * (bot._poisonSlow ? 0.5 : 1);
     switch (bot.aiBehavior) {
         case 'chase': {
             if (bot.aiTarget && bot.aiTarget.alive) {
@@ -2318,13 +3080,89 @@ function updateAI(bot, dt) {
     }
     // Auto-attack nearest
     bot.attackCooldown -= dt;
+    if (bot.attackSwingTimer > 0) bot.attackSwingTimer -= dt;
     if (bot.aiTarget && bot.aiTarget.alive && bot.attackCooldown <= 0) {
         const d = dist(bot, bot.aiTarget);
         if (d < bot.attackRange && Math.random() < bot.aiCfg.accuracy) {
+            // Set swing visual for bot
+            bot.lastAttackAngle = Math.atan2(bot.aiTarget.y - bot.y, bot.aiTarget.x - bot.x);
+            bot.attackSwingTimer = 0.15;
             applyDamage(bot, bot.aiTarget);
             bot.attackCooldown = bot.attackSpeed;
         }
     }
+    // Bot ability usage — use when off cooldown and in combat
+    if (bot.botAbility && bot.abilityCooldown <= 0 && bot.aiBehavior === 'chase' && bot.aiTarget && bot.aiTarget.alive) {
+        const d = dist(bot, bot.aiTarget);
+        // Use ability with some randomness so bots don't all fire at once
+        if (Math.random() < 0.02) { // ~2% chance per frame when chasing
+            activateBotAbility(bot);
+        }
+    }
+    bot.abilityCooldown -= dt;
+}
+
+// === BOT ABILITY SYSTEM ===
+function activateBotAbility(bot) {
+    const abilityKey = bot.botAbility;
+    const abilityStats = ABILITIES[abilityKey];
+    if (!abilityStats || bot.abilityCooldown > 0) return;
+
+    switch (abilityKey) {
+        case 'shockwave': {
+            const targets = [...bots.filter(b => b !== bot && b.alive), player].filter(t => t && t.alive);
+            for (const t of targets) {
+                const d = dist(bot, t);
+                if (d < abilityStats.radius) {
+                    t.hp -= abilityStats.damage;
+                    spawnDmgNum(t.x, t.y - t.radius, `-${abilityStats.damage}`, '#ff6600', false);
+                    t.hitFlash = 0.2;
+                    const angle = Math.atan2(t.y - bot.y, t.x - bot.x);
+                    t.vx = Math.cos(angle) * abilityStats.knockbackForce;
+                    t.vy = Math.sin(angle) * abilityStats.knockbackForce;
+                    if (t.hp <= 0) {
+                        t.alive = false;
+                        if (t.isPlayer) {
+                            addKillFeed(bot.nameTag, 'You');
+                        } else {
+                            addKillFeed(bot.nameTag, t.nameTag);
+                        }
+                    }
+                }
+            }
+            particles.burst(bot.x, bot.y, 8, { speed: 100, life: 0.3, size: 2.5, color: '#ff6600', gravity: 0, shrink: true });
+            spawnElimRing(bot.x, bot.y, 80, '#ff6600');
+            break;
+        }
+        case 'teleport': {
+            let newX, newY, attempts = 0;
+            do {
+                newX = arena.x + 30 + Math.random() * (arena.w - 60);
+                newY = arena.y + 30 + Math.random() * (arena.h - 60);
+                attempts++;
+            } while (attempts < 5);
+            particles.burst(bot.x, bot.y, 6, { speed: 80, life: 0.25, size: 2, color: '#aa00ff', gravity: 0, shrink: true });
+            bot.x = newX; bot.y = newY;
+            particles.burst(bot.x, bot.y, 6, { speed: 80, life: 0.25, size: 2, color: '#aa00ff', gravity: 0, shrink: true });
+            break;
+        }
+        case 'healBurst': {
+            bot.hp = Math.min(bot.maxHp, bot.hp + abilityStats.healAmount);
+            particles.burst(bot.x, bot.y, 6, { speed: 60, life: 0.3, size: 2, color: '#00ff88', gravity: 0, shrink: true });
+            break;
+        }
+        case 'shadowClone': {
+            // Bot shadow clones: spawn 2 decoy entities briefly
+            for (let c = 0; c < 2; c++) {
+                const angle = Math.random() * Math.PI * 2;
+                const cx = bot.x + Math.cos(angle) * 40;
+                const cy = bot.y + Math.sin(angle) * 40;
+                particles.burst(cx, cy, 5, { speed: 40, life: 0.5, size: 2, color: '#6644cc', gravity: 0, shrink: true });
+            }
+            break;
+        }
+    }
+    bot.abilityCooldown = abilityStats.cooldown * (1 + Math.random() * 0.5); // add randomness to bot cooldowns
 }
 
 // === PLAYER INPUT ===
@@ -2339,21 +3177,26 @@ function checkDash(tap) {
     if (!player || !player.alive || player.dashCooldown > 0) return false;
     const now = performance.now() / 1000;
     if (_lastTapPos && now - _lastTapTime < 0.35) {
-        // Double-tap detected — DASH
+        // Double-tap detected — DODGE (enhanced dash with i-frames)
         const dx = tap.x - player.x;
         const dy = tap.y - player.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
         player.vx = (dx / len) * DASH_SPEED;
         player.vy = (dy / len) * DASH_SPEED;
-        player.dashCooldown = gameState._dashMasterActive ? DASH_COOLDOWN / 2 : DASH_COOLDOWN;
+        player.dodgeDirection = { x: player.vx, y: player.vy };
+        // Dodge cooldown: 2.5s (reduced from 4s)
+        player.dashCooldown = gameState._dashMasterActive ? 1.25 : 2.5;
         player.dashTimer = DASH_DURATION;
+        // Enable invulnerability during dodge
+        player.isInvulnerable = true;
+        player.dodgeAfterimages = [];
         cameraShake(4, 0.1);
         haptics.fire('light');
         audio.play('powerUp');
         particles.burst(player.x, player.y, 8, {
             speed: 60, life: 0.3, size: 2, color: '#00ffcc', gravity: 0, shrink: true,
         });
-        showToast('DASH!', '#00ffcc', 0.6);
+        showToast('DODGE!', '#00ffcc', 0.6);
         // LTM Dash Fury — dash deals damage to nearby enemies
         if (ltmDashDamage > 0) {
             for (const bot of bots) {
@@ -2379,11 +3222,194 @@ function checkDash(tap) {
     return false;
 }
 
+// === ABILITY SYSTEM (Phase 5) ===
+function activateAbility() {
+    if (!player || !player.alive) return false;
+    const abilityKey = gameState.selectedAbility;
+    const abilityStats = ABILITIES[abilityKey];
+    if (!abilityStats) return false;
+    if (player.abilityCooldown > 0) return false; // on cooldown
+
+    // Execute ability based on type
+    switch (abilityKey) {
+        case 'shockwave': {
+            // Shockwave: damage + knockback all nearby enemies
+            const radius = abilityStats.radius; // 100
+            const damage = abilityStats.damage; // 15
+            const knockbackForce = abilityStats.knockbackForce; // 40
+            for (const bot of bots) {
+                if (!bot.alive) continue;
+                const d = dist(player, bot);
+                if (d < radius) {
+                    bot.hp -= damage;
+                    spawnDmgNum(bot.x, bot.y - bot.radius, `-${damage}`, '#ff6600', false);
+                    bot.hitFlash = 0.2;
+                    // Knockback
+                    const angle = Math.atan2(bot.y - player.y, bot.x - player.x);
+                    bot.vx = Math.cos(angle) * knockbackForce;
+                    bot.vy = Math.sin(angle) * knockbackForce;
+                    if (bot.hp <= 0) {
+                        bot.alive = false;
+                        gameState.kills++;
+                        addKillFeed(player.nameTag || 'You', bot.nameTag);
+                        spawnKanjiVFX(bot.x, bot.y, 'kill');
+                    }
+                }
+            }
+            // Visual: expanding ring + camera shake + particles
+            particles.burst(player.x, player.y, 12, {
+                speed: 120, life: 0.4, size: 3, color: '#ff6600', gravity: 0, shrink: true,
+            });
+            cameraShake(6, 0.15);
+            haptics.fire('medium');
+            audio.play('powerUp');
+            spawnElimRing(player.x, player.y, 100, '#ff6600');
+            break;
+        }
+        case 'teleport': {
+            // Teleport: move to random safe spot
+            let newX, newY, attempts = 0;
+            do {
+                newX = arena.x + 30 + Math.random() * (arena.w - 60);
+                newY = arena.y + 30 + Math.random() * (arena.h - 60);
+                attempts++;
+            } while (attempts < 5 && bots.some(b => b.alive && dist({x: newX, y: newY}, b) < 80));
+
+            // Particle burst at old position
+            particles.burst(player.x, player.y, 8, {
+                speed: 100, life: 0.3, size: 2.5, color: '#aa00ff', gravity: 0, shrink: true,
+            });
+            // Teleport
+            player.x = newX;
+            player.y = newY;
+            // Particle burst at new position
+            particles.burst(player.x, player.y, 8, {
+                speed: 100, life: 0.3, size: 2.5, color: '#aa00ff', gravity: 0, shrink: true,
+            });
+            // Brief invulnerability
+            player.isInvulnerable = true;
+            setTimeout(() => { if (player) player.isInvulnerable = false; }, 300);
+            haptics.fire('light');
+            audio.play('powerUp');
+            break;
+        }
+        case 'healBurst': {
+            // Heal Burst: restore HP
+            const healAmount = abilityStats.healAmount; // 35
+            const oldHp = player.hp;
+            player.hp = Math.min(player.maxHp, player.hp + healAmount);
+            const actualHeal = player.hp - oldHp;
+            spawnDmgNum(player.x, player.y - player.radius, `+${actualHeal} HP`, '#00ff88', false);
+            // Visual: green particles rising + green flash
+            particles.burst(player.x, player.y, 10, {
+                speed: 60, life: 0.4, size: 2, color: '#00ff88', gravity: -40, shrink: true,
+            });
+            cameraShake(2, 0.1);
+            haptics.fire('light');
+            audio.play('powerUp');
+            break;
+        }
+        case 'shadowClone': {
+            // Shadow Clone: spawn 2 decoy clones
+            const cloneCount = abilityStats.cloneCount; // 2
+            const duration = abilityStats.duration; // 4 seconds
+            for (let i = 0; i < cloneCount; i++) {
+                const angle = (Math.PI * 2 * i) / cloneCount;
+                const offset = 60;
+                const cx = player.x + Math.cos(angle) * offset;
+                const cy = player.y + Math.sin(angle) * offset;
+                abilityClones.push({
+                    x: cx, y: cy,
+                    radius: 18,
+                    skin: player.skin,
+                    duration: duration,
+                    alpha: 0.6,
+                    vx: 0, vy: 0,
+                    wanderAngle: Math.random() * Math.PI * 2,
+                    speed: 2,
+                });
+            }
+            particles.burst(player.x, player.y, 8, {
+                speed: 80, life: 0.3, size: 2, color: '#6644cc', gravity: 0, shrink: true,
+            });
+            haptics.fire('light');
+            audio.play('powerUp');
+            break;
+        }
+    }
+
+    // Set cooldown
+    player.abilityCooldown = abilityStats.cooldown;
+    return true;
+}
+
+function updateAbilityClones(dt) {
+    for (let i = abilityClones.length - 1; i >= 0; i--) {
+        const clone = abilityClones[i];
+        clone.duration -= dt;
+        clone.alpha = Math.max(0, clone.alpha - dt / clone.duration * 0.5);
+
+        if (clone.duration <= 0) {
+            abilityClones.splice(i, 1);
+            continue;
+        }
+
+        // Wander behavior
+        clone.wanderAngle += (Math.random() - 0.5) * 0.3;
+        const speed = clone.speed;
+        clone.vx += Math.cos(clone.wanderAngle) * speed * dt;
+        clone.vy += Math.sin(clone.wanderAngle) * speed * dt;
+        clone.vx *= 0.95;
+        clone.vy *= 0.95;
+
+        clone.x += clone.vx;
+        clone.y += clone.vy;
+
+        // Keep in arena
+        if (clone.x < arena.x + clone.radius) clone.x = arena.x + clone.radius;
+        if (clone.x > arena.x + arena.w - clone.radius) clone.x = arena.x + arena.w - clone.radius;
+        if (clone.y < arena.y + clone.radius) clone.y = arena.y + clone.radius;
+        if (clone.y > arena.y + arena.h - clone.radius) clone.y = arena.y + arena.h - clone.radius;
+    }
+}
+
+function drawAbilityClones(ctx) {
+    for (const clone of abilityClones) {
+        ctx.save();
+        ctx.globalAlpha = clone.alpha;
+        // Draw clone as semi-transparent player
+        ctx.beginPath();
+        ctx.arc(clone.x, clone.y, clone.radius, 0, Math.PI * 2);
+        ctx.fillStyle = clone.skin.body;
+        ctx.fill();
+        ctx.strokeStyle = clone.skin.outline;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Eyes
+        ctx.fillStyle = clone.skin.eye;
+        ctx.beginPath();
+        ctx.arc(clone.x - 6, clone.y - 4, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(clone.x + 6, clone.y - 4, 3, 0, Math.PI * 2);
+        ctx.fill();
+        // Pupils
+        ctx.fillStyle = '#111';
+        ctx.beginPath();
+        ctx.arc(clone.x - 5, clone.y - 4, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(clone.x + 7, clone.y - 4, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
 function updatePlayerInput(dt) {
     if (!player || !player.alive) return;
     // During dash, skip normal movement
     if (player.dashTimer > 0) return;
-    const spd = player.speed * (player.speedBoost ? 2 : 1) * (rageMode ? 1.3 : 1);
+    const spd = player.speed * (player.speedBoost ? 2 : 1) * (rageMode ? 1.3 : 1) * (player._poisonSlow ? 0.5 : 1);
     if (_isDragging && _dragCurrent) {
         const dx = _dragCurrent.x - player.x;
         const dy = _dragCurrent.y - player.y;
@@ -2401,11 +3427,16 @@ function updatePlayerInput(dt) {
     }
     // Auto-attack nearest bot
     player.attackCooldown -= dt;
+    if (player.attackSwingTimer > 0) player.attackSwingTimer -= dt;
     if (player.attackCooldown <= 0) {
         const { target, dist: d } = findNearest(player, bots);
         if (target && d < player.attackRange) {
             applyDamage(player, target);
             player.attackCooldown = player.attackSpeed * (rageMode ? 0.6 : 1);
+            player.attackSwingTimer = 0.15;
+            const dx = target.x - player.x;
+            const dy = target.y - player.y;
+            player.lastAttackAngle = Math.atan2(dy, dx);
         }
     }
 }
@@ -2463,6 +3494,8 @@ function updateArenaShrink(dt) {
     arena.h += (arena.targetH - arena.h) * 3 * dt;
     arena.x = (W - arena.w) / 2;
     arena.y = 98 + (700 - arena.h) / 2;
+    // Remove hazards outside new arena bounds
+    activeHazards = activeHazards.filter(h => h.x >= arena.x && h.x <= arena.x + arena.w && h.y >= arena.y && h.y <= arena.y + arena.h);
     // Damage entities outside arena
     const allEntities = [player, ...bots];
     for (const e of allEntities) {
@@ -2495,9 +3528,25 @@ function updateEffects(entity, dt) {
         entity.effectTimers.magnet -= dt;
         if (entity.effectTimers.magnet <= 0) { entity.magnetActive = false; }
     }
-    // Dash cooldown
+    // Dash cooldown and invulnerability (dodge)
     if (entity.dashCooldown > 0) entity.dashCooldown -= dt;
-    if (entity.dashTimer > 0) entity.dashTimer -= dt;
+    if (entity.dashTimer > 0) {
+        entity.dashTimer -= dt;
+        if (entity.dashTimer <= 0) {
+            // End of dodge — brief vulnerability window
+            entity.isInvulnerable = false;
+        }
+    }
+    // Ability cooldown (Phase 5)
+    if (entity.isPlayer && entity.abilityCooldown > 0) entity.abilityCooldown -= dt;
+    // Combo timer decay (player only)
+    if (entity.isPlayer && entity.comboTimer > 0) {
+        entity.comboTimer -= dt;
+        if (entity.comboTimer <= 0) {
+            entity.comboCount = 0;
+            entity.comboDamageBonus = 0;
+        }
+    }
     // Trail spawn
     entity.trailTimer -= dt;
     const spd = Math.sqrt(entity.vx * entity.vx + entity.vy * entity.vy);
@@ -2510,6 +3559,7 @@ function updateEffects(entity, dt) {
     }
     if (entity.hitFlash > 0) entity.hitFlash -= dt;
     entity.pulseTimer += dt;
+    if (entity.comboPulse > 0) entity.comboPulse -= dt;
 }
 
 // === MAIN PLAYING UPDATE ===
@@ -2541,6 +3591,40 @@ function updatePlaying(dt) {
     updateSakura(dt);
     updateKanjiVFX(dt);
     updateNarrator(dt);
+    // === PHASE 6: Weather Effects ===
+    updateWeather(dt, currentWeather);
+    // === PHASE 4 VFX UPDATES ===
+    updateHitSparks(dt);
+    updateElimRings(dt);
+    // === PHASE 3: Environmental Hazards ===
+    hazardSpawnTimer -= dt;
+    if (hazardSpawnTimer <= 0 && gameTimer > 10) {
+        hazardSpawnTimer = 8 + Math.random() * 4;
+        spawnHazard();
+    }
+    updateHazards(dt);
+    // Clear poison slow each frame (re-applied by hazard collision)
+    if (player) player._poisonSlow = false;
+    for (const bot of bots) bot._poisonSlow = false;
+    // Kill cam update
+    if (killCamActive) {
+        killCamTimer -= dt / SLOW_MO_SCALE; // decrement in real time, not slow-mo time
+        killCamLetterbox = Math.min(30, killCamLetterbox + dt * 200);
+        if (killCamTimer <= 0) {
+            killCamActive = false;
+            killCamTimer = 0;
+            killCamLetterbox = 0;
+        }
+    }
+    // Screen flash decay
+    if (screenFlashAlpha > 0) {
+        screenFlashAlpha -= dt * 4;
+        if (screenFlashAlpha < 0) screenFlashAlpha = 0;
+    }
+    // Kill streak glow timer
+    if (killStreakGlowTimer > 0) {
+        killStreakGlowTimer -= dt;
+    }
     // Emote wheel check — tap bottom-left corner to toggle
     const preTap = consumeTap();
     if (preTap) {
@@ -2556,6 +3640,22 @@ function updatePlaying(dt) {
             _taps.unshift(dashTap); // put it back for surge check
         }
     }
+    // Ability button check (Phase 5) — bottom-right, x = W - 45, y = H - 55, r = 22
+    const abilityTap = consumeTap();
+    if (abilityTap && player && player.alive) {
+        const abilityBtnX = W - 45, abilityBtnY = H - 55, abilityBtnR = 22;
+        const dx = abilityTap.x - abilityBtnX;
+        const dy = abilityTap.y - abilityBtnY;
+        if (Math.sqrt(dx * dx + dy * dy) < abilityBtnR + 5) {
+            if (activateAbility()) {
+                haptics.fire('light');
+                audio.play('powerUp');
+            }
+            // Consumed
+        } else {
+            _taps.unshift(abilityTap); // put it back
+        }
+    }
     // Surge/Rage
     checkSurgeActivation();
     if (rageMode) {
@@ -2565,12 +3665,32 @@ function updatePlaying(dt) {
     // Player
     updatePlayerInput(dt);
     if (player.alive) {
+        // Create dodge afterimages during dodge
+        if (player.dashTimer > 0 && player.isInvulnerable) {
+            player.dodgeAfterimages.push({
+                x: player.x,
+                y: player.y,
+                alpha: 0.4
+            });
+            // Keep only last 3 afterimages
+            if (player.dodgeAfterimages.length > 3) {
+                player.dodgeAfterimages.shift();
+            }
+            // Fade out afterimages
+            for (const ai of player.dodgeAfterimages) {
+                ai.alpha *= 0.85;
+            }
+        } else {
+            player.dodgeAfterimages = [];
+        }
         player.x += player.vx; player.y += player.vy;
         player.vx *= GAME_CONFIG.physics.friction;
         player.vy *= GAME_CONFIG.physics.friction;
         clampToArena(player);
         updateEffects(player, dt);
     }
+    // Update ability clones (Phase 5)
+    updateAbilityClones(dt);
 
     // ── MULTIPLAYER MODE: server-driven sync ──
     if (gameState.mpIsMultiplayer) {
@@ -2795,12 +3915,16 @@ function updatePlaying(dt) {
 // === DRAWING: ARENA (JAPANESE STYLE) ===
 function drawArena(ctx) {
     const ax = arena.x, ay = arena.y, aw = arena.w, ah = arena.h;
+    // During gameplay, use selectedTheme; otherwise use equippedTheme
+    const themeKey = gameState.screen === 'playing' ? gameState.selectedTheme : gameState.equippedTheme;
+    const arenaTheme = ARENA_THEMES[themeKey];
     const theme = THEME_MAP[gameState.equippedTheme] || THEME_MAP['neon'];
-    const tAccent = theme.accent;
+    // Use arena theme stroke color if available, otherwise fall back to THEME_MAP
+    const tAccent = arenaTheme ? arenaTheme.arenaStroke : theme.accent;
     ctx.save();
     // Inner floor — subtle gradient tinted to theme
     const floorGrad = ctx.createRadialGradient(ax + aw/2, ay + ah/2, 20, ax + aw/2, ay + ah/2, aw * 0.7);
-    floorGrad.addColorStop(0, tAccent + '08');
+    floorGrad.addColorStop(0, (arenaTheme ? arenaTheme.arenaStroke : tAccent) + '08');
     floorGrad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = floorGrad;
     ctx.fillRect(ax, ay, aw, ah);
@@ -2857,6 +3981,22 @@ function drawArena(ctx) {
 }
 
 // === DRAWING: ENTITY (JAPANESE STYLE — EXPRESSIVE FACES) ===
+// === DODGE AFTERIMAGES ===
+function drawDodgeAfterimages(ctx, entity) {
+    if (!entity.dashTimer || entity.dashTimer <= 0 || entity.dodgeAfterimages.length === 0) return;
+    for (let i = 0; i < entity.dodgeAfterimages.length; i++) {
+        const ai = entity.dodgeAfterimages[i];
+        ctx.globalAlpha = ai.alpha;
+        // Draw ghost outline
+        ctx.beginPath();
+        ctx.arc(ai.x, ai.y, entity.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = entity.skin.body;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+}
+
 function drawEntity(ctx, entity) {
     if (!entity.alive) return;
     const { x, y, radius, skin, hitFlash, pulseTimer, hp, maxHp, isPlayer, nameTag } = entity;
@@ -2865,6 +4005,10 @@ function drawEntity(ctx, entity) {
     // Hit flash
     if (hitFlash > 0) {
         ctx.globalAlpha = 0.7 + 0.3 * Math.sin(hitFlash * 40);
+    }
+    // Dodge invulnerability flash — white during dodge
+    if (entity.isInvulnerable && entity.dashTimer > 0) {
+        ctx.globalAlpha = 0.5 * Math.sin(entity.dashTimer * 30);
     }
     // Frozen visual — ice crystal ring
     if (entity.frozen) {
@@ -3023,6 +4167,30 @@ function drawEntity(ctx, entity) {
         ctx.arc(x + eyeOffX, y + eyeOffY + 4, 3, 0.2, Math.PI - 0.2);
         ctx.strokeStyle = skin.eye + '60'; ctx.lineWidth = 0.8;
         ctx.stroke();
+    }
+    // Weapon swing visual — arc on attack for ALL entities (player + bots)
+    if (entity.attackSwingTimer > 0) {
+        const swingAlpha = entity.attackSwingTimer / 0.15;
+        const weaponStats = WEAPONS[entity.weapon] || WEAPONS.katana;
+        ctx.save();
+        ctx.globalAlpha = swingAlpha * (isPlayer ? 0.6 : 0.4);
+        ctx.strokeStyle = weaponStats.color;
+        ctx.lineWidth = isPlayer ? 3 : 2;
+        ctx.beginPath();
+        const arcHalfWidth = weaponStats.swingArc / 2;
+        const arcStartAngle = entity.lastAttackAngle - arcHalfWidth;
+        const arcEndAngle = entity.lastAttackAngle + arcHalfWidth;
+        ctx.arc(x, y, radius + (isPlayer ? 20 : 16), arcStartAngle, arcEndAngle);
+        ctx.stroke();
+        ctx.restore();
+    }
+    // Weapon icon badge — small icon next to HP bar for all entities
+    {
+        const wStats = WEAPONS[entity.weapon] || WEAPONS.katana;
+        ctx.save();
+        ctx.font = '10px Arial'; ctx.textAlign = 'left';
+        ctx.fillText(wStats.icon, x + 16, y - radius - 8);
+        ctx.restore();
     }
     // HP bar — slim Japanese-style
     const barW = 28, barH = 3;
@@ -3203,6 +4371,34 @@ function drawHUD(ctx) {
     }
     ctx.font = 'bold 9px Arial'; ctx.fillStyle = '#fff';
     ctx.fillText('S', surgeBarX + surgeBarW / 2, surgeBarY + surgeBarH + 12);
+
+    // === COMBO DISPLAY (left side below surge meter) ===
+    if (player && player.alive && player.comboCount > 1) {
+        const comboY = surgeBarY + surgeBarH + 40;
+        const comboColor = player.comboCount > 10 ? '#ff3355' : player.comboCount > 5 ? '#ffaa00' : '#ffcc00';
+        // Combo background
+        ctx.fillStyle = `rgba(255,200,0,0.15)`;
+        drawRoundRect(ctx, surgeBarX - 5, comboY - 15, 40, 30, 8); ctx.fill();
+        // Combo count (large)
+        const scale = 1 + (player.comboPulse > 0 ? player.comboPulse * 0.3 : 0);
+        ctx.save();
+        ctx.translate(surgeBarX + 15, comboY), ctx.scale(scale, scale);
+        ctx.font = 'bold 24px "Segoe UI", Arial';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = comboColor;
+        ctx.shadowColor = comboColor;
+        ctx.shadowBlur = 10;
+        ctx.fillText(`x${player.comboCount}`, 0, 0);
+        ctx.shadowBlur = 0;
+        ctx.restore();
+        // Damage bonus text
+        const bonusText = `+${Math.floor(player.comboDamageBonus * 100)}%`;
+        ctx.font = 'bold 10px "Segoe UI", Arial';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = comboColor;
+        ctx.fillText(bonusText, surgeBarX + 15, comboY + 18);
+    }
+
     // Active power-up indicators (bottom bar)
     if (player && player.alive) {
         const puIcons = [];
@@ -3295,10 +4491,12 @@ function drawMiniMap(ctx) {
     ctx.restore();
 }
 
-// === DASH COOLDOWN INDICATOR ===
+// === DODGE COOLDOWN INDICATOR ===
 function drawDashIndicator(ctx) {
     if (!player || !player.alive) return;
-    const cdPct = player.dashCooldown / DASH_COOLDOWN;
+    // Use the new dodge cooldown of 2.5s (or 1.25s with dash master)
+    const maxCooldown = gameState._dashMasterActive ? 1.25 : 2.5;
+    const cdPct = player.dashCooldown / maxCooldown;
     const dx = 50, dy = H - 50, r = 18;
     ctx.save();
     // Background circle
@@ -3316,9 +4514,62 @@ function drawDashIndicator(ctx) {
         ctx.fill();
     }
     // Icon
-    ctx.font = 'bold 12px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillStyle = cdPct > 0 ? '#666' : '#00ffcc';
-    ctx.fillText('DASH', dx, dy);
+    ctx.fillText(cdPct > 0 ? 'DODGE' : 'READY', dx, dy);
+    ctx.restore();
+}
+
+// === ABILITY BUTTON (Phase 5) ===
+function drawAbilityButton(ctx) {
+    if (!player || !player.alive) return;
+    const abilityKey = gameState.selectedAbility;
+    const abilityStats = ABILITIES[abilityKey];
+    if (!abilityStats) return;
+
+    const bx = W - 45, by = H - 55, r = 22;
+    const cdPct = player.abilityCooldown / abilityStats.cooldown;
+    const isReady = cdPct <= 0;
+
+    ctx.save();
+    // Background circle
+    ctx.beginPath();
+    ctx.arc(bx, by, r, 0, Math.PI * 2);
+    ctx.fillStyle = isReady ? `rgba(255,102,0,0.2)` : 'rgba(0,0,0,0.5)';
+    ctx.fill();
+
+    // Glow when ready
+    if (isReady) {
+        ctx.shadowColor = abilityStats.color;
+        ctx.shadowBlur = 12;
+        ctx.strokeStyle = abilityStats.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(bx, by, r, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    // Cooldown arc
+    if (cdPct > 0) {
+        ctx.beginPath();
+        ctx.moveTo(bx, by);
+        ctx.arc(bx, by, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - cdPct));
+        ctx.closePath();
+        ctx.fillStyle = `${abilityStats.color}40`;
+        ctx.fill();
+
+        // Cooldown text
+        ctx.font = 'bold 8px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#999';
+        const remainingSecs = Math.ceil(player.abilityCooldown);
+        ctx.fillText(`${remainingSecs}s`, bx, by + r + 12);
+    }
+
+    // Ability icon
+    ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = isReady ? abilityStats.color : '#666';
+    ctx.fillText(abilityStats.icon, bx, by);
+
     ctx.restore();
 }
 
@@ -3328,6 +4579,7 @@ function drawPlaying(ctx) {
     ctx.save();
     ctx.translate(camera.shakeX, camera.shakeY);
     drawArena(ctx);
+    drawHazards(ctx);
     drawPowerUps(ctx);
     // Draw bots
     for (const bot of bots) {
@@ -3337,11 +4589,15 @@ function drawPlaying(ctx) {
     // Draw player on top
     if (player) {
         drawTrail(ctx, player);
+        drawDodgeAfterimages(ctx, player);
         drawEntity(ctx, player);
         drawEmoteAbovePlayer(ctx, player);
     }
     // Draw particles
     particles.draw(ctx);
+    // Phase 4 VFX — hit sparks + elimination rings (in camera space)
+    drawHitSparks(ctx);
+    drawElimRings(ctx);
     // Floating damage numbers + kanji VFX
     drawDmgNums(ctx);
     drawKanjiVFX(ctx);
@@ -3356,6 +4612,11 @@ function drawPlaying(ctx) {
         ctx.setLineDash([]);
     }
     ctx.restore();
+    // Draw ability clones (Phase 5) — need to be in screen space with camera translation
+    ctx.save();
+    ctx.translate(camera.shakeX, camera.shakeY);
+    drawAbilityClones(ctx);
+    ctx.restore();
     // Low-HP danger vignette — pulsing red border when below 25%
     if (player && player.alive && player.hp <= player.maxHp * 0.25) {
         const pulse = 0.3 + 0.2 * Math.sin(gameTimer * 6); // heartbeat pulse
@@ -3365,11 +4626,78 @@ function drawPlaying(ctx) {
         ctx.fillStyle = dangerVg;
         ctx.fillRect(0, 0, W, H);
     }
+    // === PHASE 4: Screen-space VFX overlays ===
+    // Screen flash (crits, kills)
+    if (screenFlashAlpha > 0) {
+        ctx.save();
+        ctx.globalAlpha = screenFlashAlpha;
+        ctx.fillStyle = screenFlashColor;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+    }
+    // Kill streak glow — pulsing red edge glow for 5+ streaks
+    if (killStreakGlowTimer > 0 && streak >= 5) {
+        ctx.save();
+        const glowPulse = killStreakGlowIntensity * (0.7 + 0.3 * Math.sin(gameTimer * 8));
+        const streakVg = ctx.createRadialGradient(W/2, H/2, H*0.35, W/2, H/2, H*0.55);
+        streakVg.addColorStop(0, 'rgba(0,0,0,0)');
+        streakVg.addColorStop(1, `rgba(255,80,0,${glowPulse})`);
+        ctx.fillStyle = streakVg;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+    }
+    // Kill cam cinematic overlay
+    if (killCamActive) {
+        ctx.save();
+        // Letterbox bars (top and bottom)
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, W, killCamLetterbox);
+        ctx.fillRect(0, H - killCamLetterbox, W, killCamLetterbox);
+        // Cinematic vignette
+        const vigGrad = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.55);
+        vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+        vigGrad.addColorStop(1, 'rgba(0,0,0,0.5)');
+        ctx.fillStyle = vigGrad;
+        ctx.fillRect(0, 0, W, H);
+        // Radial zoom lines from kill point
+        if (killCamTargetPos) {
+            const kx = killCamTargetPos.x + camera.shakeX;
+            const ky = killCamTargetPos.y + camera.shakeY;
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 16; i++) {
+                const a = (Math.PI * 2 * i) / 16;
+                ctx.beginPath();
+                ctx.moveTo(kx + Math.cos(a) * 40, ky + Math.sin(a) * 40);
+                ctx.lineTo(kx + Math.cos(a) * 300, ky + Math.sin(a) * 300);
+                ctx.stroke();
+            }
+        }
+        // Kill cam label text
+        const labelProgress = Math.min(1, (1 - killCamTimer / 1.8) * 3);
+        const labelScale = 0.5 + labelProgress * 0.5;
+        ctx.globalAlpha = Math.min(1, labelProgress * 2);
+        ctx.font = `bold ${Math.floor(32 * labelScale)}px 'Segoe UI', Arial`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowColor = killCamLabel === 'RAGE KILL' ? '#ff3355' : '#ffcc00';
+        ctx.shadowBlur = 25;
+        ctx.fillStyle = killCamLabel === 'RAGE KILL' ? '#ff3355' : '#ffcc00';
+        ctx.fillText(killCamLabel, W/2, H/2);
+        // Sub-label
+        ctx.font = 'bold 14px Arial';
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#ffffff';
+        ctx.fillText(killCamLabel === 'FINAL KILL' ? '滅殺 ANNIHILATION' : '怒殺 FURY', W/2, H/2 + 30);
+        ctx.shadowBlur = 0;
+        ctx.restore();
+    }
     drawHUD(ctx);
     drawNarrator(ctx);
     drawKillFeed(ctx);
     drawMiniMap(ctx);
     drawDashIndicator(ctx);
+    drawAbilityButton(ctx); // Phase 5 ability button (bottom-right)
     // Emote button (bottom-left)
     if (player && player.alive) {
         ctx.save();
@@ -3389,6 +4717,8 @@ function drawPlaying(ctx) {
     }
     // Onboarding overlay
     drawOnboardingOverlay(ctx);
+    // === PHASE 6: Weather Effects ===
+    drawWeather(ctx, currentWeather);
     drawToasts(ctx);
     drawTransition(ctx);
     if (isPaused) drawPauseOverlay(ctx);
@@ -3459,6 +4789,16 @@ function handleGameOver(won) {
         difficulty: gameState.difficulty, duration: Math.floor(gameTimer), streak: bestStreakThisGame,
     });
     if (gameState.matchHistory.length > 10) gameState.matchHistory = gameState.matchHistory.slice(-10);
+    // Update daily/weekly challenges (Phase 7)
+    updateChallengeProgress({
+        kills: gameState.kills,
+        won: won,
+        streak: bestStreakThisGame,
+        combo: maxComboThisGame,
+        powerupsCollected: powerupsCollectedThisMatch,
+        difficulty: gameState.difficulty,
+        hpPercent: player ? Math.floor((player.hp / player.maxHp) * 100) : 0,
+    });
     checkMissions();
     checkAchievements();
     // Battle Pass XP (bonus for LTM featured mode)
@@ -3537,6 +4877,9 @@ function updateBpPromo(dt, tap) {
     const popX = (W - popW) / 2, popY = (H - popH) / 2;
     const buyBtnX = popX + 20, buyBtnY = popY + popH - 75, buyBtnW = popW - 40, buyBtnH = 48;
     const dismissY = popY + popH - 18;
+    // ✕ Close button (top-right corner)
+    const closeBtnX = popX + popW - 36, closeBtnY = popY + 8, closeBtnS = 28;
+    if (hitTest(tap, closeBtnX, closeBtnY, closeBtnS, closeBtnS)) { bpPromoVisible = false; return true; }
     if (hitTest(tap, buyBtnX, buyBtnY, buyBtnW, buyBtnH)) {
         if (typeof NativePurchase !== 'undefined') {
             NativePurchase.present('battle_pass_premium');
@@ -3577,6 +4920,14 @@ function drawBpPromo(ctx) {
     ctx.strokeStyle = `rgba(204,68,255,${0.4 + 0.3 * glowPulse})`;
     ctx.lineWidth = 2;
     drawRoundRect(ctx, popX, popY, popW, popH, 20); ctx.stroke();
+    // ✕ Close button (top-right)
+    const closeBtnX = popX + popW - 36, closeBtnY = popY + 8, closeBtnS = 28;
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.beginPath(); ctx.arc(closeBtnX + closeBtnS / 2, closeBtnY + closeBtnS / 2, closeBtnS / 2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(closeBtnX + closeBtnS / 2, closeBtnY + closeBtnS / 2, closeBtnS / 2, 0, Math.PI * 2); ctx.stroke();
+    ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('✕', closeBtnX + closeBtnS / 2, closeBtnY + closeBtnS / 2 + 6);
     ctx.shadowColor = '#cc44ff'; ctx.shadowBlur = 25;
     ctx.font = '36px Arial'; ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
@@ -3714,6 +5065,7 @@ function drawGameOver(ctx) {
     const stats = [
         { icon: '🎯', label: 'Score', value: `${gameState.score}`, color: '#00ff88' },
         { icon: '💀', label: 'Kills', value: `${gameState.kills}`, color: '#ff3355' },
+        { icon: '⚡', label: 'Max Combo', value: `x${maxComboThisGame}`, color: '#ffaa00' },
         { icon: '🔥', label: 'Best Streak', value: `x${bestStreakThisGame}`, color: '#ffcc00' },
         { icon: '⏱', label: 'Duration', value: `${Math.floor(gameTimer)}s`, color: '#aabbcc' },
         { icon: '🪙', label: 'Coins', value: `+${won ? 50 + gameState.kills * 5 : gameState.kills * 5}`, color: '#ffcc00' },
@@ -4497,6 +5849,11 @@ function updateStats(dt) {
     if (!tap) return;
     if (hitTest(tap, 20, H - 70, 120, 50)) { gameState.screen = 'menu'; return; }
     if (hitTest(tap, W - 160, H - 70, 140, 50)) { gameState.screen = 'achievements'; return; }
+    // Prestige button (Phase 7)
+    if (canPrestige() && hitTest(tap, W/2 - 85, 375, 170, 44)) {
+        activatePrestige();
+        return;
+    }
 }
 
 function drawStats(ctx) {
@@ -4522,12 +5879,40 @@ function drawStats(ctx) {
         ctx.font = 'bold 14px Arial'; ctx.textAlign = 'right'; ctx.fillStyle = color;
         ctx.fillText(`${val}`, W - 40, sy);
     }
+    // Prestige display (Phase 7)
+    if (gameState.prestigeLevel > 0) {
+        const prestige = PRESTIGE_CONFIG;
+        const badge = prestige.rewards[gameState.prestigeLevel - 1];
+        const badgeY = 375;
+        ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = prestige.colors[gameState.prestigeLevel - 1];
+        ctx.shadowColor = prestige.colors[gameState.prestigeLevel - 1]; ctx.shadowBlur = 10;
+        ctx.fillText(`${prestige.icons[gameState.prestigeLevel - 1]} ${badge.name} (Prestige ${gameState.prestigeLevel})`, W/2, badgeY);
+        ctx.shadowBlur = 0;
+    }
+    // Prestige button (Phase 7)
+    if (canPrestige()) {
+        drawButton(ctx, '⭐ PRESTIGE', W/2 - 85, 375, 170, 44, '#c8a0e8');
+    }
+    // Daily Challenges (Phase 7) - compact display
+    if (gameState.dailyChallenges && gameState.dailyChallenges.length > 0) {
+        ctx.font = 'bold 12px Arial'; ctx.textAlign = 'left'; ctx.fillStyle = '#00ff88';
+        ctx.fillText('📋 Daily Challenges', 25, 410);
+        for (let i = 0; i < Math.min(2, gameState.dailyChallenges.length); i++) {
+            const c = gameState.dailyChallenges[i];
+            const y = 424 + i * 16;
+            const progress = Math.min(100, Math.floor((c.progress / c.target) * 100));
+            ctx.font = '10px Arial'; ctx.textAlign = 'left'; ctx.fillStyle = '#aaa';
+            ctx.fillText(`${c.completed ? '✓' : '○'} ${c.name}`, 30, y);
+            ctx.fillStyle = c.completed ? '#00ff88' : '#888';
+            ctx.fillText(`${progress}%`, W - 50, y);
+        }
+    }
     // Match history
-    drawNeonText(ctx, 'Recent Matches', W/2, 400, 18, '#8888ff');
-    const history = gameState.matchHistory.slice(-5).reverse();
+    drawNeonText(ctx, 'Recent Matches', W/2, 470, 18, '#8888ff');
+    const history = gameState.matchHistory.slice(-2).reverse();
     for (let i = 0; i < history.length; i++) {
         const m = history[i];
-        const my = 430 + i * 45;
+        const my = 495 + i * 45;
         drawGlassCard(ctx, 20, my, W - 40, 40, 8, 0.05);
         ctx.font = '12px Arial'; ctx.textAlign = 'left';
         ctx.fillStyle = m.won ? '#00ff88' : '#ff3355';
@@ -4616,7 +6001,7 @@ function drawSettings(ctx) {
     // Version
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.font = '10px Arial'; ctx.textAlign = 'center';
-    ctx.fillText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version + '  ·  ' + APP_CONFIG.studio, W/2, 575);
+    ctx.fillText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version, W/2, 575);
     drawButton(ctx, '← BACK', 20, H - 70, 120, 50, '#555555', '#fff');
     drawToasts(ctx);
 }
@@ -4884,8 +6269,8 @@ function getMpName() {
 // ── MP SYNC ENGINE ──────────────────────────────────────────────
 let mpSyncActive = false;
 let mpPollTimer = 0;
-const MP_POLL_INTERVAL = 150;    // ms between state polls
-const MP_POSITION_INTERVAL = 100; // ms between position sends
+const MP_POLL_INTERVAL = 300;    // ms between state polls (was 150 — saves 50% bandwidth)
+const MP_POSITION_INTERVAL = 300; // ms between position sends (was 100 — saves 66% calls)
 let mpRemotePlayers = {};        // { name: { prev, target, lerpT, ... } }
 let mpLocalPlayer = null;        // ref to our arena_player from server
 const mpCollectedPowerUps = new Set(); // track locally-collected power-up IDs to filter server sync
@@ -4970,7 +6355,7 @@ async function reportMpHit(targetName) {
 
 function lerpMpPlayers(dt) {
     for (const rp of Object.values(mpRemotePlayers)) {
-        rp.lerpT = Math.min(1, rp.lerpT + dt / 0.2); // lerp over 200ms (matches server tick)
+        rp.lerpT = Math.min(1, rp.lerpT + dt / 0.3); // lerp over 300ms (matches poll interval)
         rp.extrapolateT = (rp.extrapolateT || 0) + dt;
     }
 }
@@ -4979,14 +6364,16 @@ function getMpPlayerPos(name) {
     const rp = mpRemotePlayers[name];
     if (!rp) return null;
     const t = Math.min(1, rp.lerpT);
-    let x = rp.prev.x + (rp.target.x - rp.prev.x) * t;
-    let y = rp.prev.y + (rp.target.y - rp.prev.y) * t;
-    // Velocity extrapolation when lerp is done (keeps bots moving smoothly between polls)
+    // Smooth easing — cubic ease-out for natural deceleration
+    const eased = 1 - (1 - t) * (1 - t) * (1 - t);
+    let x = rp.prev.x + (rp.target.x - rp.prev.x) * eased;
+    let y = rp.prev.y + (rp.target.y - rp.prev.y) * eased;
+    // Velocity extrapolation — fills gaps between polls smoothly
     if (t >= 1 && rp.data) {
-        const extra = Math.min(0.15, (rp.extrapolateT || 0) - 0.2); // only extrapolate 150ms past lerp
+        const extra = Math.min(0.4, (rp.extrapolateT || 0) - 0.3); // extrapolate up to 400ms past lerp
         if (extra > 0) {
-            x += (rp.data.vx || 0) * extra * 5;
-            y += (rp.data.vy || 0) * extra * 5;
+            x += (rp.data.vx || 0) * extra * 4;
+            y += (rp.data.vy || 0) * extra * 4;
         }
     }
     return { x, y };
@@ -5066,6 +6453,7 @@ async function startQuickMatch() {
             gameState.mpRoomId = result.roomId;
             gameState.mpIsHost = false;
             gameState.screen = 'mp_lobby';
+            mpLobbyAutoStartTimer = 0; mpLobbyAutoStarting = false;
             pollLobbyState();
         }
     } catch (e) {
@@ -5074,22 +6462,23 @@ async function startQuickMatch() {
     }
 }
 
-const MP_BOT_FILL_TIMEOUT = 30; // seconds before auto-filling with bots
-let mpAutoStarting = false; // prevent duplicate auto-start calls
+const MP_SEARCH_TIMEOUT = 30; // seconds searching queue before creating a lobby room (was 5 — too fast)
+let mpAutoStarting = false;   // prevent duplicate auto-start calls
 
 function updateMpSearching(dt) {
     updateToasts(dt);
     gameState.mpSearchTimer += dt;
-    // Poll queue status every 2 seconds (only while still searching for humans)
-    if (gameState.mpSearchTimer < MP_BOT_FILL_TIMEOUT) {
-        if (Math.floor(gameState.mpSearchTimer) !== Math.floor(gameState.mpSearchTimer - dt) && Math.floor(gameState.mpSearchTimer) % 2 === 0) {
+    // Poll queue status every 1.5 seconds — check if we got matched with another player
+    if (gameState.mpSearchTimer < MP_SEARCH_TIMEOUT) {
+        if (Math.floor(gameState.mpSearchTimer * 2) !== Math.floor((gameState.mpSearchTimer - dt) * 2)) {
             checkQueueStatus();
         }
     }
-    // Auto-fill with bots after timeout — no more waiting
-    if (gameState.mpSearchTimer >= MP_BOT_FILL_TIMEOUT && !mpAutoStarting) {
+    // After timeout: create a PUBLIC lobby room (not private!) so other players can still join.
+    // The lobby's 10-second auto-start will fill remaining slots with bots.
+    if (gameState.mpSearchTimer >= MP_SEARCH_TIMEOUT && !mpAutoStarting) {
         mpAutoStarting = true;
-        autoCreateBotMatch();
+        createPublicLobbyRoom();
     }
     const tap = consumeTap();
     if (!tap) return;
@@ -5109,45 +6498,44 @@ async function checkQueueStatus() {
             gameState.mpIsHost = false;
             mpAutoStarting = false;
             gameState.screen = 'mp_lobby';
+            mpLobbyAutoStartTimer = 0; mpLobbyAutoStarting = false;
             pollLobbyState();
         }
     } catch (e) { /* retry next tick */ }
 }
 
 /**
- * Auto-create a room with just this player + bots when no humans found.
- * Standard .io pattern: short wait → fill with AI opponents → play.
+ * Create a PUBLIC lobby room and go to lobby screen.
+ * Other players can still join via joinArenaQueue step 1 (checks lobby rooms).
+ * The lobby's 10-second auto-start timer will fill remaining slots with bots and start.
+ * This replaces the old autoCreateBotMatch which created private rooms — breaking matchmaking.
  */
-async function autoCreateBotMatch() {
+async function createPublicLobbyRoom() {
     try {
         // Leave the queue first
         await convex.leaveArenaQueue(getMpName()).catch(() => {});
-        // Create a private room (we become host)
+        // Create a PUBLIC room (isPrivate: false) — other Quick Match players can find and join it
         const result = await convex.createArenaRoom(
             getMpName(), gameState.mpDifficulty,
-            gameState.mpMaxPlayers, gameState.equippedSkin
+            gameState.mpMaxPlayers, gameState.equippedSkin,
+            false  // PUBLIC room — visible to other players' joinArenaQueue
         );
         if (result && result.roomId) {
             gameState.mpRoomId = result.roomId;
             gameState.mpRoomCode = result.roomCode;
             gameState.mpIsHost = true;
-            // Immediately start match — server fills bots in startArenaMatch
-            const startResult = await convex.startArenaMatch(result.roomId);
-            if (startResult && startResult.success) {
-                // Poll once to get player positions, then start game
-                await pollLobbyState();
-                startMpGame();
-            } else {
-                // Fallback: go to lobby so user can manually start
-                gameState.screen = 'mp_lobby';
-                pollLobbyState();
-            }
+            // Go to lobby — auto-start (10s) will fill bots and start the game.
+            // Other players searching via Quick Match can join this lobby in the meantime.
+            gameState.screen = 'mp_lobby';
+            mpLobbyAutoStartTimer = 0;
+            mpLobbyAutoStarting = false;
+            pollLobbyState();
         } else {
             showToast('Failed to create match', '#ff3355', 2);
             gameState.screen = 'mp_menu';
         }
     } catch (e) {
-        console.warn('[MP] Auto bot-match error:', e.message);
+        console.warn('[MP] Create lobby error:', e.message);
         showToast('Connection error', '#ff3355', 2);
         gameState.screen = 'mp_menu';
     } finally {
@@ -5169,8 +6557,8 @@ const MP_SEARCH_TIPS = [
 function drawMpSearching(ctx) {
     drawBackground(ctx);
     const elapsed = gameState.mpSearchTimer;
-    const remaining = Math.max(0, Math.ceil(MP_BOT_FILL_TIMEOUT - elapsed));
-    const isFillingBots = elapsed >= MP_BOT_FILL_TIMEOUT;
+    const remaining = Math.max(0, Math.ceil(MP_SEARCH_TIMEOUT - elapsed));
+    const isFillingBots = elapsed >= MP_SEARCH_TIMEOUT;
     const t = elapsed; // shorthand for animations
     const mainColor = isFillingBots ? '#00ff88' : '#00ccff';
     const mainRGB = isFillingBots ? '0,255,136' : '0,204,255';
@@ -5248,7 +6636,7 @@ function drawMpSearching(ctx) {
         // Filling bots — show bot silhouettes sliding in
         const botColors = ['#ff5544', '#00ccff', '#cc44ff', '#ffcc00'];
         for (let i = 0; i < Math.min(4, gameState.mpMaxPlayers - 1); i++) {
-            const slideIn = Math.min(1, (elapsed - MP_BOT_FILL_TIMEOUT) * 2 + i * 0.3);
+            const slideIn = Math.min(1, (elapsed - MP_SEARCH_TIMEOUT) * 2 + i * 0.3);
             const bx = W / 2 + (i - 1.5) * 60;
             const by = 420 + (1 - slideIn) * 40;
             ctx.globalAlpha = slideIn;
@@ -5288,7 +6676,7 @@ function drawMpSearching(ctx) {
     }
 
     // === Progress section ===
-    const pct = Math.min(1, elapsed / MP_BOT_FILL_TIMEOUT);
+    const pct = Math.min(1, elapsed / MP_SEARCH_TIMEOUT);
     const barW = 260, barH = 8, barX = W / 2 - barW / 2, barY = 485;
 
     // Time label
@@ -5366,6 +6754,7 @@ async function createPrivateRoom() {
             gameState.mpRoomCode = result.roomCode;
             gameState.mpIsHost = true;
             gameState.screen = 'mp_lobby';
+            mpLobbyAutoStartTimer = 0; mpLobbyAutoStarting = false;
             pollLobbyState();
         }
     } catch (e) {
@@ -5385,35 +6774,84 @@ async function pollLobbyState() {
         ]);
         gameState.mpRoom = room;
         gameState.mpPlayers = players || [];
-        // If room transitioned to countdown/playing, start the game
-        if (room && (room.status === 'countdown' || room.status === 'playing')) {
+        // KEY: If room transitioned to countdown/playing on server (another client started it),
+        // immediately start the game. The guard inside startMpGame() prevents double-init.
+        if (room && (room.status === 'countdown' || room.status === 'playing') && gameState.screen === 'mp_lobby') {
+            console.log('[MP] Poll detected room in', room.status, '— starting game');
             startMpGame();
         }
-    } catch (e) { /* retry */ }
+    } catch (e) { console.warn('[MP] pollLobbyState error:', e); }
 }
+
+let mpLobbyAutoStartTimer = 0;
+let mpLobbyAutoStarting = false;
+let mpAutoStartTimestamp = 0;
+const MP_LOBBY_AUTO_START_DELAY = 15; // seconds — auto-start after entering lobby (was 10)
 
 function updateMpLobby(dt) {
     updateToasts(dt);
     mpLobbyPollTimer += dt;
+    mpLobbyAutoStartTimer += dt;
     // Poll every 1.5s
     if (mpLobbyPollTimer >= 1.5) {
         mpLobbyPollTimer = 0;
         pollLobbyState();
     }
+    // AUTO-START: when lobby is full OR after delay, trigger start
+    const players = gameState.mpPlayers || [];
+    const maxP = gameState.mpRoom ? gameState.mpRoom.maxPlayers : gameState.mpMaxPlayers;
+    const lobbyFull = players.length >= maxP;
+    const timedOut = mpLobbyAutoStartTimer >= MP_LOBBY_AUTO_START_DELAY;
+
+    if ((lobbyFull || timedOut) && !mpLobbyAutoStarting) {
+        mpLobbyAutoStarting = true;
+        mpAutoStartTimestamp = Date.now();
+        convex.startArenaMatch(gameState.mpRoomId).then(async (r) => {
+            if (r && r.success) {
+                console.log('[MP] startArenaMatch succeeded, polling then starting game');
+                await pollLobbyState();
+                if (gameState.screen === 'mp_lobby') startMpGame();
+                // NUCLEAR FALLBACK: if still on lobby after 3s, force transition
+                setTimeout(() => {
+                    if (gameState.screen === 'mp_lobby') {
+                        console.warn('[MP] NUCLEAR FALLBACK — forcing game start');
+                        startMpGame();
+                    }
+                }, 3000);
+            } else {
+                console.log('[MP] startArenaMatch returned false, polling for room status');
+                mpLobbyAutoStarting = false;
+                pollLobbyState();
+            }
+        }).catch((e) => { console.error('[MP] startArenaMatch error:', e); mpLobbyAutoStarting = false; pollLobbyState(); });
+    }
+
+    // Safety: if "Starting match..." is stuck for >5 seconds, reset so poll can retry
+    if (mpLobbyAutoStarting && mpAutoStartTimestamp && (Date.now() - mpAutoStartTimestamp > 5000)) {
+        console.warn('[MP] Auto-start stuck for 5s, resetting');
+        mpLobbyAutoStarting = false;
+        mpAutoStartTimestamp = 0;
+        pollLobbyState(); // force poll to check room status
+    }
+
     const tap = consumeTap();
     if (!tap) return;
-    // START button (host only)
-    if (gameState.mpIsHost && hitTest(tap, W / 2 - 100, H - 170, 200, 55)) {
+    // START button (host or any player can start)
+    if (hitTest(tap, W / 2 - 100, H - 170, 200, 55) && !mpLobbyAutoStarting) {
+        mpLobbyAutoStarting = true;
+        mpAutoStartTimestamp = Date.now();
         convex.startArenaMatch(gameState.mpRoomId).then(r => {
             if (r && r.success) startMpGame();
-            else showToast('Failed to start', '#ff3355', 1.5);
-        }).catch(() => showToast('Error starting match', '#ff3355', 1.5));
+            else { showToast('Failed to start', '#ff3355', 1.5); mpLobbyAutoStarting = false; }
+        }).catch(() => { showToast('Error starting match', '#ff3355', 1.5); mpLobbyAutoStarting = false; });
     }
     // LEAVE button
     if (hitTest(tap, W / 2 - 75, H - 90, 150, 50)) {
         convex.leaveArenaQueue(getMpName()).catch(() => {});
         stopMpSync();
         gameState.mpRoomId = null;
+        mpLobbyAutoStartTimer = 0;
+        mpLobbyAutoStarting = false;
         gameState.screen = 'mp_menu';
     }
 }
@@ -5472,12 +6910,15 @@ function drawMpLobby(ctx) {
             ctx.fillText('— empty slot —', W / 2, py + 28);
         }
     }
-    // START button (host only)
-    if (gameState.mpIsHost) {
-        drawButton(ctx, '▶ START MATCH', W / 2 - 100, H - 170, 200, 55, '#00ff88', '#0a0a1a');
+    // START button (anyone can start) + auto-start countdown
+    const autoCountdown = Math.max(0, Math.ceil(MP_LOBBY_AUTO_START_DELAY - mpLobbyAutoStartTimer));
+    if (mpLobbyAutoStarting) {
+        ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = '#00ff88';
+        ctx.fillText('Starting match...', W / 2, H - 145);
     } else {
-        ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = '#888';
-        ctx.fillText('Waiting for host to start...', W / 2, H - 145);
+        drawButton(ctx, '▶ START MATCH', W / 2 - 100, H - 170, 200, 55, '#00ff88', '#0a0a1a');
+        ctx.font = '12px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = '#888';
+        ctx.fillText(`Auto-start in ${autoCountdown}s`, W / 2, H - 110);
     }
     // LEAVE button
     drawButton(ctx, 'LEAVE', W / 2 - 75, H - 90, 150, 50, '#ff3355', '#fff');
@@ -5543,6 +6984,7 @@ async function joinByCode() {
             gameState.mpRoomCode = code;
             gameState.mpIsHost = false;
             gameState.screen = 'mp_lobby';
+            mpLobbyAutoStartTimer = 0; mpLobbyAutoStarting = false;
             pollLobbyState();
         } else {
             gameState.mpLobbyError = result?.reason || 'Room not found';
@@ -5597,48 +7039,74 @@ function drawMpJoinCode(ctx) {
 
 // ── START MP GAME ────────────────────────────────────────────────
 function startMpGame() {
-    gameState.mpIsMultiplayer = true;
-    gameState._mpGameCounted = false;
-    mpCollectedPowerUps.clear();
-    gameState.screen = 'playing';
-    gameState.mpCountdown = 3;
-    startMpSync();
-    // Initialize local entities using server spawn position
-    const myName = getMpName();
-    const me = (gameState.mpPlayers || []).find(p => p.playerName === myName);
-    const room = gameState.mpRoom;
-    // Set arena bounds from server
-    if (room) {
-        arena.x = room.arenaX; arena.y = room.arenaY;
-        arena.w = room.arenaW; arena.h = room.arenaH;
-        arena.targetW = room.arenaW; arena.targetH = room.arenaH;
-        arena.shrinkTimer = room.shrinkTimer;
+    // Guard: prevent double-init if already transitioned to playing
+    if (gameState.screen === 'playing' && gameState.mpIsMultiplayer) {
+        console.warn('[MP] startMpGame already called, skipping');
+        return;
     }
-    // Create local player entity
-    const spawnX = me ? me.x : (arena.x + arena.w / 2);
-    const spawnY = me ? me.y : (arena.y + arena.h / 2);
-    player = createEntity(spawnX, spawnY, true, null, gameState.equippedSkin);
-    player.nameTag = myName;
-    // In MP mode, bots are server-managed — create empty local array
-    bots = [];
-    powerUps = [];
-    projectiles = [];
-    gameTimer = 0;
-    streak = 0;
-    bestStreakThisGame = 0;
-    surgeLevel = 0;
-    surgeMeter = 0;
-    rageMode = false;
-    rageTimer = 0;
-    isPaused = false;
-    commentaryText = '';
-    commentaryTimer = 0;
-    aliveCount = room ? room.maxPlayers : 5;
-    totalBots = aliveCount - 1;
-    gameState.score = 0;
-    gameState.kills = 0;
-    gameState.isCampaignMode = false;
-    audio.startBGM();
+    try {
+        console.log('[MP] startMpGame — transitioning to playing');
+        gameState.mpIsMultiplayer = true;
+        gameState._mpGameCounted = false;
+        if (mpCollectedPowerUps) mpCollectedPowerUps.clear();
+        gameState.screen = 'playing';
+        gameState.mpCountdown = 3;
+        startMpSync();
+        // Initialize local entities using server spawn position
+        const myName = getMpName();
+        const me = (gameState.mpPlayers || []).find(p => p.playerName === myName);
+        const room = gameState.mpRoom;
+        // Set arena bounds from server
+        if (room) {
+            arena.x = room.arenaX; arena.y = room.arenaY;
+            arena.w = room.arenaW; arena.h = room.arenaH;
+            arena.targetW = room.arenaW; arena.targetH = room.arenaH;
+            arena.shrinkTimer = room.shrinkTimer;
+        }
+        // Create local player entity
+        const spawnX = me ? me.x : (arena.x + arena.w / 2);
+        const spawnY = me ? me.y : (arena.y + arena.h / 2);
+        player = createEntity(spawnX, spawnY, true, null, gameState.equippedSkin);
+        player.nameTag = myName;
+        // In MP mode, bots are server-managed — create empty local array
+        bots = [];
+        powerUps = [];
+        projectiles = [];
+        gameTimer = 0;
+        streak = 0;
+        bestStreakThisGame = 0;
+        surgeLevel = 0;
+        surgeMeter = 0;
+        rageMode = false;
+        rageTimer = 0;
+        isPaused = false;
+        commentaryText = '';
+        commentaryTimer = 0;
+        // Reset Phase 4 VFX state (MP init)
+        killCamActive = false; killCamTimer = 0; killCamLabel = '';
+        killCamTargetPos = null; killCamLetterbox = 0;
+        screenFlashAlpha = 0;
+        _hitSparks.length = 0; _elimRings.length = 0;
+        killStreakGlowTimer = 0; killStreakGlowIntensity = 0;
+        // Reset Phase 3 environmental hazards
+        activeHazards = []; hazardSpawnTimer = 10;
+        // Reset ability state (Phase 5)
+        if (player) player.abilityCooldown = 0;
+        abilityClones = [];
+        aliveCount = room ? room.maxPlayers : 5;
+        totalBots = aliveCount - 1;
+        gameState.score = 0;
+        gameState.kills = 0;
+        gameState.isCampaignMode = false;
+        audio.startBGM();
+        console.log('[MP] startMpGame completed — screen is now:', gameState.screen);
+    } catch (e) {
+        console.error('[MP] CRITICAL: startMpGame threw:', e.message, e.stack);
+        // Force screen to playing anyway so the game isn't stuck
+        gameState.screen = 'playing';
+        gameState.mpIsMultiplayer = true;
+        showToast('Match started with errors', '#ff8800', 2);
+    }
 }
 
 // ── MP RESULT SCREEN ─────────────────────────────────────────────
@@ -6860,8 +8328,8 @@ class ConvexGameClient {
         return this._mutation("arenaMultiplayer:leaveArenaQueue",{playerName}); }
     async getArenaQueueCount() {
         return this._query("arenaMultiplayer:getArenaQueueCount",{}); }
-    async createArenaRoom(hostName, difficulty, maxPlayers, skin) {
-        return this._mutation("arenaMultiplayer:createArenaRoom",{hostName,difficulty,maxPlayers,skin}); }
+    async createArenaRoom(hostName, difficulty, maxPlayers, skin, isPrivate) {
+        return this._mutation("arenaMultiplayer:createArenaRoom",{hostName,difficulty,maxPlayers,skin,isPrivate: isPrivate !== undefined ? isPrivate : true}); }
     async joinArenaRoom(roomCode, playerName, skin) {
         return this._mutation("arenaMultiplayer:joinArenaRoom",{roomCode,playerName,skin}); }
     async setArenaReady(roomId, playerName, ready) {

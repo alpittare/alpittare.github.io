@@ -1,0 +1,33 @@
+{
+  "name": "game-ecosystem-backend",
+  "version": "1.0.0",
+  "description": "Production-ready Convex backend for multi-game platform (Cricket, Football, Baseball)",
+  "main": "ConvexClient.js",
+  "type": "module",
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy",
+    "test": "convex test",
+    "build": "convex build"
+  },
+  "keywords": [
+    "convex",
+    "backend",
+    "gaming",
+    "multiplayer",
+    "leaderboard",
+    "real-time"
+  ],
+  "author": "Game Ecosystem",
+  "license": "MIT",
+  "dependencies": {
+    "convex": "^1.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

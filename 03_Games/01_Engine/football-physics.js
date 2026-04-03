@@ -425,8 +425,20 @@ class Goalkeeper extends Entity {
         const baseReachY = this.height * 0.5 + 25;
 
         const earlyBonus = this.earlyDiveBonus || 0;
-        const reachX = (baseReachX + earlyBonus * 20) * reach;
+        let reachX = (baseReachX + earlyBonus * 20) * reach;
         const reachY = (baseReachY + earlyBonus * 10) * reach;
+
+        // === WRONG-DIRECTION PENALTY ===
+        // If keeper dove one way but ball is on the OTHER side, drastically reduce reach
+        if (this.state === 'dive' && this.diveDirection !== 0 && this.diveProgress > 0.1) {
+            const goalCX = FootballConfig.field.goalCenterX;
+            const ballSide = ballX < goalCX - 15 ? -1 : (ballX > goalCX + 15 ? 1 : 0);
+            if (ballSide !== 0 && ballSide !== this.diveDirection) {
+                // Keeper dove wrong way — reach shrinks with dive commitment
+                const wrongPenalty = this.diveProgress * 0.85;
+                reachX *= (1.0 - wrongPenalty);
+            }
+        }
 
         // Chip shots reduce save effectiveness
         const heightPenalty = ballHeight > 2 ? Math.min(ballHeight * 1.5, 18) : 0;

@@ -1,0 +1,46 @@
+{
+  "cli": {
+    "version": ">= 5.0.0"
+  },
+  "build": {
+    "preview": {
+      "ios": {
+        "resourceClass": "default"
+      }
+    },
+    "preview2": {
+      "ios": {
+        "resourceClass": "default"
+      }
+    },
+    "preview3": {
+      "ios": {
+        "resourceClass": "default"
+      }
+    },
+    "production": {
+      "ios": {
+        "image": "latest",
+        "resourceClass": "large",
+        "enterpriseProvisioning": "adhoc",
+        "buildType": "archive"
+      }
+    },
+    "staging": {
+      "ios": {
+        "image": "latest",
+        "resourceClass": "default",
+        "enterpriseProvisioning": "adhoc"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "XXXXXXXXXX"
+      }
+    }
+  }
+}

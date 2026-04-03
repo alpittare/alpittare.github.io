@@ -875,7 +875,11 @@ class BattingSystem {
     }
 
     _perfectRuns(shot, power) {
-        if (shot === ShotTypes.LOFT) return Math.random() < (0.55 + power * 0.25) ? 6 : 4;
+        if (shot === ShotTypes.LOFT) {
+            const _b = { easy: 0.55, medium: 0.42, hard: 0.32, legend: 0.22 }[gameState.difficulty] || 0.42;
+            const _p = { easy: 0.25, medium: 0.18, hard: 0.13, legend: 0.08 }[gameState.difficulty] || 0.18;
+            return Math.random() < (_b + power * _p) ? 6 : 4;
+        }
         if (shot === ShotTypes.DRIVE) return Math.random() < 0.55 ? 4 : (Math.random() < 0.3 ? 6 : 2);
         if (shot === ShotTypes.CUT || shot === ShotTypes.PULL) return Math.random() < 0.5 ? 4 : 2;
         if (shot === ShotTypes.SWEEP) return Math.random() < 0.4 ? 4 : 2;
@@ -883,7 +887,10 @@ class BattingSystem {
     }
 
     _goodRuns(shot, power) {
-        if (shot === ShotTypes.LOFT) return Math.random() < 0.35 ? 6 : (Math.random() < 0.5 ? 4 : 2);
+        if (shot === ShotTypes.LOFT) {
+            const _g = { easy: 0.35, medium: 0.25, hard: 0.16, legend: 0.10 }[gameState.difficulty] || 0.25;
+            return Math.random() < _g ? 6 : (Math.random() < 0.5 ? 4 : 2);
+        }
         if (shot === ShotTypes.DRIVE) return Math.random() < 0.45 ? 4 : 2;
         if (shot === ShotTypes.CUT || shot === ShotTypes.PULL) return Math.random() < 0.35 ? 4 : 2;
         if (shot === ShotTypes.SWEEP) return Math.random() < 0.3 ? 2 : 1;
@@ -3677,7 +3684,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             name: 'Cricket AI 2026',
             version: '1.0.0',
             build: '1',
-            studio: 'GameHub Studios',
+            studio: '',
             developer: 'Alpit Tare',
             support: 'alpittare204dev@gmail.com',
             bundleId: 'com.cricketprobotai.app',
@@ -3936,10 +3943,10 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
         };
 
         const BALL_SPEEDS = {
-            easy: { min: 2, max: 3 },
-            medium: { min: 3, max: 4.5 },
-            hard: { min: 4, max: 6 },
-            legend: { min: 5, max: 8 },
+            easy: { min: 5, max: 7 },
+            medium: { min: 7, max: 9.5 },
+            hard: { min: 9.5, max: 13 },
+            legend: { min: 13, max: 18 },
         };
 
         // Timing zones: ball Y when bat connects determines quality
@@ -5255,7 +5262,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 minRuns: 4,             // guaranteed 4+ (70% chance of 6)
                 sixChance: 0.70,
                 bonusCoins: 3,
-                drainPct: 0.15,         // drains bar by this much after use
+                drainPct: 0.30,         // drains bar heavily after use — no free spam
                 color: '#00ff88',
                 icon: '🚁',
                 shakePower: 12,
@@ -5269,7 +5276,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 minRuns: 6,             // guaranteed SIX
                 sixChance: 1.0,
                 bonusCoins: 5,
-                drainPct: 0.25,
+                drainPct: 0.45,
                 color: '#00e5ff',
                 icon: '⚡',
                 shakePower: 18,
@@ -5284,7 +5291,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 sixChance: 1.0,
                 bonusCoins: 10,
                 coinMultiplier: 2,      // double coins from this shot
-                drainPct: 0.35,
+                drainPct: 0.60,
                 color: '#ffff00',
                 icon: '🔄',
                 shakePower: 22,
@@ -5299,7 +5306,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 sixChance: 1.0,
                 bonusCoins: 20,
                 coinMultiplier: 3,      // triple coins
-                drainPct: 0.50,
+                drainPct: 0.80,
                 color: '#ff4444',
                 icon: '💥',
                 shakePower: 30,
@@ -5366,6 +5373,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.activeSurge = null;
                 this.activePowerShot = null;    // currently activated POWER_SHOTS entry
                 this.powerShotTimer = 0;        // frames remaining to use the shot
+                this.powerShotCooldown = 0;     // balls remaining before next power shot allowed
                 this.resultText = '';
                 this.resultTextTime = 0;
                 this.gameOverProcessed = false;
@@ -5374,6 +5382,11 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.fours = 0;
                 this.sixes = 0;
                 this.runsThisInning = 0;
+                // === PHASE 1: Shot statistics ===
+                this.shotStats = { LOFT: 0, DRIVE: 0, CUT: 0, PULL: 0, SWEEP: 0, DEFEND: 0 };
+                this.shotQualities = { perfect: 0, good: 0, edge: 0, weak: 0 };
+                // === PHASE 3: Aggression mode ===
+                this.battingMode = 'defensive'; // 'defensive' or 'attacking'
                 this.gameStartTime = 0;
                 this.phasesUnlocked = [true, false, false, false]; // Phase 1 unlocked by default
                 this.currentPhase = 0; // index into PHASES array
@@ -5986,6 +5999,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.activeSurge = null;
                 this.activePowerShot = null;
                 this.powerShotTimer = 0;
+                this.powerShotCooldown = 0;
                 this.gameOverProcessed = false;
                 _confettiSpawned = false;
                 _confetti.length = 0;
@@ -5994,6 +6008,11 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.fours = 0;
                 this.sixes = 0;
                 this.runsThisInning = 0;
+                // === PHASE 1: Shot statistics ===
+                this.shotStats = { LOFT: 0, DRIVE: 0, CUT: 0, PULL: 0, SWEEP: 0, DEFEND: 0 };
+                this.shotQualities = { perfect: 0, good: 0, edge: 0, weak: 0 };
+                // === PHASE 3: Aggression mode ===
+                this.battingMode = 'defensive'; // 'defensive' or 'attacking'
                 this.extras = 0;      // total extras (wides + no-balls)
                 this._psUses = { helicopter: 0, uppercut: 0, reverse_sweep: 0, dilscoop: 0 };
 
@@ -6094,6 +6113,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.activeSurge = null;
                 this.activePowerShot = null;
                 this.powerShotTimer = 0;
+                this.powerShotCooldown = 0;
                 this.gameOverProcessed = false;
                 _confettiSpawned = false;
                 _confetti.length = 0;
@@ -6102,6 +6122,11 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.fours = 0;
                 this.sixes = 0;
                 this.runsThisInning = 0;
+                // === PHASE 1: Shot statistics ===
+                this.shotStats = { LOFT: 0, DRIVE: 0, CUT: 0, PULL: 0, SWEEP: 0, DEFEND: 0 };
+                this.shotQualities = { perfect: 0, good: 0, edge: 0, weak: 0 };
+                // === PHASE 3: Aggression mode ===
+                this.battingMode = 'defensive'; // 'defensive' or 'attacking'
                 this.extras = 0;
                 this._psUses = { helicopter: 0, uppercut: 0, reverse_sweep: 0, dilscoop: 0 };
                 this._consecutiveDots = 0;
@@ -6252,6 +6277,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.activeSurge = null;
                 this.activePowerShot = null;
                 this.powerShotTimer = 0;
+                this.powerShotCooldown = 0;
                 this.gameOverProcessed = false;
                 _confettiSpawned = false;
                 _confetti.length = 0;
@@ -6260,6 +6286,11 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 this.fours = 0;
                 this.sixes = 0;
                 this.runsThisInning = 0;
+                // === PHASE 1: Shot statistics ===
+                this.shotStats = { LOFT: 0, DRIVE: 0, CUT: 0, PULL: 0, SWEEP: 0, DEFEND: 0 };
+                this.shotQualities = { perfect: 0, good: 0, edge: 0, weak: 0 };
+                // === PHASE 3: Aggression mode ===
+                this.battingMode = 'defensive'; // 'defensive' or 'attacking'
                 this.extras = 0;
                 this._psUses = { helicopter: 0, uppercut: 0, reverse_sweep: 0, dilscoop: 0 };
 
@@ -6287,8 +6318,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             bowlNextBall() {
                 if (this.screen !== 'game') return;
                 // Prevent multiple simultaneous active deliveries
-                // Only block if there's a ball still in-flight (not hit AND not yet result-given)
-                if (this.balls.some(b => !b.hit && !b.resultGiven)) return;
+                // Block if ANY ball hasn't had its result fully processed yet
+                if (this.balls.some(b => !b.resultGiven)) return;
 
                 // Reset stumps for new delivery (rebuild after scatter)
                 if (typeof stumps !== 'undefined') stumps.reset();
@@ -6332,14 +6363,16 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
 
                 // Base speed from difficulty config, modified by ball type + length + fatigue + level scaling
                 const baseSpeed = config.speeds.min + Math.random() * (config.speeds.max - config.speeds.min);
-                const finalSpeed = baseSpeed * delivery.ballType.speedMul * lengthData.speedMul * fatigueMods.speedMul * levelScaling.speedMul;
+                const _deathOverSpeedMul = getOverPhase() === 'death' ? 1.15 : 1.0;
+                const finalSpeed = baseSpeed * delivery.ballType.speedMul * lengthData.speedMul * fatigueMods.speedMul * levelScaling.speedMul * _deathOverSpeedMul;
 
                 // Adaptive speed boost: if AI bias is high, push speed up slightly
                 const adaptiveSpeedBoost = 1 + adaptiveAI.difficultyBias * 0.1;
 
                 // Line offset: where the ball targets (fatigue reduces accuracy, level scaling improves it)
                 const accuracyJitter = (1 - fatigueMods.accuracyMul) * 15 * levelScaling.accuracyMul;
-                const lineOffset = lineData.xOffset + (Math.random() - 0.5) * 8 * levelScaling.accuracyMul + (Math.random() - 0.5) * accuracyJitter;
+                const _deathOverLineMul = getOverPhase() === 'death' ? 1.5 : 1.0;
+                const lineOffset = lineData.xOffset + (Math.random() - 0.5) * 8 * levelScaling.accuracyMul * _deathOverLineMul + (Math.random() - 0.5) * accuracyJitter;
 
                 // Swing: from ball type + length modifier + random variation + level scaling
                 const swingAmount = (delivery.ballType.swing + delivery.ballType.spin) *
@@ -6361,6 +6394,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     extrasSystem.totalExtras++;
                     commentary.trigger('noBall');
                     crowdSystem.trigger('noBall');
+                    umpire.triggerSignal('noball');
                 } else {
                     extrasSystem.isNoBall = false;
                 }
@@ -6672,6 +6706,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.font = '20px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#ffffff';
             ctx.fillText(theme.emoji, avX, avY + 1);
 
             // === BOT NAME + LEVEL BADGE ===
@@ -7464,6 +7499,71 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
         const SWIPE_MIN_DIST = 25;
         const SWIPE_MAX_TIME = 600; // max ms for a valid swipe
 
+        // === PHASE 1: SHOT FEEDBACK SYSTEM ===
+        const shotFeedback = {
+            active: false,
+            shotName: '',
+            shotColor: '#fff',
+            quality: '',
+            qualityColor: '#fff',
+            runs: 0,
+            x: 0,
+            y: 0,
+            timer: 0,
+            maxTime: 70,
+
+            trigger(shotType, quality, runs, x, y) {
+                this.active = true;
+                this.shotName = shotType ? shotType.label : 'TAP';
+                this.shotColor = shotType ? shotType.color : '#ffffff';
+                this.quality = quality.toUpperCase();
+                this.runs = runs;
+                this.x = x || DESIGN.width / 2;
+                this.y = y || 700;
+                this.timer = this.maxTime;
+
+                // Quality color mapping
+                const qColors = { PERFECT: '#ffd700', GOOD: '#00e5ff', EDGE: '#ff8800', WEAK: '#888888', MISS: '#ff4444' };
+                this.qualityColor = qColors[this.quality] || '#ffffff';
+            },
+
+            update() {
+                if (!this.active) return;
+                this.timer--;
+                if (this.timer <= 0) this.active = false;
+            },
+
+            render(ctx) {
+                if (!this.active || this.timer <= 0) return;
+                const progress = 1 - (this.timer / this.maxTime);
+                const alpha = this.timer < 20 ? this.timer / 20 : 1;
+                const rise = progress * 60; // rises 60px total
+                const scale = 1 + progress * 0.15; // subtle scale up
+
+                ctx.save();
+                ctx.globalAlpha = alpha;
+
+                // Shot name (big, colored)
+                const nameY = this.y - rise - 30;
+                ctx.shadowColor = this.shotColor;
+                ctx.shadowBlur = 12 + Math.sin(this.timer * 0.3) * 4;
+                drawText(this.shotName, this.x, nameY, 28 * scale, this.shotColor, 'bold', false);
+
+                // Quality text (smaller, underneath)
+                ctx.shadowColor = this.qualityColor;
+                ctx.shadowBlur = 8;
+                drawText(this.quality, this.x, nameY + 26, 14, this.qualityColor, 'bold', false);
+
+                // Runs text (small, below quality)
+                if (this.runs > 0) {
+                    ctx.shadowBlur = 0;
+                    drawText('+' + this.runs, this.x, nameY + 44, 16, '#ffffff', 'bold', false);
+                }
+
+                ctx.restore();
+            }
+        };
+
         function classifySwipe(dx, dy, dist) {
             // Angle: 0 = right, PI/2 = down, -PI/2 = up, PI = left
             const angle = Math.atan2(dy, dx);
@@ -7479,7 +7579,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             // deg: -180 to 180, where -90 = straight up, 0 = right, 90 = down, +-180 = left
 
             // Direction zones (non-overlapping):
-            //   UP:       -120 to -60   → LOFT (six attempt)
+            //   UP:       -120 to -60   → LOFT (six attempt) — requires bigger swipe
             //   UP-RIGHT: -60  to -15   → DRIVE (off-side four)
             //   RIGHT:    -15  to  45   → CUT (quick runs)
             //   DOWN:      45  to 135   → SWEEP (grounded)
@@ -7487,7 +7587,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             //   UP-LEFT: -180  to -120  → DRIVE (leg-side four)
             let shotType;
             if (deg >= -120 && deg < -60) {
-                shotType = SWIPE_SHOTS.LOFT;
+                // LOFT requires a more deliberate swipe — short lazy flicks become DRIVE
+                shotType = absDist >= 40 ? SWIPE_SHOTS.LOFT : SWIPE_SHOTS.DRIVE;
             } else if (deg >= -60 && deg < -15) {
                 shotType = SWIPE_SHOTS.DRIVE;
             } else if (deg >= -15 && deg < 45) {
@@ -8105,6 +8206,216 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
         const bowler = new Bowler();
 
         // ============================================================================
+        // UMPIRE — stands at bowler's end, signals decisions
+        // ============================================================================
+
+        class Umpire {
+            constructor() {
+                // Position: off to the left of the pitch at bowler's end
+                this.x = DESIGN.width / 2 - 55;
+                this.y = DESIGN.bowlersCreaseY + 10;
+                this.scale = 0.55;
+
+                // Signal state
+                this.signal = 'idle';       // idle, six, four, wide, noball, out, not_out
+                this.signalTimer = 0;
+                this.signalDuration = 80;   // frames to hold signal
+            }
+
+            // Trigger a signal animation
+            triggerSignal(type) {
+                this.signal = type;
+                this.signalTimer = 0;
+                this.signalDuration = (type === 'six' || type === 'out') ? 90 : 70;
+            }
+
+            update() {
+                if (this.signal !== 'idle') {
+                    this.signalTimer++;
+                    if (this.signalTimer >= this.signalDuration) {
+                        this.signal = 'idle';
+                        this.signalTimer = 0;
+                    }
+                }
+            }
+
+            render() {
+                const sx = cameraShakeX || 0;
+                const sy = cameraShakeY || 0;
+                const x = this.x + sx;
+                const y = this.y + sy;
+                const s = this.scale;
+                const sig = this.signal;
+                const t = this.signalTimer;
+
+                // Animation progress 0→1
+                const prog = Math.min(1, t / 12); // ramp up over 12 frames
+
+                ctx.save();
+
+                // Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.25)';
+                ctx.beginPath();
+                ctx.ellipse(x, y + 30 * s, 14 * s, 3.5 * s, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Legs (standing still, slightly apart)
+                ctx.fillStyle = '#1a1a2e';  // dark trousers
+                ctx.fillRect(x - 7 * s, y + 16 * s, 6 * s, 16 * s);
+                ctx.fillRect(x + 1 * s, y + 16 * s, 6 * s, 16 * s);
+
+                // Shoes
+                ctx.fillStyle = '#111';
+                ctx.fillRect(x - 7 * s, y + 32 * s, 7 * s, 3 * s);
+                ctx.fillRect(x + 1 * s, y + 32 * s, 7 * s, 3 * s);
+
+                // Jacket / blazer (umpire coat — dark navy/black)
+                ctx.fillStyle = '#1c1c3a';
+                ctx.fillRect(x - 10 * s, y + 2 * s, 20 * s, 15 * s);
+
+                // White collar detail
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x - 4 * s, y + 1 * s, 8 * s, 3 * s);
+
+                // === ARMS — depend on signal ===
+                ctx.strokeStyle = '#c4956a'; // skin
+                ctx.lineWidth = 2.5 * s;
+                ctx.lineCap = 'round';
+
+                if (sig === 'six' && prog > 0) {
+                    // BOTH arms raised straight up
+                    const raise = prog * 22 * s;
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x - 12 * s, y - raise);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x + 12 * s, y - raise);
+                    ctx.stroke();
+                    // Hands (circles at tips)
+                    ctx.fillStyle = '#c4956a';
+                    ctx.beginPath(); ctx.arc(x - 12 * s, y - raise, 2 * s, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x + 12 * s, y - raise, 2 * s, 0, Math.PI * 2); ctx.fill();
+
+                } else if (sig === 'four' && prog > 0) {
+                    // One arm waves side to side (horizontal sweep)
+                    const wave = Math.sin(t * 0.25) * 18 * s * prog;
+                    // Right arm waves
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x + 20 * s + wave, y + 2 * s);
+                    ctx.stroke();
+                    ctx.fillStyle = '#c4956a';
+                    ctx.beginPath(); ctx.arc(x + 20 * s + wave, y + 2 * s, 2 * s, 0, Math.PI * 2); ctx.fill();
+                    // Left arm at side
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x - 14 * s, y + 16 * s);
+                    ctx.stroke();
+
+                } else if (sig === 'wide' && prog > 0) {
+                    // Both arms stretched out horizontally
+                    const spread = prog * 22 * s;
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x - 10 * s - spread, y + 4 * s);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x + 10 * s + spread, y + 4 * s);
+                    ctx.stroke();
+                    ctx.fillStyle = '#c4956a';
+                    ctx.beginPath(); ctx.arc(x - 10 * s - spread, y + 4 * s, 2 * s, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x + 10 * s + spread, y + 4 * s, 2 * s, 0, Math.PI * 2); ctx.fill();
+
+                } else if (sig === 'noball' && prog > 0) {
+                    // One arm extended out, other arm touches elbow (bent arm signal)
+                    const extend = prog * 20 * s;
+                    // Right arm out
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x + 10 * s + extend, y + 2 * s);
+                    ctx.stroke();
+                    // Left arm bent touching right elbow
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x - 2 * s, y - 2 * s);
+                    ctx.lineTo(x + 6 * s, y + 2 * s);
+                    ctx.stroke();
+
+                } else if (sig === 'out' && prog > 0) {
+                    // RIGHT hand raised, index finger pointing up
+                    const raise = prog * 26 * s;
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x + 8 * s, y - raise);
+                    ctx.stroke();
+                    // Finger pointing up (small line above hand)
+                    ctx.strokeStyle = '#c4956a';
+                    ctx.lineWidth = 1.5 * s;
+                    ctx.beginPath();
+                    ctx.moveTo(x + 8 * s, y - raise);
+                    ctx.lineTo(x + 8 * s, y - raise - 5 * s);
+                    ctx.stroke();
+                    ctx.lineWidth = 2.5 * s;
+                    // Left arm at side
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x - 14 * s, y + 16 * s);
+                    ctx.stroke();
+
+                } else if (sig === 'not_out' && prog > 0) {
+                    // Both arms crossed in front (not out signal)
+                    const sweep = prog * 16 * s;
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x + sweep, y + 2 * s);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x - sweep, y + 2 * s);
+                    ctx.stroke();
+
+                } else {
+                    // Idle: hands behind back
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 6 * s);
+                    ctx.lineTo(x - 6 * s, y + 14 * s);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 6 * s);
+                    ctx.lineTo(x + 6 * s, y + 14 * s);
+                    ctx.stroke();
+                }
+
+                // Face
+                ctx.fillStyle = '#c4956a';
+                ctx.fillRect(x - 5 * s, y - 3 * s, 10 * s, 7 * s);
+
+                // Hat (wide-brimmed umpire hat — white/cream)
+                ctx.fillStyle = '#f0ead6';
+                // Brim
+                ctx.fillRect(x - 10 * s, y - 7 * s, 20 * s, 3 * s);
+                // Crown
+                ctx.fillStyle = '#e8e0c8';
+                ctx.fillRect(x - 7 * s, y - 12 * s, 14 * s, 6 * s);
+                // Hat band
+                ctx.fillStyle = '#1c1c3a';
+                ctx.fillRect(x - 7 * s, y - 7.5 * s, 14 * s, 1.5 * s);
+
+                // Sunglasses
+                ctx.fillStyle = '#111';
+                ctx.fillRect(x - 4 * s, y - 2 * s, 3.5 * s, 2.5 * s);
+                ctx.fillRect(x + 0.5 * s, y - 2 * s, 3.5 * s, 2.5 * s);
+
+                ctx.restore();
+            }
+        }
+
+        const umpire = new Umpire();
+
+        // ============================================================================
         // BOWLER'S END STUMPS (small, at the far end of pitch)
         // ============================================================================
 
@@ -8447,14 +8758,65 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 // Scale based on Y position (perspective: higher Y = closer = larger)
                 this.scale = 0.85 + (baseY - DESIGN.farOutfieldStartY) / (DESIGN.pitchEndY - DESIGN.farOutfieldStartY) * 0.35;
                 // Catch radius — generous for satisfying gameplay catches
-                this.catchRadius = 45 + this.scale * 20;
+                this.catchRadius = 70 + this.scale * 30;
+                // === PHASE 4: Near-miss flash ===
+                this.nearMissTimer = 0;
+                this.nearMissActive = false;
+                // === Aggressive chase: fielder moves toward ball ===
+                this.chaseTargetX = null;
+                this.chaseTargetY = null;
+                this.chasing = false;
+                this.chaseSpeed = 3.5 + Math.random() * 1.0; // fast enough to actually intercept balls
+                this.jumping = false;
+                this.jumpTimer = 0;
+                this.jumpHeight = 0;
+                this.diving = false;
+                this.diveTimer = 0;
+            }
+
+            // Reposition fielder smoothly to new base position (over phase change)
+            repositionTo(newX, newY) {
+                this.baseX = newX;
+                this.baseY = newY;
+                // Recalculate scale for new position
+                this.scale = 0.85 + (newY - DESIGN.farOutfieldStartY) / (DESIGN.pitchEndY - DESIGN.farOutfieldStartY) * 0.35;
+                this.catchRadius = 70 + this.scale * 30;
+            }
+
+            // Start chasing a ball — fielder runs toward predicted intercept point
+            startChase(ballX, ballY, ballVx, ballVy) {
+                if (this.catching || this.celebrating) return;
+                // Predict where ball will be in ~18 frames (longer prediction = better interception)
+                const predictX = ballX + ballVx * 18;
+                const predictY = ballY + ballVy * 12;
+                const dx = predictX - this.x;
+                const dy = predictY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                // Chase if ball is within 300px range — fielders sprint hard
+                if (dist < 300 && dist > 10) {
+                    this.chasing = true;
+                    this.chaseTargetX = predictX;
+                    this.chaseTargetY = predictY;
+                    // Update chase target dynamically — track actual ball position too
+                    this._lastBallX = ballX;
+                    this._lastBallY = ballY;
+                }
+            }
+
+            triggerNearMiss() {
+                this.nearMissActive = true;
+                this.nearMissTimer = 40; // ~0.7 seconds
             }
 
             triggerCatch() {
                 this.catching = true;
                 this.catchTimer = 0;
+                this.chasing = false;
+                this.diving = true;
+                this.diveTimer = 0;
                 setTimeout(() => {
                     this.catching = false;
+                    this.diving = false;
                     this.celebrating = true;
                     this.celebTimer = 0;
                 }, 400);
@@ -8462,18 +8824,73 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
 
             update() {
                 this.bobTimer += 0.02;
-                // Subtle idle sway
-                this.x = this.baseX + Math.sin(this.bobTimer) * 2;
-                this.y = this.baseY + Math.cos(this.bobTimer * 0.7) * 1.2;
+
+                if (this.chasing && this.chaseTargetX !== null) {
+                    // Sprint toward ball intercept point
+                    const dx = this.chaseTargetX - this.x;
+                    const dy = this.chaseTargetY - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 3) {
+                        // Accelerate when close — diving lunge
+                        const speedMul = dist < 40 ? 1.5 : 1.0;
+                        this.x += (dx / dist) * this.chaseSpeed * speedMul;
+                        this.y += (dy / dist) * this.chaseSpeed * speedMul;
+                        // Trigger jump/dive when very close to intercept
+                        if (dist < 50 && !this.jumping) {
+                            this.jumping = true;
+                            this.jumpTimer = 0;
+                        }
+                    } else {
+                        this.chasing = false;
+                        this.chaseTargetX = null;
+                        this.chaseTargetY = null;
+                        this.jumping = false;
+                    }
+                } else if (!this.catching && !this.celebrating) {
+                    // Return to base position smoothly when not chasing
+                    const retDx = this.baseX - this.x;
+                    const retDy = this.baseY - this.y;
+                    const retDist = Math.sqrt(retDx * retDx + retDy * retDy);
+                    if (retDist > 1) {
+                        this.x += retDx * 0.08; // ease back
+                        this.y += retDy * 0.08;
+                    } else {
+                        // Subtle idle sway at base
+                        this.x = this.baseX + Math.sin(this.bobTimer) * 2;
+                        this.y = this.baseY + Math.cos(this.bobTimer * 0.7) * 1.2;
+                    }
+                }
 
                 if (this.catching) {
                     this.catchTimer++;
+                }
+                if (this.diving) {
+                    this.diveTimer++;
+                    if (this.diveTimer > 20) this.diving = false;
+                }
+                if (this.jumping) {
+                    this.jumpTimer++;
+                    // Jump arc: rises then falls over 24 frames
+                    this.jumpHeight = Math.sin(Math.min(1, this.jumpTimer / 24) * Math.PI) * 18;
+                    if (this.jumpTimer > 24) {
+                        this.jumping = false;
+                        this.jumpTimer = 0;
+                        this.jumpHeight = 0;
+                    }
                 }
                 if (this.celebrating) {
                     this.celebTimer++;
                     if (this.celebTimer > 50) {
                         this.celebrating = false;
                         this.celebTimer = 0;
+                    }
+                }
+
+                // Phase 4: Near-miss flash countdown
+                if (this.nearMissActive) {
+                    this.nearMissTimer--;
+                    if (this.nearMissTimer <= 0) {
+                        this.nearMissActive = false;
                     }
                 }
             }
@@ -8490,10 +8907,15 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     y -= Math.sin(this.celebTimer * 0.15) * 6 * s;
                 }
 
+                // Jump/dive toward ball — visible leap animation
+                if (this.jumping && !this.catching) {
+                    y -= this.jumpHeight * s;
+                }
+
                 // Dive toward ball during catch
                 if (this.catching) {
                     const diveProgress = Math.min(1, this.catchTimer / 12);
-                    y -= Math.sin(diveProgress * Math.PI) * 5 * s;
+                    y -= Math.sin(diveProgress * Math.PI) * 8 * s;
                 }
 
                 // Shadow
@@ -8520,8 +8942,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 ctx.strokeStyle = '#d4a574';
                 ctx.lineWidth = Math.max(1.5, 2.5 * s);
 
-                if (this.catching) {
-                    // Arms reaching up for catch
+                if (this.catching || (this.jumping && this.jumpTimer > 4)) {
+                    // Arms reaching up for catch / diving leap
                     ctx.beginPath();
                     ctx.moveTo(x - 10 * s, y + 4 * s);
                     ctx.lineTo(x - 6 * s, y - 18 * s);
@@ -8535,6 +8957,17 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     ctx.beginPath();
                     ctx.arc(x, y - 19 * s, 4 * s, 0, Math.PI * 2);
                     ctx.fill();
+                } else if (this.chasing) {
+                    // Arms pumping while running — one forward, one back
+                    const armSwing = Math.sin(this.bobTimer * 8) * 6;
+                    ctx.beginPath();
+                    ctx.moveTo(x - 10 * s, y + 4 * s);
+                    ctx.lineTo(x - 14 * s, y + (6 + armSwing) * s);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10 * s, y + 4 * s);
+                    ctx.lineTo(x + 14 * s, y + (6 - armSwing) * s);
+                    ctx.stroke();
                 } else if (this.celebrating) {
                     // Arms up celebration
                     ctx.beginPath();
@@ -8571,21 +9004,257 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 // Cap brim
                 ctx.fillStyle = 'rgba(0,0,0,0.3)';
                 ctx.fillRect(x - 8 * s, y - 13 * s, 16 * s, 2 * s);
+
+                // === PHASE 4: Near-miss flash effect ===
+                if (this.nearMissActive && this.nearMissTimer > 0) {
+                    const nmAlpha = this.nearMissTimer / 40;
+                    const nmPulse = Math.sin(this.nearMissTimer * 0.4) * 0.3 + 0.7;
+                    ctx.save();
+                    ctx.globalAlpha = nmAlpha * nmPulse * 0.6;
+                    ctx.strokeStyle = '#ff4444';
+                    ctx.lineWidth = 2;
+                    ctx.shadowColor = '#ff4444';
+                    ctx.shadowBlur = 15;
+                    const nmR = 20 * s + (40 - this.nearMissTimer) * 0.5;
+                    ctx.beginPath();
+                    ctx.arc(x, y, nmR, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // "CLOSE!" text
+                    if (this.nearMissTimer > 20) {
+                        ctx.save();
+                        ctx.globalAlpha = nmAlpha * 0.9;
+                        ctx.shadowColor = '#ff4444';
+                        ctx.shadowBlur = 10;
+                        drawText('CLOSE!', x, y - 30 * s, 12, '#ff4444', 'bold', false);
+                        ctx.restore();
+                    }
+                }
             }
         }
 
-        // Fielders positioned on the OUTFIELD — outside the pitch trapezoid
-        // Pitch center X=207. At Y=480: pitch spans X~152 to X~262.
-        // 2-run shots now travel to Y≈460-520 with X spread ±200px from center.
-        // Fielders placed on the green grass OUTSIDE the pitch edges.
-        const fielders = [
-            // Cover fielder (left outfield)
-            new Fielder(60, 480, 'cover', '#2d8c2d'),
-            // Mid-on fielder (right outfield)
-            new Fielder(355, 490, 'mid-on', '#2d8c2d'),
-            // Mid-off fielder (straight ahead, far outfield)
-            new Fielder(140, 390, 'mid-off', '#2d8c2d'),
+        // ============================================================================
+        // DYNAMIC FIELDING SETUPS — positions change EVERY OVER
+        // Pitch center X=207. Multiple variations per phase, rotated each over.
+        // Also adapts to batsman tendencies (loft-heavy → deeper field).
+        // ============================================================================
+        // ============================================================================
+        // 15 PREDEFINED FIELD SETUPS — one applied each over, rotating through all 15.
+        // Pitch center X=207, Y ranges: close catchers 480-530, ring 400-480, deep 340-400.
+        // Each setup is a realistic cricket field with 6 fielders.
+        // ============================================================================
+        // --- Pitch exclusion: fielders must stay OFF the brown pitch strip ---
+        // Pitch is a trapezoid: 50px wide at Y=320, 180px wide at Y=720, centered at X=207
+        function _pitchEdgesAtY(y) {
+            if (y < DESIGN.pitchStartY || y > DESIGN.pitchEndY) return null;
+            const ratio = (y - DESIGN.pitchStartY) / (DESIGN.pitchEndY - DESIGN.pitchStartY);
+            const halfW = (50 + 130 * ratio) / 2;
+            return { left: 207 - halfW, right: 207 + halfW };
+        }
+        function _pushOffPitch(x, y, pad) {
+            pad = pad || 12; // minimum gap from pitch edge
+            const edges = _pitchEdgesAtY(y);
+            if (!edges) return x; // above or below pitch — fine
+            if (x < edges.left - pad || x > edges.right + pad) return x; // already outside
+            // Push to nearest side
+            const distLeft = Math.abs(x - (edges.left - pad));
+            const distRight = Math.abs(x - (edges.right + pad));
+            return distLeft <= distRight ? edges.left - pad : edges.right + pad;
+        }
+
+        const FIELD_PRESETS = [
+            // 0: Standard attacking (close catchers + mid-off)
+            [ { x: 80,  y: 510, name: 'short-cover' },  { x: 330, y: 520, name: 'short-midwkt' },
+              { x: 145, y: 440, name: 'silly-point' },   { x: 270, y: 450, name: 'short-leg' },
+              { x: 40,  y: 430, name: 'point' },          { x: 370, y: 390, name: 'mid-on' } ],
+            // 1: Slip cordon — heavy off-side catching
+            [ { x: 110, y: 530, name: 'first-slip' },    { x: 140, y: 525, name: 'second-slip' },
+              { x: 100, y: 490, name: 'gully' },          { x: 60,  y: 460, name: 'point' },
+              { x: 350, y: 500, name: 'fine-leg' },       { x: 370, y: 400, name: 'mid-on' } ],
+            // 2: Leg-side trap — packed leg side
+            [ { x: 300, y: 510, name: 'short-leg' },     { x: 340, y: 460, name: 'leg-gully' },
+              { x: 380, y: 420, name: 'deep-sq-leg' },    { x: 100, y: 500, name: 'cover' },
+              { x: 145, y: 440, name: 'mid-off' },        { x: 50,  y: 420, name: 'point' } ],
+            // 3: Off-side ring — tight off side circle
+            [ { x: 45,  y: 460, name: 'cover' },          { x: 100, y: 400, name: 'extra-cover' },
+              { x: 135, y: 370, name: 'mid-off' },        { x: 30,  y: 390, name: 'deep-point' },
+              { x: 355, y: 490, name: 'mid-on' },         { x: 380, y: 400, name: 'long-on' } ],
+            // 4: Leg-side heavy — midwicket region packed
+            [ { x: 320, y: 470, name: 'midwicket' },     { x: 370, y: 410, name: 'deep-mw' },
+              { x: 280, y: 370, name: 'long-on' },        { x: 60,  y: 480, name: 'cover' },
+              { x: 130, y: 390, name: 'mid-off' },        { x: 40,  y: 360, name: 'deep-point' } ],
+            // 5: Catching ring — all 6 in catching arc
+            [ { x: 75,  y: 475, name: 'cover' },          { x: 330, y: 485, name: 'midwicket' },
+              { x: 145, y: 430, name: 'mid-off' },        { x: 270, y: 440, name: 'mid-on' },
+              { x: 45,  y: 425, name: 'point' },          { x: 370, y: 395, name: 'straight-hit' } ],
+            // 6: Wide spread defensive
+            [ { x: 25,  y: 400, name: 'deep-point' },    { x: 390, y: 410, name: 'deep-sq-leg' },
+              { x: 100, y: 360, name: 'long-off' },       { x: 310, y: 370, name: 'long-on' },
+              { x: 130, y: 340, name: 'deep-mid-off' },   { x: 60,  y: 470, name: 'sweeper-cover' } ],
+            // 7: Straight boundary loaded — 3 on straight boundary
+            [ { x: 120, y: 350, name: 'long-off' },      { x: 290, y: 345, name: 'deep-straight' },
+              { x: 275, y: 350, name: 'long-on' },        { x: 30,  y: 410, name: 'deep-point' },
+              { x: 385, y: 420, name: 'deep-fine' },      { x: 65,  y: 475, name: 'sweeper' } ],
+            // 8: Boundary ring — evenly spaced deep arc
+            [ { x: 20,  y: 420, name: 'deep-cover' },    { x: 80,  y: 365, name: 'deep-extra' },
+              { x: 130, y: 345, name: 'long-off' },       { x: 330, y: 365, name: 'deep-mid-on' },
+              { x: 395, y: 420, name: 'deep-sq-leg' },    { x: 60,  y: 460, name: 'sweeper-mid' } ],
+            // 9: Umbrella field — 4 close + 2 deep (Dhoni style)
+            [ { x: 120, y: 500, name: 'silly-point' },   { x: 280, y: 505, name: 'short-leg' },
+              { x: 85,  y: 460, name: 'point' },          { x: 310, y: 465, name: 'square-leg' },
+              { x: 40,  y: 370, name: 'deep-cover' },     { x: 380, y: 375, name: 'deep-mw' } ],
+            // 10: V-field — strong on both sides of straight
+            [ { x: 110, y: 380, name: 'long-off' },      { x: 300, y: 385, name: 'long-on' },
+              { x: 55,  y: 450, name: 'cover' },          { x: 360, y: 455, name: 'midwicket' },
+              { x: 130, y: 350, name: 'deep-straight' },  { x: 65,  y: 475, name: 'bowler-end' } ],
+            // 11: Cow corner loaded — expecting leg-side lofts
+            [ { x: 340, y: 370, name: 'deep-mw' },       { x: 390, y: 440, name: 'deep-sq-leg' },
+              { x: 280, y: 350, name: 'long-on' },        { x: 130, y: 380, name: 'mid-off' },
+              { x: 70,  y: 460, name: 'cover' },          { x: 35,  y: 400, name: 'deep-point' } ],
+            // 12: Off-side cordon — short catching off side
+            [ { x: 60,  y: 510, name: 'cover-close' },   { x: 100, y: 480, name: 'point-close' },
+              { x: 130, y: 500, name: 'gully' },          { x: 40,  y: 420, name: 'deep-point' },
+              { x: 350, y: 480, name: 'fine-leg' },       { x: 300, y: 400, name: 'long-on' } ],
+            // 13: Spread with sweeper — 1 sweeper + balanced ring
+            [ { x: 105, y: 500, name: 'sweeper' },       { x: 55,  y: 445, name: 'cover' },
+              { x: 360, y: 450, name: 'midwicket' },      { x: 130, y: 380, name: 'mid-off' },
+              { x: 290, y: 385, name: 'mid-on' },         { x: 290, y: 355, name: 'long-on' } ],
+            // 14: Anti-loft deep ring — all 6 deep on boundary
+            [ { x: 30,  y: 385, name: 'deep-cover' },    { x: 120, y: 355, name: 'long-off' },
+              { x: 290, y: 340, name: 'deep-straight' },  { x: 295, y: 355, name: 'long-on' },
+              { x: 385, y: 385, name: 'deep-mw' },        { x: 60,  y: 420, name: 'sweeper' } ],
         ];
+
+        // Phase-based depth adjustment: powerplay pulls fielders closer, death pushes deeper
+        const PHASE_Y_OFFSET = { powerplay: 50, middle: 0, death: -30 };
+
+        // Create 6 fielders (start with preset 0)
+        const fielders = FIELD_PRESETS[0].map(
+            pos => new Fielder(pos.x, pos.y, pos.name, '#2d8c2d')
+        );
+
+        // Track current over for per-over field changes
+        let _lastFieldOver = -1;
+        let _currentFieldPhase = 'middle';
+        let _usingAntiLoft = false;
+
+        // Reposition fielders EVERY over — cycles through 15 presets + loft-spam override
+        function updateFieldSetup() {
+            const phase = getOverPhase();
+            const currentOver = gameState.oversCompleted;
+            const loftSpam = (gameState._consecutiveLofts || 0) >= 4;
+
+            // Only reposition when over changes
+            if (currentOver === _lastFieldOver && !loftSpam) return;
+            if (currentOver === _lastFieldOver && loftSpam && _usingAntiLoft) return;
+
+            _lastFieldOver = currentOver;
+            _currentFieldPhase = phase;
+
+            let setup;
+            if (loftSpam) {
+                // Override: anti-loft deep field (preset 14)
+                setup = FIELD_PRESETS[14];
+                _usingAntiLoft = true;
+            } else {
+                _usingAntiLoft = false;
+                // Rotate through all 15 presets each over
+                const presetIdx = currentOver % FIELD_PRESETS.length;
+                setup = FIELD_PRESETS[presetIdx];
+            }
+
+            // Phase-based Y adjustment (closer in powerplay, deeper in death)
+            const yOffset = PHASE_Y_OFFSET[phase] || 0;
+
+            // Apply jitter so same preset doesn't look identical across games
+            for (let i = 0; i < fielders.length && i < setup.length; i++) {
+                const jitterX = (Math.random() - 0.5) * 16; // ±8px random offset
+                const jitterY = (Math.random() - 0.5) * 12;
+                const targetY = Math.max(330, Math.min(540, setup[i].y + yOffset + jitterY));
+                let targetX = Math.max(15, Math.min(DESIGN.width - 15, setup[i].x + jitterX));
+                // Enforce pitch exclusion — fielders must stay OFF the brown pitch strip
+                targetX = _pushOffPitch(targetX, targetY, 14);
+                targetX = Math.max(15, Math.min(DESIGN.width - 15, targetX)); // re-clamp after push
+                fielders[i].repositionTo(targetX, targetY);
+                fielders[i].name = setup[i].name;
+                // Reset chase state on reposition
+                fielders[i].chasing = false;
+                fielders[i].chaseTargetX = null;
+                fielders[i].chaseTargetY = null;
+                fielders[i].jumping = false;
+                fielders[i].jumpTimer = 0;
+                fielders[i].jumpHeight = 0;
+            }
+        }
+
+        // ============================================================================
+        // ADAPTIVE FIELDING — tracks batsman hit direction, shifts fielders mid-over
+        // ============================================================================
+        const _hitDirectionHistory = []; // rolling window of recent hitAngle values
+        const HIT_HISTORY_SIZE = 5;     // remember last 5 scoring shots
+
+        // Called after every scoring hit — records the hitAngle direction
+        function recordHitDirection(hitAngle, runs) {
+            if (runs <= 0) return; // don't track dot balls
+            _hitDirectionHistory.push({ angle: hitAngle, runs: runs, weight: Math.min(runs, 6) });
+            if (_hitDirectionHistory.length > HIT_HISTORY_SIZE) {
+                _hitDirectionHistory.shift();
+            }
+        }
+
+        // Analyze scoring pattern and shift fielders toward dominant direction
+        // Called every frame — fielders drift toward the batsman's preferred zone
+        function adaptFieldToScoring() {
+            if (_hitDirectionHistory.length < 2) return;
+
+            // Weighted average of hit directions (heavier shots = more weight)
+            let totalWeight = 0;
+            let weightedAngle = 0;
+            for (const h of _hitDirectionHistory) {
+                weightedAngle += h.angle * h.weight;
+                totalWeight += h.weight;
+            }
+            if (totalWeight === 0) return;
+            const avgAngle = weightedAngle / totalWeight;
+
+            // Consistency check: are they hitting in one direction repeatedly?
+            let sameDirection = 0;
+            const avgSign = avgAngle > 0 ? 1 : -1;
+            for (const h of _hitDirectionHistory) {
+                if ((h.angle > 0 ? 1 : -1) === avgSign) sameDirection++;
+            }
+            const consistency = sameDirection / _hitDirectionHistory.length;
+            if (consistency < 0.6) return;
+
+            // Target zone center: where the batsman is scoring
+            const centerX = DESIGN.width / 2; // 207
+            const targetX = centerX + (avgAngle > 0 ? 1 : -1) * consistency * 80;
+            // targetX: the ideal center of the fielding formation (shifts 0-80px from center)
+
+            // Move each fielder's base toward the target zone while PRESERVING SPREAD
+            // Key: each fielder keeps its offset from formation center, but the center drifts
+            const driftRate = 0.012 * consistency; // slow drift per frame (smooth transition)
+
+            for (const f of fielders) {
+                if (f.catching || f.celebrating) continue;
+
+                // How far is this fielder from center? Preserve this relative offset
+                const offsetFromCenter = f.baseX - centerX;
+                // Desired position: target center + scaled version of their offset
+                // Spread factor: 0.75 = slightly tighter on the scoring side, wider on off-side
+                const spreadFactor = (avgSign > 0 && offsetFromCenter > 0) ? 0.8 :
+                                     (avgSign < 0 && offsetFromCenter < 0) ? 0.8 : 1.15;
+                const desiredX = targetX + offsetFromCenter * spreadFactor;
+
+                // Drift toward desired position (not instant — smooth over many frames)
+                const dx = desiredX - f.baseX;
+                if (Math.abs(dx) > 0.5) {
+                    f.baseX += dx * driftRate;
+                    f.baseX = Math.max(15, Math.min(DESIGN.width - 15, f.baseX));
+                }
+            }
+        }
 
         // ============================================================================
         // RUN ANIMATIONS
@@ -9063,6 +9732,30 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             }
 
             // ================================================================
+            // PHASE 5: POWERPLAY / DEATH OVERS BANNER
+            // ================================================================
+            const _overPhase = getOverPhase();
+            if (_overPhase === 'powerplay' && !extrasSystem.isFreeHit) {
+                const ppFlash = Math.sin(Date.now() * 0.006) * 0.2 + 0.8;
+                const ppY = topH + 6;
+                ctx.save();
+                ctx.shadowColor = '#00e5ff';
+                ctx.shadowBlur = 10 * ppFlash;
+                drawRoundedRect(W / 2 - 65, ppY, 130, 22, 11, `rgba(0,229,255,${ppFlash * 0.15})`, `rgba(0,229,255,${ppFlash * 0.5})`, 1.5);
+                drawText('⚡ POWERPLAY', W / 2, ppY + 11, 9, `rgba(0,229,255,${ppFlash})`, 'bold', false);
+                ctx.restore();
+            } else if (_overPhase === 'death' && !extrasSystem.isFreeHit) {
+                const dFlash = Math.sin(Date.now() * 0.008) * 0.25 + 0.75;
+                const dY = topH + 6;
+                ctx.save();
+                ctx.shadowColor = '#ff4444';
+                ctx.shadowBlur = 12 * dFlash;
+                drawRoundedRect(W / 2 - 70, dY, 140, 22, 11, `rgba(255,68,68,${dFlash * 0.15})`, `rgba(255,68,68,${dFlash * 0.5})`, 1.5);
+                drawText('🔥 DEATH OVERS', W / 2, dY + 11, 9, `rgba(255,68,68,${dFlash})`, 'bold', false);
+                ctx.restore();
+            }
+
+            // ================================================================
             // FREE HIT BANNER (below top bar)
             // ================================================================
             if (extrasSystem.isFreeHit) {
@@ -9261,142 +9954,388 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.fillRect(0, 0, DESIGN.width, DESIGN.height);
         }
 
+        // ================================================================
+        // PHASE 3: AGGRESSION TOGGLE BUTTON
+        // ================================================================
+        function drawAggressionToggle() {
+            const mode = gameState.battingMode || 'defensive';
+            const isAttacking = mode === 'attacking';
+            const btnX = 45;
+            const btnY = DESIGN.height - 45;
+            const btnR = 26;
+
+            ctx.save();
+
+            // Outer glow
+            const glowColor = isAttacking ? '#ff4444' : '#00ff88';
+            ctx.shadowColor = glowColor;
+            ctx.shadowBlur = 12 + Math.sin(gameTime * 0.08) * 4;
+
+            // Button background
+            const bgGrad = ctx.createRadialGradient(btnX, btnY, 0, btnX, btnY, btnR);
+            if (isAttacking) {
+                bgGrad.addColorStop(0, 'rgba(255,40,40,0.35)');
+                bgGrad.addColorStop(1, 'rgba(180,20,20,0.55)');
+            } else {
+                bgGrad.addColorStop(0, 'rgba(0,255,136,0.25)');
+                bgGrad.addColorStop(1, 'rgba(0,180,80,0.45)');
+            }
+            ctx.fillStyle = bgGrad;
+            ctx.beginPath();
+            ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Border
+            ctx.strokeStyle = glowColor;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.shadowBlur = 0;
+
+            // Icon
+            const icon = isAttacking ? '⚔️' : '🛡️';
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(icon, btnX, btnY - 2);
+
+            // Label below button
+            const label = isAttacking ? 'ATTACK' : 'DEFEND';
+            drawText(label, btnX, btnY + btnR + 10, 7, glowColor, 'bold', false);
+
+            ctx.restore();
+        }
+
+        // ================================================================
+        // PHASE 5: OVER PHASE SYSTEM (Powerplay / Middle / Death)
+        // ================================================================
+        function getOverPhase() {
+            const totalOvers = (DIFFICULTY_CONFIG[gameState.difficulty] || DIFFICULTY_CONFIG.easy).overs;
+            const currentOver = gameState.oversCompleted;
+
+            // Need at least 5 overs for phases to make sense
+            if (totalOvers < 5) {
+                if (currentOver < 1) return 'powerplay';
+                if (currentOver >= totalOvers - 1) return 'death';
+                return 'middle';
+            }
+
+            if (currentOver < 2) return 'powerplay';
+            if (currentOver >= totalOvers - 2) return 'death';
+            return 'middle';
+        }
+
+        // ================================================================
+        // PHASE 4: FIELDER POSITION INDICATORS (pre-delivery awareness)
+        // ================================================================
+        function drawFielderIndicators() {
+            // Only show when no balls are active (between deliveries)
+            if (gameState.balls.length > 0) return;
+
+            const t = gameTime * 0.06;
+            for (const f of fielders) {
+                const sx = cameraShakeX || 0;
+                const sy = cameraShakeY || 0;
+                const fx = f.x + sx;
+                const fy = f.y + sy;
+
+                // Pulsing ring around fielder
+                const pulse = Math.sin(t + f.bobTimer) * 0.3 + 0.7;
+                ctx.save();
+                ctx.globalAlpha = 0.25 * pulse;
+                ctx.strokeStyle = '#ff6666';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.arc(fx, fy, f.catchRadius * 0.6, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Fielder name label
+                ctx.globalAlpha = 0.3 * pulse;
+                ctx.font = 'bold 6px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#ffaaaa';
+                ctx.fillText(f.name.toUpperCase(), fx, fy + 35 * f.scale);
+                ctx.restore();
+            }
+        }
+
         // ============================================================================
         // SURGE BAR
         // ============================================================================
 
+        // Surge bar energy particles (persistent array for smooth animation)
+        const _surgeParticles = [];
+        const _SURGE_MAX_PARTICLES = 12;
+
         function drawSurgeBar() {
             const W = DESIGN.width;
             const progress = Math.max(0, Math.min(1, gameState.surgeProgress));
+            const t = gameTime * 0.001; // time in seconds for smooth animation
 
             // ================================================================
-            // ENHANCED POWER BAR — wider bar with glass card background
+            // POLISHED SURGE BAR — premium glass design with energy particles
             // ================================================================
-            const barW = 14;
+            const barW = 16;
             const barH = 220;
-            const barX = W - 24;
+            const barX = W - 26;
             const barY = 80;
-            const r = 7;
+            const r = 8;
+            const cx = barX + barW / 2;
 
-            // Glass card background behind bar
+            // Tier color stops (matches SURGE_TIERS)
+            const tierColors = ['#00aaff', '#00ff88', '#ffdd00', '#ff4444'];
+            const activeTierIdx = progress >= 1.0 ? 3 : progress >= 0.75 ? 2 : progress >= 0.5 ? 1 : progress >= 0.25 ? 0 : -1;
+            const barColor = activeTierIdx >= 0 ? tierColors[activeTierIdx] : '#3388cc';
+
+            // --- Outer glow (intensifies with progress) ---
+            if (progress > 0.1) {
+                ctx.save();
+                ctx.shadowColor = barColor;
+                ctx.shadowBlur = 8 + progress * 14;
+                ctx.globalAlpha = 0.15 + progress * 0.2;
+                ctx.fillStyle = barColor;
+                ctx.beginPath();
+                ctx.roundRect(barX - 2, barY - 2, barW + 4, barH + 4, r + 1);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // --- Dark glass background ---
             ctx.save();
-            ctx.globalAlpha = 0.4;
-            drawRoundedRect(barX - 6, barY - 6, barW + 12, barH + 12, r + 2, 'rgba(200,220,255,0.5)', '#00e5ff', 1);
+            ctx.globalAlpha = 0.65;
+            ctx.fillStyle = 'rgba(8,12,24,0.85)';
+            ctx.beginPath();
+            ctx.roundRect(barX, barY, barW, barH, r);
+            ctx.fill();
             ctx.restore();
 
-            // Background bar
-            ctx.globalAlpha = 0.5;
-            drawRoundedRect(barX, barY, barW, barH, r, 'rgba(0,0,0,0.6)');
-            ctx.globalAlpha = 1;
+            // --- Inner shadow (depth effect) ---
+            ctx.save();
+            ctx.globalAlpha = 0.3;
+            const innerShadow = ctx.createLinearGradient(barX, barY, barX + barW, barY);
+            innerShadow.addColorStop(0, 'rgba(0,0,0,0.5)');
+            innerShadow.addColorStop(0.3, 'rgba(0,0,0,0)');
+            innerShadow.addColorStop(0.7, 'rgba(0,0,0,0)');
+            innerShadow.addColorStop(1, 'rgba(0,0,0,0.3)');
+            ctx.fillStyle = innerShadow;
+            ctx.beginPath();
+            ctx.roundRect(barX + 1, barY + 1, barW - 2, barH - 2, r - 1);
+            ctx.fill();
+            ctx.restore();
 
-            // Fill with animated gradient
+            // --- Fluid fill with tier-based gradient ---
             const fillH = barH * progress;
             if (progress > 0.01) {
                 const fillY = barY + barH - fillH;
-                // Animated gradient that flows upward
-                const animOffset = (gameTime * 0.002) % 1;
-                const fillGrad = ctx.createLinearGradient(0, barY + barH - animOffset * 40, 0, barY - animOffset * 40);
-                fillGrad.addColorStop(0, '#0066ff');
-                fillGrad.addColorStop(0.35, '#00ff88');
-                fillGrad.addColorStop(0.65, '#ffdd00');
+
+                // Clip to bar shape
+                ctx.save();
+                ctx.beginPath();
+                ctx.roundRect(barX + 1, barY + 1, barW - 2, barH - 2, r - 1);
+                ctx.clip();
+
+                // Animated flowing gradient
+                const wave = Math.sin(t * 2) * 8;
+                const fillGrad = ctx.createLinearGradient(0, barY + barH + wave, 0, barY - 30 + wave);
+                fillGrad.addColorStop(0, '#0055cc');
+                fillGrad.addColorStop(0.25, '#00aaff');
+                fillGrad.addColorStop(0.5, '#00ff88');
+                fillGrad.addColorStop(0.75, '#ffdd00');
                 fillGrad.addColorStop(1, '#ff4444');
-                ctx.save();
-                ctx.globalAlpha = 0.7;
-                ctx.beginPath();
-                ctx.moveTo(barX + r, fillY);
-                ctx.lineTo(barX + barW - r, fillY);
-                ctx.arcTo(barX + barW, fillY, barX + barW, fillY + r, r);
-                ctx.lineTo(barX + barW, barY + barH - r);
-                ctx.arcTo(barX + barW, barY + barH, barX + barW - r, barY + barH, r);
-                ctx.lineTo(barX + r, barY + barH);
-                ctx.arcTo(barX, barY + barH, barX, barY + barH - r, r);
-                ctx.lineTo(barX, fillY + r);
-                ctx.arcTo(barX, fillY, barX + r, fillY, r);
-                ctx.closePath();
+
+                ctx.globalAlpha = 0.85;
                 ctx.fillStyle = fillGrad;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-                ctx.restore();
-            }
+                ctx.fillRect(barX + 1, fillY, barW - 2, fillH);
 
-            // Subtle glow when high
-            if (progress > 0.5) {
-                ctx.save();
-                ctx.shadowColor = progress > 0.75 ? '#ff4444' : '#ffdd00';
-                ctx.shadowBlur = 6 * progress;
-                ctx.strokeStyle = `rgba(255,255,255,${0.15 * progress})`;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(barX + r, barY);
-                ctx.arcTo(barX + barW, barY, barX + barW, barY + r, r);
-                ctx.lineTo(barX + barW, barY + barH - r);
-                ctx.arcTo(barX + barW, barY + barH, barX + barW - r, barY + barH, r);
-                ctx.lineTo(barX + r, barY + barH);
-                ctx.arcTo(barX, barY + barH, barX, barY + barH - r, r);
-                ctx.lineTo(barX, barY + r);
-                ctx.arcTo(barX, barY, barX + r, barY, r);
-                ctx.closePath();
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            // Milestone markers: glowing diamond shapes at 25/50/75/100%
-            const milestones = [0.25, 0.5, 0.75, 1.0];
-            for (let m = 0; m < milestones.length; m++) {
-                const milestonePct = milestones[m];
-                const msY = barY + barH - (barH * milestonePct);
-                const isActive = progress >= milestonePct * 0.95;
-
-                // Diamond shape marker
-                ctx.save();
-                if (isActive) {
-                    ctx.shadowColor = '#ffdd00';
-                    ctx.shadowBlur = 8;
-                    ctx.fillStyle = '#ffdd00';
-                } else {
-                    ctx.fillStyle = 'rgba(100,150,220,0.25)';
+                // Liquid surface wobble at the top of the fill
+                if (fillH > 5) {
+                    const wobbleAmp = 1.5 + progress * 1.5;
+                    ctx.globalAlpha = 0.6;
+                    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                    ctx.beginPath();
+                    ctx.moveTo(barX + 1, fillY + 2);
+                    for (let px = 0; px <= barW - 2; px++) {
+                        const wy = fillY + Math.sin((px / (barW - 2)) * Math.PI * 2 + t * 4) * wobbleAmp;
+                        ctx.lineTo(barX + 1 + px, wy);
+                    }
+                    ctx.lineTo(barX + barW - 1, fillY + 4);
+                    ctx.lineTo(barX + 1, fillY + 4);
+                    ctx.closePath();
+                    ctx.fill();
                 }
+
+                // Glass highlight (left edge reflection)
+                ctx.globalAlpha = 0.18;
+                const glassHL = ctx.createLinearGradient(barX + 1, 0, barX + barW * 0.4, 0);
+                glassHL.addColorStop(0, 'rgba(255,255,255,0.6)');
+                glassHL.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = glassHL;
+                ctx.fillRect(barX + 2, fillY + 3, barW * 0.35, fillH - 4);
+
+                ctx.restore(); // end clip
+            }
+
+            // --- Energy particles rising inside the bar ---
+            if (progress > 0.15) {
+                // Spawn new particles
+                if (_surgeParticles.length < _SURGE_MAX_PARTICLES && Math.random() < 0.12 + progress * 0.15) {
+                    _surgeParticles.push({
+                        x: barX + 3 + Math.random() * (barW - 6),
+                        y: barY + barH - 4,
+                        vy: -(0.3 + Math.random() * 0.6) * (0.5 + progress),
+                        size: 1 + Math.random() * 1.8,
+                        life: 1.0,
+                        color: barColor
+                    });
+                }
+                // Update + draw particles
+                ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(barX + barW / 2, msY - 5);
-                ctx.lineTo(barX + barW / 2 + 5, msY);
-                ctx.lineTo(barX + barW / 2, msY + 5);
-                ctx.lineTo(barX + barW / 2 - 5, msY);
-                ctx.closePath();
+                ctx.roundRect(barX + 1, barY + 1, barW - 2, barH - 2, r - 1);
+                ctx.clip();
+                for (let i = _surgeParticles.length - 1; i >= 0; i--) {
+                    const p = _surgeParticles[i];
+                    p.y += p.vy;
+                    p.x += Math.sin(t * 3 + i) * 0.15; // gentle sway
+                    p.life -= 0.012;
+                    const maxY = barY + barH - fillH;
+                    if (p.life <= 0 || p.y < maxY - 10) {
+                        _surgeParticles.splice(i, 1);
+                        continue;
+                    }
+                    ctx.globalAlpha = p.life * 0.7;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 4;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            // --- Tier markers: notch lines with labels ---
+            const tierThresholds = [0.25, 0.5, 0.75, 1.0];
+            const tierLabels = ['I', 'II', 'III', 'IV'];
+            for (let m = 0; m < tierThresholds.length; m++) {
+                const pct = tierThresholds[m];
+                const msY = barY + barH - (barH * pct);
+                const isActive = progress >= pct * 0.95;
+
+                // Notch line
+                ctx.save();
+                ctx.globalAlpha = isActive ? 0.9 : 0.2;
+                ctx.strokeStyle = isActive ? tierColors[m] : 'rgba(150,180,220,0.4)';
+                ctx.lineWidth = isActive ? 1.5 : 0.8;
+                ctx.beginPath();
+                ctx.moveTo(barX + 2, msY);
+                ctx.lineTo(barX + barW - 2, msY);
+                ctx.stroke();
+
+                // Glow dot on active tiers
+                if (isActive) {
+                    ctx.shadowColor = tierColors[m];
+                    ctx.shadowBlur = 6;
+                    ctx.fillStyle = tierColors[m];
+                    ctx.beginPath();
+                    ctx.arc(cx, msY, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Tier label to the left
+                ctx.globalAlpha = isActive ? 0.85 : 0.25;
+                ctx.font = 'bold 6px Arial';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = isActive ? tierColors[m] : '#8899bb';
+                ctx.fillText(tierLabels[m], barX - 4, msY);
+                ctx.restore();
+            }
+
+            // --- Thin border ---
+            ctx.save();
+            ctx.globalAlpha = 0.4;
+            ctx.strokeStyle = 'rgba(120,160,220,0.5)';
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.roundRect(barX, barY, barW, barH, r);
+            ctx.stroke();
+            ctx.restore();
+
+            // --- Multiplier badge below bar ---
+            if (activeTierIdx >= 0) {
+                const mul = activeTierIdx + 1;
+                const badgeY = barY + barH + 16;
+                const pulse = Math.sin(t * 3) * 0.12 + 0.88;
+
+                ctx.save();
+                // Badge pill background
+                ctx.globalAlpha = 0.7 * pulse;
+                ctx.shadowColor = tierColors[activeTierIdx];
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.beginPath();
+                ctx.roundRect(cx - 12, badgeY - 7, 24, 14, 7);
                 ctx.fill();
+                ctx.strokeStyle = tierColors[activeTierIdx];
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Badge text
+                ctx.globalAlpha = pulse;
+                ctx.font = 'bold 9px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = tierColors[activeTierIdx];
+                ctx.fillText('x' + mul, cx, badgeY);
                 ctx.restore();
             }
 
-            // Current multiplier badge with glow
-            if (progress > 0.2) {
-                const multiplier = Math.floor(progress * 4) + 1;
-                const badgeY = barY + barH + 30;
-                ctx.save();
-                ctx.shadowColor = '#ffdd00';
-                ctx.shadowBlur = 12;
-                drawText('x' + multiplier, barX + barW / 2, badgeY, 12, '#ffdd00', 'bold', false);
-                ctx.restore();
-            }
-
-            // Pulsing rainbow border when surge is full
+            // --- Full bar celebration: pulsing neon border ---
             if (progress > 0.95) {
-                const rainbowPulse = Math.sin(gameTime * 0.02) * 0.4 + 0.6;
+                const neonPulse = Math.sin(t * 5) * 0.3 + 0.7;
                 ctx.save();
-                ctx.globalAlpha = rainbowPulse * 0.6;
-                ctx.strokeStyle = '#ff4444';
-                ctx.lineWidth = 3;
+                ctx.globalAlpha = neonPulse * 0.7;
+                // Animated hue shift
+                const hue = ((t * 60) % 360) | 0;
+                ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+                ctx.lineWidth = 2.5;
+                ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
+                ctx.shadowBlur = 12;
                 ctx.beginPath();
-                ctx.moveTo(barX + r, barY);
-                ctx.arcTo(barX + barW, barY, barX + barW, barY + r, r);
-                ctx.lineTo(barX + barW, barY + barH - r);
-                ctx.arcTo(barX + barW, barY + barH, barX + barW - r, barY + barH, r);
-                ctx.lineTo(barX + r, barY + barH);
-                ctx.arcTo(barX, barY + barH, barX, barY + barH - r, r);
-                ctx.lineTo(barX, barY + r);
-                ctx.arcTo(barX, barY, barX + r, barY, r);
-                ctx.closePath();
+                ctx.roundRect(barX - 1, barY - 1, barW + 2, barH + 2, r + 1);
                 ctx.stroke();
                 ctx.restore();
+
+                // "MAX" label above bar
+                const maxPulse = Math.sin(t * 4) * 0.2 + 0.8;
+                ctx.save();
+                ctx.globalAlpha = maxPulse;
+                ctx.shadowColor = '#ff4444';
+                ctx.shadowBlur = 10;
+                ctx.font = 'bold 8px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillStyle = '#ff4444';
+                ctx.fillText('MAX', cx, barY - 6);
+                ctx.restore();
             }
+
+            // --- "SURGE" label at very top ---
+            ctx.save();
+            ctx.globalAlpha = 0.5 + progress * 0.3;
+            ctx.font = 'bold 6px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillStyle = progress > 0.5 ? barColor : '#8899bb';
+            ctx.fillText('SURGE', cx, barY - (progress > 0.95 ? 16 : 4));
+            ctx.restore();
 
             // ================================================================
             // POWER SHOT INDICATOR — only shows when a shot is available
@@ -9412,12 +10351,13 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 const iconY = DESIGN.height / 2 - 20;
                 const iconX = 12;
                 const iconS = 40;
-                const pulse = Math.sin(Date.now() * 0.005) * 0.15 + 0.85;
+                const onCooldown = gameState.powerShotCooldown > 0;
+                const pulse = onCooldown ? 0.4 : Math.sin(Date.now() * 0.005) * 0.15 + 0.85;
 
                 ctx.save();
-                ctx.globalAlpha = 0.85 * pulse;
-                ctx.shadowColor = ps.color;
-                ctx.shadowBlur = 10 * pulse;
+                ctx.globalAlpha = (onCooldown ? 0.35 : 0.85) * pulse;
+                ctx.shadowColor = onCooldown ? '#666666' : ps.color;
+                ctx.shadowBlur = onCooldown ? 0 : 10 * pulse;
 
                 // Circular button
                 ctx.fillStyle = `rgba(0,0,0,0.5)`;
@@ -9431,8 +10371,12 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 ctx.globalAlpha = 1;
                 // Icon
                 drawText(ps.icon, iconX + iconS / 2, iconY + iconS / 2 - 2, 16, '#ffffff', 'normal', false);
-                // Shot name below
-                drawText(ps.name, iconX + iconS / 2, iconY + iconS + 6, 7, ps.color, 'bold', false);
+                // Shot name or cooldown indicator below
+                if (onCooldown) {
+                    drawText(gameState.powerShotCooldown + ' BALLS', iconX + iconS / 2, iconY + iconS + 6, 7, '#ff6666', 'bold', false);
+                } else {
+                    drawText(ps.name, iconX + iconS / 2, iconY + iconS + 6, 7, ps.color, 'bold', false);
+                }
                 ctx.restore();
             }
 
@@ -9478,6 +10422,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             // Extras (wides, no-balls) don't count as a legal delivery
             if (!isExtra) {
                 fatigueSystem.onBallBowled();
+                // Decrement power shot cooldown each legal delivery
+                if (gameState.powerShotCooldown > 0) gameState.powerShotCooldown--;
                 gameState.ballsInOver++;
                 if (gameState.ballsInOver >= 6) {
                     gameState.oversCompleted++;
@@ -9713,7 +10659,15 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                             const fdy = ball.y - f.y;
                             const dist = Math.sqrt(fdx * fdx + fdy * fdy);
                             const ballSpeed = Math.sqrt(ball.hitVx * ball.hitVx + ball.hitVy * ball.hitVy);
-                            if (dist < f.catchRadius && ballSpeed < 8.5 && Math.random() < 0.70) {
+                            const _phFielderMul = getOverPhase() === 'powerplay' ? 0.5 : getOverPhase() === 'death' ? 1.3 : 1.0;
+                            // Difficulty scaling: harder = better catchers, wider speed threshold
+                            const _diffFielderMul = { easy: 0.7, medium: 0.85, hard: 1.0, legend: 1.25 }[gameState.difficulty] || 1.0;
+                            const _diffSpeedThresh = { easy: 9.0, medium: 10.5, hard: 12.0, legend: 14.0 }[gameState.difficulty] || 10.5;
+                            // Chasing fielders get +50% catch radius (diving reach), jumping get +70%
+                            const _effectiveCatchRadius = f.jumping ? f.catchRadius * 1.7 : f.chasing ? f.catchRadius * 1.5 : f.catchRadius;
+                            // Loft spam boost: fielders read repetitive shots, catch rate up after 3+ lofts
+                            const _spamBoost = Math.min(1.5, 1.0 + Math.max(0, (gameState._consecutiveLofts || 0) - 2) * 0.12);
+                            if (dist < _effectiveCatchRadius && ballSpeed < _diffSpeedThresh && Math.random() < (0.70 * _phFielderMul * _diffFielderMul * _spamBoost)) {
                                 // CAUGHT by fielder!
                                 ball._fielderCaught = true;
                                 ball.resultGiven = true;
@@ -9726,6 +10680,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                                 gameState.resultText = '🧤 CAUGHT!';
                                 gameState.resultTextTime = 70;
                                 gameState.surgeProgress = Math.max(0, gameState.surgeProgress - 0.15);
+                                umpire.triggerSignal('out');
                                 commentary.trigger('caught');
                                 crowdSystem.trigger('six'); // big crowd reaction for catches
                                 crowdSystem.triggerWicket();
@@ -9774,6 +10729,11 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                                     setTimeout(() => _advanceBall(), 1400);
                                 }
                                 break;
+                            }
+                            // === PHASE 4: Near-miss detection ===
+                            else if (dist < f.catchRadius * 1.6 && !ball._nearMissTriggered) {
+                                f.triggerNearMiss();
+                                ball._nearMissTriggered = true;
                             }
                         }
                     }
@@ -9834,14 +10794,17 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                         audio.play('bat_hit');
 
                         // Timing quality based on ball Y position
+                        // === PHASE 3: Aggression mode modifies timing zones ===
+                        const _modeOffset = gameState.battingMode === 'attacking' ? -15 :
+                                            gameState.battingMode === 'defensive' ? 20 : 0;
                         let quality = 'weak';
-                        if (ball.y >= TIMING_ZONES.perfect.min && ball.y <= TIMING_ZONES.perfect.max) {
+                        if (ball.y >= (TIMING_ZONES.perfect.min - _modeOffset) && ball.y <= (TIMING_ZONES.perfect.max + _modeOffset)) {
                             quality = 'perfect';
-                        } else if ((ball.y >= TIMING_ZONES.good.min && ball.y <= TIMING_ZONES.good.max) ||
-                                   (ball.y >= TIMING_ZONES.good.min2 && ball.y <= TIMING_ZONES.good.max2)) {
+                        } else if ((ball.y >= (TIMING_ZONES.good.min - _modeOffset) && ball.y <= (TIMING_ZONES.good.max + _modeOffset)) ||
+                                   (ball.y >= (TIMING_ZONES.good.min2 - _modeOffset) && ball.y <= (TIMING_ZONES.good.max2 + _modeOffset))) {
                             quality = 'good';
-                        } else if ((ball.y >= TIMING_ZONES.edge.min && ball.y <= TIMING_ZONES.edge.max) ||
-                                   (ball.y >= TIMING_ZONES.edge.min2 && ball.y <= TIMING_ZONES.edge.max2)) {
+                        } else if ((ball.y >= (TIMING_ZONES.edge.min - _modeOffset) && ball.y <= (TIMING_ZONES.edge.max + _modeOffset)) ||
+                                   (ball.y >= (TIMING_ZONES.edge.min2 - _modeOffset) && ball.y <= (TIMING_ZONES.edge.max2 + _modeOffset))) {
                             quality = 'edge';
                         }
 
@@ -9850,13 +10813,48 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                         const shotType = swDir ? swDir.shotType : SWIPE_SHOTS.DEFEND;
                         const swipePower = swDir ? Math.min(swDir.distance / 80, 1.0) : 0.2; // 0-1 normalized
 
+                        // === ANTI-SPAM: Swipe accuracy + consecutive loft penalty ===
+                        // Dead-center straight-up (-90°) is lazy; penalize it
+                        // Swipes near edge of LOFT zone (-120° or -60°) show intent
+                        let _swipeAccuracy = 1.0;
+                        if (shotType === SWIPE_SHOTS.LOFT && swDir) {
+                            const deg = swDir.angle * (180 / Math.PI);
+                            // -90° = dead center of LOFT zone. Distance from -90 = 0-30°
+                            const deviationFromCenter = Math.abs(deg - (-90)); // 0 = dead center, 30 = edge
+                            // Dead center (0°) → accuracy 0.55, Edge (30°) → accuracy 1.0
+                            _swipeAccuracy = 0.55 + (deviationFromCenter / 30) * 0.45;
+                            _swipeAccuracy = Math.min(1.0, Math.max(0.55, _swipeAccuracy));
+                        }
+
+                        // Track consecutive lofts — AI adapts to spam
+                        if (!gameState._consecutiveLofts) gameState._consecutiveLofts = 0;
+                        if (shotType === SWIPE_SHOTS.LOFT) {
+                            gameState._consecutiveLofts++;
+                        } else {
+                            gameState._consecutiveLofts = Math.max(0, gameState._consecutiveLofts - 1);
+                        }
+                        // After 3+ consecutive lofts, six chance drops progressively
+                        const _loftSpamPenalty = Math.max(0.4, 1.0 - Math.max(0, gameState._consecutiveLofts - 2) * 0.15);
+
                         let runs = 1;
                         let wasCaught = false;
 
                         if (quality === 'perfect') {
                             // Perfect timing + swipe type
                             if (shotType === SWIPE_SHOTS.LOFT) {
-                                runs = Math.random() < (0.55 + swipePower * 0.25) ? 6 : 4;
+                                // Difficulty-scaled six probability: harder = fewer sixes
+                                const _loftSixBase = { easy: 0.38, medium: 0.28, hard: 0.18, legend: 0.10 }[gameState.difficulty] || 0.28;
+                                const _loftSixPow = { easy: 0.15, medium: 0.10, hard: 0.07, legend: 0.04 }[gameState.difficulty] || 0.10;
+                                const _adjustedSixChance = (_loftSixBase + swipePower * _loftSixPow) * _swipeAccuracy * _loftSpamPenalty;
+                                // Additional outcome: mishit loft → caught chance (not just 6 or 4)
+                                const _mishitCatchChance = { easy: 0.05, medium: 0.10, hard: 0.18, legend: 0.25 }[gameState.difficulty] || 0.10;
+                                if (!extrasSystem.isFreeHit && Math.random() < _mishitCatchChance * (1 - _swipeAccuracy + 0.3)) {
+                                    // Mishit loft — top edge, skied to fielder
+                                    wasCaught = true;
+                                    runs = 0;
+                                } else {
+                                    runs = Math.random() < _adjustedSixChance ? 6 : 4;
+                                }
                             } else if (shotType === SWIPE_SHOTS.DRIVE) {
                                 runs = Math.random() < 0.55 ? 4 : (Math.random() < 0.3 ? 6 : 2);
                             } else if (shotType === SWIPE_SHOTS.CUT || shotType === SWIPE_SHOTS.PULL) {
@@ -9869,7 +10867,16 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                             }
                         } else if (quality === 'good') {
                             if (shotType === SWIPE_SHOTS.LOFT) {
-                                runs = Math.random() < 0.35 ? 6 : (Math.random() < 0.5 ? 4 : 2);
+                                // Difficulty-scaled: harder difficulties = fewer sixes on good timing
+                                const _goodLoftSix = { easy: 0.25, medium: 0.18, hard: 0.10, legend: 0.06 }[gameState.difficulty] || 0.18;
+                                // Good timing loft also has mishit risk
+                                const _goodMishitChance = { easy: 0.08, medium: 0.14, hard: 0.22, legend: 0.30 }[gameState.difficulty] || 0.14;
+                                if (!extrasSystem.isFreeHit && Math.random() < _goodMishitChance * (1 - _swipeAccuracy + 0.3)) {
+                                    wasCaught = true;
+                                    runs = 0;
+                                } else {
+                                    runs = Math.random() < (_goodLoftSix * _swipeAccuracy * _loftSpamPenalty) ? 6 : (Math.random() < 0.5 ? 4 : 2);
+                                }
                             } else if (shotType === SWIPE_SHOTS.DRIVE) {
                                 runs = Math.random() < 0.45 ? 4 : 2;
                             } else if (shotType === SWIPE_SHOTS.CUT || shotType === SWIPE_SHOTS.PULL) {
@@ -9880,8 +10887,10 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                                 runs = 1;
                             }
                         } else if (quality === 'edge') {
-                            // 12% chance of caught on edge (not on free hit)
-                            if (!extrasSystem.isFreeHit && Math.random() < 0.12) {
+                            // === PHASE 3: Catch chance varies by batting mode ===
+                            const _catchChance = gameState.battingMode === 'attacking' ? 0.18 :
+                                                 gameState.battingMode === 'defensive' ? 0.08 : 0.12;
+                            if (!extrasSystem.isFreeHit && Math.random() < _catchChance) {
                                 wasCaught = true;
                                 ball.resultGiven = true;
                                 gameState.wickets++;
@@ -9892,6 +10901,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                                 gameState.resultText = '🧤 CAUGHT!';
                                 gameState.resultTextTime = 70;
                                 gameState.surgeProgress = Math.max(0, gameState.surgeProgress - 0.15);
+                                umpire.triggerSignal('out');
                                 commentary.trigger('caught');
                                 crowdSystem.trigger('six'); // big crowd roar for catches
                                 adaptiveAI.recordResult({ hit: false, runs: 0, quality: 'caught', timing: ball.y });
@@ -9920,6 +10930,35 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                                 runs = Math.random() < 0.15 ? 2 : 0; // risky loft mistimed = mostly dot
                             } else {
                                 runs = Math.random() < 0.25 ? 1 : 0; // mistimed = usually dot
+                            }
+                        }
+                        // Handle loft mishit catch (from perfect/good quality loft mishit)
+                        if (wasCaught && quality !== 'edge') {
+                            ball.resultGiven = true;
+                            gameState.wickets++;
+                            audio.play('wicket');
+                            triggerShake(14);
+                            camera.triggerZoom(1.06, DESIGN.width / 2, 400, 600);
+                            Utils.haptic(150);
+                            gameState.resultText = '🏏 SKIED! CAUGHT!';
+                            gameState.resultTextTime = 70;
+                            gameState.surgeProgress = Math.max(0, gameState.surgeProgress - 0.15);
+                            umpire.triggerSignal('out');
+                            commentary.trigger('caught');
+                            crowdSystem.trigger('six');
+                            adaptiveAI.recordResult({ hit: false, runs: 0, quality: 'caught', timing: ball.y });
+                            batsmanProfile.record(ball.delivery || {}, { hit: false, runs: 0 });
+                            _feedEngineEvent(ball.delivery || {}, { quality: 'caught', runs: 0, shotType: 'LOFT' });
+                            extrasSystem.isFreeHit = false;
+                            AI_BOT.show('playerWicket');
+                            AI_BOT.consecutiveBoundaries = 0;
+                            ball._fielderCatchImmune = true;
+                            ball.hitVx = (Math.random() - 0.5) * 3;
+                            ball.hitVy = -6 - Math.random() * 3;
+                            if (gameState.wickets >= 3) {
+                                setTimeout(() => _endGame(), 1000);
+                            } else {
+                                setTimeout(() => _advanceBall(), 1200);
                             }
                         }
                         if (wasCaught) continue; // skip normal scoring, move to next ball in loop
@@ -9968,6 +11007,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
 
                             // Drain surge bar
                             gameState.surgeProgress = Math.max(0, gameState.surgeProgress - ps.drainPct);
+                            // Cooldown: can't use another power shot for 3 balls
+                            gameState.powerShotCooldown = 3;
 
                             // Re-evaluate active surge tier after drain
                             gameState.activeSurge = null;
@@ -10036,6 +11077,16 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
 
                         const prevScore = gameState.score;
                         let finalRuns = runs;
+                        // === PHASE 3: Aggression mode run modifiers ===
+                        if (gameState.battingMode === 'attacking') {
+                            finalRuns = Math.ceil(finalRuns * 1.5); // +50% runs in attacking mode
+                        } else if (gameState.battingMode === 'defensive') {
+                            finalRuns = Math.min(finalRuns, 4); // cap at 4 in defensive mode
+                        }
+                        // === PHASE 5: Powerplay run bonus ===
+                        if (getOverPhase() === 'powerplay' && finalRuns > 0) {
+                            finalRuns = Math.min(6, finalRuns + 1); // +1 bonus run, capped at 6
+                        }
                         // Apply score boost power-up
                         if (gameState._activeScoreBoost) {
                             finalRuns *= 2;
@@ -10046,6 +11097,16 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
 
                         // === PHASE 2: Milestone check ===
                         milestoneSystem.check(prevScore, gameState.score);
+
+                        // === PHASE 2: Consecutive boundary tracking + reset dots ===
+                        crowdSystem.triggerBoundary(runs);
+                        gameState._consecutiveDots = 0;
+
+                        // === PHASE 1: Track shot stats + trigger feedback ===
+                        const shotLabel = shotType ? shotType.label : 'DEFEND';
+                        if (gameState.shotStats[shotLabel] !== undefined) gameState.shotStats[shotLabel]++;
+                        if (gameState.shotQualities[quality] !== undefined) gameState.shotQualities[quality]++;
+                        shotFeedback.trigger(shotType, quality, finalRuns, DESIGN.width / 2, 680);
 
                         // === PHASE 2: Consecutive boundary tracking + reset dots ===
                         crowdSystem.triggerBoundary(runs);
@@ -10064,6 +11125,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                             runAnimation.trigger('6');
                             AI_BOT.show('playerSix'); // Bot reacts to six
                             AI_BOT.consecutiveBoundaries++;
+                            umpire.triggerSignal('six');
                         } else if (runs >= 4) {
                             audio.play('four');
                             triggerShake(10);
@@ -10075,6 +11137,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                             runAnimation.trigger('4');
                             AI_BOT.show('playerFour'); // Bot reacts to four
                             AI_BOT.consecutiveBoundaries++;
+                            umpire.triggerSignal('four');
                         } else if (runs >= 2) {
                             audio.play('click');
                             triggerShake(5);
@@ -10194,6 +11257,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                             gameState.resultTextTime = 60;
                             commentary.trigger('wide');
                             crowdSystem.trigger('wide');
+                            umpire.triggerSignal('wide');
 
                             adaptiveAI.recordResult({ hit: false, runs: 0, quality: 'wide', timing: ball.y });
                             batsmanProfile.record(ball.delivery || {}, { hit: false, runs: 0 });
@@ -10233,6 +11297,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                                 gameState.surgeProgress = Math.max(0, gameState.surgeProgress - 0.15);
                                 commentary.trigger('bowled');
                                 crowdSystem.trigger('bowled');
+                                umpire.triggerSignal('out');
                                 crowdSystem.triggerWicket();
                                 AI_BOT.show('playerWicket'); // Bot reacts to wicket
                                 AI_BOT.consecutiveBoundaries = 0; // Reset streak on wicket
@@ -10323,6 +11388,9 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             if (gameState.screen === 'game' && gameState.score >= gameState.target) {
                 _endGame();
             }
+
+            // === PHASE 1: Update shot feedback animation ===
+            shotFeedback.update();
 
             // Update result text timer
             if (gameState.resultTextTime > 0) {
@@ -10970,7 +12038,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             ctx.font = 'normal 7px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
-            ctx.fillText('v' + APP_CONFIG.version + ' • ' + APP_CONFIG.studio, DESIGN.width - 10, DESIGN.height - 8);
+            ctx.fillText('v' + APP_CONFIG.version, DESIGN.width - 10, DESIGN.height - 8);
             ctx.restore();
         }
 
@@ -12662,7 +13730,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             drawText(APP_CONFIG.support, 62, fbY + 42, 10, '#00e5ff', 'normal', false);
 
             // === VERSION ===
-            drawText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version + '  ·  ' + APP_CONFIG.studio, W / 2, H - 22, 10, 'rgba(255,255,255,0.2)', 'normal', false);
+            drawText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version, W / 2, H - 22, 10, 'rgba(255,255,255,0.2)', 'normal', false);
         }
 
         function handleSettingsTap(x, y) {
@@ -12891,6 +13959,80 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 drawText(statsData[i].label, sx, sy + 20, 9, 'rgba(255,255,255,0.55)', 'normal', false);
             }
 
+            // === PHASE 1: Pre-compute shot map data ===
+            const _shotNames = ['LOFT', 'DRIVE', 'CUT', 'PULL', 'SWEEP', 'DEFEND'];
+            const _totalShots = _shotNames.reduce((sum, s) => sum + (gameState.shotStats[s] || 0), 0);
+            const shotMapExtraH = _totalShots > 0 ? 155 : 0;
+
+            // === PHASE 1: SHOT MAP ===
+            if (_totalShots > 0) {
+                const shotMapY = statsY + 2 * rowH + 8;
+                const shotColors = { LOFT: '#ff4444', DRIVE: '#00e5ff', CUT: '#ffff00', PULL: '#ff8800', SWEEP: '#aa44ff', DEFEND: '#88ff88' };
+
+                drawText('SHOT MAP', W / 2, shotMapY, 10, 'rgba(255,255,255,0.5)', 'bold', false);
+
+                const barStartX = panelX + 70;
+                const barMaxW = panelW - 100;
+                const barH = 13;
+                const barGap = 3;
+                let barIdx = 0;
+
+                for (let si = 0; si < _shotNames.length; si++) {
+                    const sName = _shotNames[si];
+                    const sCount = gameState.shotStats[sName] || 0;
+                    if (sCount === 0) continue;
+                    const by = shotMapY + 16 + barIdx * (barH + barGap);
+                    const barW = Math.max(10, (sCount / _totalShots) * barMaxW);
+
+                    // Bar background
+                    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+                    ctx.beginPath();
+                    ctx.roundRect(barStartX, by, barMaxW, barH, 3);
+                    ctx.fill();
+
+                    // Bar fill
+                    ctx.fillStyle = shotColors[sName] || '#ffffff';
+                    ctx.globalAlpha = 0.75;
+                    ctx.beginPath();
+                    ctx.roundRect(barStartX, by, barW, barH, 3);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+
+                    // Label (left of bar)
+                    ctx.save();
+                    ctx.textAlign = 'right';
+                    ctx.font = 'bold 7px Arial';
+                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                    ctx.fillText(sName, barStartX - 5, by + barH / 2 + 3);
+                    ctx.restore();
+
+                    // Count (right of bar)
+                    ctx.save();
+                    ctx.textAlign = 'left';
+                    ctx.font = 'bold 7px Arial';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillText(sCount.toString(), barStartX + barW + 5, by + barH / 2 + 3);
+                    ctx.restore();
+
+                    barIdx++;
+                }
+
+                // Timing quality summary
+                const qualY = shotMapY + 16 + barIdx * (barH + barGap) + 12;
+                const quals = [
+                    { label: 'PERFECT', count: gameState.shotQualities.perfect, color: '#ffd700' },
+                    { label: 'GOOD', count: gameState.shotQualities.good, color: '#00e5ff' },
+                    { label: 'EDGE', count: gameState.shotQualities.edge, color: '#ff8800' },
+                    { label: 'WEAK', count: gameState.shotQualities.weak, color: '#888888' },
+                ];
+                const qualSpacing = panelW / 4;
+                for (let qi = 0; qi < quals.length; qi++) {
+                    const qx = panelX + qualSpacing * qi + qualSpacing / 2;
+                    drawText(quals[qi].count.toString(), qx, qualY, 14, quals[qi].color, 'bold', false);
+                    drawText(quals[qi].label, qx, qualY + 14, 6, 'rgba(255,255,255,0.45)', 'bold', false);
+                }
+            }
+
             // === EXTRAS ===
             if (gameState.extras > 0) {
                 const extY = statsY + 2 * rowH + 12;
@@ -12898,7 +14040,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
             }
 
             // === REWARDS ===
-            const rwdY = statsY + 2 * rowH + 38;
+            const rwdY = statsY + 2 * rowH + 38 + shotMapExtraH;
             const coinsEarned = gameState.runsThisInning * 7;
             const xpEarned = gameState.runsThisInning * 2;
 
@@ -13963,11 +15105,39 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 bowler.update();
                 bowler.render();
 
+                // Render umpire (bowler's end, with signal animations)
+                umpire.update();
+                umpire.render();
+
+                // Update field setup based on current over phase
+                updateFieldSetup();
+
+                // Adaptive per-ball fielder drift DISABLED — fielders only reposition per over
+                // adaptFieldToScoring();
+
+                // Aggressive fielder chase: when a ball is in flight, fielders sprint toward it
+                for (const ball of gameState.balls) {
+                    if (ball.hit && !ball.resultGiven && !ball._fielderCatchImmune && ball.hitTimer > 2) {
+                        for (const f of fielders) {
+                            // Continuously update chase target as ball moves (not just initial prediction)
+                            if (f.chasing) {
+                                f.chaseTargetX = ball.x + ball.hitVx * 8;
+                                f.chaseTargetY = ball.y + ball.hitVy * 5;
+                            } else {
+                                f.startChase(ball.x, ball.y, ball.hitVx, ball.hitVy);
+                            }
+                        }
+                    }
+                }
+
                 // Render fielders (between bowler and batsman for correct depth)
                 for (const f of fielders) {
                     f.update();
                     f.render();
                 }
+
+                // === PHASE 4: Fielder position indicators (pre-delivery) ===
+                drawFielderIndicators();
 
                 // Render batsman
                 batsman.render();
@@ -14019,6 +15189,12 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     }
                     ctx.globalAlpha = 1;
                 }
+
+                // === PHASE 1: Shot feedback overlay ===
+                shotFeedback.render(ctx);
+
+                // === PHASE 3: Aggression toggle button ===
+                drawAggressionToggle();
 
                 // Draw commentary (centered, just above bottom zone)
                 if (commentary.displayTimer > 0) {
@@ -14173,8 +15349,8 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
         // INPUT HANDLING
         // ============================================================================
 
-        canvas.addEventListener('click', (e) => {
-            const { x, y } = screenToGame(e.clientX, e.clientY);
+        // === Unified tap handler — called by BOTH click and touchstart ===
+        function _handleTap(x, y) {
 
             // VIP Popup handler (highest priority)
             if (_showVIPPopup) {
@@ -14211,6 +15387,17 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     }
                 }
                 return; // Block all other taps while popup is showing
+            }
+
+            // === PHASE 3: Aggression toggle (game screen only) ===
+            if (gameState.screen === 'game' && !gameState.paused) {
+                const togX = 45, togY = DESIGN.height - 45, togR = 30;
+                const tdx = x - togX, tdy = y - togY;
+                if (tdx * tdx + tdy * tdy <= togR * togR) {
+                    gameState.battingMode = gameState.battingMode === 'defensive' ? 'attacking' : 'defensive';
+                    audio.play('click');
+                    return;
+                }
             }
 
             // Settings screen handler
@@ -14561,7 +15748,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 const psIconY = DESIGN.height / 2 - 20;
                 const psIconS = 48;
                 if (x >= psIconX && x <= psIconX + psIconS && y >= psIconY && y <= psIconY + psIconS) {
-                    if (!gameState.activePowerShot) {
+                    if (!gameState.activePowerShot && gameState.powerShotCooldown <= 0) {
                         for (let t = POWER_SHOTS.length - 1; t >= 0; t--) {
                             if (gameState.surgeProgress >= POWER_SHOTS[t].threshold * 0.95) {
                                 gameState.activePowerShot = POWER_SHOTS[t];
@@ -14581,7 +15768,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 const slimBarY = 80;
                 const slimBarH = 220;
                 if (x >= slimBarX - 20 && x <= slimBarX + 20 && y >= slimBarY && y <= slimBarY + slimBarH) {
-                    if (!gameState.activePowerShot) {
+                    if (!gameState.activePowerShot && gameState.powerShotCooldown <= 0) {
                         for (let t = POWER_SHOTS.length - 1; t >= 0; t--) {
                             if (gameState.surgeProgress >= POWER_SHOTS[t].threshold * 0.95) {
                                 gameState.activePowerShot = POWER_SHOTS[t];
@@ -15042,16 +16229,41 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                     }
                 }
             }
+        }
+
+        // Click handler (desktop) — calls unified _handleTap
+        canvas.addEventListener('click', (e) => {
+            const { x, y } = screenToGame(e.clientX, e.clientY);
+            _handleTap(x, y);
         });
 
+        // Touch handler (mobile) — calls unified _handleTap + swipe init
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if (e.touches.length !== 1) return; // ignore multi-touch
+            if (e.touches.length !== 1) return;
             const touch = e.touches[0];
             const { x, y } = screenToGame(touch.clientX, touch.clientY);
 
-            if (gameState.screen === 'menu') {
-                // Stats & Achievements buttons (touch)
+            _handleTap(x, y);
+
+            // Start swipe tracking for batting (game screen only)
+            if (gameState.screen === 'game' && !gameState.paused && gameState.tutorialStep === null) {
+                // Don't start swipe on pause button, power-up bar, or surge button
+                const pcx = DESIGN.width / 2, pcy = 22, pr = 22;
+                if ((x - pcx) * (x - pcx) + (y - pcy) * (y - pcy) <= pr * pr) { /* pause btn */ }
+                else {
+                    swipeState.active = true;
+                    swipeState.startX = x;
+                    swipeState.startY = y;
+                    swipeState.curX = x;
+                    swipeState.curY = y;
+                    swipeState.trailPoints = [{ x, y, t: Date.now() }];
+                    swipeState.swipeTime = Date.now();
+                    swipeState.direction = null;
+                }
+            }
+
+            if (false) {
                 const tNavBtnY = 243, tNavBtnH = 34;
                 const tNavBtnW = (DESIGN.width - 50) / 2;
                 if (x >= 20 && x <= 20 + tNavBtnW && y >= tNavBtnY && y <= tNavBtnY + tNavBtnH) {
@@ -15348,7 +16560,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 {
                     const psIconX = 12, psIconY = DESIGN.height / 2 - 20, psIconS = 48;
                     if (x >= psIconX && x <= psIconX + psIconS && y >= psIconY && y <= psIconY + psIconS) {
-                        if (!gameState.activePowerShot) {
+                        if (!gameState.activePowerShot && gameState.powerShotCooldown <= 0) {
                             for (let t = POWER_SHOTS.length - 1; t >= 0; t--) {
                                 if (gameState.surgeProgress >= POWER_SHOTS[t].threshold * 0.95) {
                                     gameState.activePowerShot = POWER_SHOTS[t];
@@ -15368,7 +16580,7 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                 {
                     const barX = DESIGN.width - 18, barY = 80, barH = 220, margin = 20;
                     if (x >= barX - margin && x <= barX + 10 + margin && y >= barY && y <= barY + barH) {
-                        if (!gameState.activePowerShot) {
+                        if (!gameState.activePowerShot && gameState.powerShotCooldown <= 0) {
                             for (let t = POWER_SHOTS.length - 1; t >= 0; t--) {
                                 if (gameState.surgeProgress >= POWER_SHOTS[t].threshold * 0.95) {
                                     gameState.activePowerShot = POWER_SHOTS[t];
@@ -15405,11 +16617,23 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                             gameState.addCoins(-cost);
                             // Increment continue cost for next time
                             gameState._continueCostMultiplier++;
-                            // Add 3 more at-bats and resume game
+                            // Restore 3 wickets and resume game
                             gameState.wickets = Math.max(0, gameState.wickets - 3);
+                            // Reset critical flags so game loop works again
+                            gameState.gameOverProcessed = false;
                             gameState.screen = 'game';
+                            // Clear any stale balls from the field
+                            gameState.balls = [];
+                            // Reset result text so it doesn't linger
+                            gameState.resultText = '';
+                            gameState.resultTextTime = 0;
+                            // Clear any active power shot state
+                            gameState.activePowerShot = null;
+                            gameState.powerShotTimer = 0;
                             gameState.saveToStorage();
-                            console.log('[CONTINUE] Used continue button, cost: ' + cost + ', new wickets: ' + gameState.wickets);
+                            // Bowl a new delivery after a short delay
+                            setTimeout(() => gameState.bowlNextBall(), 600);
+                            console.log('[CONTINUE] Used continue, cost: ' + cost + ', wickets: ' + gameState.wickets);
                             return;
                         } else {
                             audio.play('error');
@@ -15508,6 +16732,289 @@ window.CRICKET_LEVELS = CRICKET_LEVELS;
                         gameState.screen = 'menu';
                         return;
                     }
+                }
+
+            // ── VIP Popup (highest priority, blocks other taps) ──
+            } else if (_showVIPPopup) {
+                if (window._vipBuyBtn) {
+                    const btn = window._vipBuyBtn;
+                    if (x >= btn.x && x < btn.x + btn.w && y >= btn.y && y < btn.y + btn.h) {
+                        if (window.NativePurchase) {
+                            window.NativePurchase.buy('vip_yearly');
+                        } else {
+                            gameState.isVIP = true;
+                            gameState.saveToStorage();
+                            audio.play('click');
+                        }
+                        _showVIPPopup = false;
+                        return;
+                    }
+                }
+                if (window._vipCloseBtn) {
+                    const btn = window._vipCloseBtn;
+                    if (x >= btn.x && x < btn.x + btn.w && y >= btn.y && y < btn.y + btn.h) {
+                        _showVIPPopup = false; audio.play('click'); return;
+                    }
+                }
+                if (window._vipDismissBtn) {
+                    const btn = window._vipDismissBtn;
+                    if (x >= btn.x && x < btn.x + btn.w && y >= btn.y && y < btn.y + btn.h) {
+                        _showVIPPopup = false; audio.play('click'); return;
+                    }
+                }
+                return; // Block all other taps while popup is showing
+
+            // ── Settings Screen ──
+            } else if (gameState.screen === 'settings') {
+                handleSettingsTap(x, y);
+                return;
+
+            // ── Leaderboard Screen ──
+            } else if (gameState.screen === 'leaderboard') {
+                if (x >= 10 && x <= 56 && y >= 17 && y <= 63) {
+                    audio.play('click'); gameState.screen = 'menu'; return;
+                }
+
+            // ── Multiplayer Lobby ──
+            } else if (gameState.screen === 'mp_lobby') {
+                const W = DESIGN.width;
+                const H = DESIGN.height;
+
+                // Difficulty selector buttons
+                if (!_mpSearching) {
+                    const diffY = 90;
+                    const diffBtnW = 62;
+                    const diffGap = 6;
+                    const diffKeys = ['easy', 'medium', 'hard', 'legend'];
+                    const diffTotalW = diffKeys.length * diffBtnW + (diffKeys.length - 1) * diffGap;
+                    const diffStartX = W / 2 - diffTotalW / 2;
+                    const diffBtnY = diffY + 12;
+                    const diffBtnH = 30;
+                    for (let di = 0; di < diffKeys.length; di++) {
+                        const dx = diffStartX + di * (diffBtnW + diffGap);
+                        if (x >= dx && x < dx + diffBtnW && y >= diffBtnY && y < diffBtnY + diffBtnH) {
+                            audio.play('click'); _mpSelectedDifficulty = diffKeys[di]; return;
+                        }
+                    }
+                }
+
+                const btnY = _mpSearching ? 310 : 260;
+                const btnW = 200;
+                const btnX = W / 2 - btnW / 2;
+
+                // Find Match / Cancel button
+                if (x >= btnX && x < btnX + btnW && y >= btnY && y < btnY + 50) {
+                    audio.play('click');
+                    if (_mpSearching) {
+                        _mpSearching = false;
+                        _mpSearchStartTime = 0;
+                        if (_mpQueueCheckInterval) { clearInterval(_mpQueueCheckInterval); _mpQueueCheckInterval = null; }
+                        if (_mpBotTimeoutId) { clearTimeout(_mpBotTimeoutId); _mpBotTimeoutId = null; }
+                        window._convexClient.leaveQueue('Alpit').catch(() => {});
+                    } else {
+                        _mpSearching = true;
+                        _mpSearchStartTime = Date.now();
+                        _mpIsBotMatch = false;
+                        window._convexClient.leaveQueue('Alpit').catch(() => {});
+                        _mpBotTimeoutId = setTimeout(() => {
+                            if (!_mpSearching) return;
+                            _mpSearching = false;
+                            if (_mpQueueCheckInterval) { clearInterval(_mpQueueCheckInterval); _mpQueueCheckInterval = null; }
+                            window._convexClient.leaveQueue('Alpit').catch(() => {});
+                            _mpBotTimeoutId = null;
+                            _mpIsBotMatch = true;
+                            const botRoom = _mpSimulateBotInnings(_mpSelectedDifficulty);
+                            _mpWaitingRoomData = botRoom;
+                            _mpWaitingForOpponent = false;
+                            gameState.screen = 'mp_waiting';
+                            audio.play('click');
+                        }, _MP_BOT_TIMEOUT_MS);
+                        window._convexClient.joinMatchmaking('Alpit', _mpSelectedDifficulty).then(result => {
+                            if (result.status === 'matched') {
+                                _mpSearching = false; _mpSearchStartTime = 0;
+                                if (_mpBotTimeoutId) { clearTimeout(_mpBotTimeoutId); _mpBotTimeoutId = null; }
+                                _mpIsBotMatch = false;
+                                window._convexClient.getRoom(result.roomId).then(room => {
+                                    _mpWaitingRoomData = room; _mpWaitingForOpponent = false;
+                                    gameState.screen = 'mp_waiting';
+                                });
+                            } else {
+                                _mpQueueCheckInterval = setInterval(() => {
+                                    window._convexClient.checkQueue('Alpit').then(qResult => {
+                                        if (qResult.status === 'matched') {
+                                            clearInterval(_mpQueueCheckInterval); _mpQueueCheckInterval = null;
+                                            _mpSearching = false; _mpSearchStartTime = 0;
+                                            if (_mpBotTimeoutId) { clearTimeout(_mpBotTimeoutId); _mpBotTimeoutId = null; }
+                                            _mpIsBotMatch = false;
+                                            window._convexClient.getRoom(qResult.roomId).then(room => {
+                                                _mpWaitingRoomData = room; _mpWaitingForOpponent = false;
+                                                gameState.screen = 'mp_waiting';
+                                            });
+                                        }
+                                    });
+                                }, 2000);
+                            }
+                        }).catch(e => { console.warn('[MP] Online matchmaking failed:', e.message); });
+                    }
+                    return;
+                }
+
+                // Create Room / Join Room buttons
+                if (!_mpSearching) {
+                    const friendY = btnY + 65;
+                    const crBtnY = friendY + 32;
+                    const crBtnW = 130;
+                    const crBtnGap = 10;
+                    const crBtnX1 = W / 2 - crBtnW - crBtnGap / 2;
+                    const crBtnX2 = W / 2 + crBtnGap / 2;
+                    const crBtnH = 42;
+
+                    if (x >= crBtnX1 && x < crBtnX1 + crBtnW && y >= crBtnY && y < crBtnY + crBtnH) {
+                        audio.play('click');
+                        window._convexClient.createPrivateRoom('Alpit', _mpSelectedDifficulty).then(result => {
+                            _mpPrivateRoomId = result.roomId;
+                            _mpPrivateRoomCode = result.roomCode;
+                            gameState.screen = 'mp_create_room';
+                            _mpPrivatePolling = setInterval(() => {
+                                window._convexClient.checkPrivateRoom(_mpPrivateRoomId).then(check => {
+                                    if (check.status === 'ready') {
+                                        clearInterval(_mpPrivatePolling); _mpPrivatePolling = null;
+                                        _mpWaitingRoomData = check.room; _mpWaitingForOpponent = false;
+                                        _mpIsBotMatch = false; gameState.screen = 'mp_waiting'; audio.play('click');
+                                    }
+                                });
+                            }, 2000);
+                        }).catch(e => { console.warn('[MP] Create room failed:', e.message); });
+                        return;
+                    }
+
+                    if (x >= crBtnX2 && x < crBtnX2 + crBtnW && y >= crBtnY && y < crBtnY + crBtnH) {
+                        audio.play('click');
+                        _mpJoinCode = ['', '', '', ''];
+                        _mpJoinCodeIdx = 0;
+                        _mpJoinError = '';
+                        _mpJoinSuccess = false;
+                        gameState.screen = 'mp_join_room';
+                        return;
+                    }
+                }
+
+                // Back button
+                const backY = H - 60;
+                if (x >= W / 2 - 50 && x < W / 2 + 50 && y >= backY && y < backY + 35) {
+                    audio.play('click');
+                    _mpSearching = false; _mpSearchStartTime = 0;
+                    if (_mpQueueCheckInterval) { clearInterval(_mpQueueCheckInterval); _mpQueueCheckInterval = null; }
+                    if (_mpBotTimeoutId) { clearTimeout(_mpBotTimeoutId); _mpBotTimeoutId = null; }
+                    window._convexClient.leaveQueue('Alpit').catch(() => {});
+                    gameState.screen = 'menu';
+                    return;
+                }
+
+            // ── Create Room Screen ──
+            } else if (gameState.screen === 'mp_create_room') {
+                const W = DESIGN.width;
+                const H = DESIGN.height;
+                const cancelY = H - 65;
+                if (x >= W / 2 - 70 && x < W / 2 + 70 && y >= cancelY && y < cancelY + 38) {
+                    audio.play('click');
+                    if (_mpPrivatePolling) { clearInterval(_mpPrivatePolling); _mpPrivatePolling = null; }
+                    _mpPrivateRoomId = null; _mpPrivateRoomCode = '';
+                    gameState.screen = 'mp_lobby';
+                    return;
+                }
+
+            // ── Join Room Screen ──
+            } else if (gameState.screen === 'mp_join_room') {
+                const W = DESIGN.width;
+                const H = DESIGN.height;
+
+                // Keyboard
+                const kbY = 190;
+                const kbRows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM', '1234567890'];
+                const kbKeyH = 34;
+                const kbGap = 4;
+
+                let keyHit = false;
+                for (let row = 0; row < kbRows.length && !keyHit; row++) {
+                    const keys = kbRows[row].split('');
+                    const kbKeyW = Math.min(26, (W - 20 - (keys.length - 1) * kbGap) / keys.length);
+                    const rowW = keys.length * kbKeyW + (keys.length - 1) * kbGap;
+                    const rowX = W / 2 - rowW / 2;
+                    const rowY = kbY + row * (kbKeyH + kbGap);
+                    for (let ki = 0; ki < keys.length; ki++) {
+                        const kx = rowX + ki * (kbKeyW + kbGap);
+                        if (x >= kx && x < kx + kbKeyW && y >= rowY && y < rowY + kbKeyH) {
+                            audio.play('click');
+                            if (_mpJoinCodeIdx < 4) {
+                                _mpJoinCode[_mpJoinCodeIdx] = keys[ki];
+                                _mpJoinCodeIdx = Math.min(3, _mpJoinCodeIdx + 1);
+                                while (_mpJoinCodeIdx < 3 && _mpJoinCode[_mpJoinCodeIdx] !== '') _mpJoinCodeIdx++;
+                            }
+                            _mpJoinError = ''; keyHit = true; break;
+                        }
+                    }
+                }
+
+                // Backspace + Join buttons
+                const actionY = kbY + 4 * (kbKeyH + kbGap) + 8;
+                if (x >= W / 2 - 130 && x < W / 2 - 50 && y >= actionY && y < actionY + 38) {
+                    audio.play('click');
+                    if (_mpJoinCode[_mpJoinCodeIdx] !== '') {
+                        _mpJoinCode[_mpJoinCodeIdx] = '';
+                    } else if (_mpJoinCodeIdx > 0) {
+                        _mpJoinCodeIdx--;
+                        _mpJoinCode[_mpJoinCodeIdx] = '';
+                    }
+                    _mpJoinError = ''; return;
+                }
+
+                const allFilled = _mpJoinCode.every(c => c !== '');
+                if (allFilled && x >= W / 2 + 10 && x < W / 2 + 130 && y >= actionY && y < actionY + 38) {
+                    audio.play('click');
+                    const code = _mpJoinCode.join('');
+                    _mpJoinError = '';
+                    window._convexClient.joinPrivateRoom(code, 'Alpit').then(result => {
+                        if (result.success) {
+                            _mpJoinSuccess = true; _mpIsBotMatch = false;
+                            _mpWaitingRoomData = result.room; _mpWaitingForOpponent = false;
+                            setTimeout(() => { gameState.screen = 'mp_waiting'; }, 800);
+                        } else { _mpJoinError = result.reason || 'Room not found'; }
+                    }).catch(e => { _mpJoinError = 'Connection failed'; });
+                    return;
+                }
+
+                // Tap on code boxes
+                const inputY = 100;
+                const boxW = 44, boxH = 56, boxGap = 12;
+                const totalBoxW = 4 * boxW + 3 * boxGap;
+                const boxStartX = W / 2 - totalBoxW / 2;
+                for (let bi = 0; bi < 4; bi++) {
+                    const bx = boxStartX + bi * (boxW + boxGap);
+                    if (x >= bx && x < bx + boxW && y >= inputY && y < inputY + boxH) {
+                        audio.play('click'); _mpJoinCodeIdx = bi; return;
+                    }
+                }
+
+                // Back button
+                const cancelY = H - 55;
+                if (x >= W / 2 - 50 && x < W / 2 + 50 && y >= cancelY && y < cancelY + 35) {
+                    audio.play('click'); gameState.screen = 'mp_lobby'; return;
+                }
+
+            // ── Multiplayer Waiting Screen ──
+            } else if (gameState.screen === 'mp_waiting') {
+                const W = DESIGN.width;
+                const startY = 250;
+                const startW = 180;
+                const startX = W / 2 - startW / 2;
+                if (!_mpWaitingForOpponent && _mpWaitingRoomData &&
+                    x >= startX && x < startX + startW && y >= startY && y < startY + 50) {
+                    audio.play('click');
+                    const room = _mpWaitingRoomData;
+                    const role = room.player1Name === 'Alpit' ? 'setter' : 'chaser';
+                    gameState.startMultiplayerGame(room, role);
+                    return;
                 }
             }
         }, { passive: false });

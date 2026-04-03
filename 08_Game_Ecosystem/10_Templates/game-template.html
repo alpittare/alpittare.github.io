@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="{{GAME_NAME}}">
+    <title>{{GAME_NAME}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #0f0f0f;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameContainer {
+            width: 414px;
+            height: 896px;
+            position: relative;
+            overflow: hidden;
+            background: #0f0f0f;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #debugPanel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 9999;
+            max-width: 200px;
+            display: none;
+            pointer-events: none;
+        }
+
+        #debugPanel.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="debugPanel"></div>
+    </div>
+
+    <!-- Framework Module Imports -->
+    <script src="../../../00_Framework_Modules/core.js"></script>
+    <script src="../../../00_Framework_Modules/audio.js"></script>
+    <script src="../../../00_Framework_Modules/input.js"></script>
+    <script src="../../../00_Framework_Modules/physics.js"></script>
+    <script src="../../../00_Framework_Modules/ai.js"></script>
+    <script src="../../../00_Framework_Modules/analytics.js"></script>
+    <script src="../../../00_Framework_Modules/backend.js"></script>
+    <script src="../../../00_Framework_Modules/payments.js"></script>
+    <script src="../../../00_Framework_Modules/storage.js"></script>
+
+    <script>
+        // ============================================================================
+        // {{GAME_NAME}} - Game Template
+        // ============================================================================
+        // This is a production-ready game template. Fill in sections marked with
+        // TODO comments to customize for your sport/game. All framework modules are
+        // pre-imported above.
+        // ============================================================================
+
+        // Canvas and rendering setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const debugPanel = document.getElementById('debugPanel');
+
+        // Device DPI scaling for crisp rendering
+        const dpr = window.devicePixelRatio || 1;
+        const canvasWidth = 414;
+        const canvasHeight = 896;
+
+        function setupCanvas() {
+            canvas.width = canvasWidth * dpr;
+            canvas.height = canvasHeight * dpr;
+            ctx.scale(dpr, dpr);
+            ctx.imageSmoothingEnabled = false;
+        }
+
+        setupCanvas();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            setupCanvas();
+        });
+
+        // ============================================================================
+        // SECTION 1: Global Game State
+        // ============================================================================
+
+        const gameState = {
+            // Screen management
+            currentScreen: 'menu', // 'menu', 'game', 'shop', 'levels', 'gameover', 'settings'
+            screenTransition: 0,
+            screenTransitionDuration: 0.3,
+
+            // Game round state
+            score: 0,
+            opponentScore: 0,
+            gameTime: 0,
+            maxGameTime: 60, // TODO: Customize for your game (seconds)
+            gameActive: false,
+            gamePaused: false,
+
+            // Player state
+            player: {
+                x: 207, // Center horizontally
+                y: 750, // Bottom of screen
+                width: 40,
+                height: 40,
+                color: '#ff6b35',
+            },
+
+            // Opponent state
+            opponent: {
+                x: 207, // Center horizontally
+                y: 50, // Top of screen
+                width: 40,
+                height: 40,
+                color: '#4a90e2',
+            },
+
+            // TODO: Add sport-specific objects here
+            // Examples:
+            // - ball: { x, y, vx, vy, radius, color }
+            // - court: { x, y, width, height, color }
+            // - paddle: { x, y, width, height }
+            // - target: { x, y, radius }
+
+            // Progression and persistence
+            stats: {
+                totalGamesPlayed: 0,
+                totalWins: 0,
+                totalLosses: 0,
+                totalPoints: 0,
+                bestScore: 0,
+                currentStreak: 0,
+                bestStreak: 0,
+                currentDifficulty: 'medium', // 'easy', 'medium', 'hard'
+            },
+
+            // Cosmetics and unlocks
+            cosmetics: {
+                playerColor: '#ff6b35',
+                opponentColor: '#4a90e2',
+                ballTexture: 'default',
+                courtTheme: 'default',
+            },
+
+            // Monetization
+            coins: 0,
+            gems: 0,
+            adsWatchedToday: 0,
+            purchasedProducts: {},
+
+            // Debug
+            debugMode: false,
+            fps: 0,
+            frameCount: 0,
+        };
+
+        // ============================================================================
+        // SECTION 2: Physics Configuration
+        // ============================================================================
+
+        const physicsConfig = {
+            gravity: 0.6,           // TODO: Adjust for your game
+            friction: 0.98,         // Air resistance
+            bounce: 0.85,           // Elasticity on collision
+            maxSpeed: 12,           // Pixels per frame
+            playerSpeed: 6,         // Player movement speed
+            courtWidth: 350,        // TODO: Court/play area dimensions
+            courtHeight: 600,
+            courtX: (canvasWidth - 350) / 2,  // Center horizontally
+            courtY: 100,
+        };
+
+        // ============================================================================
+        // SECTION 3: AI Configuration
+        // ============================================================================
+
+        const aiConfig = {
+            difficulty: 'medium',   // 'easy', 'medium', 'hard'
+            reactionTime: 300,      // milliseconds
+            accuracy: 0.75,         // 0-1
+            positioningSkill: 0.7,
+            shotSelection: 'adaptive',
+            exploitWeakness: 0.5,
+            pressureHandling: 0.6,
+        };
+
+        // AI state tracking
+        const aiState = {
+            targetX: 207,
+            targetY: 50,
+            lastDecisionTime: 0,
+            lastShotAngle: 0,
+            consecutiveWins: 0,
+            isMovingLeft: false,
+            isMovingRight: false,
+        };
+
+        // TODO: Define sport-specific AI logic in aiStep() function below
+
+        // ============================================================================
+        // SECTION 4: Input Handling
+        // ============================================================================
+
+        let inputState = {
+            mouseX: 0,
+            mouseY: 0,
+            isPressed: false,
+            isDragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            dragDeltaX: 0,
+            dragDeltaY: 0,
+            touchStartTime: 0,
+            touchDuration: 0,
+        };
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvasWidth / rect.width;
+            const scaleY = canvasHeight / rect.height;
+
+            inputState.mouseX = (e.clientX - rect.left) * scaleX;
+            inputState.mouseY = (e.clientY - rect.top) * scaleY;
+            inputState.isPressed = true;
+            inputState.dragStartX = inputState.mouseX;
+            inputState.dragStartY = inputState.mouseY;
+            inputState.touchStartTime = performance.now();
+
+            // TODO: Call sport-specific input handler
+            handleGameInput(inputState);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvasWidth / rect.width;
+            const scaleY = canvasHeight / rect.height;
+
+            inputState.mouseX = (e.clientX - rect.left) * scaleX;
+            inputState.mouseY = (e.clientY - rect.top) * scaleY;
+            inputState.dragDeltaX = inputState.mouseX - inputState.dragStartX;
+            inputState.dragDeltaY = inputState.mouseY - inputState.dragStartY;
+
+            if (inputState.isPressed) {
+                inputState.isDragging = true;
+                inputState.touchDuration = performance.now() - inputState.touchStartTime;
+            }
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            inputState.isPressed = false;
+            inputState.isDragging = false;
+            inputState.touchDuration = performance.now() - inputState.touchStartTime;
+
+            // TODO: Call sport-specific input release handler
+            handleGameInputRelease(inputState);
+        });
+
+        // Touch event handlers (mobile)
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvasWidth / rect.width;
+                const scaleY = canvasHeight / rect.height;
+                const touch = e.touches[0];
+
+                inputState.mouseX = (touch.clientX - rect.left) * scaleX;
+                inputState.mouseY = (touch.clientY - rect.top) * scaleY;
+                inputState.isPressed = true;
+                inputState.dragStartX = inputState.mouseX;
+                inputState.dragStartY = inputState.mouseY;
+                inputState.touchStartTime = performance.now();
+
+                handleGameInput(inputState);
+                e.preventDefault();
+            }
+        }, false);
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0 && inputState.isPressed) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvasWidth / rect.width;
+                const scaleY = canvasHeight / rect.height;
+                const touch = e.touches[0];
+
+                inputState.mouseX = (touch.clientX - rect.left) * scaleX;
+                inputState.mouseY = (touch.clientY - rect.top) * scaleY;
+                inputState.dragDeltaX = inputState.mouseX - inputState.dragStartX;
+                inputState.dragDeltaY = inputState.mouseY - inputState.dragStartY;
+                inputState.isDragging = true;
+                inputState.touchDuration = performance.now() - inputState.touchStartTime;
+
+                e.preventDefault();
+            }
+        }, false);
+
+        canvas.addEventListener('touchend', (e) => {
+            inputState.isPressed = false;
+            inputState.isDragging = false;
+            inputState.touchDuration = performance.now() - inputState.touchStartTime;
+
+            handleGameInputRelease(inputState);
+            e.preventDefault();
+        }, false);
+
+        // TODO: Implement sport-specific input handlers
+        function handleGameInput(input) {
+            // Called when touch/mouse starts
+            // Example: trigger swing animation, show aiming reticle
+            console.log(`Input started at (${input.mouseX}, ${input.mouseY})`);
+        }
+
+        function handleGameInputRelease(input) {
+            // Called when touch/mouse releases
+            // Example: execute shot, apply physics
+            console.log(`Input released after ${input.touchDuration}ms`);
+        }
+
+        // ============================================================================
+        // SECTION 5: Screen Rendering Functions
+        // ============================================================================
+
+        function renderMenuScreen() {
+            // TODO: Customize menu appearance
+            ctx.fillStyle = '#0f0f0f';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('{{GAME_NAME}}', canvasWidth / 2, 120);
+
+            // Subtitle
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#999999';
+            ctx.fillText('Tap to Start', canvasWidth / 2, 200);
+
+            // Best Score
+            ctx.fillStyle = '#ff6b35';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText(`Best: ${gameState.stats.bestScore}`, canvasWidth / 2, 280);
+
+            // Stats
+            ctx.fillStyle = '#cccccc';
+            ctx.font = '14px Arial';
+            ctx.fillText(`Wins: ${gameState.stats.totalWins} | Losses: ${gameState.stats.totalLosses}`, canvasWidth / 2, 350);
+            ctx.fillText(`Streak: ${gameState.stats.currentStreak}/${gameState.stats.bestStreak}`, canvasWidth / 2, 380);
+
+            // Play Button
+            drawButton(canvasWidth / 2 - 100, 450, 200, 60, 'PLAY', '#ff6b35');
+
+            // Shop Button
+            drawButton(canvasWidth / 2 - 100, 530, 200, 60, 'SHOP', '#4a90e2');
+
+            // Settings Button
+            drawButton(50, 800, 80, 40, 'SETTINGS', '#666666');
+
+            // Difficulty Indicator
+            ctx.fillStyle = '#999999';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText(`Difficulty: ${gameState.stats.currentDifficulty.toUpperCase()}`, canvasWidth - 20, 820);
+        }
+
+        function renderGameScreen() {
+            // TODO: Customize game rendering for your sport
+
+            // Clear background
+            ctx.fillStyle = '#1a472a'; // TODO: Change to your court/background color
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Draw court
+            ctx.strokeStyle = '#f5f5f5';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(
+                physicsConfig.courtX,
+                physicsConfig.courtY,
+                physicsConfig.courtWidth,
+                physicsConfig.courtHeight
+            );
+
+            // Draw center line
+            ctx.beginPath();
+            ctx.moveTo(physicsConfig.courtX + physicsConfig.courtWidth / 2, physicsConfig.courtY);
+            ctx.lineTo(physicsConfig.courtX + physicsConfig.courtWidth / 2, physicsConfig.courtY + physicsConfig.courtHeight);
+            ctx.stroke();
+
+            // Draw player (bottom)
+            ctx.fillStyle = gameState.cosmetics.playerColor;
+            drawRoundRect(
+                gameState.player.x - gameState.player.width / 2,
+                gameState.player.y - gameState.player.height / 2,
+                gameState.player.width,
+                gameState.player.height,
+                5,
+                true
+            );
+
+            // Draw opponent (top)
+            ctx.fillStyle = gameState.cosmetics.opponentColor;
+            drawRoundRect(
+                gameState.opponent.x - gameState.opponent.width / 2,
+                gameState.opponent.y - gameState.opponent.height / 2,
+                gameState.opponent.width,
+                gameState.opponent.height,
+                5,
+                true
+            );
+
+            // TODO: Draw sport-specific objects (ball, etc.)
+
+            // Draw UI Overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, canvasWidth, 50);
+            ctx.fillRect(0, canvasHeight - 50, canvasWidth, 50);
+
+            // Score display
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${gameState.score} - ${gameState.opponentScore}`, canvasWidth / 2, 35);
+
+            // Timer
+            const timeRemaining = Math.max(0, gameState.maxGameTime - gameState.gameTime);
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText(`${timeRemaining.toFixed(1)}s`, canvasWidth / 2, canvasHeight - 20);
+
+            // Pause button
+            ctx.fillStyle = '#ff6b35';
+            drawButton(canvasWidth - 70, 5, 60, 40, 'PAUSE', '#ff6b35', 12);
+        }
+
+        function renderShopScreen() {
+            // TODO: Implement shop/cosmetics screen
+            ctx.fillStyle = '#0f0f0f';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('SHOP', canvasWidth / 2, 60);
+
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#999999';
+            ctx.fillText('[Shop implementation needed]', canvasWidth / 2, 200);
+
+            // Back button
+            drawButton(50, canvasHeight - 70, 100, 50, 'BACK', '#666666');
+        }
+
+        function renderGameOverScreen() {
+            // TODO: Customize game over screen
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            const playerWon = gameState.score > gameState.opponentScore;
+
+            ctx.fillStyle = playerWon ? '#4caf50' : '#f44336';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(playerWon ? 'VICTORY!' : 'DEFEAT!', canvasWidth / 2, 150);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '24px Arial';
+            ctx.fillText(`${gameState.score} - ${gameState.opponentScore}`, canvasWidth / 2, 220);
+
+            // Stats
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#cccccc';
+            ctx.fillText(`Time: ${gameState.gameTime.toFixed(1)}s`, canvasWidth / 2, 300);
+            ctx.fillText(`Points: ${gameState.score}`, canvasWidth / 2, 330);
+
+            if (playerWon) {
+                gameState.stats.totalWins++;
+                gameState.stats.currentStreak++;
+                gameState.stats.coins += Math.floor(gameState.score * 10);
+                ctx.fillStyle = '#ffd700';
+                ctx.fillText(`+${Math.floor(gameState.score * 10)} Coins`, canvasWidth / 2, 380);
+            } else {
+                gameState.stats.totalLosses++;
+                gameState.stats.currentStreak = 0;
+            }
+
+            // Buttons
+            drawButton(canvasWidth / 2 - 150, canvasHeight - 120, 140, 60, 'REPLAY', '#ff6b35');
+            drawButton(canvasWidth / 2 + 10, canvasHeight - 120, 140, 60, 'MENU', '#4a90e2');
+        }
+
+        // ============================================================================
+        // SECTION 6: Utility Rendering Functions
+        // ============================================================================
+
+        function drawButton(x, y, width, height, label, bgColor, fontSize = 16) {
+            // Button background
+            ctx.fillStyle = bgColor;
+            drawRoundRect(x, y, width, height, 8, true);
+
+            // Button border
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            drawRoundRect(x, y, width, height, 8, false);
+
+            // Button text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, x + width / 2, y + height / 2);
+        }
+
+        function drawRoundRect(x, y, width, height, radius, fill = true, stroke = false) {
+            // Polyfill for older browsers without roundRect support
+            if (ctx.roundRect) {
+                if (fill) ctx.fillRect(x, y, width, height);
+                if (stroke) ctx.strokeRect(x, y, width, height);
+                return;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+
+        // ============================================================================
+        // SECTION 7: Game Logic (Update Loop)
+        // ============================================================================
+
+        function updateMenu() {
+            // Check for play button click
+            if (inputState.isPressed && inputState.mouseY > 450 && inputState.mouseY < 510) {
+                if (inputState.mouseX > canvasWidth / 2 - 100 && inputState.mouseX < canvasWidth / 2 + 100) {
+                    startGame();
+                    inputState.isPressed = false;
+                }
+            }
+
+            // Check for shop button click
+            if (inputState.isPressed && inputState.mouseY > 530 && inputState.mouseY < 590) {
+                if (inputState.mouseX > canvasWidth / 2 - 100 && inputState.mouseX < canvasWidth / 2 + 100) {
+                    gameState.currentScreen = 'shop';
+                    inputState.isPressed = false;
+                }
+            }
+        }
+
+        function updateGame() {
+            if (!gameState.gameActive) return;
+
+            // Update game time
+            gameState.gameTime += 1 / 60; // Assume 60 FPS
+
+            // TODO: Update sport-specific logic here
+            // - Ball physics
+            // - Collision detection
+            // - Scoring logic
+            // - Win/lose conditions
+
+            // Example: Move player towards mouse if in game
+            if (inputState.isDragging) {
+                gameState.player.x = Math.max(
+                    gameState.cosmetics.playerColor ? 50 : 0,
+                    Math.min(
+                        canvasWidth - (gameState.cosmetics.playerColor ? 50 : 0),
+                        gameState.player.x + (inputState.dragDeltaX > 0 ? 5 : -5)
+                    )
+                );
+            }
+
+            // Update AI
+            aiStep();
+
+            // Check win/lose condition
+            if (gameState.gameTime >= gameState.maxGameTime) {
+                endGame();
+            }
+        }
+
+        function updateShop() {
+            // TODO: Handle shop interactions
+        }
+
+        function updateGameOver() {
+            // TODO: Handle game over screen interactions
+        }
+
+        // ============================================================================
+        // SECTION 8: AI Logic
+        // ============================================================================
+
+        function aiStep() {
+            const now = performance.now();
+            const reactionTimeMs = aiConfig.reactionTime;
+
+            // Check if enough time has passed for next decision
+            if (now - aiState.lastDecisionTime > reactionTimeMs) {
+                // TODO: Implement sport-specific AI decision making
+                // Example for tennis:
+                // 1. Predict ball position
+                // 2. Calculate shot angle
+                // 3. Move opponent paddle towards intercept point
+                // 4. Apply accuracy modifier based on difficulty
+
+                aiState.lastDecisionTime = now;
+
+                // Placeholder: Move AI towards center
+                if (aiState.targetX < gameState.opponent.x - 2) {
+                    gameState.opponent.x -= physicsConfig.playerSpeed;
+                } else if (aiState.targetX > gameState.opponent.x + 2) {
+                    gameState.opponent.x += physicsConfig.playerSpeed;
+                }
+            }
+        }
+
+        // ============================================================================
+        // SECTION 9: Game State Management
+        // ============================================================================
+
+        function startGame() {
+            gameState.currentScreen = 'game';
+            gameState.score = 0;
+            gameState.opponentScore = 0;
+            gameState.gameTime = 0;
+            gameState.gameActive = true;
+
+            // Reset positions
+            gameState.player.x = canvasWidth / 2;
+            gameState.opponent.x = canvasWidth / 2;
+
+            // TODO: Initialize sport-specific objects (ball, etc.)
+
+            // TODO: Send analytics event
+            console.log('Game started');
+        }
+
+        function endGame() {
+            gameState.gameActive = false;
+            gameState.currentScreen = 'gameover';
+
+            // Update stats
+            gameState.stats.totalGamesPlayed++;
+            gameState.stats.totalPoints += gameState.score;
+            gameState.stats.bestScore = Math.max(gameState.stats.bestScore, gameState.score);
+
+            // TODO: Send game result to backend (Convex)
+            // TODO: Check for achievements
+            // TODO: Send analytics event
+
+            console.log('Game ended:', gameState.stats);
+        }
+
+        function resetToMenu() {
+            gameState.currentScreen = 'menu';
+            gameState.gameActive = false;
+            gameState.score = 0;
+            gameState.opponentScore = 0;
+            gameState.gameTime = 0;
+            gameState.gamePaused = false;
+        }
+
+        // ============================================================================
+        // SECTION 10: Main Game Loop
+        // ============================================================================
+
+        let lastFrameTime = performance.now();
+        let deltaTime = 0;
+
+        function gameLoop(currentTime) {
+            // Calculate delta time
+            deltaTime = (currentTime - lastFrameTime) / 1000;
+            lastFrameTime = currentTime;
+
+            // Cap delta time to prevent huge jumps
+            if (deltaTime > 0.1) deltaTime = 0.016; // ~60 FPS
+
+            // Fixed timestep update (physics)
+            const fixedDeltaTime = 1 / 60;
+            const iterations = Math.ceil(deltaTime / fixedDeltaTime);
+            for (let i = 0; i < iterations; i++) {
+                fixedUpdate(fixedDeltaTime);
+            }
+
+            // Variable timestep update (game logic)
+            update(deltaTime);
+
+            // Render
+            render();
+
+            // Next frame
+            requestAnimationFrame(gameLoop);
+        }
+
+        function fixedUpdate(dt) {
+            // Physics calculations happen here
+            // TODO: Update physics-based objects (ball velocity, collisions, etc.)
+        }
+
+        function update(dt) {
+            // Game logic updates
+            switch (gameState.currentScreen) {
+                case 'menu':
+                    updateMenu();
+                    break;
+                case 'game':
+                    updateGame();
+                    break;
+                case 'shop':
+                    updateShop();
+                    break;
+                case 'gameover':
+                    updateGameOver();
+                    break;
+            }
+
+            // FPS counter
+            gameState.frameCount++;
+            if (gameState.frameCount % 60 === 0) {
+                gameState.fps = Math.round(1 / dt);
+            }
+        }
+
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Render current screen
+            switch (gameState.currentScreen) {
+                case 'menu':
+                    renderMenuScreen();
+                    break;
+                case 'game':
+                    renderGameScreen();
+                    break;
+                case 'shop':
+                    renderShopScreen();
+                    break;
+                case 'gameover':
+                    renderGameOverScreen();
+                    break;
+            }
+
+            // Debug panel
+            if (gameState.debugMode) {
+                renderDebugPanel();
+            }
+        }
+
+        function renderDebugPanel() {
+            const debugInfo = [
+                `FPS: ${gameState.fps}`,
+                `Screen: ${gameState.currentScreen}`,
+                `Score: ${gameState.score}-${gameState.opponentScore}`,
+                `Time: ${gameState.gameTime.toFixed(1)}s`,
+                `Player: (${gameState.player.x.toFixed(0)}, ${gameState.player.y.toFixed(0)})`,
+                `AI: (${gameState.opponent.x.toFixed(0)}, ${gameState.opponent.y.toFixed(0)})`,
+                `Stats: ${gameState.stats.totalWins}W ${gameState.stats.totalLosses}L`,
+            ];
+
+            debugPanel.classList.add('active');
+            debugPanel.innerHTML = debugInfo.map(line => `<div>${line}</div>`).join('');
+        }
+
+        // ============================================================================
+        // SECTION 11: Game Over Button Handling
+        // ============================================================================
+
+        canvas.addEventListener('click', (e) => {
+            if (gameState.currentScreen === 'gameover') {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvasWidth / rect.width;
+                const scaleY = canvasHeight / rect.height;
+
+                const clickX = (e.clientX - rect.left) * scaleX;
+                const clickY = (e.clientY - rect.top) * scaleY;
+
+                // Check "REPLAY" button (left)
+                if (clickX > canvasWidth / 2 - 150 && clickX < canvasWidth / 2 - 10 &&
+                    clickY > canvasHeight - 120 && clickY < canvasHeight - 60) {
+                    startGame();
+                }
+
+                // Check "MENU" button (right)
+                if (clickX > canvasWidth / 2 + 10 && clickX < canvasWidth / 2 + 150 &&
+                    clickY > canvasHeight - 120 && clickY < canvasHeight - 60) {
+                    resetToMenu();
+                }
+            }
+        });
+
+        // ============================================================================
+        // SECTION 12: Persistence & Storage
+        // ============================================================================
+
+        function saveGameState() {
+            // TODO: Implement save using storage.js
+            // localStorage.setItem('gameState', JSON.stringify(gameState));
+            console.log('Game state saved');
+        }
+
+        function loadGameState() {
+            // TODO: Implement load using storage.js
+            // const saved = localStorage.getItem('gameState');
+            // if (saved) gameState = JSON.parse(saved);
+            console.log('Game state loaded');
+        }
+
+        // Save state periodically
+        setInterval(saveGameState, 5000);
+
+        // Load state on startup
+        loadGameState();
+
+        // ============================================================================
+        // SECTION 13: Backend Integration (Convex)
+        // ============================================================================
+
+        async function sendGameResultToBackend() {
+            // TODO: Send game result to Convex
+            // const result = {
+            //     score: gameState.score,
+            //     opponentScore: gameState.opponentScore,
+            //     duration: gameState.gameTime,
+            //     difficulty: gameState.stats.currentDifficulty,
+            //     timestamp: new Date().toISOString(),
+            // };
+            // await backend.submitGameResult(result);
+        }
+
+        // ============================================================================
+        // SECTION 14: Payment Integration (Superwall)
+        // ============================================================================
+
+        async function initializePayments() {
+            // TODO: Initialize Superwall bridge
+            // This will be called from the Expo wrapper
+            console.log('Payments initialized');
+        }
+
+        window.addEventListener('superwall-product-purchased', (e) => {
+            // TODO: Handle product purchase event
+            const productId = e.detail.productId;
+            console.log('Product purchased:', productId);
+            gameState.purchasedProducts[productId] = true;
+        });
+
+        // ============================================================================
+        // SECTION 15: Debug Mode Toggle
+        // ============================================================================
+
+        // Press 'D' to toggle debug mode
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'd' || e.key === 'D') {
+                gameState.debugMode = !gameState.debugMode;
+            }
+        });
+
+        // ============================================================================
+        // START GAME LOOP
+        // ============================================================================
+
+        requestAnimationFrame(gameLoop);
+
+        // Log that game is ready
+        console.log('{{GAME_NAME}} loaded and ready');
+        window.gameState = gameState; // Expose for debugging
+    </script>
+</body>
+</html>

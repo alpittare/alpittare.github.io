@@ -50,7 +50,7 @@ const APP_CONFIG = {
     name: 'Baseball AI 2026',
     version: '1.0.0',
     build: '1',
-    studio: 'GameHub Studios',
+    studio: '',
     developer: 'Alpit Tare',
     support: 'alpittare204dev@gmail.com',
     bundleId: 'com.alpittare.basehit',
@@ -135,10 +135,10 @@ const BASEBALL_CONFIG = {
         label: 'Easy',
         description: 'Perfect for learning',
         color: '#4CAF50',
-        pitchSpeed: 260,
-        pitchSpeedVar: 40,
-        perfectWindow: 130,
-        goodWindow: 220,
+        pitchSpeed: 340,
+        pitchSpeedVar: 50,
+        perfectWindow: 115,
+        goodWindow: 195,
         curveChance: 0.0,
         changeChance: 0.0,
         sliderChance: 0.0,
@@ -151,10 +151,10 @@ const BASEBALL_CONFIG = {
         label: 'Medium',
         description: 'Classic challenge',
         color: '#FF9800',
-        pitchSpeed: 375,
-        pitchSpeedVar: 60,
-        perfectWindow: 82,
-        goodWindow: 145,
+        pitchSpeed: 500,
+        pitchSpeedVar: 75,
+        perfectWindow: 68,
+        goodWindow: 125,
         curveChance: 0.20,
         changeChance: 0.10,
         sliderChance: 0.05,
@@ -167,10 +167,10 @@ const BASEBALL_CONFIG = {
         label: 'Hard',
         description: 'Expert only',
         color: '#F44336',
-        pitchSpeed: 495,
-        pitchSpeedVar: 80,
-        perfectWindow: 52,
-        goodWindow: 100,
+        pitchSpeed: 680,
+        pitchSpeedVar: 100,
+        perfectWindow: 40,
+        goodWindow: 82,
         curveChance: 0.40,
         changeChance: 0.22,
         sliderChance: 0.12,
@@ -183,10 +183,10 @@ const BASEBALL_CONFIG = {
         label: 'Legend',
         description: 'True mastery',
         color: '#FFD700',
-        pitchSpeed: 645,
-        pitchSpeedVar: 100,
-        perfectWindow: 30,
-        goodWindow: 65,
+        pitchSpeed: 900,
+        pitchSpeedVar: 130,
+        perfectWindow: 22,
+        goodWindow: 48,
         curveChance: 0.62,
         changeChance: 0.32,
         sliderChance: 0.20,
@@ -464,6 +464,13 @@ class GameState {
         this._legendWins = 0;
         this._perfectSwings = 0;
         this._maxSurgeReached = false;
+
+        // === PHASE 7: Career analytics ===
+        this.careerExitVelos = [];
+        this.careerMaxExitVelo = 0;
+        this.careerPerfectCount = 0;
+        this.careerPitchCount = 0;
+        this.careerHitCount = 0;
 
         // Level progression (100-level campaign)
         this.campaignLevel = 1;
@@ -782,7 +789,13 @@ class GameState {
             matchHistory: this.matchHistory,
             dailyReward: this.dailyReward,
             isVIP: this.isVIP,
-            vipPopupShown: this.vipPopupShown
+            vipPopupShown: this.vipPopupShown,
+            // === PHASE 7: Career analytics ===
+            careerExitVelos: this.careerExitVelos,
+            careerMaxExitVelo: this.careerMaxExitVelo,
+            careerPerfectCount: this.careerPerfectCount,
+            careerPitchCount: this.careerPitchCount,
+            careerHitCount: this.careerHitCount
         };
         localStorage.setItem('basehit_save_v3', JSON.stringify(data));
     }
@@ -852,6 +865,12 @@ class GameState {
             this.dailyReward = { ...this.dailyReward, ...data.dailyReward };
             this.isVIP = data.isVIP ?? this.isVIP;
             this.vipPopupShown = data.vipPopupShown ?? this.vipPopupShown;
+            // === PHASE 7: Career analytics ===
+            this.careerExitVelos = data.careerExitVelos || [];
+            this.careerMaxExitVelo = data.careerMaxExitVelo || 0;
+            this.careerPerfectCount = data.careerPerfectCount || 0;
+            this.careerPitchCount = data.careerPitchCount || 0;
+            this.careerHitCount = data.careerHitCount || 0;
         } catch (e) {
             console.error('Failed to load game state:', e);
         }
@@ -1582,6 +1601,7 @@ function drawAIBotBubble(ctx) {
     ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
     ctx.fillText(theme.emoji, avX, avY + 1);
 
     // === BOT NAME + LEVEL BADGE ===
@@ -4648,6 +4668,16 @@ class GameSession {
         this.ballCount = 0;
         this.atBatOver = false;
 
+        // === PHASE 2: Batting stance toggle ===
+        this.battingStance = 'contact'; // 'contact' or 'power'
+
+        // === PHASE 3: Pitch location zones ===
+        this.pitchZone = 'center';
+        this.zoneFlashTimer = 0;
+
+        // === PHASE 4: Statcast metrics ===
+        this.statcastLog = []; // array of { exitVelo, launchAngle, result, timing, pitchType, zone }
+
         // Combo multiplier system
         this.combo = 0;
         this.comboMultiplier = 1;
@@ -4767,11 +4797,39 @@ class GameSession {
         return type;
     }
 
+    _selectZone() {
+        const diff = this.difficulty;
+        // Easy: mostly center. Harder = more variety
+        const weights = {
+            easy:   { center: 0.60, inside: 0.10, outside: 0.10, high: 0.10, low: 0.10 },
+            medium: { center: 0.35, inside: 0.18, outside: 0.18, high: 0.15, low: 0.14 },
+            hard:   { center: 0.20, inside: 0.22, outside: 0.22, high: 0.18, low: 0.18 },
+            legend: { center: 0.10, inside: 0.25, outside: 0.25, high: 0.20, low: 0.20 },
+        };
+        const w = weights[diff] || weights.easy;
+        const r = Math.random();
+        let cum = 0;
+        for (const z of ZONE_NAMES) {
+            cum += w[z];
+            if (r < cum) return z;
+        }
+        return 'center';
+    }
+
     startPitch() {
         this.pitchType = this.decidePitch();
         this.pitchSpeed = inlineAI.getAdaptiveSpeed(this.config.pitchSpeed, this.config);
         this.pitchDuration = (450 / this.pitchSpeed) * 1.2;
         this.ballArrivalTime = Date.now() + this.pitchDuration * 1000;
+
+        // === PHASE 3: Select pitch zone ===
+        this.pitchZone = this._selectZone();
+        const zoneData = PITCH_ZONES[this.pitchZone] || PITCH_ZONES.center;
+        this.zoneFlashTimer = 0.8; // show zone indicator for 0.8 seconds
+
+        // Apply zone offset to ball target
+        this.ballEndX = W / 2 + zoneData.xOff;
+        this.ballEndY = 705 + zoneData.yOff;
 
         if (this.pitchType === 'curveball') {
             this.curveDir = Math.random() > 0.5 ? 1 : -1;
@@ -4802,8 +4860,11 @@ class GameSession {
 
     processSwing() {
         const timeOffset = Date.now() - this.ballArrivalTime;
-        const perfectWindow = this.config.perfectWindow || 150;
-        const goodWindow = this.config.goodWindow || 300;
+
+        // === PHASE 2: Stance modifies timing windows ===
+        const _stanceMul = this.battingStance === 'power' ? 0.75 : this.battingStance === 'contact' ? 1.3 : 1.0;
+        const perfectWindow = (this.config.perfectWindow || 150) * _stanceMul;
+        const goodWindow = (this.config.goodWindow || 300) * _stanceMul;
 
         let timing = 'late';
         let result = 'STRIKE';
@@ -4812,8 +4873,10 @@ class GameSession {
         // Power-up bonus to timing windows
         const puPerfBonus = this._puPerfectBonus || 0;
         const puGoodBonus = this._puGoodBonus || 0;
-        let adjustedPerfect = (surgeActive ? perfectWindow * 1.4 : perfectWindow) + puPerfBonus;
-        let adjustedGood = (surgeActive ? goodWindow * 1.35 : goodWindow) + puGoodBonus;
+        // === PHASE 3: Zone timing modifier ===
+        const _zoneTMod = (PITCH_ZONES[this.pitchZone] || PITCH_ZONES.center).timingMod;
+        let adjustedPerfect = ((surgeActive ? perfectWindow * 1.4 : perfectWindow) + puPerfBonus) * _zoneTMod;
+        let adjustedGood = ((surgeActive ? goodWindow * 1.35 : goodWindow) + puGoodBonus) * _zoneTMod;
 
         // Easy mode power-up: widen sweet spot by 1.5x
         if (_activeScoreBoost || _activeCoinMagnet || _activeXpBoost) {
@@ -4918,6 +4981,63 @@ class GameSession {
         const impX = this.ball.x || W / 2;
         const impY = this.ball.y || H * 0.48;
 
+        // === PHASE 2: Stance-based result modification ===
+        if (this.battingStance === 'contact' && result === 'HOME RUN!' && timing !== 'perfect') {
+            // Contact hitters: downgrade HR to BASE HIT 40% of the time (unless perfect timing)
+            if (Math.random() < 0.4) {
+                result = 'BASE HIT';
+                this.homeRuns = Math.max(0, this.homeRuns - 1); // undo HR increment from timing block
+            }
+        } else if (this.battingStance === 'power' && result === 'BASE HIT' && (timing === 'perfect' || timing === 'good')) {
+            // Power hitters: upgrade BASE HIT to HR 35% of the time on good+ timing
+            if (Math.random() < 0.35) {
+                result = 'HOME RUN!';
+                this.homeRuns++;
+                gameState.totalHRs = (gameState.totalHRs || 0) + 1;
+            }
+        }
+
+        // === PHASE 3: Zone HR modifier ===
+        const _zoneHRMod = (PITCH_ZONES[this.pitchZone] || PITCH_ZONES.center).hrMod;
+        if (result === 'HOME RUN!' && _zoneHRMod < 1.0 && timing !== 'perfect') {
+            // Low HR mod zones reduce HR chance (unless perfect timing)
+            if (Math.random() > _zoneHRMod) result = 'BASE HIT';
+        } else if (result === 'BASE HIT' && _zoneHRMod > 1.0 && timing === 'good') {
+            // High HR mod zones can upgrade BASE HIT to HR
+            if (Math.random() < (_zoneHRMod - 1.0) * 0.5) {
+                result = 'HOME RUN!';
+                this.homeRuns++;
+                gameState.totalHRs = (gameState.totalHRs || 0) + 1;
+            }
+        }
+
+        // === PHASE 4: Generate Statcast metrics ===
+        let _exitVelo = 0, _launchAngle = 0;
+        if (result === 'HOME RUN!') {
+            _exitVelo = 105 + Math.random() * 10; // 105-115 mph
+            _launchAngle = 25 + Math.random() * 10; // 25-35°
+        } else if (result === 'BASE HIT') {
+            _exitVelo = 90 + Math.random() * 10; // 90-100 mph
+            _launchAngle = 10 + Math.random() * 10; // 10-20°
+        } else if (result === 'FOUL') {
+            _exitVelo = 50 + Math.random() * 15; // 50-65 mph
+            _launchAngle = -10 + Math.random() * 55; // -10 to 45°
+        } else {
+            _exitVelo = 0;
+            _launchAngle = 0;
+        }
+        if (_exitVelo > 0) {
+            this.statcastLog.push({
+                exitVelo: Math.round(_exitVelo),
+                launchAngle: Math.round(_launchAngle),
+                result,
+                timing,
+                pitchType: this.pitchType,
+                zone: this.pitchZone || 'center',
+            });
+            statcastPopup.trigger(_exitVelo, _launchAngle, result, timing === 'perfect');
+        }
+
         // ── Per-at-bat logic: determine if at-bat ends ──
         if (result === 'HOME RUN!' || result === 'BASE HIT') {
             // Hit → at-bat is over
@@ -4929,6 +5049,8 @@ class GameSession {
             this._tickPowerUp();
             // AI Bot reacts to hit
             if (result === 'HOME RUN!') {
+                // === PHASE 6: Trigger slow-mo replay for home runs ===
+                slowMoReplay.trigger();
                 AI_BOT.show('playerHomeRun');
             } else {
                 AI_BOT.show('playerHit');
@@ -4964,7 +5086,8 @@ class GameSession {
         }
 
         if (result === 'HOME RUN!') {
-            fillSurge(0.30);
+            const _surgePowerMul = this.battingStance === 'power' ? 1.5 : 1.0;
+            fillSurge(0.30 * _surgePowerMul);
             // Play bat crack sound immediately (satisfying contact feedback)
             audio.play('hit');
             Haptics.pulse('medium');
@@ -4986,7 +5109,8 @@ class GameSession {
             _hrCelebrationPending = true;
             _hrCelebrationFired = false;
         } else if (result === 'BASE HIT') {
-            fillSurge(0.18);
+            const _surgePowerMul = this.battingStance === 'power' ? 1.5 : 1.0;
+            fillSurge(0.18 * _surgePowerMul);
             audio.play('hit');
             camera.triggerShake(8, 0.2);
             Haptics.pulse('medium');
@@ -4999,7 +5123,8 @@ class GameSession {
             outfielders.onHit(impX + (Math.random() - 0.5) * 100, 320 + Math.random() * 40);
             setTimeout(() => outfielders.onFielded(), 800);
         } else if (result === 'FOUL') {
-            fillSurge(0.08);
+            const _surgePowerMul = this.battingStance === 'power' ? 1.5 : 1.0;
+            fillSurge(0.08 * _surgePowerMul);
             audio.play('foul');
             Haptics.pulse('light');
             commentary.trigger('foul');
@@ -5127,6 +5252,11 @@ class GameSession {
     }
 
     update(dt) {
+        // === PHASE 6: Apply slow-mo time scale ===
+        const realDt = dt;
+        dt = dt * slowMoReplay.getTimeScale();
+        slowMoReplay.update(realDt); // update with real time
+
         camera.update(dt);
         particles.update(dt);
         updateCelebration(dt);
@@ -5136,6 +5266,7 @@ class GameSession {
         fieldFX.update(dt, this.theme && this.theme.nightMode);
         pitchAtmosphere.update(dt, this);
         performanceGrade.update(dt);
+        statcastPopup.update(dt);
         nextPitchPreview.update(dt);
         pitchWarning.update(this, dt);
         perfectBurst.update(dt);
@@ -5145,6 +5276,9 @@ class GameSession {
         outfielders.update(dt);
         this.pitcher.update(dt, this.config.windupDuration);
         this.batter.update(dt);
+
+        // Phase 3: Zone flash timer
+        if (this.zoneFlashTimer > 0) this.zoneFlashTimer -= dt;
 
         if (this.pitchState === 'windup') {
             this.windupTimer += dt;
@@ -5243,6 +5377,8 @@ class GameSession {
 
         drawHUD(ctx, this);
         pitchCountDisplay.draw(ctx, this);
+        drawStanceToggle(ctx, this);
+        statcastPopup.draw(ctx);
         if (this.pitchState === 'result') {
             drawResultOverlay(ctx, this);
         }
@@ -5260,6 +5396,7 @@ class GameSession {
         perfectBurst.draw(ctx);
         drawCommentaryText(ctx);
         drawAIBotBubble(ctx);
+        slowMoReplay.draw(ctx);
 
         // ── Surge meter + activation banner ───────────────────────────────
         drawSurgeBar(ctx);
@@ -5486,6 +5623,19 @@ const ballPhysicsViz = {
         }
     },
 };
+
+// ================================================================
+// PHASE 3: PITCH LOCATION ZONES
+// ================================================================
+const PITCH_ZONES = {
+    center:  { label: 'CENTER',  icon: '⊕', xOff: 0,   yOff: 0,   timingMod: 1.0,  hrMod: 1.0,  color: '#ffffff' },
+    inside:  { label: 'INSIDE',  icon: '←', xOff: -30,  yOff: 0,   timingMod: 0.85, hrMod: 1.3,  color: '#ff6b35' },
+    outside: { label: 'OUTSIDE', icon: '→', xOff: 30,   yOff: 0,   timingMod: 0.9,  hrMod: 0.7,  color: '#4fc3f7' },
+    high:    { label: 'HIGH',    icon: '↑', xOff: 0,    yOff: -20,  timingMod: 0.88, hrMod: 0.8,  color: '#ffd740' },
+    low:     { label: 'LOW',     icon: '↓', xOff: 0,    yOff: 15,  timingMod: 0.92, hrMod: 0.6,  color: '#69f0ae' },
+};
+
+const ZONE_NAMES = ['center', 'inside', 'outside', 'high', 'low'];
 
 // ============================================================================
 // SECTION 7: Inline AI (System 23)
@@ -5874,6 +6024,186 @@ const pitchHistory = {
     },
 };
 
+// ================================================================
+// PHASE 4: STATCAST METRICS SYSTEM
+// ================================================================
+const statcastPopup = {
+    active: false,
+    exitVelo: 0,
+    launchAngle: 0,
+    result: '',
+    timer: 0,
+    maxTime: 2.0,
+    isPerfect: false,
+
+    trigger(exitVelo, launchAngle, result, isPerfect) {
+        this.active = true;
+        this.exitVelo = Math.round(exitVelo);
+        this.launchAngle = Math.round(launchAngle);
+        this.result = result;
+        this.timer = this.maxTime;
+        this.isPerfect = isPerfect;
+    },
+
+    update(dt) {
+        if (this.active) {
+            this.timer -= dt;
+            if (this.timer <= 0) this.active = false;
+        }
+    },
+
+    draw(ctx) {
+        if (!this.active || this.timer <= 0) return;
+        const alpha = this.timer < 0.5 ? this.timer / 0.5 : 1;
+        const rise = (this.maxTime - this.timer) * 15;
+        const baseY = H * 0.68 - rise;
+        const baseX = W / 2;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        // Background pill
+        const pillW = 160, pillH = 44;
+        const pg = ctx.createLinearGradient(baseX - pillW / 2, baseY - pillH / 2, baseX - pillW / 2, baseY + pillH / 2);
+        pg.addColorStop(0, 'rgba(10,15,30,0.92)');
+        pg.addColorStop(1, 'rgba(5,10,20,0.88)');
+        ctx.fillStyle = pg;
+        ctx.beginPath();
+        ctx.roundRect(baseX - pillW / 2, baseY - pillH / 2, pillW, pillH, 10);
+        ctx.fill();
+
+        // Border
+        const bc = this.isPerfect ? '#ffd740' : '#00e5ff';
+        ctx.strokeStyle = bc;
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = bc;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.roundRect(baseX - pillW / 2, baseY - pillH / 2, pillW, pillH, 10);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Exit Velo
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = bc;
+        ctx.fillText(this.exitVelo + ' MPH', baseX, baseY - 9);
+
+        // Launch Angle
+        ctx.font = '10px sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText('LAUNCH: ' + this.launchAngle + '°', baseX, baseY + 9);
+
+        // Label
+        ctx.font = 'bold 6px sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.fillText('STATCAST', baseX, baseY - pillH / 2 + 6);
+
+        ctx.restore();
+    }
+};
+
+// ================================================================
+// PHASE 6: SLOW-MO HOME RUN REPLAY
+// ================================================================
+const slowMoReplay = {
+    active: false,
+    timer: 0,
+    duration: 1.5,
+    timeScale: 1.0, // applied to dt in game update
+    letterboxH: 0,
+
+    trigger() {
+        this.active = true;
+        this.timer = 0;
+        this.timeScale = 0.3;
+        this.letterboxH = 0;
+    },
+
+    update(dt) {
+        if (!this.active) return;
+        this.timer += dt; // real dt, not scaled
+
+        // Phase transitions
+        if (this.timer < 0.1) {
+            // Ramp down
+            this.timeScale = 1.0 - (this.timer / 0.1) * 0.7;
+            this.letterboxH = (this.timer / 0.1) * 40;
+        } else if (this.timer < 0.9) {
+            // Slow-mo hold
+            this.timeScale = 0.3;
+            this.letterboxH = 40;
+        } else if (this.timer < 1.2) {
+            // Ramp back up
+            const rampProgress = (this.timer - 0.9) / 0.3;
+            this.timeScale = 0.3 + rampProgress * 0.7;
+            this.letterboxH = 40 * (1 - rampProgress);
+        } else {
+            // Done
+            this.active = false;
+            this.timeScale = 1.0;
+            this.letterboxH = 0;
+        }
+    },
+
+    draw(ctx) {
+        if (!this.active) return;
+
+        // Letterbox bars
+        if (this.letterboxH > 1) {
+            ctx.fillStyle = 'rgba(0,0,0,0.85)';
+            ctx.fillRect(0, 0, W, this.letterboxH);
+            ctx.fillRect(0, H - this.letterboxH, W, this.letterboxH);
+        }
+
+        // Vignette during slow-mo
+        if (this.timer > 0.1 && this.timer < 0.9) {
+            const vig = ctx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H*0.6);
+            vig.addColorStop(0, 'rgba(0,0,0,0)');
+            vig.addColorStop(1, 'rgba(0,0,0,0.4)');
+            ctx.fillStyle = vig;
+            ctx.fillRect(0, 0, W, H);
+        }
+
+        // "REPLAY" flash text at start
+        if (this.timer < 0.4) {
+            const fa = Math.min(1, this.timer / 0.1) * (this.timer < 0.3 ? 1 : 1 - (this.timer - 0.3) / 0.1);
+            ctx.save();
+            ctx.globalAlpha = fa * 0.6;
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#ffd740';
+            ctx.fillText('⏪ REPLAY', W / 2, this.letterboxH + 15);
+            ctx.restore();
+        }
+
+        // Speed lines during slow-mo phase
+        if (this.timer > 0.1 && this.timer < 0.9) {
+            ctx.save();
+            ctx.globalAlpha = 0.15;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 8; i++) {
+                const angle = (Date.now() * 0.001 + i * Math.PI / 4) % (Math.PI * 2);
+                const cx = W / 2, cy = H * 0.48;
+                const r1 = 60 + i * 10;
+                const r2 = r1 + 40;
+                ctx.beginPath();
+                ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1);
+                ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    },
+
+    getTimeScale() {
+        return this.active ? this.timeScale : 1.0;
+    }
+};
+
 // Performance Grade
 const performanceGrade = {
     grade:      '',
@@ -6185,6 +6515,23 @@ function drawHUD(ctx, session) {
         ctx.textAlign = 'center';
         ctx.fillText('◀◀  SWIPE TO SWING  ▶▶', W / 2, 70);
         ctx.restore();
+    }
+
+    // === PHASE 3: Zone indicator ===
+    if (session.pitchZone && session.zoneFlashTimer > 0) {
+        const zd = PITCH_ZONES[session.pitchZone];
+        if (zd && session.pitchZone !== 'center') {
+            const zAlpha = Math.min(1, session.zoneFlashTimer * 2);
+            ctx.save();
+            ctx.globalAlpha = zAlpha * 0.8;
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = zd.color;
+            ctx.shadowColor = zd.color;
+            ctx.shadowBlur = 8;
+            ctx.fillText(zd.icon + ' ' + zd.label, W / 2, 85);
+            ctx.restore();
+        }
     }
 
     // ── RADAR GUN PANEL — REMOVED (speed shown in pitch info badge) ─────
@@ -6623,6 +6970,61 @@ const stadiumTicker = {
         ctx.restore();
     }
 };
+
+// ================================================================
+// PHASE 2: BATTING STANCE TOGGLE
+// ================================================================
+function drawStanceToggle(ctx, session) {
+    if (!session || currentScreen !== 'playing' || isPaused) return;
+    const stance = session.battingStance || 'contact';
+    const isP = stance === 'power';
+    const btnX = W - 45;
+    const btnY = H - 110;
+    const btnR = 24;
+
+    ctx.save();
+
+    // Glow
+    const gc = isP ? '#ff6b35' : '#00e5ff';
+    ctx.shadowColor = gc;
+    ctx.shadowBlur = 10 + Math.sin(Date.now() * 0.005) * 4;
+
+    // Background
+    const bg = ctx.createRadialGradient(btnX, btnY, 0, btnX, btnY, btnR);
+    if (isP) {
+        bg.addColorStop(0, 'rgba(255,107,53,0.3)');
+        bg.addColorStop(1, 'rgba(200,60,20,0.5)');
+    } else {
+        bg.addColorStop(0, 'rgba(0,229,255,0.2)');
+        bg.addColorStop(1, 'rgba(0,150,200,0.4)');
+    }
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Border
+    ctx.strokeStyle = gc;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Icon
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(isP ? '💪' : '🎯', btnX, btnY - 1);
+
+    // Label
+    ctx.font = 'bold 7px sans-serif';
+    ctx.fillStyle = gc;
+    ctx.fillText(isP ? 'POWER' : 'CONTACT', btnX, btnY + btnR + 10);
+
+    ctx.restore();
+}
 
 // ─── Pitch Count Display (Balls / Strikes indicator) ─────────────────────────
 const pitchCountDisplay = {
@@ -7726,12 +8128,109 @@ function drawGameOverScreen(ctx) {
         ctx.restore();
     }
 
+    // ── PHASE 5: Spray Chart & Analytics ────────────────────────────────
+    const chartVis = Math.min(1, (rev - 0.7) * 2.5);
+    if (chartVis > 0 && currentGame && currentGame.statcastLog && currentGame.statcastLog.length > 0) {
+        ctx.save();
+        ctx.globalAlpha = chartVis;
+
+        const scLog = currentGame.statcastLog;
+        const chartX = W / 2;
+        const chartY = 410;
+        const chartSize = 60; // half-size of diamond
+
+        // Draw diamond outline
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(chartX, chartY + chartSize); // home plate
+        ctx.lineTo(chartX + chartSize, chartY); // 1st base
+        ctx.lineTo(chartX, chartY - chartSize); // 2nd base / CF
+        ctx.lineTo(chartX - chartSize, chartY); // 3rd base
+        ctx.closePath();
+        ctx.stroke();
+
+        // Outfield arc
+        ctx.beginPath();
+        ctx.arc(chartX, chartY + chartSize, chartSize * 1.8, -Math.PI * 0.85, -Math.PI * 0.15);
+        ctx.stroke();
+
+        // Plot hits
+        for (const h of scLog) {
+            let dx = (Math.random() - 0.5) * chartSize * 1.2;
+            let dy = 0;
+            let dotColor = '#888';
+            let dotR = 3;
+
+            if (h.result === 'HOME RUN!') {
+                dy = -chartSize * 1.3 - Math.random() * 20;
+                dx = (Math.random() - 0.5) * chartSize * 1.4;
+                dotColor = '#ff4444';
+                dotR = 4;
+            } else if (h.result === 'BASE HIT') {
+                dy = -chartSize * 0.5 - Math.random() * chartSize * 0.6;
+                dx = (Math.random() - 0.5) * chartSize * 1.0;
+                dotColor = '#00e5ff';
+                dotR = 3.5;
+            } else if (h.result === 'FOUL') {
+                // Foul territory
+                const side = Math.random() > 0.5 ? 1 : -1;
+                dx = side * (chartSize * 0.6 + Math.random() * 20);
+                dy = Math.random() * chartSize * 0.5;
+                dotColor = 'rgba(255,255,255,0.3)';
+                dotR = 2.5;
+            }
+
+            ctx.fillStyle = dotColor;
+            ctx.shadowColor = dotColor;
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.arc(chartX + dx, chartY + dy, dotR, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // Label
+        ctx.font = 'bold 8px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillText('SPRAY CHART', chartX, chartY + chartSize + 18);
+
+        // === Analytics Row ===
+        const anaY = chartY + chartSize + 32;
+        const avgVelo = scLog.reduce((s, h) => s + h.exitVelo, 0) / scLog.length;
+        const maxVelo = Math.max(...scLog.map(h => h.exitVelo));
+        const perfects = scLog.filter(h => h.timing === 'perfect').length;
+        const hrs = scLog.filter(h => h.result === 'HOME RUN!').length;
+
+        const anaData = [
+            { label: 'AVG VELO', value: Math.round(avgVelo) + ' mph', color: '#00e5ff' },
+            { label: 'MAX VELO', value: maxVelo + ' mph', color: '#ffd740' },
+            { label: 'PERFECT', value: perfects + '/' + scLog.length, color: '#69f0ae' },
+            { label: 'HR RATE', value: Math.round(hrs / Math.max(1, scLog.length) * 100) + '%', color: '#ff6b35' },
+        ];
+
+        const anaSpacing = W / 4;
+        for (let ai = 0; ai < anaData.length; ai++) {
+            const ax = anaSpacing * ai + anaSpacing / 2;
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = anaData[ai].color;
+            ctx.fillText(anaData[ai].value, ax, anaY);
+            ctx.font = '6px sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillText(anaData[ai].label, ax, anaY + 12);
+        }
+
+        ctx.restore();
+    }
+
     // ── Action buttons ──────────────────────────────────────────────────
     const btnVis = Math.min(1, (rev - 0.9) * 3);
     if (btnVis > 0) {
         ctx.save();
         ctx.globalAlpha = btnVis;
-        const btnY = 414;
+        const btnY = 520;
         const btnW = 145, btnH = 46;
 
         // Play Again button
@@ -9217,6 +9716,118 @@ function drawStatsScreen(ctx) {
         }
     }
     ctx.restore();
+
+    // === PHASE 7: ADVANCED ANALYTICS ===
+    const anaStartY = H - 300;
+
+    // Section header
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffd740';
+    ctx.fillText('ADVANCED ANALYTICS', W / 2, anaStartY);
+
+    // Divider line
+    ctx.strokeStyle = 'rgba(255,215,64,0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, anaStartY + 8);
+    ctx.lineTo(W - 40, anaStartY + 8);
+    ctx.stroke();
+
+    // Career stats grid (2 columns — uses gs from drawStatsScreen scope)
+    const avgVelo = gs.careerExitVelos.length > 0
+        ? Math.round(gs.careerExitVelos.reduce((a,b) => a+b, 0) / gs.careerExitVelos.length)
+        : 0;
+    const perfectRate = gs.careerPitchCount > 0
+        ? Math.round(gs.careerPerfectCount / gs.careerPitchCount * 100)
+        : 0;
+    const hrRate = gs.careerHitCount > 0
+        ? Math.round((gs.totalHRs || 0) / gs.careerHitCount * 100)
+        : 0;
+
+    const anaStats = [
+        { label: 'AVG EXIT VELO', value: avgVelo + ' mph', color: '#00e5ff' },
+        { label: 'MAX EXIT VELO', value: gs.careerMaxExitVelo + ' mph', color: '#ffd740' },
+        { label: 'PERFECT RATE', value: perfectRate + '%', color: '#69f0ae' },
+        { label: 'HR RATE', value: hrRate + '%', color: '#ff6b35' },
+    ];
+
+    const colW = W / 2;
+    for (let i = 0; i < anaStats.length; i++) {
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        const ax = col * colW + colW / 2;
+        const ay = anaStartY + 28 + row * 40;
+
+        ctx.font = 'bold 18px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = anaStats[i].color;
+        ctx.fillText(anaStats[i].value, ax, ay);
+
+        ctx.font = '7px sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillText(anaStats[i].label, ax, ay + 14);
+    }
+
+    // Hit distribution bar chart
+    const barY = anaStartY + 110;
+    const hrCount = gs.totalHRs || 0;
+    const hitCount = Math.max(0, (gs.careerHitCount || 0) - hrCount);
+    const otherCount = Math.max(0, (gs.totalGames || 0) * 5 - (gs.careerHitCount || 0));
+    const maxVal = Math.max(1, hrCount, hitCount, otherCount);
+
+    ctx.font = 'bold 8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText('HIT DISTRIBUTION', W / 2, barY);
+
+    const bars = [
+        { label: 'HR', count: hrCount, color: '#ff4444' },
+        { label: 'HITS', count: hitCount, color: '#00e5ff' },
+        { label: 'OUTS', count: otherCount, color: '#888888' },
+    ];
+
+    const barMaxW = W - 120;
+    const barH = 14;
+    const barGap = 6;
+    const barStartX = 65;
+
+    for (let bi = 0; bi < bars.length; bi++) {
+        const by = barY + 12 + bi * (barH + barGap);
+        const bw = Math.max(4, (bars[bi].count / maxVal) * barMaxW);
+
+        // Background
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.beginPath();
+        ctx.roundRect(barStartX, by, barMaxW, barH, 4);
+        ctx.fill();
+
+        // Fill
+        ctx.fillStyle = bars[bi].color;
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.roundRect(barStartX, by, bw, barH, 4);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Label
+        ctx.save();
+        ctx.font = 'bold 7px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(bars[bi].label, barStartX - 5, by + barH / 2);
+        ctx.restore();
+
+        // Count
+        ctx.save();
+        ctx.font = 'bold 7px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(bars[bi].count.toString(), barStartX + bw + 5, by + barH / 2);
+        ctx.restore();
+    }
 }
 
 // ============================================================================
@@ -9616,7 +10227,7 @@ function drawSettingsScreen(ctx) {
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version + '  ·  ' + APP_CONFIG.studio, W / 2, H - 22);
+    ctx.fillText(APP_CONFIG.name + '  ·  v' + APP_CONFIG.version, W / 2, H - 22);
 }
 
 function handleSettingsTap(x, y) {
@@ -9900,6 +10511,10 @@ function startGame(difficulty) {
     gameState.saveToStorage();
     currentGame = new GameSession(difficulty);
 
+    // === PHASE 6: Reset slow-mo replay ===
+    slowMoReplay.active = false;
+    slowMoReplay.timeScale = 1.0;
+
     // Consume and activate power-ups for this game
     _activeScoreBoost = false;
     _activeCoinMagnet = false;
@@ -9960,6 +10575,9 @@ function startLevelGame(levelNum) {
     if (!lc) return;
     gameState._currentLevelConfig = lc;
     currentGame = new GameSession('level', lc);
+    // === PHASE 6: Reset slow-mo replay ===
+    slowMoReplay.active = false;
+    slowMoReplay.timeScale = 1.0;
     currentGame.startWindup();
     inlineAI.reset();
     mlDataStore.events = [];
@@ -10095,6 +10713,19 @@ function endGame(won) {
         coins: currentGame.coinsEarned,
     });
     if (gameState.matchHistory.length > 10) gameState.matchHistory.pop();
+
+    // === PHASE 7: Update career analytics ===
+    if (currentGame && currentGame.statcastLog) {
+        for (const h of currentGame.statcastLog) {
+            gameState.careerExitVelos.push(h.exitVelo);
+            if (gameState.careerExitVelos.length > 100) gameState.careerExitVelos.shift();
+            if (h.exitVelo > gameState.careerMaxExitVelo) gameState.careerMaxExitVelo = h.exitVelo;
+            if (h.timing === 'perfect') gameState.careerPerfectCount++;
+            gameState.careerHitCount++;
+        }
+        gameState.careerPitchCount += currentGame.atBat;
+    }
+
     gameState.saveToStorage();
 
     // Sync to Convex Cloud
@@ -10318,6 +10949,16 @@ function handleTap(x, y) {
         if (hitTestSurgeButton(x, y) && getActivePowerShot() && !_surgeActivated) {
             activateSurge();
             return;
+        }
+        // === PHASE 2: Stance toggle tap ===
+        if (currentGame && !isPaused) {
+            const stX = W - 45, stY = H - 110, stR = 30;
+            const sdx = x - stX, sdy = y - stY;
+            if (sdx * sdx + sdy * sdy <= stR * stR) {
+                currentGame.battingStance = currentGame.battingStance === 'contact' ? 'power' : 'contact';
+                audio.play('click');
+                return;
+            }
         }
     } else if (currentScreen === 'pauseOverlay') {
         if (hitTest(_pauseButtons.resume, x, y)) {

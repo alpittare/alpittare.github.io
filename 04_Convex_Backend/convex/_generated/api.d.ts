@@ -9,6 +9,8 @@
  */
 
 import type * as achievements from "../achievements.js";
+import type * as arenaMultiplayer from "../arenaMultiplayer.js";
+import type * as arenaTick from "../arenaTick.js";
 import type * as campaign from "../campaign.js";
 import type * as claude from "../claude.js";
 import type * as leaderboard from "../leaderboard.js";
@@ -25,6 +27,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
+  arenaMultiplayer: typeof arenaMultiplayer;
+  arenaTick: typeof arenaTick;
   campaign: typeof campaign;
   claude: typeof claude;
   leaderboard: typeof leaderboard;

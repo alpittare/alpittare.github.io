@@ -460,7 +460,7 @@ const FootballConfig = {
         radius: 12,
         shotSpeed: 18,           // base speed (px/frame)
         friction: 0.995,         // velocity decay/frame
-        curveDecay: 0.97,        // curve force decay/frame
+        curveDecay: 0.96,        // curve force decay/frame — tighter arc
         heightGravity: 0.25,     // chip shot gravity (px/frame²)
         maxHeight: 12,           // cap height for chip shots
         chipThreshold: 0.85,     // power threshold to trigger chip
@@ -655,7 +655,7 @@ class Football extends Entity {
         const speed = cfg.shotSpeed * FBUtils.clamp(power, FootballConfig.kicker.minPower, 1.0);
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.curveForce = curve * 0.3;
+        this.curveForce = curve; // direct — tuned in _shoot()
         this.active = true;
 
         // Chip shot at high power
@@ -899,8 +899,20 @@ class Goalkeeper extends Entity {
         const baseReachY = this.height * 0.5 + 25;
 
         const earlyBonus = this.earlyDiveBonus || 0;
-        const reachX = (baseReachX + earlyBonus * 20) * reach;
+        let reachX = (baseReachX + earlyBonus * 20) * reach;
         const reachY = (baseReachY + earlyBonus * 10) * reach;
+
+        // === WRONG-DIRECTION PENALTY ===
+        // If keeper dove one way but ball is on the OTHER side, drastically reduce reach
+        if (this.state === 'dive' && this.diveDirection !== 0 && this.diveProgress > 0.1) {
+            const goalCX = FootballConfig.field.goalCenterX;
+            const ballSide = ballX < goalCX - 15 ? -1 : (ballX > goalCX + 15 ? 1 : 0);
+            if (ballSide !== 0 && ballSide !== this.diveDirection) {
+                // Keeper dove wrong way — reach shrinks with dive commitment
+                const wrongPenalty = this.diveProgress * 0.85;
+                reachX *= (1.0 - wrongPenalty);
+            }
+        }
 
         // Chip shots reduce save effectiveness
         const heightPenalty = ballHeight > 2 ? Math.min(ballHeight * 1.5, 18) : 0;
@@ -4234,8 +4246,7 @@ const DESIGN = {
     ballRadius: 12,
     keeperWidth: 50,
     keeperHeight: 70,
-    joystickRadius: 70,
-    joystickKnobRadius: 30,
+    // joystick removed — swipe-only input
     swipeThreshold: 30,
     maxPower: 1.0,
     shotSpeed: 18,
@@ -4845,158 +4856,7 @@ class GameStorage {
     }
 }
 
-// ===== joystick.js =====
-// ============================================================================
-// JOYSTICK — Virtual touch joystick + swipe-to-shoot system
-// ============================================================================
-
-class VirtualJoystick {
-    constructor() {
-        // Position (set dynamically based on canvas size)
-        this.baseX = 0;
-        this.baseY = 0;
-        this.radius = DESIGN.joystickRadius;
-        this.knobRadius = DESIGN.joystickKnobRadius;
-
-        // State
-        this.active = false;
-        this.knobX = 0;
-        this.knobY = 0;
-        this.dx = 0;     // normalized -1 to 1
-        this.dy = 0;     // normalized -1 to 1
-        this.magnitude = 0;
-        this.angle = 0;
-        this.touchId = null;
-
-        // Visual
-        this.opacity = 0;
-        this.pulsePhase = 0;
-    }
-
-    setPosition(x, y) {
-        this.baseX = x;
-        this.baseY = y;
-        this.knobX = x;
-        this.knobY = y;
-    }
-
-    handleTouchStart(touch) {
-        const dx = touch.x - this.baseX;
-        const dy = touch.y - this.baseY;
-        const d = Math.sqrt(dx * dx + dy * dy);
-
-        if (d < this.radius * 2) {
-            this.active = true;
-            this.touchId = touch.id;
-            this._updateKnob(touch.x, touch.y);
-            return true;
-        }
-        return false;
-    }
-
-    handleTouchMove(touch) {
-        if (!this.active || touch.id !== this.touchId) return false;
-        this._updateKnob(touch.x, touch.y);
-        return true;
-    }
-
-    handleTouchEnd(touch) {
-        if (touch.id !== this.touchId) return false;
-        this.active = false;
-        this.touchId = null;
-        this.dx = 0;
-        this.dy = 0;
-        this.magnitude = 0;
-        this.knobX = this.baseX;
-        this.knobY = this.baseY;
-        return true;
-    }
-
-    _updateKnob(x, y) {
-        let dx = x - this.baseX;
-        let dy = y - this.baseY;
-        const d = Math.sqrt(dx * dx + dy * dy);
-
-        if (d > this.radius) {
-            dx = (dx / d) * this.radius;
-            dy = (dy / d) * this.radius;
-        }
-
-        this.knobX = this.baseX + dx;
-        this.knobY = this.baseY + dy;
-        this.dx = dx / this.radius;
-        this.dy = dy / this.radius;
-        this.magnitude = Math.min(d / this.radius, 1);
-        this.angle = Math.atan2(dy, dx);
-    }
-
-    update() {
-        this.pulsePhase += 0.05;
-        this.opacity = Utils.lerp(this.opacity, this.active ? 1 : 0.4, 0.15);
-    }
-
-    draw(ctx) {
-        ctx.save();
-
-        const pulse = 1 + Math.sin(this.pulsePhase) * 0.03;
-
-        // Base ring (outer)
-        ctx.globalAlpha = this.opacity * 0.3;
-        ctx.strokeStyle = COLORS.primary;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(this.baseX, this.baseY, this.radius * pulse, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Base fill
-        ctx.globalAlpha = this.opacity * 0.08;
-        ctx.fillStyle = COLORS.primary;
-        ctx.beginPath();
-        ctx.arc(this.baseX, this.baseY, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Direction indicators (cardinal lines)
-        ctx.globalAlpha = this.opacity * 0.15;
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 4; i++) {
-            const a = (Math.PI / 2) * i;
-            ctx.beginPath();
-            ctx.moveTo(this.baseX + Math.cos(a) * 20, this.baseY + Math.sin(a) * 20);
-            ctx.lineTo(this.baseX + Math.cos(a) * (this.radius - 10), this.baseY + Math.sin(a) * (this.radius - 10));
-            ctx.stroke();
-        }
-
-        // Knob shadow
-        ctx.globalAlpha = this.opacity * 0.3;
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
-        ctx.arc(this.knobX + 2, this.knobY + 3, this.knobRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Knob
-        ctx.globalAlpha = this.opacity;
-        const grad = ctx.createRadialGradient(
-            this.knobX - 5, this.knobY - 5, 2,
-            this.knobX, this.knobY, this.knobRadius
-        );
-        grad.addColorStop(0, this.active ? COLORS.primaryLight : '#ffffff');
-        grad.addColorStop(1, this.active ? COLORS.primary : '#cccccc');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(this.knobX, this.knobY, this.knobRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Knob highlight
-        ctx.globalAlpha = this.opacity * 0.5;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(this.knobX - 6, this.knobY - 6, this.knobRadius * 0.3, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-    }
-}
+// (VirtualJoystick class removed — swipe-only input)
 
 // ============================================================================
 // SWIPE DETECTOR — For shooting
@@ -5098,7 +4958,6 @@ class TouchManager {
         this.offsetX = 0;
         this.offsetY = 0;
 
-        this.joystick = new VirtualJoystick();
         this.swipe = new SwipeDetector();
         this.taps = []; // for UI button taps
 
@@ -5137,17 +4996,12 @@ class TouchManager {
     _bindEvents() {
         const c = this.canvas;
 
-        // Touch events
+        // Touch events — all touches go to swipe (joystick disabled)
         c.addEventListener('touchstart', (e) => {
             e.preventDefault();
             for (const ct of e.changedTouches) {
                 const t = this._getTouch(e, ct);
-                // Left side = joystick, right side = swipe (in playing state)
-                if (t.x < DESIGN.width / 2) {
-                    this.joystick.handleTouchStart(t);
-                } else {
-                    this.swipe.handleTouchStart(t);
-                }
+                this.swipe.handleTouchStart(t);
                 this.taps.push({ x: t.x, y: t.y, time: Date.now() });
             }
         }, { passive: false });
@@ -5156,7 +5010,6 @@ class TouchManager {
             e.preventDefault();
             for (const ct of e.changedTouches) {
                 const t = this._getTouch(e, ct);
-                this.joystick.handleTouchMove(t);
                 this.swipe.handleTouchMove(t);
             }
         }, { passive: false });
@@ -5165,7 +5018,6 @@ class TouchManager {
             e.preventDefault();
             for (const ct of e.changedTouches) {
                 const t = this._getTouch(e, ct);
-                this.joystick.handleTouchEnd(t);
                 this.swipe.handleTouchEnd(t);
             }
         }, { passive: false });
@@ -5173,7 +5025,6 @@ class TouchManager {
         c.addEventListener('touchcancel', (e) => {
             for (const ct of e.changedTouches) {
                 const t = this._getTouch(e, ct);
-                this.joystick.handleTouchEnd(t);
                 this.swipe.handleTouchEnd(t);
             }
         });
@@ -5183,25 +5034,19 @@ class TouchManager {
         c.addEventListener('mousedown', (e) => {
             mouseDown = true;
             const t = this._getMouse(e);
-            if (t.x < DESIGN.width / 2) {
-                this.joystick.handleTouchStart(t);
-            } else {
-                this.swipe.handleTouchStart(t);
-            }
+            this.swipe.handleTouchStart(t);
             this.taps.push({ x: t.x, y: t.y, time: Date.now() });
         });
 
         c.addEventListener('mousemove', (e) => {
             if (!mouseDown) return;
             const t = this._getMouse(e);
-            this.joystick.handleTouchMove(t);
             this.swipe.handleTouchMove(t);
         });
 
         c.addEventListener('mouseup', (e) => {
             mouseDown = false;
             const t = this._getMouse(e);
-            this.joystick.handleTouchEnd(t);
             this.swipe.handleTouchEnd(t);
         });
     }
@@ -5212,7 +5057,7 @@ class TouchManager {
     }
 
     update() {
-        this.joystick.update();
+        // swipe-only — no joystick update needed
     }
 }
 
@@ -5256,22 +5101,21 @@ class Ball {
         const speed = DESIGN.shotSpeed * power;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.curveForce = (curve || 0) * 0.8;
+        this.curveForce = curve || 0; // direct — tuned in _shoot()
         this.active = true;
 
-        // Chip: slight lift on high power shots (not unsaveable)
-        // Max height ~8-10 at power=1.0, making it harder but not impossible to save
+        // Chip: slight lift on high power shots
         if (power > 0.85) {
-            this.heightVel = (power - 0.85) * 20; // 0-3 range, much less than before
+            this.heightVel = (power - 0.85) * 20;
         }
     }
 
     update() {
         if (!this.active) return;
 
-        // Apply curve (swerve) — slower decay = longer, more visible bend
+        // Apply curve (swerve) — 0.96 decay = tighter, dramatic arc
         this.vx += this.curveForce;
-        this.curveForce *= 0.985;
+        this.curveForce *= 0.96;
 
         // Move
         this.x += this.vx;
@@ -5303,18 +5147,17 @@ class Ball {
                 surge: this.surgeMode, surgeLevel: this.surgeLevel, style: this.surgeStyle,
                 curve: this.curveIntensity > 0.15 // flag curved trail points
             });
-            // Banana kick: extra swerve particles when curving hard
-            if (this.curveIntensity > 0.2 && speed > 4) {
-                const spread = 6 + this.curveIntensity * 15;
-                for (let ci = 0; ci < 2; ci++) {
-                    this.trail.push({
-                        x: this.x + Utils.randRange(-spread, spread) * -this.curveDirection,
-                        y: this.y - this.height + Utils.randRange(-3, 3),
-                        alpha: 0.8 + Math.random() * 0.2,
-                        size: this.radius * (0.3 + Math.random() * 0.3),
-                        surge: false, curve: true, curveParticle: true
-                    });
-                }
+            // Curve swerve particles — scale with curve intensity
+            if (this.curveIntensity > 0.12 && speed > 4) {
+                const spread = 4 + this.curveIntensity * 12;
+                this.trail.push({
+                    x: this.x + Utils.randRange(-spread, spread) * -this.curveDirection,
+                    y: this.y - this.height + Utils.randRange(-2, 2),
+                    alpha: 0.6 + this.curveIntensity * 0.8,
+                    size: this.radius * (0.25 + Math.random() * 0.25),
+                    surge: false, curveTrail: true,
+                    curveLevel: this.curveIntensity > 0.25 ? 3 : (this.curveIntensity > 0.15 ? 2 : 1)
+                });
             }
             // Surge mode: extra trail particles scale with level (L1=0, L2=1, L3=2, L4=3)
             if (this.surgeMode && speed > 5) {
@@ -5407,15 +5250,16 @@ class Ball {
                     ctx.arc(t.x, t.y, t.size * (0.3 + progress * 0.7), 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-                } else if (t.curve) {
-                    // BANANA KICK TRAIL — yellow-orange swerve particles
-                    const r = Math.round(255);
-                    const g = Math.round(Utils.lerp(180, 255, progress));
-                    const b = Math.round(Utils.lerp(0, 50, progress));
-                    ctx.globalAlpha = t.alpha * (t.curveParticle ? 0.5 : 0.4);
-                    ctx.shadowColor = `rgb(${r},${g},${b})`;
-                    ctx.shadowBlur = t.curveParticle ? 8 : 5;
-                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                } else if (t.curveTrail) {
+                    // CURVE TRAIL — tiered colors (blue/cyan/gold)
+                    const cl = t.curveLevel || 1;
+                    const cr = cl >= 3 ? 255 : (cl >= 2 ? 80 : 140);
+                    const cg = cl >= 3 ? Math.round(Utils.lerp(180, 240, progress)) : (cl >= 2 ? Math.round(Utils.lerp(200, 240, progress)) : Math.round(Utils.lerp(190, 230, progress)));
+                    const cb = cl >= 3 ? Math.round(Utils.lerp(0, 80, progress)) : 255;
+                    ctx.globalAlpha = t.alpha * 0.45;
+                    ctx.shadowColor = cl >= 3 ? '#ff8800' : '#44aaff';
+                    ctx.shadowBlur = cl >= 3 ? 8 : 5;
+                    ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
                     ctx.beginPath();
                     ctx.arc(t.x, t.y, t.size * (0.25 + progress * 0.5), 0, Math.PI * 2);
                     ctx.fill();
@@ -5498,40 +5342,51 @@ class Ball {
             ctx.fill();
         }
 
-        // BANANA KICK EFFECTS — swirl aura + wind lines when curving
-        if (this.active && this.curveIntensity > 0.15 && speed > 4) {
-            const ci = Math.min(this.curveIntensity, 1.5);
+        // === UNIFIED CURVE AURA — intensity-based ===
+        if (this.active && this.curveIntensity > 0.08 && speed > 3) {
+            const ci = Math.min(this.curveIntensity, 0.4);
             const dir = this.curveDirection;
-
-            // Orange-yellow swerve aura
-            const auraR = r * (2.0 + ci * 2);
-            const auraAlpha = Math.min(0.35, ci * 0.3);
-            const auraGrad = ctx.createRadialGradient(dir * -r * 0.5, 0, r * 0.5, 0, 0, auraR);
-            auraGrad.addColorStop(0, `rgba(255,200,0,${auraAlpha})`);
-            auraGrad.addColorStop(0.5, `rgba(255,140,0,${auraAlpha * 0.4})`);
-            auraGrad.addColorStop(1, 'rgba(255,100,0,0)');
+            const isBanana = ci > 0.25;
+            const isStrong = ci > 0.15;
+            const auraR = r * (1.8 + ci * 4);
+            const auraAlpha = Math.min(0.3, ci * 0.8);
+            const auraGrad = ctx.createRadialGradient(dir * -r * 0.4, 0, r * 0.3, 0, 0, auraR);
+            if (isBanana) {
+                auraGrad.addColorStop(0, `rgba(255,200,0,${auraAlpha})`);
+                auraGrad.addColorStop(0.6, `rgba(255,140,0,${auraAlpha * 0.3})`);
+                auraGrad.addColorStop(1, 'rgba(255,100,0,0)');
+            } else if (isStrong) {
+                auraGrad.addColorStop(0, `rgba(100,220,255,${auraAlpha})`);
+                auraGrad.addColorStop(0.6, `rgba(50,150,255,${auraAlpha * 0.3})`);
+                auraGrad.addColorStop(1, 'rgba(0,100,255,0)');
+            } else {
+                auraGrad.addColorStop(0, `rgba(180,220,255,${auraAlpha * 0.6})`);
+                auraGrad.addColorStop(0.6, `rgba(120,180,255,${auraAlpha * 0.2})`);
+                auraGrad.addColorStop(1, 'rgba(80,140,255,0)');
+            }
             ctx.fillStyle = auraGrad;
             ctx.beginPath();
             ctx.arc(0, 0, auraR, 0, Math.PI * 2);
             ctx.fill();
-
-            // Spinning wind arcs (3 arcs rotating around ball)
-            const windTime = this.spinAngle * 2;
-            ctx.lineWidth = 1.5;
-            for (let w = 0; w < 3; w++) {
-                const wa = windTime + w * (Math.PI * 2 / 3);
-                const windR = r * (1.4 + ci * 0.8) + Math.sin(windTime * 2 + w) * 3;
-                const arcLen = Math.PI * (0.3 + ci * 0.2);
-                ctx.globalAlpha = 0.3 + ci * 0.15;
-                ctx.strokeStyle = w === 0 ? '#ffcc00' : (w === 1 ? '#ff8800' : '#ffee44');
-                ctx.shadowColor = '#ff8800';
-                ctx.shadowBlur = 4;
-                ctx.beginPath();
-                ctx.arc(0, 0, windR, wa * dir, (wa + arcLen) * dir, dir < 0);
-                ctx.stroke();
+            if (isStrong) {
+                const windTime = this.spinAngle * 2;
+                ctx.lineWidth = 1.5;
+                const arcCount = isBanana ? 3 : 2;
+                for (let w = 0; w < arcCount; w++) {
+                    const wa = windTime + w * (Math.PI * 2 / arcCount);
+                    const windR = r * (1.3 + ci * 1.5) + Math.sin(windTime * 2 + w) * 2;
+                    const arcLen = Math.PI * (0.25 + ci * 0.3);
+                    ctx.globalAlpha = 0.25 + ci * 0.4;
+                    ctx.strokeStyle = isBanana ? (w === 0 ? '#ffcc00' : '#ff8800') : (w === 0 ? '#66eeff' : '#44aaff');
+                    ctx.shadowColor = isBanana ? '#ff8800' : '#00aaff';
+                    ctx.shadowBlur = 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, windR, wa * dir, (wa + arcLen) * dir, dir < 0);
+                    ctx.stroke();
+                }
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
             }
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
         }
 
         // Ball body — themed gradient from BALL_VISUALS
@@ -5700,11 +5555,25 @@ class Goalkeeper {
 
         // Early dive bonus: keeper who committed early has extended reach
         const earlyBonus = this.earlyDiveBonus || 0;
-        const reachX = (baseReachX + earlyBonus * 20) * reach;
+        let reachX = (baseReachX + earlyBonus * 20) * reach;
         const reachY = (baseReachY + earlyBonus * 10) * reach;
 
+        // === WRONG-DIRECTION PENALTY ===
+        // If keeper is diving one way but ball is on the OTHER side, massively reduce reach.
+        // This prevents "phantom saves" where keeper dives left but saves a right-side shot.
+        if (this.state === 'dive' && this.diveDirection !== 0 && this.diveProgress > 0.1) {
+            const goalCX = DESIGN ? DESIGN.width / 2 : 207;
+            const ballSide = ballX < goalCX - 15 ? -1 : (ballX > goalCX + 15 ? 1 : 0);
+            // Ball is on opposite side of where keeper dove
+            if (ballSide !== 0 && ballSide !== this.diveDirection) {
+                // Keeper dove wrong way — reach shrinks drastically with dive progress
+                // The further they've committed, the less they can reach back
+                const wrongPenalty = this.diveProgress * 0.85; // up to 85% reach reduction
+                reachX *= (1.0 - wrongPenalty);
+            }
+        }
+
         // Chip shots reduce save chance slightly (not drastically)
-        // Max penalty ~15px at height=10, making it harder but not impossible
         const heightPenalty = ballHeight > 2 ? Math.min(ballHeight * 1.5, 18) : 0;
 
         // Diving keepers get forward reach (Y direction toward ball)
@@ -10102,9 +9971,8 @@ class Game {
         this.celebrating = false;
         this.celebrationTimer = 0;
 
-        // Banana kick flash
-        this.bananaKickFlash = 0;
-        this.bananaKickDir = 0;
+        // Curve hint overlay (shows every 5 shots)
+        this._curveHintAlpha = 0;
 
         // ====== MULTI-LEVEL POWER SURGE SYSTEM ======
         this.surgeLevels = {
@@ -10280,7 +10148,7 @@ class Game {
     _resize() {
         const transform = this.renderer.resize();
         this.touch.setTransform(transform.scaleX, transform.scaleY, transform.offsetX, transform.offsetY);
-        this.touch.joystick.setPosition(80, DESIGN.height - 130);
+        // (joystick config removed — swipe-only input)
     }
 
     _loadStats() {
@@ -10510,14 +10378,26 @@ class Game {
         this.playerY = DESIGN.fieldBottom - 100;
         this.aimX = DESIGN.width / 2;
         this.aimY = (DESIGN.goalLineY + DESIGN.crossbarY) / 2;  // center of visual goal
-        this.aimOscillation = Math.random() * Math.PI * 2; // random start phase
         this.aimLocked = false;
-        this.shotPower = 0;
+        this.shotPower = 0.1 + Math.random() * 0.8; // random start position on power bar
+        this.powerDirection = Math.random() < 0.5 ? 1 : -1;
         this.powerCharging = false;
+
+        // CRITICAL: Drain any buffered swipes/taps to prevent auto-shooting next round
+        this.touch.swipe.swipe = null;
+        this.touch.swipe.active = false;
+        this.touch.swipe.trail = [];
+        while (this.touch.consumeTap()) {} // drain tap queue
+
         this.state = 'playing';
         this.resultText = '';
         this.celebrating = false;
         this.celebrationTimer = 0;
+
+        // Show curve hint on round 1 and every 5 rounds
+        if (this.round === 1 || this.round % 5 === 0) {
+            this._curveHintAlpha = 1.0;
+        }
 
         // Reset dual ball for new round
         if (this.dualBall) this.dualBall.secondBall = null;
@@ -10723,8 +10603,15 @@ class Game {
             power = Math.min(1.0, power + 0.08);
         }
 
-        // Curve from joystick lateral offset (boosted for visible banana kicks)
-        const curve = this.touch.joystick.dx * 1.2;
+        // === UNIFIED CURVE SYSTEM ===
+        // Diagonal swipe ratio determines curve intensity
+        // Aim offset determines curve direction (toward center = visible arc)
+        const swDx = this._lastSwipeDx || 0;
+        const swDy = this._lastSwipeDy || 0;
+        const swipeAbsDy = Math.abs(swDy) || 1;
+        const diagonalRatio = Math.abs(swDx) / swipeAbsDy;
+        this._lastSwipeDx = 0;
+        this._lastSwipeDy = 0;
 
         // === MULTI-LEVEL SURGE BOOST ===
         const isSurgeShot = this.surge.active && this.surge.level > 0;
@@ -10739,16 +10626,34 @@ class Game {
             this.ball.surgeLevel = 0;
         }
 
-        // === CURVE SHOT (level 6+) ===
-        let finalCurve = curve;
-        if (this.curveShot.enabled) {
-            // Auto-apply curve based on aim offset from center
-            const centerX = DESIGN.width / 2;
-            const aimOffset = (this.aimX - centerX) / (DESIGN.goalWidth / 2);
-            finalCurve += aimOffset * this.curveShot.strength * -1; // curve toward center
+        // === UNIFIED CURVE — input-driven, 3 tiers, banana = max curve ===
+        const goalCenterX = DESIGN.width / 2;
+        const aimOffset = (this.aimX - goalCenterX) / (DESIGN.goalWidth / 2);
+        let finalCurve = 0;
+        let curveTier = 0;
+        if (this.curveShot.enabled && diagonalRatio > 0.10) {
+            const curveInput = Utils.clamp((diagonalRatio - 0.10) / 0.90, 0, 1);
+            const curveStrength = Math.pow(curveInput, 1.5);
+            const curveDir = -Math.sign(aimOffset) || (swDx > 0 ? -1 : 1);
+            finalCurve = curveDir * curveStrength * 0.50 * this.curveShot.strength;
+            if (curveStrength >= 0.75) curveTier = 3;
+            else if (curveStrength >= 0.40) curveTier = 2;
+            else if (curveStrength >= 0.05) curveTier = 1;
         }
 
         this.ball.shoot(angle, power, finalCurve);
+
+        // === CURVE VISUAL FEEDBACK — tier-based flash ===
+        this._curveFlash = 0;
+        this._curveFlashTier = 0;
+        this._curveFlashDir = 0;
+        if (curveTier >= 1) {
+            this._curveFlash = 1.0;
+            this._curveFlashTier = curveTier;
+            this._curveFlashDir = finalCurve > 0 ? 1 : -1;
+            if (curveTier >= 3) Utils.haptic(30);
+            else if (curveTier >= 2) Utils.haptic(20);
+        }
 
         // Apply speed boost during surge — scales with level
         if (isSurgeShot) {
@@ -10774,13 +10679,7 @@ class Game {
 
         this.state = 'shooting';
 
-        // BANANA KICK — show flash text if significant curve applied
-        this.bananaKickFlash = 0;
-        if (Math.abs(finalCurve) > 0.3) {
-            this.bananaKickFlash = 1.0; // triggers fade-out animation
-            this.bananaKickDir = finalCurve > 0 ? 1 : -1;
-            Utils.haptic(25); // extra haptic for curve shots
-        }
+        // (banana kick trigger removed — unified curve system)
 
         this.audio.play(isSurgeShot ? 'surgeShot' : (power > 0.75 ? 'powerKick' : 'kick'));
         this.particles.grass(this.playerX, this.playerY);
@@ -13688,38 +13587,61 @@ class Game {
         const goalCenterX = (goalLeft + goalRight) / 2;
         const goalHalfRange = (goalRight - goalLeft) / 2;
 
-        // === AIM: Auto-oscillates left/right, joystick nudges, locks on swipe ===
+        const goalCenterY = (DESIGN.goalLineY + DESIGN.crossbarY) / 2;
+
+        // === SWIPE-DRIVEN AIM (no joystick — pure skill) ===
+        const sw = this.touch.swipe;
+
         if (!this.aimLocked) {
-            // Auto-sweep left-right (smooth sine wave)
-            // Bot aim stabilization: reduces sweep range slightly
-            let aimRange = goalHalfRange * 0.85;
-            if (this.assistBot.enabled && this.assistBot.boosts.aimSteady > 0) {
-                aimRange *= (1 - this.assistBot.boosts.aimSteady);
-            }
-            this.aimOscillation += this.aimOscSpeed;
-            this.aimX = goalCenterX + Math.sin(this.aimOscillation) * aimRange;
+            // Silently track aim from live swipe (no visual)
+            if (sw.active) {
+                const hSens = 1.8;
+                const vSens = 1.2;
+                this.aimX = goalCenterX + (sw.liveDx * hSens);
+                this.aimY = goalCenterY + (sw.liveDy * vSens);
 
-            // Joystick can nudge aim position while oscillating
-            const joy = this.touch.joystick;
-            if (joy.active) {
-                this.aimX += joy.dx * 2;
-                this.aimY += joy.dy * 1.5;
-            }
+                if (this.assistBot.enabled && this.assistBot.boosts.aimSteady > 0) {
+                    const sf = this.assistBot.boosts.aimSteady;
+                    this.aimX = this.aimX + (goalCenterX - this.aimX) * sf * 0.3;
+                    this.aimY = this.aimY + (goalCenterY - this.aimY) * sf * 0.3;
+                }
 
-            this.aimX = Utils.clamp(this.aimX, goalLeft, goalRight);
-            this.aimY = Utils.clamp(this.aimY, DESIGN.crossbarY + 5, DESIGN.goalLineY);
+                this.aimX = Utils.clamp(this.aimX, goalLeft, goalRight);
+                this.aimY = Utils.clamp(this.aimY, DESIGN.crossbarY + 5, DESIGN.goalLineY);
+            } else {
+                // Idle — aim stays at center
+                this.aimX = goalCenterX;
+                this.aimY = goalCenterY;
+            }
         }
 
-        // Power charging (auto-oscillate)
-        this.shotPower += 0.018 * this.powerDirection;
-        if (this.shotPower >= 1) { this.shotPower = 1; this.powerDirection = -1; }
-        if (this.shotPower <= 0.1) { this.shotPower = 0.1; this.powerDirection = 1; }
+        // === POWER BAR: Auto-oscillates up/down, locked on swipe ===
+        if (!this.aimLocked) {
+            this.shotPower += 0.018 * this.powerDirection;
+            if (this.shotPower >= 1) { this.shotPower = 1; this.powerDirection = -1; }
+            if (this.shotPower <= 0.1) { this.shotPower = 0.1; this.powerDirection = 1; }
+        }
 
-        // Swipe to shoot — LOCKS aim + power, then shoots
-        const swipe = this.touch.swipe.consumeSwipe();
+        // Swipe to shoot — direction from swipe, power locked at current bar level
+        const swipe = sw.consumeSwipe();
         if (swipe && swipe.dy < -10) {
+            // Final aim from swipe direction
+            const hSens = 1.8;
+            const vSens = 1.2;
+            this.aimX = Utils.clamp(goalCenterX + (swipe.dx * hSens), goalLeft, goalRight);
+            this.aimY = Utils.clamp(goalCenterY + (swipe.dy * vSens), DESIGN.crossbarY + 5, DESIGN.goalLineY);
+
+            if (this.assistBot.enabled && this.assistBot.boosts.aimSteady > 0) {
+                const sf = this.assistBot.boosts.aimSteady;
+                this.aimX = this.aimX + (goalCenterX - this.aimX) * sf * 0.3;
+            }
+
             this.aimLocked = true;
-            this.shotPower = Utils.clamp(swipe.power, 0.3, 1.0);
+            this._curveHintAlpha = 0; // dismiss hint on shoot
+            // Store swipe data for curve calculation in _shoot()
+            this._lastSwipeDx = swipe.dx;
+            this._lastSwipeDy = swipe.dy;
+            // Power is locked at whatever the oscillating bar was showing
             this._shoot();
         }
 
@@ -14210,6 +14132,64 @@ class Game {
             this.renderer.drawPowerBar(this.shotPower);
         }
 
+        // === CURVE HINT OVERLAY — shows every 5 shots ===
+        if (this.state === 'playing' && this._curveHintAlpha > 0) {
+            ctx.save();
+            const ha = this._curveHintAlpha;
+            const hx = DESIGN.width / 2;
+            const hy = DESIGN.height * 0.55;
+            ctx.globalAlpha = ha * 0.7;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            const bw = 300, bh = 220, br = 16;
+            ctx.beginPath();
+            ctx.moveTo(hx - bw/2 + br, hy - bh/2);
+            ctx.lineTo(hx + bw/2 - br, hy - bh/2);
+            ctx.quadraticCurveTo(hx + bw/2, hy - bh/2, hx + bw/2, hy - bh/2 + br);
+            ctx.lineTo(hx + bw/2, hy + bh/2 - br);
+            ctx.quadraticCurveTo(hx + bw/2, hy + bh/2, hx + bw/2 - br, hy + bh/2);
+            ctx.lineTo(hx - bw/2 + br, hy + bh/2);
+            ctx.quadraticCurveTo(hx - bw/2, hy + bh/2, hx - bw/2, hy + bh/2 - br);
+            ctx.lineTo(hx - bw/2, hy - bh/2 + br);
+            ctx.quadraticCurveTo(hx - bw/2, hy - bh/2, hx - bw/2 + br, hy - bh/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalAlpha = ha;
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 18px -apple-system, Arial';
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText('\u26BD Swipe to Curve!', hx, hy - 80);
+            ctx.font = '14px -apple-system, Arial';
+            const arrowY = hy - 30;
+            const labelGap = 22;
+            ctx.fillStyle = '#aaddff';
+            ctx.fillText('\u2B06\uFE0F  Straight Up = No Curve', hx, arrowY);
+            ctx.fillStyle = '#66eeff';
+            ctx.fillText('\u2197\uFE0F  Slight Diagonal = Curve', hx, arrowY + labelGap);
+            ctx.fillStyle = '#44ccff';
+            ctx.fillText('\u2197\uFE0F\u2197\uFE0F  More Diagonal = Strong Curve', hx, arrowY + labelGap * 2);
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText('\uD83C\uDF4C  Max Diagonal = MAX CURVE!', hx, arrowY + labelGap * 3);
+            const cx = hx, cy = hy + 55;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#aaddff';
+            ctx.globalAlpha = ha * 0.8;
+            ctx.beginPath(); ctx.moveTo(cx, cy + 20); ctx.lineTo(cx, cy - 20); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, cy - 14); ctx.lineTo(cx, cy - 22); ctx.lineTo(cx + 5, cy - 14); ctx.stroke();
+            ctx.strokeStyle = '#66eeff';
+            ctx.beginPath(); ctx.moveTo(cx - 25, cy + 18); ctx.lineTo(cx - 50, cy - 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 44, cy - 9); ctx.lineTo(cx - 52, cy - 17); ctx.lineTo(cx - 44, cy - 17); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 25, cy + 18); ctx.lineTo(cx + 50, cy - 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 44, cy - 9); ctx.lineTo(cx + 52, cy - 17); ctx.lineTo(cx + 44, cy - 17); ctx.stroke();
+            ctx.strokeStyle = '#ffcc00';
+            ctx.beginPath(); ctx.moveTo(cx - 55, cy + 15); ctx.lineTo(cx - 90, cy - 5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 83, cy + 1); ctx.lineTo(cx - 92, cy - 7); ctx.lineTo(cx - 83, cy - 7); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 55, cy + 15); ctx.lineTo(cx + 90, cy - 5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 83, cy + 1); ctx.lineTo(cx + 92, cy - 7); ctx.lineTo(cx + 83, cy - 7); ctx.stroke();
+            ctx.restore();
+            this._curveHintAlpha -= 0.005;
+        }
+
         // Scoreboard
         this.renderer.drawScoreboard(this.score, this.round, this.maxRounds, this.difficulty, this.streak);
 
@@ -14273,31 +14253,46 @@ class Game {
             this.renderer.drawResultBanner(this.resultText, this.resultColor, this.resultTimer);
         }
 
-        // BANANA KICK flash text
-        if (this.bananaKickFlash > 0.01) {
+        // === CURVE SHOT FLASH — tier-based visual feedback ===
+        if (this._curveFlash && this._curveFlash > 0.01) {
             ctx.save();
-            const bkAlpha = this.bananaKickFlash;
-            const bkScale = 1 + (1 - bkAlpha) * 0.5; // grows as it fades
-            const bkY = DESIGN.height / 2 - 40 - (1 - bkAlpha) * 30; // floats up
-            ctx.globalAlpha = bkAlpha;
-            ctx.translate(DESIGN.width / 2, bkY);
-            ctx.scale(bkScale, bkScale);
-            ctx.rotate(this.bananaKickDir * (1 - bkAlpha) * 0.15); // slight tilt
-            // Glow backdrop
-            ctx.shadowColor = '#ff8800';
-            ctx.shadowBlur = 20;
-            ctx.fillStyle = '#ffcc00';
-            ctx.font = 'bold 28px -apple-system, Arial';
+            const cfAlpha = this._curveFlash;
+            const cfScale = 1 + (1 - cfAlpha) * 0.4;
+            const cfY = DESIGN.height / 2 - 40 - (1 - cfAlpha) * 25;
+            ctx.globalAlpha = cfAlpha;
+            ctx.translate(DESIGN.width / 2, cfY);
+            ctx.scale(cfScale, cfScale);
+            ctx.rotate(this._curveFlashDir * (1 - cfAlpha) * 0.1);
+            ctx.font = 'bold 26px -apple-system, Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('\uD83C\uDF4C BANANA KICK!', 0, 0);
-            ctx.shadowBlur = 0;
-            // Outline for readability
-            ctx.strokeStyle = 'rgba(180,80,0,0.6)';
-            ctx.lineWidth = 1;
-            ctx.strokeText('\uD83C\uDF4C BANANA KICK!', 0, 0);
+            if (this._curveFlashTier >= 3) {
+                ctx.shadowColor = '#ff8800';
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = '#ffcc00';
+                ctx.fillText('\uD83C\uDF4C MAX CURVE!', 0, 0);
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(180,80,0,0.6)';
+                ctx.lineWidth = 1;
+                ctx.strokeText('\uD83C\uDF4C MAX CURVE!', 0, 0);
+            } else if (this._curveFlashTier >= 2) {
+                ctx.shadowColor = '#00ccff';
+                ctx.shadowBlur = 16;
+                ctx.fillStyle = '#66eeff';
+                ctx.fillText('\u26A1 STRONG CURVE!', 0, 0);
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(0,100,150,0.5)';
+                ctx.lineWidth = 1;
+                ctx.strokeText('\u26A1 STRONG CURVE!', 0, 0);
+            } else {
+                ctx.shadowColor = '#88bbff';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#cce5ff';
+                ctx.font = 'bold 22px -apple-system, Arial';
+                ctx.fillText('CURVE', 0, 0);
+                ctx.shadowBlur = 0;
+            }
             ctx.restore();
-            // Decay the flash
-            this.bananaKickFlash -= 0.018;
+            this._curveFlash -= 0.025;
         }
 
         // Goal celebration overlay (golden flash + streaks)
@@ -14337,7 +14332,7 @@ class Game {
         }
 
         // Joystick — hidden (swipe-to-shoot controls active)
-        // this.touch.joystick.draw(ctx);
+        // (joystick removed — swipe-only)
 
         // Swipe trail
         this.touch.swipe.drawTrail(ctx);
@@ -14617,9 +14612,10 @@ class Game {
         };
 
         // ====== CURVE SHOT SYSTEM ======
+        // ====== UNIFIED CURVE SYSTEM ======
         this.curveShot = {
-            enabled: true,           // enabled by default — curve adds skill depth
-            strength: 0.7,           // curve intensity (strong banana kicks from the start)
+            enabled: true,           // enabled by default
+            strength: 0.8,           // base: clearly visible arcs
             direction: 0             // auto-calculated from aim offset
         };
 
@@ -14773,10 +14769,10 @@ class Game {
                 break;
             case 'curve_shot':
                 this.curveShot.enabled = true;
-                this.curveShot.strength = 0.3;
+                this.curveShot.strength = 0.9;
                 break;
             case 'strong_curve':
-                this.curveShot.strength = 0.6;
+                this.curveShot.strength = 1.0;
                 break;
             case 'dual_ball':
                 this.dualBall.enabled = true;

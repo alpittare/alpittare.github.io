@@ -72,6 +72,7 @@
 
         const DESIGN_WIDTH = 414;
         const DESIGN_HEIGHT = 896;
+        const TOUCH_OFFSET_Y = 80; // Ship renders above finger so it's always visible
         const SAVE_VERSION = 5;
 
         const COLORS = {
@@ -234,6 +235,23 @@
             if (levelNum <= 30) return 'medium';
             if (levelNum <= 60) return 'hard';
             return 'legend';
+        }
+
+        // Check and unlock next phase if current phase is complete
+        function updatePhaseProgress() {
+            for (let p = 0; p < 4; p++) {
+                const [start, end] = PHASE_RANGES[p];
+                let phaseComplete = true;
+                for (let lvl = start; lvl <= end; lvl++) {
+                    if ((gameState.levelStars[lvl] || 0) === 0) {
+                        phaseComplete = false;
+                        break;
+                    }
+                }
+                if (phaseComplete && p < 3) {
+                    gameState.phasesUnlocked[p + 1] = true;
+                }
+            }
         }
 
         const PHASE_NAMES = ['Inner Solar', 'Asteroid Belt', 'Outer Reaches', 'Deep Space'];
@@ -1086,6 +1104,8 @@
             upgrades: { sail: 0, battery: 0, stabilizer: 0, shield: 0, laserSail: false },
             ships: { current: 0, unlocked: [true, false, false, false, false] },
             achievements: {},
+            challengeProgress: {}, // Tracks challenge progress: { "id": { distance: X, storms: Y, ... } }
+            challengesClaimed: {}, // Tracks claimed rewards: { "id": true }
             settings: { mute: false, difficulty: 'medium', sensitivity: 'medium', aiAssist: false, audioMute: false },
             stats: { totalRuns: 0, deathCount: 0, deathAt4AU: 0, deathAt5AU: 0, totalPlayTime: 0, totalStormsCollected: 0, bestSurvivalTime: 0 },
             dailyChallenge: null,
@@ -1213,6 +1233,7 @@
                 totalCoinsSpawned: 0,
                 totalCoinsCollected: 0,
             },
+
         };
 
         // ============================================
@@ -1301,7 +1322,9 @@
                 }
                 this.thrust = solarPower * sailBonus * thrustMult;
 
-                gameRuntime.energy.recharge = SOLAR_RECHARGE_BASE / Math.max(1, distAU * distAU);
+                // Battery upgrade: +15% recharge per level
+                const batteryBonus = gameState.upgrades.battery * 0.15 + 1;
+                gameRuntime.energy.recharge = (SOLAR_RECHARGE_BASE / Math.max(1, distAU * distAU)) * batteryBonus;
 
                 // Forward velocity (auto-flies forward, thrust controls speed)
                 const forwardSpeed = BASE_SPEED + this.thrust * 0.5;
@@ -1330,15 +1353,19 @@
             }
 
             draw() {
-                // Engine glow behind ship
+                // Dynamic engine glow that scales with velocity
                 if (this.thrust > 5) {
-                    const glowGrad = ctx.createRadialGradient(this.x, this.y + 22, 4, this.x, this.y + 22, 35);
-                    glowGrad.addColorStop(0, 'rgba(255, 136, 0, 0.35)');
-                    glowGrad.addColorStop(0.5, 'rgba(255, 80, 0, 0.1)');
+                    const velocityFactor = Math.min(1, gameRuntime.velocity / 150);
+                    const glowSize = 35 + velocityFactor * 30;
+                    const glowOpacity = 0.25 + velocityFactor * 0.35;
+
+                    const glowGrad = ctx.createRadialGradient(this.x, this.y + 22, 4, this.x, this.y + 22, glowSize);
+                    glowGrad.addColorStop(0, 'rgba(255, 136, 0, ' + glowOpacity + ')');
+                    glowGrad.addColorStop(0.5, 'rgba(255, 80, 0, ' + (glowOpacity * 0.3) + ')');
                     glowGrad.addColorStop(1, 'rgba(255, 80, 0, 0)');
                     ctx.fillStyle = glowGrad;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y + 22, 35, 0, Math.PI * 2);
+                    ctx.arc(this.x, this.y + 22, glowSize, 0, Math.PI * 2);
                     ctx.fill();
                 }
 
@@ -1355,6 +1382,17 @@
                 }
                 ctx.globalAlpha = 1;
 
+                // Wing-tip particle trails
+                if (this.thrust > 5) {
+                    const velocityFactor = Math.min(1, gameRuntime.velocity / 150);
+                    if (Math.random() < velocityFactor * 0.7) {
+                        // Left wing trail
+                        particles.spawn(this.x - 8, this.y + 12, -10 - Math.random() * 20, 40 + Math.random() * 30, 0.3, '#00ccff', 1.5, 'circle');
+                        // Right wing trail
+                        particles.spawn(this.x + 8, this.y + 12, 10 + Math.random() * 20, 40 + Math.random() * 30, 0.3, '#00ccff', 1.5, 'circle');
+                    }
+                }
+
                 // Draw the ship using equipped skin
                 ctx.save();
                 ctx.translate(this.x, this.y);
@@ -1362,14 +1400,29 @@
                 drawShipSkin(ctx, gameState.equippedSkin, 1);
                 ctx.restore();
 
+                // Animated shield with rotating hexagon pattern
                 if (gameRuntime.shield.active) {
                     ctx.strokeStyle = COLORS.shield;
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.radius + 8, 0, Math.PI * 2);
                     ctx.stroke();
+
+                    // Pulsing rings effect
+                    const pulsePhase = animationTime * 3;
+                    const ringCount = 3;
+                    for (let r = 0; r < ringCount; r++) {
+                        const ringRadius = this.radius + 12 + r * 6;
+                        const ringAlpha = Math.sin(pulsePhase - r * Math.PI / ringCount) * 0.3 + 0.2;
+                        ctx.globalAlpha = Math.max(0, ringAlpha);
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, ringRadius, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1;
                 }
 
+                // Surge mode with electric arc effects
                 if (gameRuntime.surge.active) {
                     ctx.strokeStyle = COLORS.surge[gameRuntime.surge.tier];
                     ctx.lineWidth = 3;
@@ -1377,6 +1430,29 @@
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.radius + 15, 0, Math.PI * 2);
                     ctx.stroke();
+                    ctx.globalAlpha = 1;
+
+                    // Electric arcs around ship
+                    const arcCount = 4;
+                    for (let a = 0; a < arcCount; a++) {
+                        const angle = (a / arcCount) * Math.PI * 2 + animationTime * 2;
+                        const x1 = this.x + Math.cos(angle) * (this.radius + 12);
+                        const y1 = this.y + Math.sin(angle) * (this.radius + 12);
+                        const nextAngle = angle + (Math.PI * 2 / arcCount);
+                        const x2 = this.x + Math.cos(nextAngle) * (this.radius + 12);
+                        const y2 = this.y + Math.sin(nextAngle) * (this.radius + 12);
+
+                        ctx.strokeStyle = COLORS.surge[gameRuntime.surge.tier];
+                        ctx.globalAlpha = Math.sin(animationTime * 6 + a) * 0.5 + 0.3;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        // Zigzag path for electric effect
+                        const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * 8;
+                        const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * 8;
+                        ctx.quadraticCurveTo(midX, midY, x2, y2);
+                        ctx.stroke();
+                    }
                     ctx.globalAlpha = 1;
                 }
             }
@@ -1418,7 +1494,7 @@
                         obj.vy = baseVy + getRandomInt(-20, 40);
                         obj.type = type;
                         obj.radius = type === 'storm' ? 12 : (type === 'powerup' ? 18 : 15);
-                        obj.life = 1;
+                        obj.life = 0; // age counter: 0 = just spawned
                         return obj;
                     }
                 }
@@ -1433,9 +1509,10 @@
                     obj.x += obj.vx * dt;
                     obj.y += obj.vy * dt;
                     obj.vy += 30 * dt; // gentle acceleration
-                    obj.life -= dt * 0.3;
+                    // life tracks age for visual fade-in only (no decay-based despawn)
+                    obj.life += dt;
 
-                    if (obj.y > DESIGN_HEIGHT + 50 || obj.life <= 0) {
+                    if (obj.y > DESIGN_HEIGHT + 50 || obj.x < -60 || obj.x > DESIGN_WIDTH + 60) {
                         obj._active = false;
                         // AI Director: obstacle went off-screen = dodged
                         gameRuntime.aiDirector.totalObstaclesPassed++;
@@ -1450,26 +1527,39 @@
                 for (let i = 0; i < this.pool.length; i++) {
                     const obj = this.pool[i];
                     if (!obj._active) continue;
-                    ctx.globalAlpha = Math.min(1, obj.life);
+                    // Fade-in over 0.5s (life = age in seconds)
+                    ctx.globalAlpha = Math.min(1, obj.life * 2);
 
                     if (obj.type === 'asteroid') {
-                        // DANGER — jagged brown rock with red warning glow
-                        const glow = ctx.createRadialGradient(obj.x, obj.y, obj.radius * 0.5, obj.x, obj.y, obj.radius * 2);
-                        glow.addColorStop(0, 'rgba(255, 50, 50, 0.15)');
+                        // DANGER — jagged brown rock with rotating animation and outer glow ring
+                        const glow = ctx.createRadialGradient(obj.x, obj.y, obj.radius * 0.5, obj.x, obj.y, obj.radius * 2.5);
+                        glow.addColorStop(0, 'rgba(255, 80, 50, 0.2)');
+                        glow.addColorStop(0.6, 'rgba(255, 50, 50, 0.08)');
                         glow.addColorStop(1, 'rgba(255, 50, 50, 0)');
                         ctx.fillStyle = glow;
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius * 2, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y, obj.radius * 2.5, 0, Math.PI * 2);
                         ctx.fill();
-                        // Jagged rock shape
+
+                        // Outer glow ring
+                        ctx.strokeStyle = 'rgba(255, 100, 80, 0.4)';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(obj.x, obj.y, obj.radius * 2, 0, Math.PI * 2);
+                        ctx.stroke();
+
+                        // Jagged rock shape with rotation
+                        ctx.save();
+                        ctx.translate(obj.x, obj.y);
+                        ctx.rotate(animationTime * 0.8); // rotating effect
                         ctx.fillStyle = '#8b6914';
                         ctx.beginPath();
                         const sides = 7;
                         for (let s = 0; s < sides; s++) {
                             const a = (s / sides) * Math.PI * 2;
                             const r = obj.radius * (0.7 + Math.sin(s * 3.7) * 0.3);
-                            const px = obj.x + Math.cos(a) * r;
-                            const py = obj.y + Math.sin(a) * r;
+                            const px = Math.cos(a) * r;
+                            const py = Math.sin(a) * r;
                             s === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
                         }
                         ctx.closePath();
@@ -1477,101 +1567,213 @@
                         ctx.strokeStyle = '#aa8820';
                         ctx.lineWidth = 1;
                         ctx.stroke();
+
+                        // Surface detail lines
+                        ctx.strokeStyle = 'rgba(170, 136, 32, 0.6)';
+                        ctx.lineWidth = 1;
+                        for (let d = 0; d < 3; d++) {
+                            const a = (d / 3) * Math.PI * 2;
+                            ctx.beginPath();
+                            ctx.moveTo(0, 0);
+                            ctx.lineTo(Math.cos(a) * obj.radius * 0.9, Math.sin(a) * obj.radius * 0.9);
+                            ctx.stroke();
+                        }
+
                         // Danger icon: red X
                         ctx.strokeStyle = '#ff3333';
                         ctx.lineWidth = 2;
                         ctx.beginPath();
-                        ctx.moveTo(obj.x - 5, obj.y - 5); ctx.lineTo(obj.x + 5, obj.y + 5);
-                        ctx.moveTo(obj.x + 5, obj.y - 5); ctx.lineTo(obj.x - 5, obj.y + 5);
+                        ctx.moveTo(-5, -5); ctx.lineTo(5, 5);
+                        ctx.moveTo(5, -5); ctx.lineTo(-5, 5);
                         ctx.stroke();
+                        ctx.restore();
 
                     } else if (obj.type === 'debris') {
-                        // MINOR DAMAGE — gray metallic fragments
-                        ctx.fillStyle = '#777';
+                        // MINOR DAMAGE — metallic fragments with tumbling rotation and sheen effect
                         ctx.save();
                         ctx.translate(obj.x, obj.y);
-                        ctx.rotate(Date.now() * 0.002);
+                        ctx.rotate(animationTime * 4); // faster tumbling rotation
+
+                        // Metallic sheen effect
+                        const shineGrad = ctx.createLinearGradient(-obj.radius * 0.6, -obj.radius * 0.4, obj.radius * 0.6, obj.radius * 0.4);
+                        shineGrad.addColorStop(0, 'rgba(200, 200, 200, 0.4)');
+                        shineGrad.addColorStop(0.5, 'rgba(100, 100, 100, 0)');
+                        shineGrad.addColorStop(1, 'rgba(150, 150, 150, 0.2)');
+
+                        // Main fragment
+                        ctx.fillStyle = '#777';
                         ctx.fillRect(-obj.radius * 0.6, -obj.radius * 0.4, obj.radius * 1.2, obj.radius * 0.8);
+                        ctx.fillStyle = shineGrad;
+                        ctx.fillRect(-obj.radius * 0.6, -obj.radius * 0.4, obj.radius * 1.2, obj.radius * 0.8);
+
+                        // Secondary fragment
                         ctx.fillStyle = '#999';
                         ctx.fillRect(-obj.radius * 0.3, -obj.radius * 0.7, obj.radius * 0.6, obj.radius * 0.4);
+                        ctx.fillStyle = shineGrad;
+                        ctx.fillRect(-obj.radius * 0.3, -obj.radius * 0.7, obj.radius * 0.6, obj.radius * 0.4);
+
                         ctx.restore();
-                        // Caution: orange outline
-                        ctx.strokeStyle = 'rgba(255, 165, 0, 0.5)';
-                        ctx.lineWidth = 1;
+
+                        // Caution: orange outline with glow
+                        const glowDebris = ctx.createRadialGradient(obj.x, obj.y, obj.radius, obj.x, obj.y, obj.radius + 4);
+                        glowDebris.addColorStop(0, 'rgba(255, 165, 0, 0.2)');
+                        glowDebris.addColorStop(1, 'rgba(255, 165, 0, 0)');
+                        ctx.fillStyle = glowDebris;
+                        ctx.beginPath();
+                        ctx.arc(obj.x, obj.y, obj.radius + 4, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.strokeStyle = 'rgba(255, 165, 0, 0.6)';
+                        ctx.lineWidth = 1.5;
                         ctx.beginPath();
                         ctx.arc(obj.x, obj.y, obj.radius + 3, 0, Math.PI * 2);
                         ctx.stroke();
 
                     } else if (obj.type === 'radiation') {
-                        // DAMAGE — green pulsing hazard
-                        const pulse = 0.8 + Math.sin(Date.now() * 0.008) * 0.2;
-                        const glow2 = ctx.createRadialGradient(obj.x, obj.y, 2, obj.x, obj.y, obj.radius * 1.5 * pulse);
-                        glow2.addColorStop(0, 'rgba(0, 255, 0, 0.6)');
-                        glow2.addColorStop(0.6, 'rgba(0, 255, 0, 0.15)');
+                        // DAMAGE — pulsing green glow with animated expanding rings
+                        const pulse = 0.8 + Math.sin(animationTime * 3) * 0.2;
+                        const glow2 = ctx.createRadialGradient(obj.x, obj.y, 2, obj.x, obj.y, obj.radius * 2 * pulse);
+                        glow2.addColorStop(0, 'rgba(0, 255, 0, 0.7)');
+                        glow2.addColorStop(0.5, 'rgba(0, 255, 0, 0.2)');
                         glow2.addColorStop(1, 'rgba(0, 255, 0, 0)');
                         ctx.fillStyle = glow2;
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius * 1.5 * pulse, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y, obj.radius * 2 * pulse, 0, Math.PI * 2);
                         ctx.fill();
-                        // Radiation trefoil
+
+                        // Animated expanding rings
+                        const ringCount = 3;
+                        for (let r = 0; r < ringCount; r++) {
+                            const ringPhase = (animationTime * 2 - r * 0.5) % (Math.PI * 2);
+                            const ringRadius = obj.radius * 0.8 + Math.sin(ringPhase) * obj.radius * 0.5;
+                            const ringAlpha = Math.abs(Math.sin(ringPhase)) * 0.5;
+                            ctx.strokeStyle = 'rgba(0, 255, 100, ' + ringAlpha + ')';
+                            ctx.lineWidth = 1.5;
+                            ctx.beginPath();
+                            ctx.arc(obj.x, obj.y, ringRadius, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+
+                        // Radiation trefoil with rotation
+                        ctx.save();
+                        ctx.translate(obj.x, obj.y);
+                        ctx.rotate(animationTime * 1.5);
                         ctx.fillStyle = '#00ff00';
                         for (let s = 0; s < 3; s++) {
                             const a = (s / 3) * Math.PI * 2 - Math.PI / 2;
                             ctx.beginPath();
-                            ctx.arc(obj.x + Math.cos(a) * 5, obj.y + Math.sin(a) * 5, 4, 0, Math.PI * 2);
+                            ctx.arc(Math.cos(a) * 6, Math.sin(a) * 6, 4, 0, Math.PI * 2);
                             ctx.fill();
                         }
+                        ctx.restore();
+
                         // Hazard symbol
-                        ctx.strokeStyle = '#ff3333';
-                        ctx.lineWidth = 1.5;
+                        ctx.strokeStyle = 'rgba(255, 50, 50, 0.7)';
+                        ctx.lineWidth = 2;
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius + 4, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y, obj.radius + 5, 0, Math.PI * 2);
                         ctx.stroke();
 
                     } else if (obj.type === 'storm') {
-                        // COLLECT — golden energy orb with green glow (GOOD!)
-                        const glow3 = ctx.createRadialGradient(obj.x, obj.y, 3, obj.x, obj.y, obj.radius * 2.5);
-                        glow3.addColorStop(0, 'rgba(255, 220, 0, 0.5)');
-                        glow3.addColorStop(0.4, 'rgba(0, 255, 100, 0.2)');
-                        glow3.addColorStop(1, 'rgba(0, 255, 100, 0)');
+                        // COLLECT — golden energy orb with golden particle trail and animated lightning arcs
+                        const glow3 = ctx.createRadialGradient(obj.x, obj.y, 3, obj.x, obj.y, obj.radius * 3);
+                        glow3.addColorStop(0, 'rgba(255, 220, 0, 0.6)');
+                        glow3.addColorStop(0.4, 'rgba(255, 200, 0, 0.2)');
+                        glow3.addColorStop(1, 'rgba(255, 220, 0, 0)');
                         ctx.fillStyle = glow3;
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius * 2.5, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y, obj.radius * 3, 0, Math.PI * 2);
                         ctx.fill();
+
+                        // Golden particle trail
+                        if (Math.random() < 0.6) {
+                            particles.spawn(obj.x + (Math.random() - 0.5) * 6, obj.y + (Math.random() - 0.5) * 6,
+                                           (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, 0.3, '#ffdd00', 1.5, 'circle');
+                        }
+
+                        // Animated lightning arcs
+                        const arcCount = 3;
+                        for (let a = 0; a < arcCount; a++) {
+                            const angle = (a / arcCount) * Math.PI * 2 + animationTime * 1.2;
+                            const x1 = obj.x + Math.cos(angle) * obj.radius;
+                            const y1 = obj.y + Math.sin(angle) * obj.radius;
+                            const nextAngle = angle + (Math.PI * 2 / arcCount);
+                            const x2 = obj.x + Math.cos(nextAngle) * obj.radius;
+                            const y2 = obj.y + Math.sin(nextAngle) * obj.radius;
+
+                            ctx.strokeStyle = 'rgba(255, 220, 0, ' + (Math.sin(animationTime * 5 + a) * 0.3 + 0.4) + ')';
+                            ctx.lineWidth = 1.5;
+                            ctx.beginPath();
+                            ctx.moveTo(x1, y1);
+                            const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * 6;
+                            const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * 6;
+                            ctx.quadraticCurveTo(midX, midY, x2, y2);
+                            ctx.stroke();
+                        }
+
                         // Golden core with sparkle
                         ctx.fillStyle = '#ffdd00';
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius * 0.8, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y, obj.radius * 0.9, 0, Math.PI * 2);
                         ctx.fill();
+
+                        // Animated sparkle
+                        const sparkleOffset = Math.sin(animationTime * 4) * 4;
                         ctx.fillStyle = '#fff';
                         ctx.beginPath();
-                        ctx.arc(obj.x - 3, obj.y - 3, 2, 0, Math.PI * 2);
+                        ctx.arc(obj.x - 3 + sparkleOffset, obj.y - 3 + sparkleOffset, 2.5, 0, Math.PI * 2);
                         ctx.fill();
-                        // Plus sign — collect indicator
+
+                        // Plus sign — collect indicator (bobbing animation)
+                        const bobOffset = Math.sin(animationTime * 3) * 3;
                         ctx.strokeStyle = '#00ff88';
-                        ctx.lineWidth = 2;
+                        ctx.lineWidth = 2.5;
                         ctx.beginPath();
-                        ctx.moveTo(obj.x, obj.y - obj.radius - 6); ctx.lineTo(obj.x, obj.y - obj.radius - 12);
-                        ctx.moveTo(obj.x - 3, obj.y - obj.radius - 9); ctx.lineTo(obj.x + 3, obj.y - obj.radius - 9);
+                        ctx.moveTo(obj.x, obj.y - obj.radius - 6 - bobOffset);
+                        ctx.lineTo(obj.x, obj.y - obj.radius - 12 - bobOffset);
+                        ctx.moveTo(obj.x - 3, obj.y - obj.radius - 9 - bobOffset);
+                        ctx.lineTo(obj.x + 3, obj.y - obj.radius - 9 - bobOffset);
                         ctx.stroke();
                     } else if (obj.type === 'powerup' && obj.powerUpType) {
-                        // Glowing orb with icon
-                        const glow = ctx.createRadialGradient(obj.x, obj.y, 5, obj.x, obj.y, obj.radius * 2);
-                        glow.addColorStop(0, obj.powerUpType.color);
-                        glow.addColorStop(1, 'rgba(0,0,0,0)');
-                        ctx.fillStyle = glow;
+                        // Animated floating effect (bobbing up/down)
+                        const bobHeight = Math.sin(animationTime * 2.5 + obj.x * 0.01) * 4;
+
+                        // Bright beacon glow
+                        const glowPower = ctx.createRadialGradient(obj.x, obj.y + bobHeight, 5, obj.x, obj.y + bobHeight, obj.radius * 2.5);
+                        glowPower.addColorStop(0, obj.powerUpType.color);
+                        glowPower.addColorStop(0.5, 'rgba(200, 200, 200, 0.2)');
+                        glowPower.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = glowPower;
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius * 2, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y + bobHeight, obj.radius * 2.5, 0, Math.PI * 2);
                         ctx.fill();
+
+                        // Pulsating outer ring
+                        const pulseScale = 0.8 + Math.sin(animationTime * 4) * 0.3;
+                        ctx.strokeStyle = obj.powerUpType.color;
+                        ctx.globalAlpha = 0.6 + Math.sin(animationTime * 3) * 0.3;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(obj.x, obj.y + bobHeight, obj.radius * 1.8 * pulseScale, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+
+                        // White core
                         ctx.fillStyle = '#fff';
                         ctx.beginPath();
-                        ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
+                        ctx.arc(obj.x, obj.y + bobHeight, obj.radius, 0, Math.PI * 2);
                         ctx.fill();
+
+                        // Spinning icon indicator
+                        ctx.save();
+                        ctx.translate(obj.x, obj.y + bobHeight);
+                        ctx.rotate(animationTime * 3);
                         ctx.fillStyle = obj.powerUpType.color;
-                        ctx.font = 'bold 16px Arial';
+                        ctx.font = "bold 18px 'Orbitron', monospace";
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
-                        ctx.fillText(obj.powerUpType.icon, obj.x, obj.y);
+                        ctx.fillText(obj.powerUpType.icon, 0, 0);
+                        ctx.restore();
                     }
                     ctx.globalAlpha = 1;
                 }
@@ -1918,7 +2120,9 @@
                         audioManager.playShieldHit();
                         particles.spawnBurst(b.x, b.y, 6, '#44aaff', 80, 0.3, 2);
                     } else {
-                        gameRuntime.energy.current -= 20;
+                        // Shield upgrade: -12% damage per level
+                        const boltShieldReduce = Math.max(0.4, 1 - gameState.upgrades.shield * 0.12);
+                        gameRuntime.energy.current -= 20 * boltShieldReduce;
                         gameRuntime.cameraShakeIntensity = 6;
                         gameRuntime.cameraShakeDuration = 0.08;
                         particles.spawnBurst(b.x, b.y, 8, '#ff4444', 100, 0.3, 2);
@@ -2716,7 +2920,9 @@
             let energyDrain = NAV_DRAIN;
             if (gameRuntime.shield.active) energyDrain += SHIELD_DRAIN;
             if (gameState.settings.aiAssist) energyDrain += AI_DRAIN;
-            gameRuntime.energy.current -= energyDrain * dt;
+            // Stabilizer upgrade: -10% energy drain per level
+            const stabilizerReduction = Math.max(0.4, 1 - gameState.upgrades.stabilizer * 0.1);
+            gameRuntime.energy.current -= energyDrain * stabilizerReduction * dt;
             gameRuntime.energy.current += gameRuntime.energy.recharge * dt;
             gameRuntime.energy.current = clamp(gameRuntime.energy.current, 0, MAX_ENERGY);
 
@@ -2801,13 +3007,16 @@
                     } else if (obs.type === 'debris') {
                         audioManager.playCollision();
                         particles.spawnBurst(obs.x, obs.y, 10, '#cccccc', 80, 0.35, 2);
-                        gameRuntime.energy.current -= 15;
+                        // Shield upgrade: -12% damage per level
+                        const shieldReduce = Math.max(0.4, 1 - gameState.upgrades.shield * 0.12);
+                        gameRuntime.energy.current -= 15 * shieldReduce;
                         gameRuntime.cameraShakeIntensity = 5;
                         gameRuntime.cameraShakeDuration = 0.05;
                     } else if (obs.type === 'radiation') {
                         audioManager.playCollision();
                         particles.spawnBurst(obs.x, obs.y, 10, '#00ff00', 90, 0.3, 2);
-                        gameRuntime.energy.current -= 25;
+                        const shieldReduce2 = Math.max(0.4, 1 - gameState.upgrades.shield * 0.12);
+                        gameRuntime.energy.current -= 25 * shieldReduce2;
                     } else if (obs.type === 'powerup' && obs.powerUpType) {
                         audioManager.playCoinCollect();
                         particles.spawnBurst(obs.x, obs.y, 20, obs.powerUpType.color, 150, 0.5, 3);
@@ -2899,11 +3108,17 @@
                 ctx.translate(dx, dy);
             }
 
-            ctx.fillStyle = COLORS.bg;
+            // Rich deep-space gradient background
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, DESIGN_HEIGHT);
+            bgGrad.addColorStop(0, '#0a1a3a');
+            bgGrad.addColorStop(0.4, '#001a2e');
+            bgGrad.addColorStop(1, '#000814');
+            ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
 
             drawNebulas();
             drawStars();
+            drawAuroraEffect();
             drawSpeedLines();
             drawSun();
             gameRuntime.obstacles.draw();
@@ -2913,6 +3128,10 @@
             if (gameRuntime.companion) drawCompanion();
             particles.draw(ctx);
             if (gameRuntime.activeEncounter) drawEncounter();
+
+            // Add vignette and high-speed effects before restore
+            drawVignette();
+            if (gameRuntime.velocity > 100) drawHighSpeedEffects();
 
             ctx.restore();
 
@@ -2938,7 +3157,6 @@
         }
 
         function drawStars() {
-            ctx.fillStyle = '#ffffff';
             for (let i = 0; i < gameRuntime.stars.length; i++) {
                 const s = gameRuntime.stars[i];
                 // Parallax: deeper stars (low z) scroll slower, near stars (high z) faster
@@ -2946,7 +3164,13 @@
                 const scroll = gameRuntime.distance * scrollSpeed * 0.01;
                 const y = ((s.baseY + scroll) % DESIGN_HEIGHT + DESIGN_HEIGHT) % DESIGN_HEIGHT;
                 const size = 0.5 + s.z * 1.5; // near stars bigger
-                ctx.globalAlpha = 0.3 + s.z * 0.7;
+
+                // Twinkling effect: per-star phase offset
+                const phase = (s.baseX * 0.31 + s.baseY * 0.47) % (Math.PI * 2);
+                const twinkle = 0.3 + Math.sin(animationTime * 3 + phase) * 0.4 + s.z * 0.3;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.globalAlpha = Math.max(0.1, twinkle);
                 ctx.beginPath();
                 ctx.arc(s.baseX, y, size, 0, Math.PI * 2);
                 ctx.fill();
@@ -2954,11 +3178,18 @@
             ctx.globalAlpha = 1;
         }
 
-        // Nebula clouds — slow-drifting colored gradients for depth
+        // Nebula clouds — rich colors, larger, more abundant
         const NEBULAS = [
-            { cx: 100, cy: 200, r: 160, color: '40, 20, 80' },
-            { cx: 320, cy: 500, r: 140, color: '20, 50, 80' },
-            { cx: 200, cy: 750, r: 120, color: '60, 10, 40' },
+            { cx: 80, cy: 150, r: 180, color: '100, 40, 150' },    // magenta
+            { cx: 350, cy: 250, r: 160, color: '30, 120, 180' },   // teal
+            { cx: 200, cy: 450, r: 200, color: '80, 30, 120' },    // purple
+            { cx: 50, cy: 650, r: 170, color: '40, 100, 140' },    // blue
+            { cx: 320, cy: 750, r: 150, color: '120, 30, 100' },   // magenta
+            { cx: 150, cy: 900, r: 190, color: '60, 80, 160' },    // deep blue
+            { cx: 370, cy: 1050, r: 140, color: '100, 40, 180' },  // purple
+            { cx: 100, cy: 1250, r: 160, color: '50, 110, 140' },  // teal
+            { cx: 300, cy: 1400, r: 150, color: '90, 40, 130' },   // magenta
+            { cx: 200, cy: 1600, r: 170, color: '40, 90, 150' },   // blue
         ];
         function drawNebulas() {
             for (let i = 0; i < NEBULAS.length; i++) {
@@ -2966,8 +3197,8 @@
                 const scroll = (gameRuntime.distance * 5 + i * 300) % (DESIGN_HEIGHT + n.r * 2);
                 const ny = ((n.cy + scroll) % (DESIGN_HEIGHT + n.r * 2)) - n.r;
                 const grd = ctx.createRadialGradient(n.cx, ny, n.r * 0.1, n.cx, ny, n.r);
-                grd.addColorStop(0, 'rgba(' + n.color + ', 0.08)');
-                grd.addColorStop(0.5, 'rgba(' + n.color + ', 0.03)');
+                grd.addColorStop(0, 'rgba(' + n.color + ', 0.15)');
+                grd.addColorStop(0.5, 'rgba(' + n.color + ', 0.06)');
                 grd.addColorStop(1, 'rgba(' + n.color + ', 0)');
                 ctx.fillStyle = grd;
                 ctx.beginPath();
@@ -2976,23 +3207,85 @@
             }
         }
 
-        // Speed lines — appear when velocity is high, reinforce forward motion
+        // Speed lines — dramatic at high velocity, wider, brighter, longer
         function drawSpeedLines() {
             const speed = gameRuntime.velocity;
             if (speed < 40) return;
             const intensity = Math.min(1, (speed - 40) / 100);
-            const lineCount = Math.floor(intensity * 12);
-            ctx.strokeStyle = 'rgba(100, 180, 255, ' + (intensity * 0.15) + ')';
-            ctx.lineWidth = 1;
+            const lineCount = Math.floor(intensity * 20);
+            const opacity = Math.min(0.4, intensity * 0.4);
+            ctx.strokeStyle = 'rgba(100, 200, 255, ' + opacity + ')';
+            ctx.lineWidth = 1.5 + intensity * 1.5;
             for (let i = 0; i < lineCount; i++) {
                 // Seeded position so lines don't flicker randomly each frame
                 const seed = (i * 137.5 + gameRuntime.distance * 50) % DESIGN_WIDTH;
                 const x = seed;
                 const scrollY = ((i * 97.3 + gameRuntime.distance * 200) % (DESIGN_HEIGHT + 100)) - 50;
-                const len = 15 + intensity * 25;
+                const len = 25 + intensity * 50;
                 ctx.beginPath();
                 ctx.moveTo(x, scrollY);
                 ctx.lineTo(x + (Math.sin(i) * 2), scrollY + len);
+                ctx.stroke();
+            }
+        }
+
+        // Aurora effect — animated color band across top third of screen
+        function drawAuroraEffect() {
+            const height = DESIGN_HEIGHT / 3;
+            const grad = ctx.createLinearGradient(0, 0, 0, height);
+
+            // Animate color shift for aurora wave
+            const hueShift = animationTime * 0.5;
+            const c1 = Math.sin(hueShift) * 0.3;
+            const c2 = Math.sin(hueShift + Math.PI * 0.66) * 0.3;
+            const c3 = Math.sin(hueShift + Math.PI * 1.33) * 0.3;
+
+            grad.addColorStop(0, 'rgba(' + Math.floor(100 + c1 * 100) + ',' + Math.floor(80 + c2 * 100) + ',' + Math.floor(200 + c3 * 100) + ', 0.08)');
+            grad.addColorStop(0.5, 'rgba(' + Math.floor(80 + c1 * 100) + ',' + Math.floor(100 + c2 * 100) + ',' + Math.floor(180 + c3 * 100) + ', 0.04)');
+            grad.addColorStop(1, 'rgba(100, 100, 150, 0)');
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, DESIGN_WIDTH, height);
+        }
+
+        // Vignette — dark edges, bright center
+        function drawVignette() {
+            const radius = Math.sqrt(DESIGN_WIDTH * DESIGN_WIDTH + DESIGN_HEIGHT * DESIGN_HEIGHT) / 2;
+            const vignette = ctx.createRadialGradient(DESIGN_WIDTH / 2, DESIGN_HEIGHT / 2, radius * 0.5, DESIGN_WIDTH / 2, DESIGN_HEIGHT / 2, radius);
+            vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            vignette.addColorStop(0.8, 'rgba(0, 0, 0, 0.1)');
+            vignette.addColorStop(1, 'rgba(0, 0, 0, 0.3)');
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+        }
+
+        // High-speed effects — subtle tint and chromatic aberration hint
+        function drawHighSpeedEffects() {
+            const speedFactor = Math.min(1, (gameRuntime.velocity - 100) / 100);
+
+            // Blue tint at screen edges
+            const edgeTint = ctx.createLinearGradient(0, 0, DESIGN_WIDTH, 0);
+            edgeTint.addColorStop(0, 'rgba(100, 150, 200, ' + (speedFactor * 0.08) + ')');
+            edgeTint.addColorStop(0.5, 'rgba(100, 150, 200, 0)');
+            edgeTint.addColorStop(1, 'rgba(100, 150, 200, ' + (speedFactor * 0.08) + ')');
+            ctx.fillStyle = edgeTint;
+            ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+
+            // Chromatic aberration hint (subtle colored edge offset)
+            if (speedFactor > 0.5) {
+                const aberration = speedFactor * 2;
+                // Red left edge
+                ctx.strokeStyle = 'rgba(255, 100, 100, ' + (speedFactor * 0.04) + ')';
+                ctx.lineWidth = aberration;
+                ctx.beginPath();
+                ctx.moveTo(2, 0);
+                ctx.lineTo(2, DESIGN_HEIGHT);
+                ctx.stroke();
+                // Cyan right edge
+                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (speedFactor * 0.04) + ')';
+                ctx.beginPath();
+                ctx.moveTo(DESIGN_WIDTH - 2, 0);
+                ctx.lineTo(DESIGN_WIDTH - 2, DESIGN_HEIGHT);
                 ctx.stroke();
             }
         }
@@ -3281,61 +3574,35 @@
             const safeTop = 20;
             const safeRight = 20;
 
+            // Left panel background — glassmorphism style
+            drawGlassPanel(15, safeTop + 10, 170, 140, 10, 'rgba(50, 80, 120, 0.15)');
+
             ctx.fillStyle = COLORS.text;
-            ctx.font = 'bold 18px Arial';
+            ctx.font = "bold 18px 'Orbitron', monospace";
             ctx.textAlign = 'left';
             ctx.fillText('DISTANCE', 20, safeTop + 20);
             ctx.fillText(gameRuntime.distance.toFixed(1) + ' AU', 20, safeTop + 45);
             ctx.fillText('SPD: ' + gameRuntime.velocity.toFixed(0), 20, safeTop + 70);
 
-            ctx.fillStyle = '#333333';
-            drawRoundRect(20, safeTop + 85, 150, 20, 4);
-            ctx.fill();
+            // Premium health bar with heart icon and animation
+            drawHealthBar(20, safeTop + 85);
 
-            const energyPercent = gameRuntime.energy.current / MAX_ENERGY;
-            const energyColor = energyPercent > 0.5 ? COLORS.energy.full :
-                                 energyPercent > 0.2 ? COLORS.energy.mid : COLORS.energy.low;
-            ctx.fillStyle = energyColor;
-            drawRoundRect(20, safeTop + 85, 150 * energyPercent, 20, 4);
-            ctx.fill();
+            // Surge bar with pulsation
+            drawSurgeBar(20, safeTop + 115);
 
-            ctx.strokeStyle = COLORS.ui;
-            ctx.lineWidth = 2;
-            drawRoundRect(20, safeTop + 85, 150, 20, 4);
-            ctx.stroke();
-
-            ctx.fillStyle = COLORS.text;
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(gameRuntime.energy.current.toFixed(0) + '/' + MAX_ENERGY, 95, safeTop + 99);
-
-            ctx.fillStyle = '#333333';
-            drawRoundRect(20, safeTop + 115, 150, 15, 3);
-            ctx.fill();
-
-            ctx.fillStyle = COLORS.surge[gameRuntime.surge.tier];
-            drawRoundRect(20, safeTop + 115, 150 * (gameRuntime.surge.bar / 100), 15, 3);
-            ctx.fill();
-
-            ctx.strokeStyle = COLORS.surge[gameRuntime.surge.tier];
-            ctx.lineWidth = 1.5;
-            drawRoundRect(20, safeTop + 115, 150, 15, 3);
-            ctx.stroke();
-
-            ctx.fillStyle = COLORS.text;
-            ctx.font = 'bold 10px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('SURGE ' + gameRuntime.surge.tier, 95, safeTop + 125);
+            // Right panel background — glassmorphism style
+            drawGlassPanel(DESIGN_WIDTH - safeRight - 110, safeTop + 10, 100, 80, 8, 'rgba(50, 80, 120, 0.15)');
 
             ctx.textAlign = 'right';
-            ctx.font = 'bold 16px Arial';
+            ctx.font = "bold 16px 'Orbitron', monospace";
             ctx.fillStyle = COLORS.multiplier;
             ctx.fillText('x' + gameRuntime.multiplier.toFixed(1), DESIGN_WIDTH - safeRight - 10, safeTop + 20);
 
             ctx.fillStyle = COLORS.text;
-            ctx.font = '12px Arial';
+            ctx.font = "12px 'Orbitron', monospace";
             ctx.fillText('COINS: ' + gameState.coins, DESIGN_WIDTH - safeRight - 10, safeTop + 45);
 
+            // Excitement bar
             ctx.fillStyle = '#333333';
             drawRoundRect(DESIGN_WIDTH - safeRight - 100, safeTop + 55, 90, 10, 2);
             ctx.fill();
@@ -3344,17 +3611,28 @@
             drawRoundRect(DESIGN_WIDTH - safeRight - 100, safeTop + 55, 90 * gameRuntime.excitement, 10, 2);
             ctx.fill();
 
-            // Combo counter
+            // Combo counter with glow and scale animation
             if (gameRuntime.combo > 2) {
-                ctx.font = 'bold 24px Arial';
+                const comboScale = 1 + Math.sin(animationTime * 4) * 0.15;
+                ctx.save();
+                ctx.translate(DESIGN_WIDTH / 2, 100);
+                ctx.scale(comboScale, comboScale);
+                ctx.font = "bold 28px 'Orbitron', monospace";
                 ctx.textAlign = 'center';
                 ctx.fillStyle = '#ffdd00';
-                ctx.fillText('COMBO x' + gameRuntime.combo, DESIGN_WIDTH / 2, 100);
+                ctx.globalAlpha = 0.9;
+                // Glow effect
+                ctx.shadowColor = '#ffdd00';
+                ctx.shadowBlur = 20;
+                ctx.fillText('COMBO x' + gameRuntime.combo, 0, 0);
+                ctx.globalAlpha = 1;
+                ctx.shadowBlur = 0;
+                ctx.restore();
             }
 
             // Alien kill counter
             if (gameRuntime.aliensKilled > 0) {
-                ctx.font = '12px Arial';
+                ctx.font = "12px 'Orbitron', monospace";
                 ctx.textAlign = 'right';
                 ctx.fillStyle = '#00e5ff';
                 ctx.fillText('KILLS: ' + gameRuntime.aliensKilled, DESIGN_WIDTH - safeRight - 10, safeTop + 80);
@@ -3364,7 +3642,7 @@
             if (gameRuntime.aliens.length > 0) {
                 const warningAlpha = 0.5 + Math.sin(Date.now() * 0.005) * 0.3;
                 ctx.fillStyle = 'rgba(255,34,68,' + warningAlpha + ')';
-                ctx.font = 'bold 11px Arial';
+                ctx.font = "bold 11px 'Orbitron', monospace";
                 ctx.textAlign = 'center';
                 ctx.fillText('ALIENS: ' + gameRuntime.aliens.filter(a => a._active).length, DESIGN_WIDTH / 2, safeTop + 18);
             }
@@ -3373,11 +3651,12 @@
             if (gameRuntime.activePowerUp) {
                 const remaining = Math.max(0, (gameRuntime.powerUpEndTime - Date.now()) / 1000);
                 ctx.fillStyle = gameRuntime.activePowerUp.color;
-                ctx.font = 'bold 12px Arial';
+                ctx.font = "bold 12px 'Orbitron', monospace";
                 ctx.textAlign = 'left';
                 ctx.fillText(gameRuntime.activePowerUp.icon + ' ' + gameRuntime.activePowerUp.name + ' ' + remaining.toFixed(1) + 's', 20, safeTop + 95);
             }
 
+            // Commentary box
             if (gameRuntime.commentary.text && Date.now() < gameRuntime.commentary.endTime) {
                 const alpha = Math.max(0, (gameRuntime.commentary.endTime - Date.now()) / 1000);
                 ctx.fillStyle = `rgba(30, 30, 30, ${Math.min(1, alpha)})`;
@@ -3386,20 +3665,157 @@
 
                 ctx.fillStyle = COLORS.text;
                 ctx.globalAlpha = alpha;
-                ctx.font = 'bold 14px Arial';
+                ctx.font = "bold 14px 'Orbitron', monospace";
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(gameRuntime.commentary.text, DESIGN_WIDTH / 2, DESIGN_HEIGHT - 75);
                 ctx.globalAlpha = 1;
             }
 
+            // Pause button
             ctx.fillStyle = COLORS.ui;
             ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.fillText('⏸', DESIGN_WIDTH - 20, safeTop);
 
+            // Red vignette flash when health is low
+            if (gameRuntime.energy.current < 30) {
+                const lowHealthFlash = Math.sin(animationTime * 6) * 0.5 + 0.5;
+                ctx.fillStyle = 'rgba(200, 50, 50, ' + (lowHealthFlash * 0.1) + ')';
+                ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+            }
+
+            // Screen-edge red pulse when taking damage
+            if (gameRuntime.cameraShakeIntensity > 0) {
+                const pulseIntensity = gameRuntime.cameraShakeIntensity / 10;
+                ctx.strokeStyle = 'rgba(255, 100, 100, ' + (pulseIntensity * 0.3) + ')';
+                ctx.lineWidth = Math.max(1, pulseIntensity * 3);
+                ctx.beginPath();
+                const offset = pulseIntensity * 2;
+                ctx.rect(offset, offset, DESIGN_WIDTH - offset * 2, DESIGN_HEIGHT - offset * 2);
+                ctx.stroke();
+            }
+
             drawToasts();
+        }
+
+        // Glassmorphism panel background
+        function drawGlassPanel(x, y, w, h, r, fillColor) {
+            ctx.fillStyle = fillColor;
+            drawRoundRect(x, y, w, h, r);
+            ctx.fill();
+
+            // Subtle gradient border for frosted glass effect
+            ctx.strokeStyle = 'rgba(150, 180, 220, 0.3)';
+            ctx.lineWidth = 1.5;
+            drawRoundRect(x, y, w, h, r);
+            ctx.stroke();
+        }
+
+        // Premium health bar with inner glow, gradient, and heart icon
+        function drawHealthBar(x, y) {
+            const energyPercent = gameRuntime.energy.current / MAX_ENERGY;
+            const energyColor = energyPercent > 0.5 ? COLORS.energy.full :
+                                 energyPercent > 0.2 ? COLORS.energy.mid : COLORS.energy.low;
+
+            // Background
+            ctx.fillStyle = '#1a1a2e';
+            drawRoundRect(x, y, 150, 20, 4);
+            ctx.fill();
+
+            // Gradient fill for health bar
+            const healthGrad = ctx.createLinearGradient(x, y, x, y + 20);
+            healthGrad.addColorStop(0, energyColor);
+            healthGrad.addColorStop(0.5, energyColor);
+            healthGrad.addColorStop(1, 'rgba(200, 200, 200, 0.3)');
+            ctx.fillStyle = healthGrad;
+            drawRoundRect(x, y, 150 * energyPercent, 20, 4);
+            ctx.fill();
+
+            // Inner glow effect
+            const glowGrad = ctx.createLinearGradient(x, y, x, y + 20);
+            glowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+            glowGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+            glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = glowGrad;
+            drawRoundRect(x, y, 150 * energyPercent, 20, 4);
+            ctx.fill();
+
+            // Border
+            ctx.strokeStyle = energyColor;
+            ctx.lineWidth = 2;
+            drawRoundRect(x, y, 150, 20, 4);
+            ctx.stroke();
+
+            // Heart icon
+            drawHeartIcon(x - 12, y + 6, 8);
+
+            // Health percentage text with glow
+            ctx.fillStyle = COLORS.text;
+            ctx.font = "12px 'Orbitron', monospace";
+            ctx.textAlign = 'center';
+            ctx.globalAlpha = 0.8;
+            ctx.shadowColor = energyColor;
+            ctx.shadowBlur = 10;
+            ctx.fillText(gameRuntime.energy.current.toFixed(0) + '/' + MAX_ENERGY, x + 75, y + 14);
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+
+        // Draw a small heart icon for health display
+        function drawHeartIcon(x, y, size) {
+            ctx.fillStyle = '#ff4444';
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(size / 8, size / 8);
+            ctx.beginPath();
+            ctx.moveTo(0, -2);
+            ctx.quadraticCurveTo(-3, -5, -5, -3);
+            ctx.quadraticCurveTo(-6, -2, -4, 0);
+            ctx.lineTo(0, 5);
+            ctx.lineTo(4, 0);
+            ctx.quadraticCurveTo(6, -2, 5, -3);
+            ctx.quadraticCurveTo(3, -5, 0, -2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Surge bar with pulsation when near full
+        function drawSurgeBar(x, y) {
+            const surgePercent = gameRuntime.surge.bar / 100;
+            const surgeColor = COLORS.surge[gameRuntime.surge.tier];
+            const threshold = gameRuntime.surge.tier === 'L1' ? 20 : gameRuntime.surge.tier === 'L2' ? 50 : gameRuntime.surge.tier === 'L3' ? 75 : 100;
+            const isFull = gameRuntime.surge.bar >= threshold;
+
+            // Pulsation effect when surge bar is near full
+            let barWidth = 150;
+            if (isFull) {
+                barWidth = 150 + Math.sin(animationTime * 5) * 3;
+            }
+
+            // Background
+            ctx.fillStyle = '#1a1a2e';
+            drawRoundRect(x, y, 150, 15, 3);
+            ctx.fill();
+
+            // Surge fill
+            ctx.fillStyle = surgeColor;
+            drawRoundRect(x, y, 150 * surgePercent, 15, 3);
+            ctx.fill();
+
+            // Border
+            ctx.strokeStyle = surgeColor;
+            ctx.lineWidth = 1.5;
+            drawRoundRect(x, y, barWidth, 15, 3);
+            ctx.stroke();
+
+            // Text label
+            ctx.fillStyle = COLORS.text;
+            ctx.font = "bold 10px 'Orbitron', monospace";
+            ctx.textAlign = 'center';
+            ctx.fillText('SURGE ' + gameRuntime.surge.tier, x + 75, y + 10);
         }
 
         function drawSurgeZone() {
@@ -3746,7 +4162,7 @@
                     if (pointInRect(tap.x, tap.y, modeBtns[i].x, modeY, modeBtnW, modeBtnH)) {
                         audioManager.playButtonClick();
                         if (i === 0) gameRuntime.state = STATES.levels;
-                        else if (i === 1) gameRuntime.currentScreen = 'stats';
+                        else if (i === 1) gameRuntime.currentScreen = 'leaderboard';
                         else if (i === 2) gameRuntime.currentScreen = 'challenges';
                         return;
                     }
@@ -3769,6 +4185,335 @@
                     audioManager.playButtonClick();
                     gameRuntime.currentScreen = 'achievements';
                     return;
+                }
+            });
+        }
+
+        // ============================================
+        // LEADERBOARD SCREEN (Convex Backend)
+        // ============================================
+        let _leaderboardCache = null;
+        let _leaderboardLoading = false;
+        let _leaderboardLastFetch = 0;
+        let _playerRankCache = null;
+
+        function fetchLeaderboard() {
+            if (_leaderboardLoading) return;
+            const now = Date.now();
+            if (_leaderboardCache && now - _leaderboardLastFetch < 15000) return; // cache 15s
+            _leaderboardLoading = true;
+            Promise.all([
+                voyagerConvex.getLeaderboard(20),
+                voyagerConvex.getPlayerRank(),
+            ]).then(([lb, rank]) => {
+                _leaderboardCache = lb || [];
+                _playerRankCache = rank;
+                _leaderboardLastFetch = Date.now();
+            }).catch(() => {}).finally(() => { _leaderboardLoading = false; });
+        }
+
+        function drawLeaderboardScreen() {
+            ctx.fillStyle = COLORS.bg;
+            ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+
+            // Fetch on first render
+            fetchLeaderboard();
+
+            // Title
+            ctx.fillStyle = '#ffcc00';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('LEADERBOARD', DESIGN_WIDTH / 2, 55);
+
+            // Player name + rank badge
+            const pName = localStorage.getItem('iv_player_name') || 'Unknown';
+            ctx.fillStyle = COLORS.textAlt;
+            ctx.font = '13px Arial';
+            ctx.fillText('Player: ' + pName, DESIGN_WIDTH / 2, 78);
+
+            if (_playerRankCache) {
+                ctx.fillStyle = '#00ffcc';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('Your Rank: #' + (_playerRankCache.rank || '—') + '  |  Best: ' + ((_playerRankCache.score || 0) / 100).toFixed(1) + ' AU', DESIGN_WIDTH / 2, 98);
+            }
+
+            // Loading state
+            if (_leaderboardLoading && !_leaderboardCache) {
+                ctx.fillStyle = COLORS.textAlt;
+                ctx.font = '16px Arial';
+                ctx.fillText('Loading...', DESIGN_WIDTH / 2, DESIGN_HEIGHT / 2);
+            } else if (!_leaderboardCache || _leaderboardCache.length === 0) {
+                ctx.fillStyle = COLORS.textAlt;
+                ctx.font = '16px Arial';
+                ctx.fillText('No leaderboard data yet', DESIGN_WIDTH / 2, DESIGN_HEIGHT / 2);
+                ctx.font = '13px Arial';
+                ctx.fillText('Play a game to get on the board!', DESIGN_WIDTH / 2, DESIGN_HEIGHT / 2 + 25);
+            } else {
+                // Table header
+                const tableTop = 118;
+                const rowH = 32;
+                ctx.fillStyle = 'rgba(0, 100, 200, 0.2)';
+                drawRoundRect(20, tableTop, DESIGN_WIDTH - 40, rowH, 6);
+                ctx.fill();
+
+                ctx.fillStyle = '#88aacc';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('#', 32, tableTop + 20);
+                ctx.fillText('PLAYER', 60, tableTop + 20);
+                ctx.textAlign = 'right';
+                ctx.fillText('SCORE', DESIGN_WIDTH - 120, tableTop + 20);
+                ctx.fillText('BEST AU', DESIGN_WIDTH - 32, tableTop + 20);
+
+                // Rows
+                const maxVisible = Math.min(_leaderboardCache.length, 18);
+                for (let i = 0; i < maxVisible; i++) {
+                    const entry = _leaderboardCache[i];
+                    const y = tableTop + rowH + i * rowH;
+
+                    // Highlight current player
+                    const isMe = voyagerConvex._playerId && entry.playerId === voyagerConvex._playerId;
+
+                    // Alternating row bg
+                    if (isMe) {
+                        ctx.fillStyle = 'rgba(0, 255, 200, 0.12)';
+                    } else if (i % 2 === 0) {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+                    } else {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    }
+                    drawRoundRect(20, y, DESIGN_WIDTH - 40, rowH - 2, 4);
+                    ctx.fill();
+
+                    // Rank medal for top 3
+                    ctx.textAlign = 'left';
+                    ctx.font = 'bold 13px Arial';
+                    if (i === 0) ctx.fillStyle = '#ffd700';
+                    else if (i === 1) ctx.fillStyle = '#c0c0c0';
+                    else if (i === 2) ctx.fillStyle = '#cd7f32';
+                    else ctx.fillStyle = isMe ? '#00ffcc' : COLORS.text;
+                    ctx.fillText((i + 1).toString(), 32, y + 20);
+
+                    // Name
+                    ctx.font = isMe ? 'bold 13px Arial' : '13px Arial';
+                    ctx.fillStyle = isMe ? '#00ffcc' : COLORS.text;
+                    const name = (entry.playerName || 'Voyager').substring(0, 14);
+                    ctx.fillText(name, 60, y + 20);
+
+                    // Score
+                    ctx.textAlign = 'right';
+                    ctx.font = '13px Arial';
+                    ctx.fillStyle = isMe ? '#ffdd00' : '#aabbcc';
+                    ctx.fillText((entry.score || 0).toLocaleString(), DESIGN_WIDTH - 120, y + 20);
+
+                    // Best AU
+                    ctx.fillStyle = isMe ? '#ffdd00' : '#88aacc';
+                    ctx.fillText(((entry.score || 0) / 100).toFixed(1), DESIGN_WIDTH - 32, y + 20);
+                }
+            }
+
+            // Refresh button
+            ctx.fillStyle = _leaderboardLoading ? '#444' : '#0088cc';
+            drawRoundRect(DESIGN_WIDTH / 2 + 10, DESIGN_HEIGHT - 85, 90, 36, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(_leaderboardLoading ? 'LOADING...' : 'REFRESH', DESIGN_WIDTH / 2 + 55, DESIGN_HEIGHT - 63);
+
+            // Back button
+            ctx.fillStyle = '#555';
+            drawRoundRect(DESIGN_WIDTH / 2 - 100, DESIGN_HEIGHT - 85, 90, 36, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.fillText('BACK', DESIGN_WIDTH / 2 - 55, DESIGN_HEIGHT - 63);
+
+            // Change name button
+            ctx.fillStyle = '#664488';
+            drawRoundRect(DESIGN_WIDTH / 2 - 70, DESIGN_HEIGHT - 40, 140, 30, 6);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.font = '11px Arial';
+            ctx.fillText('CHANGE NAME', DESIGN_WIDTH / 2, DESIGN_HEIGHT - 22);
+
+            consumeTap((tap) => {
+                // Back
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 100, DESIGN_HEIGHT - 85, 90, 36)) {
+                    audioManager.playButtonClick();
+                    gameRuntime.currentScreen = 'menu';
+                }
+                // Refresh
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 + 10, DESIGN_HEIGHT - 85, 90, 36)) {
+                    _leaderboardCache = null; // force refresh
+                    _leaderboardLastFetch = 0;
+                    fetchLeaderboard();
+                }
+                // Change name
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 70, DESIGN_HEIGHT - 40, 140, 30)) {
+                    audioManager.playButtonClick();
+                    gameRuntime.currentScreen = 'name_entry';
+                }
+            });
+        }
+
+        // ============================================
+        // PLAYER NAME ENTRY SCREEN
+        // ============================================
+        const NAME_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
+        let nameEntryBuffer = '';
+        let nameEntryCursor = 0;
+
+        function drawNameEntryScreen() {
+            ctx.fillStyle = COLORS.bg;
+            ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+
+            if (!nameEntryBuffer) {
+                nameEntryBuffer = (localStorage.getItem('iv_player_name') || '').toUpperCase();
+            }
+
+            ctx.fillStyle = '#00ccff';
+            ctx.font = 'bold 26px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('ENTER YOUR NAME', DESIGN_WIDTH / 2, 60);
+
+            ctx.fillStyle = COLORS.textAlt;
+            ctx.font = '13px Arial';
+            ctx.fillText('This name shows on the leaderboard', DESIGN_WIDTH / 2, 85);
+
+            // Name display box
+            ctx.fillStyle = 'rgba(0, 50, 80, 0.6)';
+            drawRoundRect(30, 105, DESIGN_WIDTH - 60, 50, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#00ccff';
+            ctx.lineWidth = 2;
+            drawRoundRect(30, 105, DESIGN_WIDTH - 60, 50, 10);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px monospace';
+            ctx.textAlign = 'center';
+            const displayName = nameEntryBuffer || '_ _ _';
+            ctx.fillText(displayName, DESIGN_WIDTH / 2, 138);
+
+            // Character count
+            ctx.fillStyle = COLORS.textAlt;
+            ctx.font = '11px Arial';
+            ctx.fillText(nameEntryBuffer.length + '/12', DESIGN_WIDTH - 50, 148);
+
+            // Keyboard grid
+            const kbTop = 175;
+            const kbPad = 12;
+            const cols = 10;
+            const keyW = (DESIGN_WIDTH - kbPad * 2 - (cols - 1) * 4) / cols;
+            const keyH = 38;
+            const keyGap = 4;
+
+            for (let i = 0; i < NAME_CHARS.length; i++) {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const kx = kbPad + col * (keyW + keyGap);
+                const ky = kbTop + row * (keyH + keyGap);
+
+                ctx.fillStyle = 'rgba(0, 80, 140, 0.5)';
+                drawRoundRect(kx, ky, keyW, keyH, 6);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0, 180, 255, 0.3)';
+                ctx.lineWidth = 1;
+                drawRoundRect(kx, ky, keyW, keyH, 6);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(NAME_CHARS[i], kx + keyW / 2, ky + keyH / 2);
+            }
+
+            // Action buttons row
+            const actY = kbTop + Math.ceil(NAME_CHARS.length / cols) * (keyH + keyGap) + 10;
+
+            // DELETE button
+            ctx.fillStyle = '#cc3333';
+            drawRoundRect(kbPad, actY, 100, 42, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('DELETE', kbPad + 50, actY + 21);
+
+            // SPACE button
+            ctx.fillStyle = '#336688';
+            drawRoundRect(kbPad + 110, actY, 80, 42, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.fillText('SPACE', kbPad + 150, actY + 21);
+
+            // SAVE button
+            const saveEnabled = nameEntryBuffer.trim().length >= 2;
+            ctx.fillStyle = saveEnabled ? '#00aa44' : '#444';
+            drawRoundRect(DESIGN_WIDTH - kbPad - 120, actY, 120, 42, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('SAVE', DESIGN_WIDTH - kbPad - 60, actY + 21);
+
+            // Cancel
+            ctx.fillStyle = '#555';
+            drawRoundRect(DESIGN_WIDTH / 2 - 50, actY + 55, 100, 36, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.font = '13px Arial';
+            ctx.fillText('CANCEL', DESIGN_WIDTH / 2, actY + 73);
+
+            ctx.textBaseline = 'alphabetic';
+
+            consumeTap((tap) => {
+                // Keyboard chars
+                for (let i = 0; i < NAME_CHARS.length; i++) {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    const kx = kbPad + col * (keyW + keyGap);
+                    const ky = kbTop + row * (keyH + keyGap);
+                    if (pointInRect(tap.x, tap.y, kx, ky, keyW, keyH)) {
+                        if (nameEntryBuffer.length < 12) {
+                            nameEntryBuffer += NAME_CHARS[i];
+                            audioManager.playButtonClick();
+                        }
+                        return;
+                    }
+                }
+                // DELETE
+                if (pointInRect(tap.x, tap.y, kbPad, actY, 100, 42)) {
+                    nameEntryBuffer = nameEntryBuffer.slice(0, -1);
+                    audioManager.playButtonClick();
+                    return;
+                }
+                // SPACE
+                if (pointInRect(tap.x, tap.y, kbPad + 110, actY, 80, 42)) {
+                    if (nameEntryBuffer.length < 12) nameEntryBuffer += ' ';
+                    return;
+                }
+                // SAVE
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH - kbPad - 120, actY, 120, 42) && saveEnabled) {
+                    const newName = nameEntryBuffer.trim();
+                    localStorage.setItem('iv_player_name', newName);
+                    // Re-register with Convex under new name
+                    voyagerConvex._playerId = null;
+                    localStorage.removeItem('convex_player_id');
+                    voyagerConvex.getOrRegister(newName).catch(() => {});
+                    _leaderboardCache = null; // force refresh
+                    showToast('Name saved: ' + newName);
+                    audioManager.playButtonClick();
+                    gameRuntime.currentScreen = 'leaderboard';
+                    nameEntryBuffer = '';
+                    return;
+                }
+                // CANCEL
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 50, actY + 55, 100, 36)) {
+                    audioManager.playButtonClick();
+                    nameEntryBuffer = '';
+                    gameRuntime.currentScreen = 'leaderboard';
                 }
             });
         }
@@ -3850,6 +4595,16 @@
                 ctx.fillText(d.toUpperCase(), x + w / 2, y + h / 2);
             }
 
+            // Reset data button
+            ctx.fillStyle = '#cc3333';
+            drawRoundRect(DESIGN_WIDTH / 2 - 70, DESIGN_HEIGHT - 180, 140, 40, 8);
+            ctx.fill();
+            ctx.fillStyle = COLORS.text;
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('RESET ALL DATA', DESIGN_WIDTH / 2, DESIGN_HEIGHT - 160);
+
             drawButton(DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 100, 100, 50, 'BACK');
 
             consumeTap((tap) => {
@@ -3879,6 +4634,18 @@
                     }
                 }
 
+                // Reset all data
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 70, DESIGN_HEIGHT - 180, 140, 40)) {
+                    if (gameRuntime.resetConfirm) {
+                        localStorage.removeItem('iv_gamestate');
+                        location.reload();
+                    } else {
+                        gameRuntime.resetConfirm = true;
+                        showToast('Tap again to confirm reset!');
+                        setTimeout(() => { gameRuntime.resetConfirm = false; }, 3000);
+                    }
+                }
+
                 if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 100, 100, 50)) {
                     audioManager.playButtonClick();
                     gameRuntime.currentScreen = 'menu';
@@ -3896,10 +4663,10 @@
             ctx.fillText('UPGRADES', DESIGN_WIDTH / 2, 60);
 
             const upgrades = [
-                { y: 140, label: 'Solar Sail', key: 'sail', cost: 200, level: gameState.upgrades.sail },
-                { y: 220, label: 'Battery', key: 'battery', cost: 250, level: gameState.upgrades.battery },
-                { y: 300, label: 'Stabilizer', key: 'stabilizer', cost: 300, level: gameState.upgrades.stabilizer },
-                { y: 380, label: 'Shield', key: 'shield', cost: 350, level: gameState.upgrades.shield },
+                { y: 140, label: 'Solar Sail', key: 'sail', cost: 200, level: gameState.upgrades.sail, desc: '+10% thrust per level' },
+                { y: 220, label: 'Battery', key: 'battery', cost: 250, level: gameState.upgrades.battery, desc: '+15% energy recharge per level' },
+                { y: 300, label: 'Stabilizer', key: 'stabilizer', cost: 300, level: gameState.upgrades.stabilizer, desc: '-10% energy drain per level' },
+                { y: 380, label: 'Shield', key: 'shield', cost: 350, level: gameState.upgrades.shield, desc: '-12% damage taken per level' },
             ];
 
             for (let i = 0; i < upgrades.length; i++) {
@@ -3908,6 +4675,9 @@
                 ctx.textAlign = 'left';
                 ctx.fillStyle = COLORS.text;
                 ctx.fillText(u.label + ' Lv.' + u.level, 50, u.y);
+                ctx.font = '11px Arial';
+                ctx.fillStyle = COLORS.textAlt;
+                ctx.fillText(u.desc, 50, u.y + 18);
 
                 const canAfford = gameState.coins >= u.cost;
                 const btnColor = canAfford ? COLORS.ui : COLORS.buttonDisabled;
@@ -3987,18 +4757,50 @@
             ctx.textAlign = 'center';
             ctx.fillText('ACHIEVEMENTS', DESIGN_WIDTH / 2, 60);
 
+            // Check achievements when entering screen
+            checkAchievements();
+
             let yPos = 120;
             for (let i = 0; i < ACHIEVEMENTS.length; i++) {
                 const ach = ACHIEVEMENTS[i];
-                const unlocked = gameState.achievements[ach.id];
-                ctx.fillStyle = unlocked ? COLORS.text : COLORS.textAlt;
-                ctx.font = 'bold 14px Arial';
+                const unlockedData = gameState.achievements[ach.id];
+                const isUnlocked = !!unlockedData;
+
+                // Draw achievement card background
+                ctx.fillStyle = isUnlocked ? 'rgba(100, 200, 100, 0.1)' : 'rgba(100, 100, 100, 0.1)';
+                drawRoundRect(30, yPos - 15, DESIGN_WIDTH - 60, 50, 6);
+                ctx.fill();
+                ctx.strokeStyle = isUnlocked ? '#00cc00' : '#666666';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Icon and name
+                ctx.fillStyle = isUnlocked ? COLORS.text : '#888888';
+                ctx.font = 'bold 16px Arial';
                 ctx.textAlign = 'left';
-                ctx.fillText(ach.icon + ' ' + ach.name, 40, yPos);
-                ctx.font = '12px Arial';
-                ctx.fillStyle = COLORS.textAlt;
-                ctx.fillText(ach.desc, 60, yPos + 20);
-                yPos += 50;
+                ctx.fillText(ach.icon, 45, yPos);
+                ctx.fillText(ach.name, 80, yPos);
+
+                // Description
+                ctx.font = '11px Arial';
+                ctx.fillStyle = isUnlocked ? COLORS.textAlt : '#666666';
+                ctx.fillText(ach.desc, 80, yPos + 18);
+
+                // Reward display
+                ctx.fillStyle = '#ffdd00';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText('💰 +' + ach.reward, DESIGN_WIDTH - 45, yPos + 5);
+
+                // Unlocked badge
+                if (isUnlocked) {
+                    ctx.fillStyle = '#00cc00';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'right';
+                    ctx.fillText('✓ UNLOCKED', DESIGN_WIDTH - 45, yPos + 20);
+                }
+
+                yPos += 65;
             }
 
             drawButton(DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50, 'BACK');
@@ -4029,16 +4831,51 @@
             }
 
             let yPos = 130;
+            const claimButtonRects = [];
             for (let i = 0; i < selectedChallenges.length; i++) {
                 const ch = selectedChallenges[i];
                 const reward = ch.target * 100;
+                const isClaimed = gameState.challengesClaimed[ch.id];
+
+                // Initialize progress tracking for this challenge
+                if (!gameState.challengeProgress[ch.id]) {
+                    gameState.challengeProgress[ch.id] = {};
+                }
+                const progress_data = gameState.challengeProgress[ch.id];
+
+                // Calculate progress based on stat type
+                let progress = 0;
+                let progressValue = 0;
+                if (ch.stat === 'distance') {
+                    progressValue = gameState.totalDistance;
+                    progress = Math.min(1, progressValue / ch.target);
+                } else if (ch.stat === 'storms') {
+                    progressValue = gameState.stats.totalStormsCollected;
+                    progress = Math.min(1, progressValue / ch.target);
+                } else if (ch.stat === 'combo') {
+                    progressValue = progress_data.combo || 0;
+                    progress = Math.min(1, progressValue / ch.target);
+                } else if (ch.stat === 'survival') {
+                    progressValue = progress_data.survival || 0;
+                    progress = Math.min(1, progressValue / ch.target);
+                } else if (ch.stat === 'totalDistance') {
+                    progressValue = gameState.totalDistance;
+                    progress = Math.min(1, progressValue / ch.target);
+                } else if (ch.stat === 'runs') {
+                    progressValue = gameState.stats.totalRuns;
+                    progress = Math.min(1, progressValue / ch.target);
+                }
+
+                const isCompleted = progress >= 1;
+                const cardColor = isClaimed ? 'rgba(100, 100, 100, 0.2)' : (isCompleted ? 'rgba(0, 200, 100, 0.2)' : 'rgba(0, 102, 204, 0.3)');
+                const borderColor = isClaimed ? '#666666' : (isCompleted ? '#00cc00' : '#0099ff');
 
                 // Challenge card
-                ctx.fillStyle = 'rgba(0, 102, 204, 0.3)';
-                drawRoundRect(30, yPos, DESIGN_WIDTH - 60, 90, 8);
+                ctx.fillStyle = cardColor;
+                drawRoundRect(30, yPos, DESIGN_WIDTH - 60, 100, 8);
                 ctx.fill();
-                ctx.strokeStyle = '#0099ff';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
                 // Challenge name and description
@@ -4052,31 +4889,70 @@
                 ctx.fillText(ch.desc, 50, yPos + 45);
 
                 // Progress bar
-                let progress = 0;
-                if (ch.stat === 'distance') progress = Math.min(1, gameRuntime.distance / ch.target);
-                else if (ch.stat === 'storms') progress = Math.min(1, gameRuntime.stormCount / ch.target);
-                else if (ch.stat === 'combo') progress = Math.min(1, gameRuntime.combo / ch.target);
-                else if (ch.stat === 'survival') progress = Math.min(1, (Date.now() - gameRuntime.gameStartTime) / 1000 / ch.target);
-
                 ctx.fillStyle = '#333333';
-                drawRoundRect(50, yPos + 55, 120, 12, 3);
+                drawRoundRect(50, yPos + 58, 120, 12, 3);
                 ctx.fill();
-                ctx.fillStyle = '#00ff88';
-                drawRoundRect(50, yPos + 55, 120 * progress, 12, 3);
+                ctx.fillStyle = isCompleted ? '#00ff88' : '#0099ff';
+                drawRoundRect(50, yPos + 58, 120 * progress, 12, 3);
                 ctx.fill();
+
+                // Progress text
+                ctx.fillStyle = COLORS.textAlt;
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(Math.floor(progressValue) + '/' + ch.target, 175, yPos + 65);
 
                 // Reward
                 ctx.fillStyle = '#ffdd00';
-                ctx.font = 'bold 12px Arial';
+                ctx.font = 'bold 13px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText('+' + reward + ' Coins', DESIGN_WIDTH - 50, yPos + 40);
+                ctx.fillText('💰 +' + reward, DESIGN_WIDTH - 50, yPos + 35);
 
-                yPos += 110;
+                // Claim button or claimed badge
+                if (isClaimed) {
+                    ctx.fillStyle = '#666666';
+                    ctx.font = 'bold 11px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('✓ CLAIMED', DESIGN_WIDTH - 70, yPos + 72);
+                } else if (isCompleted) {
+                    const btnX = DESIGN_WIDTH - 130;
+                    const btnY = yPos + 58;
+                    const btnW = 70;
+                    const btnH = 28;
+                    claimButtonRects.push({ x: btnX, y: btnY, w: btnW, h: btnH, id: ch.id, reward: reward });
+
+                    ctx.fillStyle = '#00cc00';
+                    drawRoundRect(btnX, btnY, btnW, btnH, 4);
+                    ctx.fill();
+                    ctx.strokeStyle = '#00ff88';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.fillStyle = '#000000';
+                    ctx.font = 'bold 11px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('CLAIM', btnX + btnW / 2, btnY + btnH / 2);
+                }
+
+                yPos += 115;
             }
 
             drawButton(DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50, 'BACK');
 
+            // Handle claim button taps
             consumeTap((tap) => {
+                for (let i = 0; i < claimButtonRects.length; i++) {
+                    const btn = claimButtonRects[i];
+                    if (pointInRect(tap.x, tap.y, btn.x, btn.y, btn.w, btn.h)) {
+                        audioManager.playButtonClick();
+                        gameState.coins += btn.reward;
+                        gameState.challengesClaimed[btn.id] = true;
+                        showToast('Challenge Claimed! +' + btn.reward + ' coins');
+                        saveToStorage();
+                        return;
+                    }
+                }
+
                 if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50)) {
                     audioManager.playButtonClick();
                     gameRuntime.currentScreen = 'menu';
@@ -4389,52 +5265,160 @@
             ctx.fillStyle = COLORS.bg;
             ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
 
+            // Initialize phase select if not set
+            if (gameRuntime.currentPhaseSelect === undefined) {
+                gameRuntime.currentPhaseSelect = 0;
+            }
+
+            const selectedPhase = gameRuntime.currentPhaseSelect || 0;
+            const [phaseStart, phaseEnd] = PHASE_RANGES[selectedPhase];
+
+            // Draw title
             ctx.fillStyle = COLORS.text;
             ctx.font = 'bold 28px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('CAMPAIGN', DESIGN_WIDTH / 2, 60);
+            ctx.fillText('CAMPAIGN', DESIGN_WIDTH / 2, 50);
 
-            let scrollOffset = gameRuntime.levelScrollOffset || 0;
-            let yPos = 120;
-            const phaseHeight = 140;
+            // Draw phase tabs at top
+            const tabWidth = (DESIGN_WIDTH - 40) / 4;
+            const tabHeight = 40;
+            const tabY = 70;
 
             for (let p = 0; p < 4; p++) {
-                const [start, end] = PHASE_RANGES[p];
-                ctx.fillStyle = COLORS.text;
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText(PHASE_NAMES[p] + ' (' + start + '-' + end + ')', 40, yPos);
+                const tabX = 20 + p * (tabWidth + 2);
+                const isSelected = p === selectedPhase;
+                const isUnlocked = gameState.phasesUnlocked[p];
 
-                ctx.font = '12px Arial';
-                ctx.fillStyle = COLORS.textAlt;
-                const starsInPhase = Object.keys(gameState.levelStars).filter(k => {
-                    const lv = parseInt(k);
-                    return lv >= start && lv <= end;
-                }).reduce((sum, k) => sum + (gameState.levelStars[k] || 0), 0);
-                ctx.fillText('Stars: ' + starsInPhase + '/' + (end - start + 1) * 3, 40, yPos + 20);
+                // Draw tab background
+                ctx.fillStyle = isSelected ? '#00ccff' : (isUnlocked ? 'rgba(0, 204, 255, 0.3)' : 'rgba(100, 100, 100, 0.3)');
+                ctx.fillRect(tabX, tabY, tabWidth, tabHeight);
 
-                yPos += phaseHeight;
+                // Draw tab border
+                ctx.strokeStyle = isSelected ? '#00ffff' : (isUnlocked ? '#00ccff' : '#666666');
+                ctx.lineWidth = isSelected ? 2 : 1;
+                ctx.strokeRect(tabX, tabY, tabWidth, tabHeight);
+
+                // Draw phase name
+                ctx.fillStyle = isUnlocked ? COLORS.text : '#666666';
+                ctx.font = isSelected ? 'bold 12px Arial' : '11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(PHASE_NAMES[p], tabX + tabWidth / 2, tabY + tabHeight / 2);
             }
 
-            drawButton(DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 100, 100, 50, 'BACK');
+            // Draw level grid for selected phase
+            const gridStartY = 130;
+            const cols = 5;
+            const cellW = 60;
+            const cellH = 70;
+            const cellGap = 6;
+            const gridX = (DESIGN_WIDTH - (cols * cellW + (cols - 1) * cellGap)) / 2;
 
+            let cellIndex = 0;
+            for (let lvl = phaseStart; lvl <= phaseEnd; lvl++) {
+                const col = cellIndex % cols;
+                const row = Math.floor(cellIndex / cols);
+                const cellX = gridX + col * (cellW + cellGap);
+                const cellY = gridStartY + row * (cellH + cellGap);
+
+                const level = GAME_LEVELS[lvl - 1];
+                const isUnlocked = lvl === 1 || (gameState.levelStars[lvl - 1] || 0) > 0;
+                const stars = gameState.levelStars[lvl] || 0;
+                const isBoss = level && level.isBoss;
+
+                // Draw cell background
+                ctx.save();
+                if (!isUnlocked) {
+                    ctx.globalAlpha = 0.35;
+                }
+                ctx.fillStyle = isBoss ? 'rgba(255, 51, 85, 0.2)' : 'rgba(0, 204, 255, 0.1)';
+                ctx.fillRect(cellX, cellY, cellW, cellH);
+
+                // Draw cell border
+                ctx.strokeStyle = stars > 0 ? '#ffcc00' : (isUnlocked ? '#00ccff' : '#444444');
+                ctx.lineWidth = stars > 0 ? 2 : 1;
+                ctx.strokeRect(cellX, cellY, cellW, cellH);
+
+                // Draw level number
+                ctx.font = isBoss ? 'bold 18px Arial' : 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = isUnlocked ? '#ffffff' : '#666666';
+                ctx.fillText(lvl, cellX + cellW / 2, cellY + 20);
+
+                // Draw boss indicator
+                if (isBoss) {
+                    ctx.font = '9px Arial';
+                    ctx.fillStyle = '#ff3355';
+                    ctx.fillText('BOSS', cellX + cellW / 2, cellY + 33);
+                }
+
+                // Draw stars
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                for (let s = 0; s < 3; s++) {
+                    ctx.fillStyle = s < stars ? '#ffcc00' : 'rgba(255, 255, 255, 0.15)';
+                    ctx.fillText('★', cellX + 10 + s * 18, cellY + cellH - 12);
+                }
+
+                // Draw lock icon if locked
+                if (!isUnlocked) {
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#666666';
+                    ctx.fillText('🔒', cellX + cellW / 2, cellY + 45);
+                }
+
+                ctx.restore();
+                cellIndex++;
+            }
+
+            // Draw back button
+            drawButton(DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50, 'BACK');
+
+            // Handle taps
             consumeTap((tap) => {
-                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 100, 100, 50)) {
+                // Check back button
+                if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50)) {
                     audioManager.playButtonClick();
                     gameRuntime.state = STATES.menu;
                     gameRuntime.currentScreen = 'menu';
-                } else {
-                    yPos = 120;
-                    for (let p = 0; p < 4; p++) {
-                        if (pointInRect(tap.x, tap.y, 40, yPos, DESIGN_WIDTH - 80, 30)) {
+                    return;
+                }
+
+                // Check phase tabs
+                for (let p = 0; p < 4; p++) {
+                    const tabX = 20 + p * ((DESIGN_WIDTH - 40) / 4 + 2);
+                    if (pointInRect(tap.x, tap.y, tabX, tabY, tabWidth, tabHeight)) {
+                        if (gameState.phasesUnlocked[p]) {
+                            audioManager.playButtonClick();
                             gameRuntime.currentPhaseSelect = p;
-                            break;
                         }
-                        yPos += phaseHeight;
+                        return;
                     }
+                }
+
+                // Check level cells
+                cellIndex = 0;
+                for (let lvl = phaseStart; lvl <= phaseEnd; lvl++) {
+                    const col = cellIndex % cols;
+                    const row = Math.floor(cellIndex / cols);
+                    const cellX = gridX + col * (cellW + cellGap);
+                    const cellY = gridStartY + row * (cellH + cellGap);
+
+                    if (pointInRect(tap.x, tap.y, cellX, cellY, cellW, cellH)) {
+                        const isUnlocked = lvl === 1 || (gameState.levelStars[lvl - 1] || 0) > 0;
+                        if (isUnlocked) {
+                            audioManager.playButtonClick();
+                            startCampaignLevel(lvl);
+                        }
+                        return;
+                    }
+                    cellIndex++;
                 }
             });
         }
+
 
         function drawCampaignResultScreen() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -4449,6 +5433,12 @@
             const oldStars = gameState.levelStars[gameState.currentCampaignLevel] || 0;
             stars = Math.max(oldStars, stars);
             gameState.levelStars[gameState.currentCampaignLevel] = stars;
+            updatePhaseProgress();
+            saveToStorage();
+
+            // Sync campaign progress to Convex backend
+            const totalStars = Object.values(gameState.levelStars).reduce((a, b) => a + b, 0);
+            voyagerConvex.syncCampaign(gameState.currentCampaignLevel, totalStars, JSON.stringify(gameState.levelStars)).catch(() => {});
 
             if (ratio >= 1) {
                 audioManager.playLevelComplete();
@@ -4547,6 +5537,20 @@
             gameState.stats.totalPlayTime += survivalTime;
             gameState.stats.bestSurvivalTime = Math.max(gameState.stats.bestSurvivalTime, survivalTime);
 
+            // Track challenge progress
+            for (const ch of WEEKLY_CHALLENGES) {
+                if (!gameState.challengeProgress[ch.id]) {
+                    gameState.challengeProgress[ch.id] = {};
+                }
+                const prog = gameState.challengeProgress[ch.id];
+                if (ch.stat === 'survival') {
+                    prog.survival = Math.max(prog.survival || 0, survivalTime);
+                }
+                if (ch.stat === 'combo') {
+                    prog.combo = Math.max(prog.combo || 0, gameRuntime.combo || 0);
+                }
+            }
+
             // Track session best
             gameRuntime.sessionBest = Math.max(gameRuntime.sessionBest, gameRuntime.distance);
 
@@ -4630,7 +5634,8 @@
                     } else {
                         gameRuntime.mouseX = pos.x;
                     }
-                    gameRuntime.mouseY = pos.y;
+                    // Ship renders above finger so player can see it
+                    gameRuntime.mouseY = pos.y - TOUCH_OFFSET_Y;
                 }
             }, { passive: false });
 
@@ -4645,7 +5650,8 @@
                     } else {
                         gameRuntime.mouseX = pos.x;
                     }
-                    gameRuntime.mouseY = pos.y;
+                    // Ship renders above finger so player can see it
+                    gameRuntime.mouseY = pos.y - TOUCH_OFFSET_Y;
                 }
             }, { passive: false });
 
@@ -4749,6 +5755,10 @@
                         drawAchievementsScreen();
                     } else if (gameRuntime.currentScreen === 'challenges') {
                         drawChallengesScreen();
+                    } else if (gameRuntime.currentScreen === 'leaderboard') {
+                        drawLeaderboardScreen();
+                    } else if (gameRuntime.currentScreen === 'name_entry') {
+                        drawNameEntryScreen();
                     } else {
                         drawMenuScreen();
                     }

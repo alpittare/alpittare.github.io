@@ -1,0 +1,172 @@
+name: iOS Build & App Store Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  XCODE_VERSION: '15.0'
+
+jobs:
+  ios_build:
+    name: Build iOS App Archive
+    runs-on: macos-14
+    timeout-minutes: 120
+
+    steps:
+      # Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # Install dependencies
+      - name: Install npm dependencies
+        run: npm ci
+        continue-on-error: false
+
+      # Sync Capacitor
+      - name: Sync Capacitor platform
+        run: |
+          npx cap sync ios
+        continue-on-error: false
+
+      # Setup Xcode
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      # Decode and install signing certificate
+      - name: Decode signing certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+        run: |
+          echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+          ls -lh certificate.p12
+
+      # Import certificate into keychain
+      - name: Import certificate into keychain
+        env:
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        run: |
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
+
+      # Decode and install provisioning profile
+      - name: Install provisioning profile
+        env:
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+        run: |
+          echo "$PROVISIONING_PROFILE" | base64 --decode > profile.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      # Build iOS archive
+      - name: Build iOS archive
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cd ios
+          xcodebuild archive \
+            -scheme "Cricket AI 2026" \
+            -configuration Release \
+            -archivePath build/CricketAI.xcarchive \
+            -derivedDataPath build/DerivedData \
+            -allowProvisioningUpdates \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            TEAM_ID="$APPLE_TEAM_ID"
+
+      # Export archive for App Store
+      - name: Export archive for App Store
+        run: |
+          cd ios
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/CricketAI.xcarchive \
+            -exportOptionsPlist ../ExportOptions.plist \
+            -exportPath build/Export
+
+      # Upload to App Store Connect
+      - name: Upload to App Store Connect
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+        run: |
+          # Create API key file
+          mkdir -p ~/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY" > ~/private_keys/AuthKey_${{ secrets.APP_STORE_KEY_ID }}.p8
+
+          # Upload using xcrun altool
+          xcrun altool --upload-app \
+            --file "ios/build/Export/CricketAI.ipa" \
+            --type ios \
+            --apiKey ${{ secrets.APP_STORE_KEY_ID }} \
+            --apiIssuer ${{ secrets.APP_STORE_ISSUER_ID }}
+
+      # Cleanup sensitive files
+      - name: Cleanup sensitive files
+        if: always()
+        run: |
+          rm -f certificate.p12
+          rm -f profile.mobileprovision
+          rm -f ~/private_keys/AuthKey_*.p8
+          security delete-keychain build.keychain || true
+
+      # Notify on success
+      - name: Notify success
+        if: success()
+        run: echo "iOS app successfully uploaded to App Store Connect"
+
+      # Notify on failure
+      - name: Notify failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ iOS build failed. Check workflow logs.'
+            })
+
+  # Optional: Send Slack notification
+  notify_slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    needs: ios_build
+    if: always()
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "iOS Build Status: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Cricket AI 2026 - iOS Build*\nStatus: ${{ job.status }}\nRef: ${{ github.ref }}\nCommit: ${{ github.sha }}"
+                  }
+                }
+              ]
+            }

@@ -1,0 +1,87 @@
+{
+  "expo": {
+    "name": "{{APP_NAME}}",
+    "slug": "{{APP_SLUG}}",
+    "version": "1.0.0",
+    "scheme": "{{APP_SLUG}}",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f0f0f"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/{{EXPO_PROJECT_ID}}"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": false,
+      "supportsNotch": true,
+      "bundleIdentifier": "{{BUNDLE_ID_IOS}}",
+      "buildNumber": "1",
+      "infoPlist": {
+        "UIRequiredDeviceCapabilities": [
+          "gamekit"
+        ],
+        "NSPhotoLibraryUsageDescription": "Allow access to photos for sharing game screenshots",
+        "NSCameraUsageDescription": "Allow camera access",
+        "NSMicrophoneUsageDescription": "Allow microphone access"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "bundleIdentifier": "{{BUNDLE_ID_ANDROID}}",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "useNextNotificationId": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f0f0f"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "14.0",
+            "useFrameworks": "static"
+          },
+          "android": {
+            "minSdkVersion": 24,
+            "targetSdkVersion": 34,
+            "compileSdkVersion": 34
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow {{APP_NAME}} to access your camera"
+        }
+      ]
+    ],
+    "owner": "{{EXPO_OWNER}}",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "{{EXPO_PROJECT_ID}}"
+      }
+    }
+  }
+}

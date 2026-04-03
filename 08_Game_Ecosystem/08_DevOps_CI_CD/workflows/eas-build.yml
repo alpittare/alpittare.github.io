@@ -1,0 +1,186 @@
+name: EAS Build & Submit
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      submit:
+        description: 'Submit to App Store after build?'
+        required: false
+        default: 'false'
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  eas_build:
+    name: Build with EAS
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Setup Expo CLI
+      - name: Setup Expo CLI
+        run: npm install -g eas-cli
+
+      # Login to Expo
+      - name: Expo login
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          echo "Logging in to Expo..."
+          eas whoami || echo "Not logged in yet"
+
+      # Build iOS app with EAS (production profile)
+      - name: Build iOS app with EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_BUILD_PROFILE: production
+        run: |
+          echo "Starting EAS build for iOS (production profile)..."
+          eas build \
+            --platform ios \
+            --profile production \
+            --non-interactive \
+            --wait
+
+      # Optionally submit to App Store
+      - name: Submit to App Store
+        if: github.event_name == 'push' || github.event.inputs.submit == 'true'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+        run: |
+          echo "Creating App Store API key file..."
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_KEY_ID }}.p8
+
+          echo "Submitting to App Store via EAS..."
+          eas submit \
+            --platform ios \
+            --latest \
+            --non-interactive
+
+      # Download build artifacts
+      - name: Download build URL
+        if: always()
+        run: |
+          echo "Build artifacts available in EAS dashboard"
+          echo "View at: https://expo.dev/accounts/${{ secrets.EXPO_ACCOUNT }}/projects"
+
+      # Notify on success
+      - name: Notify success
+        if: success()
+        run: echo "✅ EAS build completed successfully"
+
+      # Notify Slack on success
+      - name: Slack notification - success
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "EAS Build Complete",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "✅ *EAS Build Successful*\nPlatform: iOS (Production)\nSubmitted: ${{ github.event_name == 'push' || github.event.inputs.submit == 'true' }}\nRef: ${{ github.ref }}"
+                  }
+                }
+              ]
+            }
+
+      # Notify Slack on failure
+      - name: Slack notification - failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "EAS Build Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "❌ *EAS Build Failed*\nPlatform: iOS\nRef: ${{ github.ref }}\nLogs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
+
+  # Parallel: Build for staging (optional)
+  eas_build_staging:
+    name: Build Staging (Optional)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Expo CLI
+        run: npm install -g eas-cli
+
+      - name: Build staging
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build \
+            --platform ios \
+            --profile staging \
+            --non-interactive \
+            --wait
+
+      - name: Notify staging build
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "Staging Build Ready",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "🔨 *EAS Staging Build Complete*\nReady for TestFlight distribution\nRef: ${{ github.ref }}"
+                  }
+                }
+              ]
+            }

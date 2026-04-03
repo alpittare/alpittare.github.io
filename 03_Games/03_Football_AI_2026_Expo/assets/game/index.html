@@ -460,7 +460,7 @@ const FootballConfig = {
         radius: 12,
         shotSpeed: 18,           // base speed (px/frame)
         friction: 0.995,         // velocity decay/frame
-        curveDecay: 0.97,        // curve force decay/frame
+        curveDecay: 0.96,        // curve force decay/frame — tighter arc
         heightGravity: 0.25,     // chip shot gravity (px/frame²)
         maxHeight: 12,           // cap height for chip shots
         chipThreshold: 0.85,     // power threshold to trigger chip
@@ -655,7 +655,7 @@ class Football extends Entity {
         const speed = cfg.shotSpeed * FBUtils.clamp(power, FootballConfig.kicker.minPower, 1.0);
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.curveForce = curve * 0.3;
+        this.curveForce = curve; // direct — tuned in _shoot()
         this.active = true;
 
         // Chip shot at high power
@@ -3864,7 +3864,7 @@ const APP_CONFIG = {
     name: 'Football AI 2026',
     version: '1.0.0',
     build: '1',
-    studio: 'GameHub Studios',
+    studio: '',
     developer: 'Alpit Tare',
     support: 'alpittare204dev@gmail.com',
     bundleId: 'com.footballprobotai.app',
@@ -4248,8 +4248,7 @@ const DESIGN = {
     ballRadius: 12,
     keeperWidth: 50,
     keeperHeight: 70,
-    joystickRadius: 70,
-    joystickKnobRadius: 30,
+    // (joystick config removed — swipe-only input)
     swipeThreshold: 30,
     maxPower: 1.0,
     shotSpeed: 18,
@@ -4490,6 +4489,7 @@ function drawAIBotBubble(ctx) {
     ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
     ctx.fillText(theme.emoji, avX, avY + 1);
 
     // === BOT NAME + LEVEL BADGE ===
@@ -5173,158 +5173,7 @@ class GameStorage {
     }
 }
 
-// ===== joystick.js =====
-// ============================================================================
-// JOYSTICK — Virtual touch joystick + swipe-to-shoot system
-// ============================================================================
-
-class VirtualJoystick {
-    constructor() {
-        // Position (set dynamically based on canvas size)
-        this.baseX = 0;
-        this.baseY = 0;
-        this.radius = DESIGN.joystickRadius;
-        this.knobRadius = DESIGN.joystickKnobRadius;
-
-        // State
-        this.active = false;
-        this.knobX = 0;
-        this.knobY = 0;
-        this.dx = 0;     // normalized -1 to 1
-        this.dy = 0;     // normalized -1 to 1
-        this.magnitude = 0;
-        this.angle = 0;
-        this.touchId = null;
-
-        // Visual
-        this.opacity = 0;
-        this.pulsePhase = 0;
-    }
-
-    setPosition(x, y) {
-        this.baseX = x;
-        this.baseY = y;
-        this.knobX = x;
-        this.knobY = y;
-    }
-
-    handleTouchStart(touch) {
-        const dx = touch.x - this.baseX;
-        const dy = touch.y - this.baseY;
-        const d = Math.sqrt(dx * dx + dy * dy);
-
-        if (d < this.radius * 2) {
-            this.active = true;
-            this.touchId = touch.id;
-            this._updateKnob(touch.x, touch.y);
-            return true;
-        }
-        return false;
-    }
-
-    handleTouchMove(touch) {
-        if (!this.active || touch.id !== this.touchId) return false;
-        this._updateKnob(touch.x, touch.y);
-        return true;
-    }
-
-    handleTouchEnd(touch) {
-        if (touch.id !== this.touchId) return false;
-        this.active = false;
-        this.touchId = null;
-        this.dx = 0;
-        this.dy = 0;
-        this.magnitude = 0;
-        this.knobX = this.baseX;
-        this.knobY = this.baseY;
-        return true;
-    }
-
-    _updateKnob(x, y) {
-        let dx = x - this.baseX;
-        let dy = y - this.baseY;
-        const d = Math.sqrt(dx * dx + dy * dy);
-
-        if (d > this.radius) {
-            dx = (dx / d) * this.radius;
-            dy = (dy / d) * this.radius;
-        }
-
-        this.knobX = this.baseX + dx;
-        this.knobY = this.baseY + dy;
-        this.dx = dx / this.radius;
-        this.dy = dy / this.radius;
-        this.magnitude = Math.min(d / this.radius, 1);
-        this.angle = Math.atan2(dy, dx);
-    }
-
-    update() {
-        this.pulsePhase += 0.05;
-        this.opacity = Utils.lerp(this.opacity, this.active ? 1 : 0.4, 0.15);
-    }
-
-    draw(ctx) {
-        ctx.save();
-
-        const pulse = 1 + Math.sin(this.pulsePhase) * 0.03;
-
-        // Base ring (outer)
-        ctx.globalAlpha = this.opacity * 0.3;
-        ctx.strokeStyle = COLORS.primary;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(this.baseX, this.baseY, this.radius * pulse, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Base fill
-        ctx.globalAlpha = this.opacity * 0.08;
-        ctx.fillStyle = COLORS.primary;
-        ctx.beginPath();
-        ctx.arc(this.baseX, this.baseY, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Direction indicators (cardinal lines)
-        ctx.globalAlpha = this.opacity * 0.15;
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 4; i++) {
-            const a = (Math.PI / 2) * i;
-            ctx.beginPath();
-            ctx.moveTo(this.baseX + Math.cos(a) * 20, this.baseY + Math.sin(a) * 20);
-            ctx.lineTo(this.baseX + Math.cos(a) * (this.radius - 10), this.baseY + Math.sin(a) * (this.radius - 10));
-            ctx.stroke();
-        }
-
-        // Knob shadow
-        ctx.globalAlpha = this.opacity * 0.3;
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
-        ctx.arc(this.knobX + 2, this.knobY + 3, this.knobRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Knob
-        ctx.globalAlpha = this.opacity;
-        const grad = ctx.createRadialGradient(
-            this.knobX - 5, this.knobY - 5, 2,
-            this.knobX, this.knobY, this.knobRadius
-        );
-        grad.addColorStop(0, this.active ? COLORS.primaryLight : '#ffffff');
-        grad.addColorStop(1, this.active ? COLORS.primary : '#cccccc');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(this.knobX, this.knobY, this.knobRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Knob highlight
-        ctx.globalAlpha = this.opacity * 0.5;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(this.knobX - 6, this.knobY - 6, this.knobRadius * 0.3, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-    }
-}
+// (VirtualJoystick class removed — swipe-only input)
 
 // ============================================================================
 // SWIPE DETECTOR — For shooting
@@ -5440,7 +5289,6 @@ class TouchManager {
         this.offsetX = 0;
         this.offsetY = 0;
 
-        this.joystick = new VirtualJoystick();
         this.swipe = new SwipeDetector();
         this.taps = []; // for UI button taps
 
@@ -5540,7 +5388,7 @@ class TouchManager {
     }
 
     update() {
-        this.joystick.update();
+        // swipe-only — no joystick update
     }
 }
 
@@ -5575,6 +5423,7 @@ class Ball {
         this.spinAngle = 0;
         this.trail = [];
         this.active = false;     // not in flight
+        this._wallChecked = false; // reset wall breakthrough flag
         this.curveForce = 0;     // lateral curve
         this.curveIntensity = 0; // visual: current curve strength
         this.curveDirection = 0; // visual: -1 left, +1 right
@@ -5584,22 +5433,21 @@ class Ball {
         const speed = DESIGN.shotSpeed * power;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.curveForce = (curve || 0) * 0.8;
+        this.curveForce = curve || 0; // direct — no damping, tuned in _shoot()
         this.active = true;
 
         // Chip: slight lift on high power shots (not unsaveable)
-        // Max height ~8-10 at power=1.0, making it harder but not impossible to save
         if (power > 0.85) {
-            this.heightVel = (power - 0.85) * 20; // 0-3 range, much less than before
+            this.heightVel = (power - 0.85) * 20;
         }
     }
 
     update() {
         if (!this.active) return;
 
-        // Apply curve (swerve) — slower decay = longer, more visible bend
+        // Apply curve (swerve) — 0.96 decay = tighter, more dramatic arc
         this.vx += this.curveForce;
-        this.curveForce *= 0.985;
+        this.curveForce *= 0.96;
 
         // Move
         this.x += this.vx;
@@ -5631,18 +5479,17 @@ class Ball {
                 surge: this.surgeMode, surgeLevel: this.surgeLevel, style: this.surgeStyle,
                 curve: this.curveIntensity > 0.15 // flag curved trail points
             });
-            // Banana kick: extra swerve particles when curving hard
-            if (this.curveIntensity > 0.2 && speed > 4) {
-                const spread = 6 + this.curveIntensity * 15;
-                for (let ci = 0; ci < 2; ci++) {
-                    this.trail.push({
-                        x: this.x + Utils.randRange(-spread, spread) * -this.curveDirection,
-                        y: this.y - this.height + Utils.randRange(-3, 3),
-                        alpha: 0.8 + Math.random() * 0.2,
-                        size: this.radius * (0.3 + Math.random() * 0.3),
-                        surge: false, curve: true, curveParticle: true
-                    });
-                }
+            // Curve swerve particles — scale with curve intensity
+            if (this.curveIntensity > 0.12 && speed > 4) {
+                const spread = 4 + this.curveIntensity * 12;
+                this.trail.push({
+                    x: this.x + Utils.randRange(-spread, spread) * -this.curveDirection,
+                    y: this.y - this.height + Utils.randRange(-2, 2),
+                    alpha: 0.6 + this.curveIntensity * 0.8,
+                    size: this.radius * (0.25 + Math.random() * 0.25),
+                    surge: false, curveTrail: true,
+                    curveLevel: this.curveIntensity > 0.25 ? 3 : (this.curveIntensity > 0.15 ? 2 : 1)
+                });
             }
             // Surge mode: extra trail particles scale with level (L1=0, L2=1, L3=2, L4=3)
             if (this.surgeMode && speed > 5) {
@@ -5735,15 +5582,16 @@ class Ball {
                     ctx.arc(t.x, t.y, t.size * (0.3 + progress * 0.7), 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-                } else if (t.curve) {
-                    // BANANA KICK TRAIL — yellow-orange swerve particles
-                    const r = Math.round(255);
-                    const g = Math.round(Utils.lerp(180, 255, progress));
-                    const b = Math.round(Utils.lerp(0, 50, progress));
-                    ctx.globalAlpha = t.alpha * (t.curveParticle ? 0.5 : 0.4);
-                    ctx.shadowColor = `rgb(${r},${g},${b})`;
-                    ctx.shadowBlur = t.curveParticle ? 8 : 5;
-                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                } else if (t.curveTrail) {
+                    // CURVE TRAIL — tiered colors (blue/cyan/gold)
+                    const cl = t.curveLevel || 1;
+                    const cr = cl >= 3 ? 255 : (cl >= 2 ? 80 : 140);
+                    const cg = cl >= 3 ? Math.round(Utils.lerp(180, 240, progress)) : (cl >= 2 ? Math.round(Utils.lerp(200, 240, progress)) : Math.round(Utils.lerp(190, 230, progress)));
+                    const cb = cl >= 3 ? Math.round(Utils.lerp(0, 80, progress)) : 255;
+                    ctx.globalAlpha = t.alpha * 0.45;
+                    ctx.shadowColor = cl >= 3 ? '#ff8800' : '#44aaff';
+                    ctx.shadowBlur = cl >= 3 ? 8 : 5;
+                    ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
                     ctx.beginPath();
                     ctx.arc(t.x, t.y, t.size * (0.25 + progress * 0.5), 0, Math.PI * 2);
                     ctx.fill();
@@ -5826,40 +5674,55 @@ class Ball {
             ctx.fill();
         }
 
-        // BANANA KICK EFFECTS — swirl aura + wind lines when curving
-        if (this.active && this.curveIntensity > 0.15 && speed > 4) {
-            const ci = Math.min(this.curveIntensity, 1.5);
+        // === UNIFIED CURVE AURA — intensity-based, no separate banana ===
+        if (this.active && this.curveIntensity > 0.08 && speed > 3) {
+            const ci = Math.min(this.curveIntensity, 0.4);
             const dir = this.curveDirection;
-
-            // Orange-yellow swerve aura
-            const auraR = r * (2.0 + ci * 2);
-            const auraAlpha = Math.min(0.35, ci * 0.3);
-            const auraGrad = ctx.createRadialGradient(dir * -r * 0.5, 0, r * 0.5, 0, 0, auraR);
-            auraGrad.addColorStop(0, `rgba(255,200,0,${auraAlpha})`);
-            auraGrad.addColorStop(0.5, `rgba(255,140,0,${auraAlpha * 0.4})`);
-            auraGrad.addColorStop(1, 'rgba(255,100,0,0)');
+            const isBanana = ci > 0.25; // max-curve tier
+            const isStrong = ci > 0.15;
+            // Curve aura glow
+            const auraR = r * (1.8 + ci * 4);
+            const auraAlpha = Math.min(0.3, ci * 0.8);
+            const auraGrad = ctx.createRadialGradient(dir * -r * 0.4, 0, r * 0.3, 0, 0, auraR);
+            if (isBanana) {
+                auraGrad.addColorStop(0, `rgba(255,200,0,${auraAlpha})`);
+                auraGrad.addColorStop(0.6, `rgba(255,140,0,${auraAlpha * 0.3})`);
+                auraGrad.addColorStop(1, 'rgba(255,100,0,0)');
+            } else if (isStrong) {
+                auraGrad.addColorStop(0, `rgba(100,220,255,${auraAlpha})`);
+                auraGrad.addColorStop(0.6, `rgba(50,150,255,${auraAlpha * 0.3})`);
+                auraGrad.addColorStop(1, 'rgba(0,100,255,0)');
+            } else {
+                auraGrad.addColorStop(0, `rgba(180,220,255,${auraAlpha * 0.6})`);
+                auraGrad.addColorStop(0.6, `rgba(120,180,255,${auraAlpha * 0.2})`);
+                auraGrad.addColorStop(1, 'rgba(80,140,255,0)');
+            }
             ctx.fillStyle = auraGrad;
             ctx.beginPath();
             ctx.arc(0, 0, auraR, 0, Math.PI * 2);
             ctx.fill();
-
-            // Spinning wind arcs (3 arcs rotating around ball)
-            const windTime = this.spinAngle * 2;
-            ctx.lineWidth = 1.5;
-            for (let w = 0; w < 3; w++) {
-                const wa = windTime + w * (Math.PI * 2 / 3);
-                const windR = r * (1.4 + ci * 0.8) + Math.sin(windTime * 2 + w) * 3;
-                const arcLen = Math.PI * (0.3 + ci * 0.2);
-                ctx.globalAlpha = 0.3 + ci * 0.15;
-                ctx.strokeStyle = w === 0 ? '#ffcc00' : (w === 1 ? '#ff8800' : '#ffee44');
-                ctx.shadowColor = '#ff8800';
-                ctx.shadowBlur = 4;
-                ctx.beginPath();
-                ctx.arc(0, 0, windR, wa * dir, (wa + arcLen) * dir, dir < 0);
-                ctx.stroke();
+            // Wind arcs for strong/banana curves
+            if (isStrong) {
+                const windTime = this.spinAngle * 2;
+                ctx.lineWidth = 1.5;
+                const arcCount = isBanana ? 3 : 2;
+                for (let w = 0; w < arcCount; w++) {
+                    const wa = windTime + w * (Math.PI * 2 / arcCount);
+                    const windR = r * (1.3 + ci * 1.5) + Math.sin(windTime * 2 + w) * 2;
+                    const arcLen = Math.PI * (0.25 + ci * 0.3);
+                    ctx.globalAlpha = 0.25 + ci * 0.4;
+                    ctx.strokeStyle = isBanana
+                        ? (w === 0 ? '#ffcc00' : '#ff8800')
+                        : (w === 0 ? '#66eeff' : '#44aaff');
+                    ctx.shadowColor = isBanana ? '#ff8800' : '#00aaff';
+                    ctx.shadowBlur = 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, windR, wa * dir, (wa + arcLen) * dir, dir < 0);
+                    ctx.stroke();
+                }
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
             }
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
         }
 
         // Ball body — themed gradient from BALL_VISUALS
@@ -8733,7 +8596,7 @@ class Renderer {
         ctx.globalAlpha = 0.2;
         ctx.fillStyle = '#ffffff';
         ctx.font = '7px -apple-system, sans-serif';
-        ctx.fillText('v' + APP_CONFIG.version + ' \u2022 ' + APP_CONFIG.studio, cx, badgeY + 38);
+        ctx.fillText('v' + APP_CONFIG.version, cx, badgeY + 38);
         ctx.globalAlpha = 1;
 
         // Settings gear — top-right area
@@ -8945,7 +8808,7 @@ class Renderer {
         ctx.globalAlpha = 0.25;
         ctx.fillStyle = '#ffffff';
         ctx.font = '7px -apple-system, sans-serif';
-        ctx.fillText('v' + APP_CONFIG.version + ' \u2022 ' + APP_CONFIG.studio, DESIGN.width / 2, DESIGN.height - 24);
+        ctx.fillText('v' + APP_CONFIG.version, DESIGN.width / 2, DESIGN.height - 24);
         ctx.restore();
 
         return { menu: menuBtn, play: playBtn, continue: continueBtn };
@@ -10534,6 +10397,675 @@ class Renderer {
     }
 }
 
+// ===== field-players.js =====
+// ============================================================================
+// FIELD PLAYERS — Wall defenders + ambient players for atmosphere & gameplay
+// ============================================================================
+
+// Jersey presets for field players (different from kicker/keeper)
+const FIELD_PLAYER_JERSEYS = {
+    teammate: [
+        { jersey: ['#1565c0','#1976d2','#1565c0'], shorts: '#0d47a1', socks: '#fff', number: '#fff' },
+        { jersey: ['#1565c0','#1976d2','#1565c0'], shorts: '#0d47a1', socks: '#fff', number: '#fff' },
+    ],
+    opponent: [
+        { jersey: ['#c62828','#e53935','#c62828'], shorts: '#b71c1c', socks: '#fff', number: '#fff' },
+        { jersey: ['#c62828','#e53935','#c62828'], shorts: '#b71c1c', socks: '#fff', number: '#fff' },
+    ],
+    wall: [
+        { jersey: ['#c62828','#e53935','#c62828'], shorts: '#b71c1c', socks: '#fff', number: '#fff' },
+    ],
+};
+
+// Per-difficulty field player configuration
+const FIELD_PLAYERS_CONFIG = {
+    easy: {
+        wallCount: 0,
+        wallJump: false,
+        wallShift: false,
+        ambientTeammates: 2,
+        ambientOpponents: 0,
+        wallY: 0,
+        wallSpacing: 0,
+    },
+    medium: {
+        wallCount: 2,
+        wallJump: false,
+        wallShift: false,
+        ambientTeammates: 3,
+        ambientOpponents: 1,
+        wallY: 280,
+        wallSpacing: 55,
+    },
+    hard: {
+        wallCount: 3,
+        wallJump: true,
+        wallShift: true,
+        wallShiftRange: 25,
+        ambientTeammates: 4,
+        ambientOpponents: 2,
+        wallY: 250,
+        wallSpacing: 50,
+    },
+    legend: {
+        wallCount: 4,
+        wallJump: true,
+        wallShift: true,
+        wallShiftRange: 40,
+        ambientTeammates: 5,
+        ambientOpponents: 3,
+        wallY: 220,
+        wallSpacing: 48,
+    },
+};
+
+class FieldPlayer {
+    constructor(x, y, type, jerseyConfig, number) {
+        this.baseX = x;
+        this.baseY = y;
+        this.x = x;
+        this.y = y;
+        this.type = type; // 'wall', 'ambient_teammate', 'ambient_opponent'
+        this.jersey = jerseyConfig;
+        this.number = number;
+        this.scale = type === 'wall' ? 0.75 : 0.6; // wall = closer = bigger, ambient = further = smaller
+
+        // Animation state
+        this.idlePhase = Math.random() * Math.PI * 2;
+        this.idleSpeed = 0.02 + Math.random() * 0.01;
+        this.swayAmount = type === 'wall' ? 2 : 4;
+
+        // Wall-specific: jump
+        this.jumpY = 0;
+        this.jumping = false;
+        this.jumpProgress = 0;
+        this.jumpHeight = 35 + Math.random() * 10;
+
+        // Collision hitbox (wall only)
+        this.hitW = 26;
+        this.hitH = 55;
+
+        // Knockout state (wall breaker)
+        this.knockedOut = false;
+        this.knockDir = 0;
+        this.knockTimer = 0;
+        this.knockX = 0;
+        this.knockAngle = 0;
+    }
+
+    triggerJump() {
+        if (this.type !== 'wall') return;
+        this.jumping = true;
+        this.jumpProgress = 0;
+    }
+
+    update(dt) {
+        // Knockout animation — player tumbles sideways
+        if (this.knockedOut) {
+            this.knockTimer += 0.03;
+            this.knockX += this.knockDir * 3.5 * Math.max(0, 1 - this.knockTimer);
+            this.knockAngle += this.knockDir * 0.08;
+            return; // skip normal animation
+        }
+
+        // Idle sway
+        this.idlePhase += this.idleSpeed;
+        this.x = this.baseX + Math.sin(this.idlePhase) * this.swayAmount;
+
+        // Jump animation (wall players)
+        if (this.jumping) {
+            this.jumpProgress += 0.035;
+            if (this.jumpProgress >= 1) {
+                this.jumping = false;
+                this.jumpProgress = 0;
+                this.jumpY = 0;
+            } else {
+                // Parabolic jump: up then down
+                this.jumpY = -Math.sin(this.jumpProgress * Math.PI) * this.jumpHeight;
+            }
+        }
+    }
+
+    checkCollision(ballX, ballY) {
+        if (this.type !== 'wall') return false;
+        const px = this.x;
+        const py = this.y + this.jumpY;
+        const hw = this.hitW * this.scale;
+        const hh = this.hitH * this.scale;
+        return ballX >= px - hw / 2 && ballX <= px + hw / 2 &&
+               ballY >= py - hh && ballY <= py + 5;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        const drawX = this.knockedOut ? this.x + this.knockX : this.x;
+        const drawY = this.y + this.jumpY;
+        ctx.translate(drawX, drawY);
+        if (this.knockedOut) {
+            ctx.rotate(this.knockAngle);
+            ctx.globalAlpha = Math.max(0, 1 - this.knockTimer * 0.8);
+        }
+        ctx.scale(this.scale, this.scale);
+
+        const j = this.jersey;
+
+        // Ground shadow
+        ctx.globalAlpha = 0.18;
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.ellipse(0, 32, 14, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Legs
+        ctx.fillStyle = j.shorts;
+        ctx.fillRect(-8, 10, 7, 16);
+        ctx.fillRect(2, 10, 7, 16);
+
+        // Socks
+        ctx.fillStyle = j.socks;
+        ctx.fillRect(-8, 22, 7, 5);
+        ctx.fillRect(2, 22, 7, 5);
+
+        // Boots
+        ctx.fillStyle = '#111';
+        ctx.fillRect(-9, 26, 8, 4);
+        ctx.fillRect(2, 26, 8, 4);
+
+        // Jersey body
+        const jerseyGrad = ctx.createLinearGradient(-12, -24, 12, 10);
+        jerseyGrad.addColorStop(0, j.jersey[0]);
+        jerseyGrad.addColorStop(0.5, j.jersey[1]);
+        jerseyGrad.addColorStop(1, j.jersey[2]);
+        ctx.fillStyle = jerseyGrad;
+        ctx.beginPath();
+        ctx.moveTo(-11, -20);
+        ctx.quadraticCurveTo(-14, -5, -10, 12);
+        ctx.lineTo(10, 12);
+        ctx.quadraticCurveTo(14, -5, 11, -20);
+        ctx.closePath();
+        ctx.fill();
+
+        // Number
+        ctx.fillStyle = j.number;
+        ctx.font = 'bold 12px -apple-system, Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.number, 0, -5);
+        ctx.textBaseline = 'alphabetic';
+
+        // Arms
+        ctx.strokeStyle = '#fdbcb4';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        const armSway = Math.sin(this.idlePhase * 1.5) * 3;
+        ctx.beginPath();
+        ctx.moveTo(-12, -14);
+        ctx.lineTo(-16 + armSway, -2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12, -14);
+        ctx.lineTo(16 - armSway, -2);
+        ctx.stroke();
+
+        // Head
+        ctx.fillStyle = '#fdbcb4';
+        ctx.beginPath();
+        ctx.arc(0, -30, 9, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hair
+        ctx.fillStyle = '#2c3e50';
+        ctx.beginPath();
+        ctx.arc(0, -32, 9, Math.PI * 1.1, Math.PI * -0.1);
+        ctx.fill();
+
+        // Eyes (tiny dots)
+        ctx.fillStyle = '#333';
+        ctx.beginPath(); ctx.arc(-3, -30, 1.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(3, -30, 1.2, 0, Math.PI * 2); ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+
+class FieldPlayersManager {
+    constructor() {
+        this.wallPlayers = [];
+        this.ambientPlayers = [];
+        this.config = null;
+        this.difficulty = 'easy';
+    }
+
+    setup(difficulty, campaignLevel) {
+        this.difficulty = difficulty;
+        this.wallPlayers = [];
+        this.ambientPlayers = [];
+
+        // Get config — campaign overrides difficulty-based defaults
+        let cfg;
+        if (campaignLevel) {
+            cfg = this._getCampaignConfig(campaignLevel);
+        } else {
+            cfg = FIELD_PLAYERS_CONFIG[difficulty] || FIELD_PLAYERS_CONFIG.easy;
+        }
+        this.config = cfg;
+
+        // === Spawn wall players (defenders between kicker and goal) ===
+        if (cfg.wallCount > 0) {
+            const centerX = DESIGN.width / 2;
+            const totalWidth = (cfg.wallCount - 1) * cfg.wallSpacing;
+            const startX = centerX - totalWidth / 2;
+
+            for (let i = 0; i < cfg.wallCount; i++) {
+                const x = startX + i * cfg.wallSpacing;
+                const jerseyTemplate = FIELD_PLAYER_JERSEYS.wall[0];
+                const num = 2 + i; // jersey numbers 2,3,4,5
+                this.wallPlayers.push(new FieldPlayer(x, cfg.wallY, 'wall', jerseyTemplate, num));
+            }
+        }
+
+        // === Spawn ambient teammates (behind kicker, lower half of field) ===
+        const ambTeamPositions = [
+            { x: 80,  y: 580 }, { x: 330, y: 560 },
+            { x: 60,  y: 480 }, { x: 350, y: 490 },
+            { x: 200, y: 520 },
+        ];
+        for (let i = 0; i < Math.min(cfg.ambientTeammates, ambTeamPositions.length); i++) {
+            const pos = ambTeamPositions[i];
+            const jerseyTemplate = FIELD_PLAYER_JERSEYS.teammate[0];
+            const num = 5 + i;
+            this.ambientPlayers.push(new FieldPlayer(pos.x, pos.y, 'ambient_teammate', jerseyTemplate, num));
+        }
+
+        // === Spawn ambient opponents (midfield area, between wall and kicker) ===
+        const ambOppPositions = [
+            { x: 100, y: 380 }, { x: 310, y: 370 },
+            { x: 200, y: 400 },
+        ];
+        for (let i = 0; i < Math.min(cfg.ambientOpponents, ambOppPositions.length); i++) {
+            const pos = ambOppPositions[i];
+            const jerseyTemplate = FIELD_PLAYER_JERSEYS.opponent[0];
+            const num = 14 + i;
+            this.ambientPlayers.push(new FieldPlayer(pos.x, pos.y, 'ambient_opponent', jerseyTemplate, num));
+        }
+    }
+
+    // Campaign-level scaling: progressively adds more wall/ambient players
+    _getCampaignConfig(levelNum) {
+        const level = typeof levelNum === 'object' ? levelNum.level : levelNum;
+        if (level <= 20) {
+            return {
+                wallCount: 0,
+                wallJump: false, wallShift: false,
+                ambientTeammates: Math.min(Math.floor(level / 7) + 1, 3),
+                ambientOpponents: level > 10 ? 1 : 0,
+                wallY: 0, wallSpacing: 0,
+            };
+        } else if (level <= 50) {
+            const wc = level <= 35 ? 1 : 2;
+            return {
+                wallCount: wc,
+                wallJump: false, wallShift: level > 40,
+                wallShiftRange: 20,
+                ambientTeammates: 3 + Math.floor((level - 20) / 15),
+                ambientOpponents: 1 + Math.floor((level - 20) / 20),
+                wallY: 280 - Math.floor((level - 20) / 3),
+                wallSpacing: 55,
+            };
+        } else if (level <= 80) {
+            return {
+                wallCount: 2 + Math.floor((level - 50) / 15),
+                wallJump: true, wallShift: true,
+                wallShiftRange: 25 + Math.floor((level - 50) / 5),
+                ambientTeammates: 4 + Math.floor((level - 50) / 20),
+                ambientOpponents: 2 + Math.floor((level - 50) / 30),
+                wallY: 260 - Math.floor((level - 50) / 3),
+                wallSpacing: 50,
+            };
+        } else {
+            const wc = 3 + Math.floor((level - 80) / 7);
+            return {
+                wallCount: Math.min(wc, 5),
+                wallJump: true, wallShift: true,
+                wallShiftRange: 40 + Math.floor((level - 80) / 4),
+                ambientTeammates: 5,
+                ambientOpponents: 3,
+                wallY: 220 - Math.floor((level - 80) / 5),
+                wallSpacing: 48,
+            };
+        }
+    }
+
+    // Called at the start of each round — randomize wall position
+    setupForRound(roundNum) {
+        const cfg = this.config;
+        if (!cfg) return;
+
+        // Shift wall position randomly each round (hard/legend)
+        if (cfg.wallShift && this.wallPlayers.length > 0) {
+            const shiftRange = cfg.wallShiftRange || 20;
+            const shiftX = (Math.random() - 0.5) * 2 * shiftRange;
+            const centerX = DESIGN.width / 2 + shiftX;
+            const totalWidth = (this.wallPlayers.length - 1) * cfg.wallSpacing;
+            const startX = centerX - totalWidth / 2;
+
+            for (let i = 0; i < this.wallPlayers.length; i++) {
+                this.wallPlayers[i].baseX = startX + i * cfg.wallSpacing;
+                this.wallPlayers[i].x = this.wallPlayers[i].baseX;
+            }
+        }
+
+        // Reset jump + knockout state
+        for (const wp of this.wallPlayers) {
+            wp.jumping = false;
+            wp.jumpProgress = 0;
+            wp.jumpY = 0;
+            wp.knockedOut = false;
+            wp.knockDir = 0;
+            wp.knockTimer = 0;
+            wp.knockX = 0;
+            wp.knockAngle = 0;
+        }
+    }
+
+    // Trigger wall jump when player shoots
+    onShot() {
+        if (!this.config || !this.config.wallJump) return;
+        // Small random delay per player for natural look
+        for (const wp of this.wallPlayers) {
+            const delay = Math.random() * 80; // 0-80ms stagger
+            setTimeout(() => wp.triggerJump(), delay);
+        }
+    }
+
+    // Check if ball hits any wall player — returns true if blocked
+    checkBallCollision(ballX, ballY) {
+        for (const wp of this.wallPlayers) {
+            if (wp.checkCollision(ballX, ballY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Returns the wall player that was hit (or null)
+    getCollidingPlayer(ballX, ballY) {
+        for (const wp of this.wallPlayers) {
+            if (!wp.knockedOut && wp.checkCollision(ballX, ballY)) {
+                return wp;
+            }
+        }
+        return null;
+    }
+
+    update(dt) {
+        for (const p of this.wallPlayers) p.update(dt);
+        for (const p of this.ambientPlayers) p.update(dt);
+    }
+
+    // Draw ambient players (behind kicker — rendered first)
+    drawAmbient(ctx) {
+        for (const p of this.ambientPlayers) p.draw(ctx);
+    }
+
+    // Draw wall players (between kicker and goal)
+    drawWall(ctx) {
+        for (const p of this.wallPlayers) p.draw(ctx);
+    }
+}
+
+
+// ===== referee.js =====
+// ============================================================================
+// REFEREE — Animated referee character with reactions
+// ============================================================================
+
+class Referee {
+    constructor() {
+        this.x = 370;
+        this.y = 420;
+        this.scale = 0.65;
+
+        // Idle animation
+        this.idlePhase = 0;
+        this.armAngle = 0;
+
+        // Reaction state
+        this.reaction = null;    // 'goal', 'save', 'wallBlock', 'wallBreak', 'whistle'
+        this.reactionTimer = 0;
+        this.reactionDuration = 80;
+
+        // Whistle animation
+        this.whistleParticles = [];
+
+        // Running to follow play
+        this.targetX = 370;
+        this.runSpeed = 0;
+    }
+
+    reset() {
+        this.reaction = null;
+        this.reactionTimer = 0;
+        this.targetX = 350 + Math.random() * 40;
+        this.whistleParticles = [];
+    }
+
+    trigger(type) {
+        this.reaction = type;
+        this.reactionTimer = 0;
+        this.reactionDuration = type === 'goal' ? 100 : (type === 'whistle' ? 60 : 80);
+
+        // Whistle particles on goal/whistle
+        if (type === 'goal' || type === 'whistle') {
+            this.whistleParticles = [];
+            for (let i = 0; i < 5; i++) {
+                this.whistleParticles.push({
+                    x: 0, y: 0,
+                    vx: 2 + Math.random() * 3,
+                    vy: -1 - Math.random() * 2,
+                    life: 1,
+                    size: 2 + Math.random() * 2,
+                });
+            }
+        }
+    }
+
+    update(dt) {
+        this.idlePhase += 0.018;
+
+        // Smoothly move toward target position
+        this.x += (this.targetX - this.x) * 0.03;
+
+        // Update reaction
+        if (this.reaction) {
+            this.reactionTimer++;
+            if (this.reactionTimer >= this.reactionDuration) {
+                this.reaction = null;
+                this.reactionTimer = 0;
+            }
+        }
+
+        // Update whistle particles
+        for (const p of this.whistleParticles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.02;
+            p.size *= 0.98;
+        }
+        this.whistleParticles = this.whistleParticles.filter(p => p.life > 0);
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.scale, this.scale);
+
+        const t = this.reactionTimer;
+        const r = this.reaction;
+
+        // Ground shadow
+        ctx.globalAlpha = 0.15;
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.ellipse(0, 32, 12, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Legs — black shorts/pants
+        ctx.fillStyle = '#1a1a1a';
+        const legSway = r === 'goal' ? Math.sin(t * 0.3) * 4 : 0;
+        ctx.fillRect(-7 + legSway, 10, 6, 17);
+        ctx.fillRect(2 - legSway, 10, 6, 17);
+
+        // Socks + boots
+        ctx.fillStyle = '#111';
+        ctx.fillRect(-8 + legSway, 25, 7, 6);
+        ctx.fillRect(2 - legSway, 25, 7, 6);
+
+        // Body — referee black jersey with neon stripes
+        const jerseyGrad = ctx.createLinearGradient(-12, -22, 12, 10);
+        jerseyGrad.addColorStop(0, '#1a1a1a');
+        jerseyGrad.addColorStop(0.5, '#2a2a2a');
+        jerseyGrad.addColorStop(1, '#1a1a1a');
+        ctx.fillStyle = jerseyGrad;
+        ctx.beginPath();
+        ctx.moveTo(-10, -18);
+        ctx.quadraticCurveTo(-13, -4, -10, 12);
+        ctx.lineTo(10, 12);
+        ctx.quadraticCurveTo(13, -4, 10, -18);
+        ctx.closePath();
+        ctx.fill();
+
+        // Yellow vertical stripes (classic referee)
+        ctx.fillStyle = '#ffd600';
+        ctx.fillRect(-6, -16, 2, 26);
+        ctx.fillRect(0, -16, 2, 26);
+        ctx.fillRect(5, -16, 2, 26);
+
+        // Collar
+        ctx.fillStyle = '#ffd600';
+        ctx.beginPath();
+        ctx.ellipse(0, -18, 6, 2.5, 0, 0, Math.PI);
+        ctx.fill();
+
+        // === ARMS — change based on reaction ===
+        ctx.strokeStyle = '#fdbcb4';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+
+        if (r === 'goal') {
+            // Arms pointing to center circle (classic goal signal)
+            const armSwing = Math.sin(t * 0.15) * 0.1;
+            ctx.beginPath();
+            ctx.moveTo(-11, -12);
+            ctx.lineTo(-25, -22 + armSwing * 10);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(11, -12);
+            ctx.lineTo(25, -22 - armSwing * 10);
+            ctx.stroke();
+        } else if (r === 'save' || r === 'wallBlock') {
+            // Arms crossed / hands on hips
+            ctx.beginPath();
+            ctx.moveTo(-11, -12);
+            ctx.lineTo(-16, 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(11, -12);
+            ctx.lineTo(16, 2);
+            ctx.stroke();
+        } else if (r === 'wallBreak') {
+            // One arm up pointing (advantage / play on)
+            ctx.beginPath();
+            ctx.moveTo(-11, -12);
+            ctx.lineTo(-18, -30);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(11, -12);
+            ctx.lineTo(18, 0);
+            ctx.stroke();
+        } else if (r === 'whistle') {
+            // Hand to mouth (blowing whistle)
+            ctx.beginPath();
+            ctx.moveTo(-11, -12);
+            ctx.lineTo(-5, -28);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(11, -12);
+            ctx.lineTo(16, -4);
+            ctx.stroke();
+        } else {
+            // Idle — hands at sides with gentle sway
+            const idle = Math.sin(this.idlePhase) * 3;
+            ctx.beginPath();
+            ctx.moveTo(-11, -12);
+            ctx.lineTo(-15 + idle, 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(11, -12);
+            ctx.lineTo(15 - idle, 2);
+            ctx.stroke();
+        }
+
+        // Head
+        ctx.fillStyle = '#fdbcb4';
+        ctx.beginPath();
+        ctx.arc(0, -28, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hair (short, dark)
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath();
+        ctx.arc(0, -30, 8, Math.PI * 1.1, Math.PI * -0.1);
+        ctx.fill();
+
+        // Eyes
+        ctx.fillStyle = '#333';
+        ctx.beginPath(); ctx.arc(-2.5, -28, 1, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(2.5, -28, 1, 0, Math.PI * 2); ctx.fill();
+
+        // Whistle (small silver circle near mouth when blowing)
+        if (r === 'whistle' || r === 'goal') {
+            ctx.fillStyle = '#ccc';
+            ctx.strokeStyle = '#888';
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.arc(-4, -25, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Whistle sound particles (musical notes floating away)
+        if (this.whistleParticles.length > 0) {
+            ctx.font = '10px -apple-system, Arial';
+            ctx.textAlign = 'center';
+            for (const p of this.whistleParticles) {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = '#ffd600';
+                ctx.fillText('♪', p.x - 4, p.y - 26);
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        // Card flash (on wall break — advantage signal)
+        if (r === 'wallBreak' && t < 30) {
+            const cardAlpha = Math.max(0, 1 - t / 30);
+            ctx.globalAlpha = cardAlpha;
+            ctx.fillStyle = '#ffd600'; // yellow card flash
+            ctx.fillRect(-20, -50, 12, 16);
+            ctx.strokeStyle = '#e6ac00';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(-20, -50, 12, 16);
+            ctx.globalAlpha = 1;
+        }
+
+        ctx.restore();
+    }
+}
+
+
 // ===== game.js =====
 // ============================================================================
 // GAME — Main game loop, state machine, and orchestration
@@ -10549,6 +11081,8 @@ class Game {
         this.ball = new Ball();
         this.keeper = new Goalkeeper();
         this.ml = new GoalkeeperML();
+        this.fieldPlayers = new FieldPlayersManager();
+        this.referee = new Referee();
 
         // ── Storage system (Capacitor Preferences / localStorage) ──
         this.storage = new GameStorage();
@@ -10591,9 +11125,14 @@ class Game {
         this.celebrating = false;
         this.celebrationTimer = 0;
 
-        // Banana kick flash
-        this.bananaKickFlash = 0;
-        this.bananaKickDir = 0;
+        // Curve hint overlay (shows every 5 shots)
+        this._curveHintAlpha = 0;
+
+        // Wall breaker flash
+        this._wallBreakFlash = 0;
+        // Wall block impact animation
+        this._wallBlockImpact = null;
+        this._wallBlockDelay = undefined;
 
         // ====== MULTI-LEVEL POWER SURGE SYSTEM ======
         this.surgeLevels = {
@@ -10783,7 +11322,7 @@ class Game {
     _resize() {
         const transform = this.renderer.resize();
         this.touch.setTransform(transform.scaleX, transform.scaleY, transform.offsetX, transform.offsetY);
-        this.touch.joystick.setPosition(80, DESIGN.height - 130);
+        // (joystick removed — swipe-only input)
     }
 
     _loadStats() {
@@ -10991,6 +11530,9 @@ class Game {
         this.state = 'playing';
         this.showMLDebug = !campaignLevelCfg; // Show ML debug only in non-campaign
 
+        // Setup field players (wall + ambient) based on difficulty/campaign
+        this.fieldPlayers.setup(difficulty, campaignLevelCfg);
+
         // Reset continues counter for new game session
         this._continuesUsed = 0;
         // Reset surge state
@@ -11102,6 +11644,23 @@ class Game {
         this.resultText = '';
         this.celebrating = false;
         this.celebrationTimer = 0;
+
+        // Reset wall impact state
+        this._wallBlockImpact = null;
+        this._wallBlockDelay = undefined;
+        this._wallBreakFlash = 0;
+
+        // Show curve hint on round 1 and every 5 rounds
+        if (this.round === 1 || this.round % 5 === 0) {
+            this._curveHintAlpha = 1.0;
+        }
+
+        // Referee reset + whistle for new round
+        this.referee.reset();
+        this.referee.trigger('whistle');
+
+        // Randomize wall position for this round
+        this.fieldPlayers.setupForRound(this.round);
 
         // Reset dual ball for new round
         if (this.dualBall) this.dualBall.secondBall = null;
@@ -11310,19 +11869,13 @@ class Game {
             power = Math.min(1.0, power + 0.08);
         }
 
-        // Curve derived from swipe angle — diagonal swipes = curve, straight up = no curve
-        // dx/dy ratio: straight up → dx≈0 → no curve, diagonal → high dx → curve
+        // === UNIFIED CURVE SYSTEM ===
+        // Diagonal swipe ratio determines curve intensity
+        // Aim offset determines curve direction (toward center = visible arc)
         const swDx = this._lastSwipeDx || 0;
         const swDy = this._lastSwipeDy || 0;
-        const swipeAbsDy = Math.abs(swDy) || 1; // avoid division by zero
-        // Ratio of horizontal to vertical movement (0 = straight up, 1+ = very diagonal)
+        const swipeAbsDy = Math.abs(swDy) || 1;
         const diagonalRatio = Math.abs(swDx) / swipeAbsDy;
-        // Apply curve only when swipe is noticeably diagonal (ratio > 0.25)
-        // Scale: 0.25-1.0 ratio maps to 0-0.6 curve strength, capped at 0.8
-        const curveRaw = diagonalRatio > 0.25
-            ? Utils.clamp((diagonalRatio - 0.25) * 0.8, 0, 0.8) * Math.sign(swDx)
-            : 0;
-        const curve = curveRaw;
         this._lastSwipeDx = 0;
         this._lastSwipeDy = 0;
 
@@ -11339,14 +11892,40 @@ class Game {
             this.ball.surgeLevel = 0;
         }
 
-        // === CURVE SHOT (level 6+) — amplifies swipe curve for skilled players ===
-        let finalCurve = curve;
-        if (this.curveShot.enabled && Math.abs(curve) > 0.15) {
-            // Boost existing swipe curve by curveShot strength (reward diagonal swiping)
-            finalCurve *= (1 + this.curveShot.strength * 0.5);
+        // === UNIFIED CURVE — input-driven, 3 tiers, banana = max curve ===
+        const goalCenterX = DESIGN.width / 2;
+        const aimOffset = (this.aimX - goalCenterX) / (DESIGN.goalWidth / 2);
+        let finalCurve = 0;
+        let curveTier = 0; // 0=none, 1=curve, 2=strong, 3=banana(max)
+        if (this.curveShot.enabled && diagonalRatio > 0.10) {
+            // Normalize diagonal input to 0-1 range (lower dead zone = easier to trigger)
+            const curveInput = Utils.clamp((diagonalRatio - 0.10) / 0.90, 0, 1);
+            // Power-1.5 scaling — visible even at low input, dramatic at high
+            const curveStrength = Math.pow(curveInput, 1.5);
+            // Direction: curve TOWARD center for visible arc
+            const curveDir = -Math.sign(aimOffset) || (swDx > 0 ? -1 : 1);
+            // Max curveForce = 0.50 at full diagonal + full strength
+            // With decay 0.96 over ~30 frames: ~100-130px displacement (clear visible arc)
+            finalCurve = curveDir * curveStrength * 0.50 * this.curveShot.strength;
+            // Determine visual tier
+            if (curveStrength >= 0.75) curveTier = 3;      // BANANA (max curve)
+            else if (curveStrength >= 0.40) curveTier = 2;  // Strong curve
+            else if (curveStrength >= 0.05) curveTier = 1;  // Normal curve
         }
 
         this.ball.shoot(angle, power, finalCurve);
+
+        // === CURVE VISUAL FEEDBACK — tier-based flash ===
+        this._curveFlash = 0;
+        this._curveFlashTier = 0;
+        this._curveFlashDir = 0;
+        if (curveTier >= 1) {
+            this._curveFlash = 1.0;
+            this._curveFlashTier = curveTier;
+            this._curveFlashDir = finalCurve > 0 ? 1 : -1;
+            if (curveTier >= 3) Utils.haptic(30); // strong haptic for banana
+            else if (curveTier >= 2) Utils.haptic(20);
+        }
 
         // Apply speed boost during surge — scales with level
         if (isSurgeShot) {
@@ -11372,13 +11951,8 @@ class Game {
 
         this.state = 'shooting';
 
-        // BANANA KICK — show flash on strong diagonal swipes
-        this.bananaKickFlash = 0;
-        if (Math.abs(finalCurve) > 0.55) {
-            this.bananaKickFlash = 1.0; // triggers fade-out animation
-            this.bananaKickDir = finalCurve > 0 ? 1 : -1;
-            Utils.haptic(25); // extra haptic for curve shots
-        }
+        // Trigger wall players to jump
+        this.fieldPlayers.onShot();
 
         this.audio.play(isSurgeShot ? 'surgeShot' : (power > 0.75 ? 'powerKick' : 'kick'));
         this.particles.grass(this.playerX, this.playerY);
@@ -11575,6 +12149,7 @@ class Game {
                 this.ball.active = false;
                 this.resultTimer = 0;
                 this.renderer.targetZoom = 1;
+                this.referee.trigger('save');
                 // === AI BOT: Saved taunt ===
                 AI_BOT.show('playerSaved');
                 // Track for adaptive difficulty
@@ -11683,6 +12258,7 @@ class Game {
         this.state = 'result';
         this.resultText = 'GOAL!';
         this.resultColor = COLORS.uiSuccess;
+        this.referee.trigger('goal');
         // Apply scoreBoost power-up (2x score)
         const scoreIncrement = (this._activeBoosts && this._activeBoosts.scoreBoost) ? 2 : 1;
         this.score.player += scoreIncrement;
@@ -12681,7 +13257,7 @@ class Game {
         // === Version ===
         ctx.fillStyle = 'rgba(255,255,255,0.2)';
         ctx.font = '10px -apple-system, Arial'; ctx.textAlign = 'center';
-        ctx.fillText(APP_CONFIG.name + '  \u00B7  v' + APP_CONFIG.version + '  \u00B7  ' + APP_CONFIG.studio, cx, H - 22);
+        ctx.fillText(APP_CONFIG.name + '  \u00B7  v' + APP_CONFIG.version, cx, H - 22);
     }
 
     _updateSettings() {
@@ -14677,6 +15253,7 @@ class Game {
             }
 
             this.aimLocked = true;
+            this._curveHintAlpha = 0; // dismiss hint on shoot
             // Store swipe data for curve calculation in _shoot()
             this._lastSwipeDx = swipe.dx;
             this._lastSwipeDy = swipe.dy;
@@ -14704,6 +15281,10 @@ class Game {
             }
             tap = this.touch.consumeTap();
         }
+
+        // Field players idle animation
+        this.fieldPlayers.update(1);
+        this.referee.update(1);
 
         // Keeper idle animation
         const config = this.difficultyConfig[this.difficulty];
@@ -14746,6 +15327,97 @@ class Game {
         this._updateSurge();
         this._updateBotVisuals();
         this._updateDualBall();
+        this.fieldPlayers.update(1);
+        this.referee.update(1);
+
+        // Wall block impact shockwave animation
+        if (this._wallBlockImpact) {
+            this._wallBlockImpact.timer++;
+            if (this._wallBlockImpact.timer >= this._wallBlockImpact.maxTimer) {
+                this._wallBlockImpact = null;
+            }
+        }
+
+        // Wall block delay — let deflected ball play out, then end round
+        if (this._wallBlockDelay !== undefined && this._wallBlockDelay > 0) {
+            this._wallBlockDelay--;
+            if (this._wallBlockDelay <= 0) {
+                this._wallBlockDelay = undefined;
+                this.ball.active = false;
+                this.ball.vx = 0;
+                this.ball.vy = 0;
+                this.resultText = 'BLOCKED';
+                this.resultColor = '#ff5252';
+                this.score.keeper++;
+                this.streak = 0;
+                this.state = 'result';
+                this.resultTimer = 0;
+                this.celebrating = false;
+                AI_BOT.show('save');
+                return;
+            }
+        }
+
+        // Check wall collision — power shots can BREAK THROUGH
+        if (this.ball.active && !this.ball._wallChecked) {
+            const hitPlayer = this.fieldPlayers.getCollidingPlayer(this.ball.x, this.ball.y);
+            if (hitPlayer) {
+                const shotSpeed = Math.sqrt(this.ball.vx * this.ball.vx + this.ball.vy * this.ball.vy);
+                const breakThreshold = 14; // ~78% power needed to break through
+                const isSurge = this.ball.surgeMode;
+
+                if (shotSpeed >= breakThreshold || isSurge) {
+                    // WALL BREAKER! Ball smashes through
+                    hitPlayer.knockedOut = true;
+                    hitPlayer.knockDir = this.ball.vx > 0 ? 1 : -1;
+                    hitPlayer.knockTimer = 0;
+                    // Ball slows down slightly from impact
+                    this.ball.vx *= 0.82;
+                    this.ball.vy *= 0.88;
+                    this.ball._wallChecked = true; // don't re-check this shot
+                    this.audio.play('powerKick');
+                    this.particles.sparks(this.ball.x, this.ball.y);
+                    Utils.haptic(30);
+                    this._wallBreakFlash = 1.0;
+                    this.referee.trigger('wallBreak');
+                } else {
+                    // Ball DEFLECTED by wall — bounces back with impact animation
+                    // Deflect ball (bounce back + random sideways scatter)
+                    this.ball.vy *= -0.5; // bounce back
+                    this.ball.vx = (Math.random() - 0.5) * 8; // scatter sideways
+                    this.ball.height = 0;
+                    this.ball.heightVel = 2 + Math.random() * 2; // pop up on bounce
+
+                    // Stagger the hit player
+                    hitPlayer.knockedOut = true;
+                    hitPlayer.knockDir = this.ball.x > hitPlayer.x ? -1 : 1;
+                    hitPlayer.knockTimer = 0;
+
+                    // Impact VFX
+                    this.audio.play('post');
+                    this.particles.sparks(this.ball.x, this.ball.y);
+                    Utils.haptic(25);
+
+                    // Store impact point for shockwave animation
+                    this._wallBlockImpact = {
+                        x: this.ball.x,
+                        y: this.ball.y,
+                        timer: 0,
+                        maxTimer: 55,
+                    };
+
+                    // Trigger camera shake
+                    if (this.renderer.targetZoom !== undefined) {
+                        this.renderer.targetZoom = 1.04;
+                    }
+
+                    // Let the ball keep flying (now deflected) for a few frames, then end round
+                    this._wallBlockDelay = 40; // frames before transitioning to result
+                    this.referee.trigger('wallBlock');
+                }
+            }
+        }
+
         const config = this.difficultyConfig[this.difficulty];
         this.keeper.update(this.keeper.diveSpeedOverride || config.diveSpeed);
         this._checkGoal();
@@ -15189,9 +15861,24 @@ class Game {
         // Layer 3: Game objects
         this.keeper.draw(ctx);
 
+        // Layer 3a: Wall players (between keeper and kicker)
+        if (this.state === 'playing' || this.state === 'shooting' || this.state === 'result') {
+            this.fieldPlayers.drawWall(ctx);
+        }
+
         // Power Surge player aura (behind player, in camera space)
         if (this.state === 'playing' || this.state === 'shooting') {
             this.renderer.drawPlayerAura(this.playerX, this.playerY, this.surge);
+        }
+
+        // Layer 3b: Ambient players (behind/around kicker for atmosphere)
+        if (this.state === 'playing' || this.state === 'shooting' || this.state === 'result') {
+            this.fieldPlayers.drawAmbient(ctx);
+        }
+
+        // Layer 3c: Referee
+        if (this.state === 'playing' || this.state === 'shooting' || this.state === 'result') {
+            this.referee.draw(ctx);
         }
 
         if (this.state === 'playing') {
@@ -15215,6 +15902,62 @@ class Game {
 
         this.particles.draw(ctx);
 
+        // Wall block impact shockwave (camera space)
+        if (this._wallBlockImpact) {
+            const imp = this._wallBlockImpact;
+            const t = imp.timer / imp.maxTimer; // 0→1
+            ctx.save();
+
+            // Expanding shockwave rings
+            const ringCount = 3;
+            for (let i = 0; i < ringCount; i++) {
+                const delay = i * 0.12;
+                const rt = Math.max(0, t - delay) / (1 - delay);
+                if (rt <= 0 || rt >= 1) continue;
+                const radius = 8 + rt * 80;
+                const alpha = (1 - rt) * 0.6;
+                ctx.beginPath();
+                ctx.arc(imp.x, imp.y, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(255,80,50,${alpha})`;
+                ctx.lineWidth = 3 * (1 - rt);
+                ctx.shadowColor = '#ff3300';
+                ctx.shadowBlur = 12 * (1 - rt);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+
+            // Impact flash (bright center burst)
+            if (t < 0.3) {
+                const flashAlpha = (1 - t / 0.3) * 0.7;
+                const flashR = 10 + t * 60;
+                const flashGrad = ctx.createRadialGradient(imp.x, imp.y, 0, imp.x, imp.y, flashR);
+                flashGrad.addColorStop(0, `rgba(255,200,100,${flashAlpha})`);
+                flashGrad.addColorStop(0.5, `rgba(255,100,30,${flashAlpha * 0.5})`);
+                flashGrad.addColorStop(1, `rgba(255,50,0,0)`);
+                ctx.fillStyle = flashGrad;
+                ctx.beginPath();
+                ctx.arc(imp.x, imp.y, flashR, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Flying debris fragments
+            if (t < 0.7) {
+                const debrisCount = 6;
+                for (let i = 0; i < debrisCount; i++) {
+                    const angle = (i / debrisCount) * Math.PI * 2 + t * 2;
+                    const dist = t * 60 + i * 5;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist - t * 20; // slight upward arc
+                    const size = 3 * (1 - t);
+                    const alpha = (1 - t / 0.7) * 0.8;
+                    ctx.fillStyle = `rgba(255,${120 + i * 20},50,${alpha})`;
+                    ctx.fillRect(imp.x + dx - size / 2, imp.y + dy - size / 2, size, size);
+                }
+            }
+
+            ctx.restore();
+        }
+
         // Swipe trail only (no aim line — direction is pure skill)
         if (this.state === 'playing') {
             this.touch.swipe.drawTrail(ctx);
@@ -15237,6 +15980,89 @@ class Game {
         // Vertical power bar on right side
         if (this.state === 'playing') {
             this.renderer.drawPowerBar(this.shotPower);
+        }
+
+        // === CURVE HINT OVERLAY — shows every 5 shots to teach swipe directions ===
+        if (this.state === 'playing' && this._curveHintAlpha > 0) {
+            ctx.save();
+            const ha = this._curveHintAlpha;
+            const hx = DESIGN.width / 2;
+            const hy = DESIGN.height * 0.55;
+
+            // Semi-transparent backdrop
+            ctx.globalAlpha = ha * 0.7;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            const bw = 300, bh = 220;
+            const br = 16;
+            ctx.beginPath();
+            ctx.moveTo(hx - bw/2 + br, hy - bh/2);
+            ctx.lineTo(hx + bw/2 - br, hy - bh/2);
+            ctx.quadraticCurveTo(hx + bw/2, hy - bh/2, hx + bw/2, hy - bh/2 + br);
+            ctx.lineTo(hx + bw/2, hy + bh/2 - br);
+            ctx.quadraticCurveTo(hx + bw/2, hy + bh/2, hx + bw/2 - br, hy + bh/2);
+            ctx.lineTo(hx - bw/2 + br, hy + bh/2);
+            ctx.quadraticCurveTo(hx - bw/2, hy + bh/2, hx - bw/2, hy + bh/2 - br);
+            ctx.lineTo(hx - bw/2, hy - bh/2 + br);
+            ctx.quadraticCurveTo(hx - bw/2, hy - bh/2, hx - bw/2 + br, hy - bh/2);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.globalAlpha = ha;
+            ctx.textAlign = 'center';
+
+            // Title
+            ctx.font = 'bold 18px -apple-system, Arial';
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText('\u26BD Swipe to Curve!', hx, hy - 80);
+
+            // Arrows + labels
+            ctx.font = '14px -apple-system, Arial';
+            const arrowY = hy - 30;
+            const labelGap = 22;
+
+            // Straight shot (up arrow)
+            ctx.fillStyle = '#aaddff';
+            ctx.fillText('\u2B06\uFE0F  Straight Up = No Curve', hx, arrowY);
+
+            // Diagonal = Curve
+            ctx.fillStyle = '#66eeff';
+            ctx.fillText('\u2197\uFE0F  Slight Diagonal = Curve', hx, arrowY + labelGap);
+
+            // Strong diagonal = Strong Curve
+            ctx.fillStyle = '#44ccff';
+            ctx.fillText('\u2197\uFE0F\u2197\uFE0F  More Diagonal = Strong Curve', hx, arrowY + labelGap * 2);
+
+            // Max diagonal = Banana
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText('\uD83C\uDF4C  Max Diagonal = MAX CURVE!', hx, arrowY + labelGap * 3);
+
+            // Visual arrow diagram
+            const cx = hx, cy = hy + 55;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            // Straight arrow
+            ctx.strokeStyle = '#aaddff';
+            ctx.globalAlpha = ha * 0.8;
+            ctx.beginPath(); ctx.moveTo(cx, cy + 20); ctx.lineTo(cx, cy - 20); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, cy - 14); ctx.lineTo(cx, cy - 22); ctx.lineTo(cx + 5, cy - 14); ctx.stroke();
+            // Slight diagonal (left)
+            ctx.strokeStyle = '#66eeff';
+            ctx.beginPath(); ctx.moveTo(cx - 25, cy + 18); ctx.lineTo(cx - 50, cy - 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 44, cy - 9); ctx.lineTo(cx - 52, cy - 17); ctx.lineTo(cx - 44, cy - 17); ctx.stroke();
+            // Slight diagonal (right)
+            ctx.beginPath(); ctx.moveTo(cx + 25, cy + 18); ctx.lineTo(cx + 50, cy - 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 44, cy - 9); ctx.lineTo(cx + 52, cy - 17); ctx.lineTo(cx + 44, cy - 17); ctx.stroke();
+            // Strong diagonal (left)
+            ctx.strokeStyle = '#ffcc00';
+            ctx.beginPath(); ctx.moveTo(cx - 55, cy + 15); ctx.lineTo(cx - 90, cy - 5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 83, cy + 1); ctx.lineTo(cx - 92, cy - 7); ctx.lineTo(cx - 83, cy - 7); ctx.stroke();
+            // Strong diagonal (right)
+            ctx.beginPath(); ctx.moveTo(cx + 55, cy + 15); ctx.lineTo(cx + 90, cy - 5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 83, cy + 1); ctx.lineTo(cx + 92, cy - 7); ctx.lineTo(cx + 83, cy - 7); ctx.stroke();
+
+            ctx.restore();
+            // Auto-fade after appearing
+            this._curveHintAlpha -= 0.005;
         }
 
         // Scoreboard
@@ -15307,31 +16133,74 @@ class Game {
             drawAIBotBubble(ctx);
         }
 
-        // BANANA KICK flash text
-        if (this.bananaKickFlash > 0.01) {
+        // === CURVE SHOT FLASH — tier-based visual feedback ===
+        if (this._curveFlash && this._curveFlash > 0.01) {
             ctx.save();
-            const bkAlpha = this.bananaKickFlash;
-            const bkScale = 1 + (1 - bkAlpha) * 0.5; // grows as it fades
-            const bkY = DESIGN.height / 2 - 40 - (1 - bkAlpha) * 30; // floats up
-            ctx.globalAlpha = bkAlpha;
-            ctx.translate(DESIGN.width / 2, bkY);
-            ctx.scale(bkScale, bkScale);
-            ctx.rotate(this.bananaKickDir * (1 - bkAlpha) * 0.15); // slight tilt
-            // Glow backdrop
-            ctx.shadowColor = '#ff8800';
-            ctx.shadowBlur = 20;
-            ctx.fillStyle = '#ffcc00';
-            ctx.font = 'bold 28px -apple-system, Arial';
+            const cfAlpha = this._curveFlash;
+            const cfScale = 1 + (1 - cfAlpha) * 0.4;
+            const cfY = DESIGN.height / 2 - 40 - (1 - cfAlpha) * 25;
+            ctx.globalAlpha = cfAlpha;
+            ctx.translate(DESIGN.width / 2, cfY);
+            ctx.scale(cfScale, cfScale);
+            ctx.rotate(this._curveFlashDir * (1 - cfAlpha) * 0.1);
+            ctx.font = 'bold 26px -apple-system, Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('\uD83C\uDF4C BANANA KICK!', 0, 0);
-            ctx.shadowBlur = 0;
-            // Outline for readability
-            ctx.strokeStyle = 'rgba(180,80,0,0.6)';
-            ctx.lineWidth = 1;
-            ctx.strokeText('\uD83C\uDF4C BANANA KICK!', 0, 0);
+            if (this._curveFlashTier >= 3) {
+                // BANANA — max curve: golden flash
+                ctx.shadowColor = '#ff8800';
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = '#ffcc00';
+                ctx.fillText('\uD83C\uDF4C MAX CURVE!', 0, 0);
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(180,80,0,0.6)';
+                ctx.lineWidth = 1;
+                ctx.strokeText('\uD83C\uDF4C MAX CURVE!', 0, 0);
+            } else if (this._curveFlashTier >= 2) {
+                // Strong curve: cyan flash
+                ctx.shadowColor = '#00ccff';
+                ctx.shadowBlur = 16;
+                ctx.fillStyle = '#66eeff';
+                ctx.fillText('\u26A1 STRONG CURVE!', 0, 0);
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(0,100,150,0.5)';
+                ctx.lineWidth = 1;
+                ctx.strokeText('\u26A1 STRONG CURVE!', 0, 0);
+            } else {
+                // Normal curve: subtle white flash
+                ctx.shadowColor = '#88bbff';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#cce5ff';
+                ctx.font = 'bold 22px -apple-system, Arial';
+                ctx.fillText('CURVE', 0, 0);
+                ctx.shadowBlur = 0;
+            }
             ctx.restore();
-            // Decay the flash
-            this.bananaKickFlash -= 0.018;
+            this._curveFlash -= 0.025; // faster fade than old banana
+        }
+
+        // WALL BREAKER flash text
+        if (this._wallBreakFlash && this._wallBreakFlash > 0.01) {
+            ctx.save();
+            const wbAlpha = this._wallBreakFlash;
+            const wbScale = 1.2 + (1 - wbAlpha) * 0.6;
+            const wbY = DESIGN.height / 2 - 60 - (1 - wbAlpha) * 40;
+            ctx.globalAlpha = wbAlpha;
+            ctx.translate(DESIGN.width / 2, wbY);
+            ctx.scale(wbScale, wbScale);
+            // Shake effect
+            ctx.translate((Math.random() - 0.5) * wbAlpha * 6, (Math.random() - 0.5) * wbAlpha * 4);
+            ctx.shadowColor = '#ff3300';
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = '#ff6600';
+            ctx.font = 'bold 26px -apple-system, Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('💥 WALL BREAKER!', 0, 0);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(200,50,0,0.7)';
+            ctx.lineWidth = 1.2;
+            ctx.strokeText('💥 WALL BREAKER!', 0, 0);
+            ctx.restore();
+            this._wallBreakFlash -= 0.015;
         }
 
         // Goal celebration overlay (golden flash + streaks)
@@ -15371,7 +16240,7 @@ class Game {
         }
 
         // Joystick — hidden (swipe-to-shoot controls active)
-        // this.touch.joystick.draw(ctx);
+        // (joystick removed — swipe-only)
         // Swipe trail rendered in camera space alongside aim line
     }
 
@@ -15648,10 +16517,11 @@ class Game {
             }
         };
 
-        // ====== CURVE SHOT SYSTEM ======
+        // ====== UNIFIED CURVE SYSTEM ======
+        // strength scales curveForce: 0.8 default → 0.9 (curve_shot) → 1.0 (strong_curve/banana)
         this.curveShot = {
-            enabled: true,           // enabled by default — curve adds skill depth
-            strength: 0.7,           // curve intensity (strong banana kicks from the start)
+            enabled: true,           // enabled by default
+            strength: 0.8,           // base: clearly visible arcs
             direction: 0             // auto-calculated from aim offset
         };
 
@@ -15859,10 +16729,10 @@ class Game {
                 break;
             case 'curve_shot':
                 this.curveShot.enabled = true;
-                this.curveShot.strength = 0.3;
+                this.curveShot.strength = 0.9; // stronger curves unlocked
                 break;
             case 'strong_curve':
-                this.curveShot.strength = 0.6;
+                this.curveShot.strength = 1.0; // full banana potential
                 break;
             case 'dual_ball':
                 this.dualBall.enabled = true;
