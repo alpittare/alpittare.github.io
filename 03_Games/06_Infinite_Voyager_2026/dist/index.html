@@ -166,27 +166,27 @@
         const BASE_SPEED = 60;
         const DRAG_COEFF = 0.97;
         const MAX_ENERGY = 100;
-        const NAV_DRAIN = 3.0;
-        const SHIELD_DRAIN = 5.0;
-        const AI_DRAIN = 2.0;
-        const SOLAR_RECHARGE_BASE = 15;
+        const NAV_DRAIN = 0;
+        const SHIELD_DRAIN = 0;
+        const AI_DRAIN = 0;
+        const SOLAR_RECHARGE_BASE = 0;
         const SHIP_RADIUS = 20;
 
         // ============================================
         // BOSS FIGHTS (P1)
         // ============================================
         const BOSS_TYPES = {
-            hive_queen: {
-                name: 'Hive Queen', hp: 12, radius: 40, color: '#ff8800',
-                level: 10, reward: 500, skinUnlock: null,
-            },
             void_sentinel: {
                 name: 'Void Sentinel', hp: 18, radius: 45, color: '#4400ff',
-                level: 20, reward: 1000, skinUnlock: null,
+                level: 10, reward: 500, skinUnlock: null,
             },
             architect: {
                 name: 'The Architect', hp: 25, radius: 35, color: '#ff00ff',
-                level: 30, reward: 2000, skinUnlock: null,
+                level: 25, reward: 1500, skinUnlock: null,
+            },
+            leviathan: {
+                name: 'Leviathan', hp: 30, radius: 50, color: '#00ffaa',
+                level: 50, reward: 3000, skinUnlock: null,
             },
         };
 
@@ -215,14 +215,14 @@
             const levels = [];
             for (let i = 0; i < 100; i++) {
                 const levelNum = i + 1;
-                const isBoss = levelNum % 25 === 0;
+                const isBoss = (levelNum === 10 || levelNum === 25 || levelNum === 50 || levelNum === 75 || levelNum === 100);
                 const isMilestone = levelNum % 10 === 0;
                 levels.push({
                     level: levelNum,
                     isBoss,
                     isMilestone,
-                    targetDistance: 2 + i * 0.3 + (isBoss ? 3 : 0),
-                    maxTime: 60 + i * 2,
+                    targetDistance: 25 + i * 3.5 + (isBoss ? 30 : 0),
+                    maxTime: 120 + i * 3,
                     coinReward: 10 + i * 3 + (isBoss ? 50 : 0),
                     starsRequired: isBoss ? 2 : 1,
                 });
@@ -598,7 +598,7 @@
 
         const toasts = [];
 
-        function showToast(text, duration = 2.5) {
+        function showToast(text, duration = 1.5) {
             while (toasts.length >= 2) toasts.shift();
             toasts.push({ text, timer: duration });
         }
@@ -1832,6 +1832,7 @@
             gameRuntime.distance = 0;
             gameRuntime.velocity = 0;
             gameRuntime.energy.current = MAX_ENERGY;
+            gameRuntime.energy.max = MAX_ENERGY;
             gameRuntime.surge.bar = 0;
             gameRuntime.surge.active = false;
             gameRuntime.stormCount = 0;
@@ -1840,6 +1841,8 @@
             gameRuntime.gameStartTime = Date.now();
             gameRuntime.state = STATES.playing;
             gameRuntime.phaseJustCompleted = false;
+            gameRuntime.playerDied = false;
+            gameRuntime.levelCompleted = false;
             gameRuntime.combo = 0;
             gameRuntime.bestCombo = 0;
             gameRuntime.nearMissCount = 0;
@@ -1883,9 +1886,11 @@
             gameRuntime.bossTimer = 0;
             if (gameState.isCampaignMode) {
                 const lvl = gameState.currentCampaignLevel;
-                if (lvl === 10) initBoss('hive_queen');
-                else if (lvl === 20) initBoss('void_sentinel');
-                else if (lvl === 30) initBoss('architect');
+                if (lvl === 10) initBoss('void_sentinel');
+                else if (lvl === 25) initBoss('architect');
+                else if (lvl === 50) initBoss('leviathan');
+                else if (lvl === 75) { initBoss('architect'); if (gameRuntime.boss) { gameRuntime.boss.maxHp = 40; gameRuntime.boss.hp = 40; } }
+                else if (lvl === 100) { initBoss('leviathan'); if (gameRuntime.boss) { gameRuntime.boss.maxHp = 50; gameRuntime.boss.hp = 50; } }
             }
 
             // Initialize companion
@@ -2137,7 +2142,7 @@
                 if (d < ship.radius + a.radius) {
                     if (a.isCloaked) continue; // can't collide with cloaked phantom
                     if (gameRuntime.shield.active) {
-                        // Shield absorbs hit and damages alien
+                        // Power-up shield absorbs hit and damages alien
                         a.hp -= 1;
                         a.flashTimer = 0.15;
                         gameRuntime.shield.active = false;
@@ -2147,11 +2152,33 @@
                         particles.spawnBurst(a.x, a.y, 10, '#44aaff', 120, 0.4, 2);
                         hapticFeedback('heavy');
                         if (a.hp <= 0) killAlien(a);
+                    } else if (gameRuntime.companion && gameState.companionLevel >= 2 && gameRuntime.companion.shieldCooldown <= 0) {
+                        // Companion shield absorbs direct alien hit
+                        a.hp -= 1;
+                        a.flashTimer = 0.15;
+                        gameRuntime.companion.shieldCooldown = 20;
+                        audioManager.playShieldHit();
+                        gameRuntime.cameraShakeIntensity = 10;
+                        gameRuntime.cameraShakeDuration = 0.12;
+                        particles.spawnBurst(a.x, a.y, 12, '#00ffc8', 130, 0.5, 3);
+                        hapticFeedback('heavy');
+                        if (a.hp <= 0) killAlien(a);
                     } else {
-                        // Player dies
+                        // Direct alien hit — heavy energy damage + knockback
+                        const shieldReduce = Math.max(0.4, 1 - gameState.upgrades.shield * 0.12);
+                        gameRuntime.energy.current -= 35 * shieldReduce;
+                        a.hp -= 1;
+                        a.flashTimer = 0.15;
+                        gameRuntime.combo = 0;
+                        gameRuntime.cameraShakeIntensity = 12;
+                        gameRuntime.cameraShakeDuration = 0.15;
                         particles.spawnBurst(ship.x, ship.y, 20, '#ff4444', 180, 0.6, 3);
-                        endGame();
-                        return;
+                        hapticFeedback('heavy');
+                        if (a.hp <= 0) killAlien(a);
+                        if (gameRuntime.energy.current <= 0) {
+                            endGame();
+                            return;
+                        }
                     }
                 }
 
@@ -2164,15 +2191,14 @@
                         gameRuntime.lastNearMissTime = Date.now();
                         gameRuntime.multiplier += 0.3; // slightly higher than obstacle near-miss
                         gameRuntime.surge.bar = Math.min(100, gameRuntime.surge.bar + 5);
-                        showToast('ALIEN DODGE! x' + gameRuntime.combo);
                     }
                 }
             }
 
-            // Ship vs Alien Bolts
+            // Ship vs Alien Bolts (skip companion bolts — they're friendly)
             for (let i = 0; i < gameRuntime.alienBolts.length; i++) {
                 const b = gameRuntime.alienBolts[i];
-                if (!b._active) continue;
+                if (!b._active || b.isCompanionBolt) continue;
                 const d = distance(ship.x, ship.y, b.x, b.y);
                 if (d < ship.radius + b.radius) {
                     b._active = false;
@@ -2180,6 +2206,12 @@
                         gameRuntime.shield.active = false;
                         audioManager.playShieldHit();
                         particles.spawnBurst(b.x, b.y, 6, '#44aaff', 80, 0.3, 2);
+                    } else if (gameRuntime.companion && gameState.companionLevel >= 2 && gameRuntime.companion.shieldCooldown <= 0) {
+                        // Companion shield absorbs the bolt
+                        gameRuntime.companion.shieldCooldown = 15;
+                        audioManager.playShieldHit();
+                        particles.spawnBurst(b.x, b.y, 10, '#00ffc8', 100, 0.4, 2);
+                        hapticFeedback('light');
                     } else {
                         // Shield upgrade: -12% damage per level
                         const boltShieldReduce = Math.max(0.4, 1 - gameState.upgrades.shield * 0.12);
@@ -2192,6 +2224,31 @@
                             endGame();
                             return;
                         }
+                    }
+                }
+            }
+
+            // Companion Bolts vs Aliens — drone fireballs damage aliens
+            for (let i = 0; i < gameRuntime.alienBolts.length; i++) {
+                const b = gameRuntime.alienBolts[i];
+                if (!b._active || !b.isCompanionBolt) continue;
+                for (let j = 0; j < gameRuntime.aliens.length; j++) {
+                    const a = gameRuntime.aliens[j];
+                    if (!a._active) continue;
+                    const d = distance(b.x, b.y, a.x, a.y);
+                    if (d < b.radius + a.radius) {
+                        b._active = false;
+                        // Companion damage scales with level (1/2/3)
+                        const dmg = gameState.companionLevel || 1;
+                        a.hp -= dmg;
+                        a.flashTimer = 0.15;
+                        particles.spawnBurst(a.x, a.y, 6, '#00ffcc', 80, 0.3, 2);
+                        gameRuntime.cameraShakeIntensity = 3;
+                        gameRuntime.cameraShakeDuration = 0.04;
+                        if (a.hp <= 0) {
+                            killAlien(a);
+                        }
+                        break;
                     }
                 }
             }
@@ -2321,6 +2378,13 @@
                 mirrorCloneY: 0,
                 controlReversalTimer: 0,
                 glitchTimer: 0,
+                chargeState: 'idle', // idle, winding, charging, recovering
+                chargeTargetX: 0,
+                chargeTargetY: 0,
+                chargeSpeed: 0,
+                chargeCooldown: 0,
+                shockwaveTimer: 0,
+                tentacleAngles: [0, 0, 0, 0, 0, 0],
             };
         }
 
@@ -2331,44 +2395,7 @@
             boss.phaseTimer += dt;
             boss.flashTimer = Math.max(0, boss.flashTimer - dt);
 
-            if (boss.type === 'hive_queen') {
-                // Hovers at y=120, sways left-right
-                boss.x = DESIGN_WIDTH / 2 + Math.sin(boss.time * 1.5) * 80;
-                boss.y = 120;
-
-                // Every 3s: spawn 4 scout aliens in a circle
-                if (boss.phaseTimer > 3.0) {
-                    boss.phaseTimer = 0;
-                    for (let i = 0; i < 4; i++) {
-                        const angle = (i / 4) * Math.PI * 2;
-                        const x = boss.x + Math.cos(angle) * 60;
-                        const y = boss.y + Math.sin(angle) * 60;
-                        const alien = spawnAlien('scout', x, y);
-                        if (alien) boss.spawnedMinions.push(alien);
-                    }
-                }
-
-                // Every 6s: fire 8 bolts in a ring pattern
-                if (boss.time > 6.0 && (Math.floor(boss.time / 6.0) > Math.floor((boss.time - dt) / 6.0))) {
-                    for (let i = 0; i < 8; i++) {
-                        const angle = (i / 8) * Math.PI * 2;
-                        const bx = boss.x + Math.cos(angle) * 20;
-                        const by = boss.y + Math.sin(angle) * 20;
-                        const vx = Math.cos(angle) * 200;
-                        const vy = Math.sin(angle) * 200;
-                        gameRuntime.alienBolts.push({ x: bx, y: by, vx, vy, time: 0, _active: true });
-                    }
-                }
-
-                // Weak point: glows red every 5s for 1.5s
-                const weakPointCycle = boss.time % 5.0;
-                if (weakPointCycle < 1.5) {
-                    // Weak point exposed
-                    boss.phase = 1;
-                } else {
-                    boss.phase = 0;
-                }
-            } else if (boss.type === 'void_sentinel') {
+            if (boss.type === 'void_sentinel') {
                 // Hovers at y=100, barely moves
                 boss.x = DESIGN_WIDTH / 2 + Math.sin(boss.time * 0.3) * 30;
                 boss.y = 100;
@@ -2406,6 +2433,77 @@
                 // Mirror clone: moves opposite to player
                 boss.mirrorCloneX = DESIGN_WIDTH - gameRuntime.ship.x;
                 boss.mirrorCloneY = gameRuntime.ship.y;
+            } else if (boss.type === 'leviathan') {
+                // Animate tentacles
+                for (let i = 0; i < boss.tentacleAngles.length; i++) {
+                    boss.tentacleAngles[i] = Math.sin(boss.time * 2 + i * 1.2) * 0.4;
+                }
+
+                boss.chargeCooldown = Math.max(0, boss.chargeCooldown - dt);
+                boss.shockwaveTimer = Math.max(0, boss.shockwaveTimer - dt);
+
+                if (boss.chargeState === 'idle') {
+                    // Drift slowly toward player X
+                    boss.x = lerp(boss.x, gameRuntime.ship.x, 0.3 * dt);
+                    boss.y = lerp(boss.y, 100, 0.5 * dt);
+                    // Start charge every 5s
+                    if (boss.chargeCooldown <= 0) {
+                        boss.chargeState = 'winding';
+                        boss.phaseTimer = 0;
+                        boss.chargeTargetX = gameRuntime.ship.x;
+                        boss.chargeTargetY = gameRuntime.ship.y;
+                    }
+                } else if (boss.chargeState === 'winding') {
+                    // Pull back for 1s (telegraph)
+                    boss.y = lerp(boss.y, 60, 2 * dt);
+                    boss.phaseTimer += dt;
+                    if (boss.phaseTimer > 1.0) {
+                        boss.chargeState = 'charging';
+                        boss.phaseTimer = 0;
+                        const dx = boss.chargeTargetX - boss.x;
+                        const dy = boss.chargeTargetY - boss.y;
+                        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                        boss.chargeSpeed = 500;
+                        boss.vx = (dx / len) * boss.chargeSpeed;
+                        boss.vy = (dy / len) * boss.chargeSpeed;
+                    }
+                } else if (boss.chargeState === 'charging') {
+                    boss.x += boss.vx * dt;
+                    boss.y += boss.vy * dt;
+                    boss.phaseTimer += dt;
+                    // Spawn trail particles
+                    particles.spawnBurst(boss.x, boss.y, 2, '#00ffaa', 80, 0.2, 3);
+                    if (boss.phaseTimer > 0.8 || boss.y > DESIGN_HEIGHT - 50 || boss.x < 20 || boss.x > DESIGN_WIDTH - 20) {
+                        boss.chargeState = 'recovering';
+                        boss.phaseTimer = 0;
+                        boss.shockwaveTimer = 0.5;
+                        // Shockwave particles
+                        particles.spawnBurst(boss.x, boss.y, 20, '#00ffaa', 200, 0.6, 4);
+                        // Shockwave spawns 6 bolts outward
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i / 6) * Math.PI * 2;
+                            gameRuntime.alienBolts.push({
+                                x: boss.x, y: boss.y,
+                                vx: Math.cos(angle) * 180,
+                                vy: Math.sin(angle) * 180,
+                                radius: 4, time: 0, _active: true
+                            });
+                        }
+                    }
+                } else if (boss.chargeState === 'recovering') {
+                    boss.phaseTimer += dt;
+                    // Stunned for 2s — vulnerable
+                    boss.phase = 1; // vulnerable
+                    if (boss.phaseTimer > 2.0) {
+                        boss.chargeState = 'idle';
+                        boss.chargeCooldown = 3.0;
+                        boss.phase = 0;
+                    }
+                }
+
+                // Clamp to screen
+                boss.x = clamp(boss.x, boss.radius, DESIGN_WIDTH - boss.radius);
+                boss.y = clamp(boss.y, boss.radius, DESIGN_HEIGHT - 80);
             }
         }
 
@@ -2415,42 +2513,7 @@
 
             ctx.save();
 
-            if (boss.type === 'hive_queen') {
-                // Insectoid shape — oval body with mandibles
-                ctx.fillStyle = boss.phase === 1 ? '#ff0000' : boss.color;
-                if (boss.phase === 1) ctx.globalAlpha = 0.9 + Math.sin(Date.now() * 0.01) * 0.1;
-
-                // Body (oval)
-                ctx.beginPath();
-                ctx.ellipse(boss.x, boss.y, 35, 40, 0, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Mandibles
-                ctx.fillStyle = boss.phase === 1 ? '#ff3333' : '#ff9900';
-                ctx.beginPath();
-                ctx.moveTo(boss.x - 15, boss.y - 35);
-                ctx.lineTo(boss.x - 20, boss.y - 50);
-                ctx.lineTo(boss.x - 10, boss.y - 40);
-                ctx.closePath();
-                ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo(boss.x + 15, boss.y - 35);
-                ctx.lineTo(boss.x + 20, boss.y - 50);
-                ctx.lineTo(boss.x + 10, boss.y - 40);
-                ctx.closePath();
-                ctx.fill();
-
-                // Wing-like protrusions
-                ctx.fillStyle = 'rgba(255, 136, 0, 0.6)';
-                ctx.beginPath();
-                ctx.ellipse(boss.x - 40, boss.y, 15, 30, -0.3, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.ellipse(boss.x + 40, boss.y, 15, 30, 0.3, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.globalAlpha = 1;
-            } else if (boss.type === 'void_sentinel') {
+            if (boss.type === 'void_sentinel') {
                 // Concentric rotating rings
                 ctx.strokeStyle = boss.color;
                 ctx.lineWidth = 3;
@@ -2537,6 +2600,103 @@
                 ctx.closePath();
                 ctx.fill();
                 ctx.globalAlpha = 1;
+            } else if (boss.type === 'leviathan') {
+                // Massive space creature
+                const isVulnerable = boss.phase === 1;
+                const bodyPulse = 1 + Math.sin(boss.time * 3) * 0.05;
+
+                // Tentacles (6 flowing appendages)
+                for (let i = 0; i < 6; i++) {
+                    const side = i < 3 ? -1 : 1;
+                    const idx = i % 3;
+                    const baseAngle = side * (0.3 + idx * 0.35) + boss.tentacleAngles[i];
+                    const tx1 = boss.x + Math.cos(Math.PI / 2 + baseAngle) * 30;
+                    const ty1 = boss.y + Math.sin(Math.PI / 2 + baseAngle) * 30;
+                    const tx2 = tx1 + Math.cos(Math.PI / 2 + baseAngle * 1.5) * 25;
+                    const ty2 = ty1 + Math.sin(Math.PI / 2 + baseAngle * 1.5) * 25;
+
+                    ctx.strokeStyle = isVulnerable ? '#ff4444' : 'rgba(0, 255, 170, 0.7)';
+                    ctx.lineWidth = 4 - idx;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(boss.x, boss.y + 15);
+                    ctx.quadraticCurveTo(tx1, ty1, tx2, ty2);
+                    ctx.stroke();
+                }
+
+                // Body — large oval
+                const bodyGrad = ctx.createRadialGradient(boss.x, boss.y, 10, boss.x, boss.y, boss.radius * bodyPulse);
+                bodyGrad.addColorStop(0, isVulnerable ? '#ff6644' : '#00ffcc');
+                bodyGrad.addColorStop(0.6, isVulnerable ? '#992222' : '#005544');
+                bodyGrad.addColorStop(1, isVulnerable ? '#440000' : '#002222');
+                ctx.fillStyle = bodyGrad;
+                ctx.beginPath();
+                ctx.ellipse(boss.x, boss.y, boss.radius * 0.8 * bodyPulse, boss.radius * bodyPulse, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Armored plates
+                ctx.strokeStyle = isVulnerable ? '#ff8866' : '#00aa88';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.ellipse(boss.x, boss.y, boss.radius * 0.8 * bodyPulse, boss.radius * bodyPulse, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Central eye
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.ellipse(boss.x, boss.y - 8, 12, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+                // Glowing pupil that tracks player
+                const ex = clamp(gameRuntime.ship.x - boss.x, -5, 5);
+                const ey = clamp(gameRuntime.ship.y - boss.y, -3, 3);
+                ctx.fillStyle = isVulnerable ? '#ff0000' : '#00ff88';
+                ctx.beginPath();
+                ctx.arc(boss.x + ex, boss.y - 8 + ey, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(boss.x + ex - 1, boss.y - 9 + ey, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Charge wind-up indicator
+                if (boss.chargeState === 'winding') {
+                    const windPulse = Math.sin(boss.phaseTimer * 12) * 0.5 + 0.5;
+                    ctx.strokeStyle = 'rgba(255, 100, 50, ' + windPulse + ')';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(boss.x, boss.y, boss.radius + 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                    // Target reticle on player
+                    ctx.strokeStyle = 'rgba(255, 50, 50, ' + windPulse + ')';
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(boss.x, boss.y);
+                    ctx.lineTo(boss.chargeTargetX, boss.chargeTargetY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                // Charging motion blur
+                if (boss.chargeState === 'charging') {
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = '#00ffaa';
+                    for (let t = 1; t <= 3; t++) {
+                        ctx.beginPath();
+                        ctx.ellipse(boss.x - (boss.vx || 0) * 0.01 * t, boss.y - (boss.vy || 0) * 0.01 * t, boss.radius * 0.6, boss.radius * 0.8, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1;
+                }
+
+                // Shockwave ring
+                if (boss.shockwaveTimer > 0) {
+                    const ringRadius = (0.5 - boss.shockwaveTimer) * 200;
+                    ctx.strokeStyle = 'rgba(0, 255, 170, ' + boss.shockwaveTimer + ')';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(boss.x, boss.y, ringRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
             }
 
             ctx.restore();
@@ -2566,9 +2726,7 @@
             if (gameRuntime.surge.active) {
                 const d = distance(gameRuntime.ship.x, gameRuntime.ship.y, boss.x, boss.y);
                 if (d < gameRuntime.ship.radius + boss.radius) {
-                    if (boss.type === 'hive_queen' && boss.phase !== 1) {
-                        // Can't damage during normal phase, only during weak point
-                    } else {
+                    {
                         boss.hp--;
                         boss.flashTimer = 0.15;
                         particles.spawnBurst(boss.x, boss.y, 10, boss.color, 100, 0.4, 2);
@@ -2681,7 +2839,7 @@
                         if (obs.type === 'storm') {
                             audioManager.playCoinCollect();
                             particles.spawnBurst(obs.x, obs.y, 8, '#ffdd00', 80, 0.3, 2);
-                            gameRuntime.energy.current = Math.min(MAX_ENERGY, gameRuntime.energy.current + 30);
+                            gameRuntime.energy.current = Math.min(gameRuntime.energy.max || MAX_ENERGY, gameRuntime.energy.current + 10);
                             gameRuntime.multiplier += 0.5;
                         } else if (obs.type === 'powerup' && obs.powerUpType) {
                             audioManager.playCoinCollect();
@@ -2722,9 +2880,10 @@
                             gameRuntime.alienBolts.push({
                                 x: orbitX,
                                 y: orbitY,
-                                vx: (dx / len) * 150,
-                                vy: (dy / len) * 150,
+                                vx: (dx / len) * 200,
+                                vy: (dy / len) * 200,
                                 time: 0,
+                                radius: 5,
                                 _active: true,
                                 isCompanionBolt: true,
                             });
@@ -2993,7 +3152,7 @@
             const stabilizerReduction = Math.max(0.4, 1 - gameState.upgrades.stabilizer * 0.1);
             gameRuntime.energy.current -= energyDrain * stabilizerReduction * dt;
             gameRuntime.energy.current += gameRuntime.energy.recharge * dt;
-            gameRuntime.energy.current = clamp(gameRuntime.energy.current, 0, MAX_ENERGY);
+            gameRuntime.energy.current = clamp(gameRuntime.energy.current, 0, gameRuntime.energy.max || MAX_ENERGY);
 
             if (gameRuntime.energy.current < 10) gameRuntime.shield.active = false;
 
@@ -3049,29 +3208,45 @@
                 if (d < gameRuntime.ship.radius + obs.radius) {
                     if (obs.type === 'asteroid') {
                         gameRuntime.combo = 0;
-                        if (!gameRuntime.shield.active) {
-                            particles.spawnBurst(gameRuntime.ship.x, gameRuntime.ship.y, 15, '#ff4444', 150, 0.5, 3);
-                            endGame();
-                            return;
-                        } else {
+                        if (gameRuntime.shield.active) {
                             audioManager.playShieldHit();
                             particles.spawnBurst(obs.x, obs.y, 8, '#44aaff', 100, 0.3, 2);
                             gameRuntime.shield.active = false;
                             gameRuntime.cameraShakeIntensity = 10;
                             gameRuntime.cameraShakeDuration = 0.1;
                             hapticFeedback('heavy');
+                        } else if (gameRuntime.companion && gameState.companionLevel >= 2 && gameRuntime.companion.shieldCooldown <= 0) {
+                            // Companion shield absorbs asteroid
+                            gameRuntime.companion.shieldCooldown = 20;
+                            audioManager.playShieldHit();
+                            particles.spawnBurst(obs.x, obs.y, 10, '#00ffc8', 110, 0.4, 2);
+                            gameRuntime.cameraShakeIntensity = 8;
+                            gameRuntime.cameraShakeDuration = 0.1;
+                            hapticFeedback('heavy');
+                        } else {
+                            // Asteroid — heavy energy damage
+                            audioManager.playCollision();
+                            const shieldReduce = Math.max(0.4, 1 - gameState.upgrades.shield * 0.12);
+                            gameRuntime.energy.current -= 40 * shieldReduce;
+                            gameRuntime.cameraShakeIntensity = 12;
+                            gameRuntime.cameraShakeDuration = 0.15;
+                            particles.spawnBurst(gameRuntime.ship.x, gameRuntime.ship.y, 15, '#ff4444', 150, 0.5, 3);
+                            hapticFeedback('heavy');
+                            if (gameRuntime.energy.current <= 0) {
+                                endGame();
+                                return;
+                            }
                         }
                     } else if (obs.type === 'storm') {
                         audioManager.playCoinCollect();
                         particles.spawnBurst(obs.x, obs.y, 12, '#ffdd00', 120, 0.4, 2);
-                        gameRuntime.energy.current = Math.min(MAX_ENERGY, gameRuntime.energy.current + 50);
+                        gameRuntime.energy.current = Math.min(gameRuntime.energy.max || MAX_ENERGY, gameRuntime.energy.current + 15);
                         gameRuntime.velocity *= 1.4;
                         gameRuntime.surge.bar = Math.min(100, gameRuntime.surge.bar + 20);
                         gameRuntime.stormCount++;
                         gameRuntime.multiplier += 1;
                         gameRuntime.excitement = Math.min(1, gameRuntime.excitement + 0.3);
                         gameRuntime.aiDirector.totalCoinsCollected++;
-                        showCommentary('storm');
                         hapticFeedback('success');
                     } else if (obs.type === 'debris') {
                         audioManager.playCollision();
@@ -3107,7 +3282,6 @@
                             gameRuntime.multiplier += 0.2;
                             gameRuntime.surge.bar = Math.min(100, gameRuntime.surge.bar + 3);
                             particles.spawnBurst(obs.x, obs.y, 5, '#ffffff', 60, 0.2, 1);
-                            showToast('NEAR MISS! x' + gameRuntime.combo);
                         }
                     }
                 }
@@ -3159,6 +3333,24 @@
             particles.update(dt);
             updateTransition(dt);
 
+            // Campaign level completion — player reached target distance alive
+            if (gameState.isCampaignMode && !gameRuntime.levelCompleted) {
+                const level = GAME_LEVELS[gameState.currentCampaignLevel - 1];
+                if (level && gameRuntime.distance >= level.targetDistance) {
+                    gameRuntime.levelCompleted = true;
+                    gameRuntime.playerDied = false;
+                    saveRunStats();
+                    showToast('LEVEL COMPLETE!');
+                    hapticFeedback('success');
+                    // Brief delay so the player sees the toast, then result screen
+                    setTimeout(() => {
+                        if (gameRuntime.state === STATES.playing) {
+                            gameRuntime.state = STATES.campaign_result;
+                        }
+                    }, 1200);
+                }
+            }
+
             if (gameRuntime.energy.current <= 0) {
                 endGame();
             }
@@ -3208,18 +3400,12 @@
             drawSurgeZone();
 
             // Touch crosshair — shows where finger is guiding the ship
-            if (gameRuntime.state === STATES.playing) {
-                const tx = gameRuntime.mouseX, ty = gameRuntime.mouseY;
-                ctx.strokeStyle = 'rgba(0, 200, 255, 0.2)';
-                ctx.lineWidth = 1;
+            // Touch indicator — subtle dot only
+            if (gameRuntime.state === STATES.playing && gameRuntime.mouseX) {
+                ctx.fillStyle = 'rgba(0, 200, 255, 0.12)';
                 ctx.beginPath();
-                ctx.arc(tx, ty, 18, 0, Math.PI * 2);
-                ctx.stroke();
-                // Small crosshair
-                ctx.beginPath();
-                ctx.moveTo(tx - 6, ty); ctx.lineTo(tx + 6, ty);
-                ctx.moveTo(tx, ty - 6); ctx.lineTo(tx, ty + 6);
-                ctx.stroke();
+                ctx.arc(gameRuntime.mouseX, gameRuntime.mouseY, 8, 0, Math.PI * 2);
+                ctx.fill();
             }
 
             drawTransition(ctx);
@@ -3228,21 +3414,45 @@
         function drawStars() {
             for (let i = 0; i < gameRuntime.stars.length; i++) {
                 const s = gameRuntime.stars[i];
-                // Parallax: deeper stars (low z) scroll slower, near stars (high z) faster
-                const scrollSpeed = (1 + s.z * 3) * 80; // 80-320 px/sec equivalent
+                const scrollSpeed = (1 + s.z * 3) * 80;
                 const scroll = gameRuntime.distance * scrollSpeed * 0.01;
                 const y = ((s.baseY + scroll) % DESIGN_HEIGHT + DESIGN_HEIGHT) % DESIGN_HEIGHT;
-                const size = 0.5 + s.z * 1.5; // near stars bigger
+                const size = 0.5 + s.z * 1.5;
 
-                // Twinkling effect: per-star phase offset
                 const phase = (s.baseX * 0.31 + s.baseY * 0.47) % (Math.PI * 2);
-                const twinkle = 0.3 + Math.sin(animationTime * 3 + phase) * 0.4 + s.z * 0.3;
+                const twinkle = 0.3 + Math.sin(animationTime * 2.5 + phase) * 0.35 + s.z * 0.3;
 
-                ctx.fillStyle = '#ffffff';
-                ctx.globalAlpha = Math.max(0.1, twinkle);
-                ctx.beginPath();
-                ctx.arc(s.baseX, y, size, 0, Math.PI * 2);
-                ctx.fill();
+                // Color variety based on star position
+                const colorSeed = (s.baseX * 0.13 + s.baseY * 0.07) % 3;
+                if (colorSeed < 1) ctx.fillStyle = '#ffffff';        // white
+                else if (colorSeed < 1.8) ctx.fillStyle = '#ffe8c0'; // warm yellow
+                else if (colorSeed < 2.4) ctx.fillStyle = '#c0d8ff'; // cool blue
+                else ctx.fillStyle = '#ffd0d0';                       // soft pink
+
+                ctx.globalAlpha = Math.max(0.08, twinkle);
+
+                // Some brighter stars get a 4-point sparkle
+                if (s.z > 0.75 && size > 1.2) {
+                    const sparkle = size * 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(s.baseX, y - sparkle);
+                    ctx.lineTo(s.baseX + 0.5, y);
+                    ctx.lineTo(s.baseX, y + sparkle);
+                    ctx.lineTo(s.baseX - 0.5, y);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(s.baseX - sparkle * 0.6, y);
+                    ctx.lineTo(s.baseX, y + 0.5);
+                    ctx.lineTo(s.baseX + sparkle * 0.6, y);
+                    ctx.lineTo(s.baseX, y - 0.5);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(s.baseX, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
             ctx.globalAlpha = 1;
         }
@@ -3278,22 +3488,26 @@
 
         // Speed lines — dramatic at high velocity, wider, brighter, longer
         function drawSpeedLines() {
+            // Soft star streaks at high velocity (not harsh straight lines)
             const speed = gameRuntime.velocity;
-            if (speed < 40) return;
-            const intensity = Math.min(1, (speed - 40) / 100);
-            const lineCount = Math.floor(intensity * 20);
-            const opacity = Math.min(0.4, intensity * 0.4);
-            ctx.strokeStyle = 'rgba(100, 200, 255, ' + opacity + ')';
-            ctx.lineWidth = 1.5 + intensity * 1.5;
-            for (let i = 0; i < lineCount; i++) {
-                // Seeded position so lines don't flicker randomly each frame
+            if (speed < 60) return;
+            const intensity = Math.min(1, (speed - 60) / 120);
+            const count = Math.floor(intensity * 8);
+            for (let i = 0; i < count; i++) {
                 const seed = (i * 137.5 + gameRuntime.distance * 50) % DESIGN_WIDTH;
-                const x = seed;
                 const scrollY = ((i * 97.3 + gameRuntime.distance * 200) % (DESIGN_HEIGHT + 100)) - 50;
-                const len = 25 + intensity * 50;
+                const len = 8 + intensity * 15;
+                const alpha = intensity * 0.15;
+                // Soft tapered streak
+                const grd = ctx.createLinearGradient(seed, scrollY, seed, scrollY + len);
+                grd.addColorStop(0, 'rgba(180, 220, 255, 0)');
+                grd.addColorStop(0.3, 'rgba(180, 220, 255, ' + alpha + ')');
+                grd.addColorStop(1, 'rgba(180, 220, 255, 0)');
+                ctx.strokeStyle = grd;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(x, scrollY);
-                ctx.lineTo(x + (Math.sin(i) * 2), scrollY + len);
+                ctx.moveTo(seed, scrollY);
+                ctx.lineTo(seed, scrollY + len);
                 ctx.stroke();
             }
         }
@@ -3645,130 +3859,187 @@
         }
 
         function drawHUD() {
-            const safeTop = 20;
-            const safeRight = 20;
+            const T = 8; // top safe margin
+            const M = 10; // side margin
+            const W = DESIGN_WIDTH;
 
-            // Left panel background — glassmorphism style
-            drawGlassPanel(15, safeTop + 10, 170, 140, 10, 'rgba(50, 80, 120, 0.15)');
-
-            ctx.fillStyle = COLORS.text;
-            ctx.font = "bold 18px 'Orbitron', monospace";
+            // ── LEFT: Distance + Speed (compact pill) ──
+            const leftW = 120, leftH = 44;
+            // Panel bg
+            ctx.fillStyle = 'rgba(0, 8, 20, 0.55)';
+            drawRoundRect(M, T, leftW, leftH, 10);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(80, 140, 200, 0.25)';
+            ctx.lineWidth = 1;
+            drawRoundRect(M, T, leftW, leftH, 10);
+            ctx.stroke();
+            // Distance
+            ctx.fillStyle = '#ffffff';
+            ctx.font = "bold 16px Arial";
             ctx.textAlign = 'left';
-            ctx.fillText('DISTANCE', 20, safeTop + 20);
-            ctx.fillText(gameRuntime.distance.toFixed(1) + ' AU', 20, safeTop + 45);
-            ctx.fillText('SPD: ' + gameRuntime.velocity.toFixed(0), 20, safeTop + 70);
+            ctx.textBaseline = 'top';
+            ctx.fillText(gameRuntime.distance.toFixed(1) + ' AU', M + 10, T + 6);
+            // Speed — smaller, muted
+            ctx.fillStyle = 'rgba(150, 200, 255, 0.6)';
+            ctx.font = "11px Arial";
+            ctx.fillText('SPD ' + gameRuntime.velocity.toFixed(0), M + 10, T + 26);
 
-            // Premium health bar with heart icon and animation
-            drawHealthBar(20, safeTop + 85);
-
-            // Surge bar with pulsation
-            drawSurgeBar(20, safeTop + 115);
-
-            // Right panel background — glassmorphism style
-            drawGlassPanel(DESIGN_WIDTH - safeRight - 110, safeTop + 10, 100, 80, 8, 'rgba(50, 80, 120, 0.15)');
-
+            // ── RIGHT: Coins + Multiplier (compact pill) ──
+            const rightW = 105, rightH = 44;
+            const rx = W - M - rightW;
+            ctx.fillStyle = 'rgba(0, 8, 20, 0.55)';
+            drawRoundRect(rx, T, rightW, rightH, 10);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(80, 140, 200, 0.25)';
+            ctx.lineWidth = 1;
+            drawRoundRect(rx, T, rightW, rightH, 10);
+            ctx.stroke();
+            // Multiplier
+            ctx.fillStyle = '#ffaa33';
+            ctx.font = "bold 15px Arial";
             ctx.textAlign = 'right';
-            ctx.font = "bold 16px 'Orbitron', monospace";
-            ctx.fillStyle = COLORS.multiplier;
-            ctx.fillText('x' + gameRuntime.multiplier.toFixed(1), DESIGN_WIDTH - safeRight - 10, safeTop + 20);
-
-            ctx.fillStyle = COLORS.text;
-            ctx.font = "12px 'Orbitron', monospace";
-            ctx.fillText('COINS: ' + gameState.coins, DESIGN_WIDTH - safeRight - 10, safeTop + 45);
-
-            // Excitement bar
-            ctx.fillStyle = '#333333';
-            drawRoundRect(DESIGN_WIDTH - safeRight - 100, safeTop + 55, 90, 10, 2);
+            ctx.textBaseline = 'top';
+            ctx.fillText('x' + gameRuntime.multiplier.toFixed(1), W - M - 10, T + 5);
+            // Coins
+            ctx.fillStyle = '#ffdd44';
+            ctx.font = "12px Arial";
+            ctx.fillText(gameState.coins.toLocaleString(), W - M - 10, T + 24);
+            // Coin icon (small circle)
+            ctx.fillStyle = '#ffdd44';
+            ctx.beginPath();
+            ctx.arc(W - M - ctx.measureText(gameState.coins.toLocaleString()).width - 16, T + 30, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#aa8800';
+            ctx.beginPath();
+            ctx.arc(W - M - ctx.measureText(gameState.coins.toLocaleString()).width - 16, T + 30, 2, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#ff6b9d';
-            drawRoundRect(DESIGN_WIDTH - safeRight - 100, safeTop + 55, 90 * gameRuntime.excitement, 10, 2);
-            ctx.fill();
-
-            // Combo counter with glow and scale animation
-            if (gameRuntime.combo > 2) {
-                const comboScale = 1 + Math.sin(animationTime * 4) * 0.15;
-                ctx.save();
-                ctx.translate(DESIGN_WIDTH / 2, 100);
-                ctx.scale(comboScale, comboScale);
-                ctx.font = "bold 28px 'Orbitron', monospace";
+            // ── CENTER TOP: Alien count (only if aliens present) ──
+            const activeAliens = gameRuntime.aliens.filter(a => a._active).length;
+            if (activeAliens > 0) {
+                const alertW = 60, alertH = 22;
+                const ax = (W - alertW) / 2;
+                ctx.fillStyle = 'rgba(255, 30, 60, 0.2)';
+                drawRoundRect(ax, T, alertW, alertH, 11);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 80, 80, 0.4)';
+                ctx.lineWidth = 1;
+                drawRoundRect(ax, T, alertW, alertH, 11);
+                ctx.stroke();
+                ctx.fillStyle = '#ff4466';
+                ctx.font = "bold 11px Arial";
                 ctx.textAlign = 'center';
-                ctx.fillStyle = '#ffdd00';
-                ctx.globalAlpha = 0.9;
-                // Glow effect
-                ctx.shadowColor = '#ffdd00';
-                ctx.shadowBlur = 20;
-                ctx.fillText('COMBO x' + gameRuntime.combo, 0, 0);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(activeAliens + ' alien' + (activeAliens > 1 ? 's' : ''), W / 2, T + 11);
+            }
+
+            // ── HEALTH BAR (full width, below top pills) ──
+            const barY = T + leftH + 6;
+            const barX = M;
+            const barW = W - M * 2;
+            const barH = 10;
+            drawHealthBar(barX, barY, barW, barH);
+
+            // ── SURGE BAR (below health) ──
+            const surgeY = barY + barH + 4;
+            drawSurgeBar(barX, surgeY, barW, 7);
+
+            // ── CAMPAIGN PROGRESS BAR (below surge, only in campaign) ──
+            if (gameState.isCampaignMode) {
+                const cpY = surgeY + 12;
+                const level = GAME_LEVELS[gameState.currentCampaignLevel - 1];
+                if (level) {
+                    const cpPct = clamp(gameRuntime.distance / level.targetDistance, 0, 1);
+                    // Track bg
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+                    drawRoundRect(barX, cpY, barW, 6, 3);
+                    ctx.fill();
+                    // Fill
+                    if (cpPct > 0.005) {
+                        const cpGrad = ctx.createLinearGradient(barX, cpY, barX + barW * cpPct, cpY);
+                        cpGrad.addColorStop(0, '#4488ff');
+                        cpGrad.addColorStop(1, cpPct >= 1 ? '#00ff88' : '#66bbff');
+                        ctx.fillStyle = cpGrad;
+                        drawRoundRect(barX, cpY, barW * cpPct, 6, 3);
+                        ctx.fill();
+                    }
+                    // Label
+                    ctx.fillStyle = 'rgba(150, 200, 255, 0.5)';
+                    ctx.font = "9px Arial";
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText('LV ' + gameState.currentCampaignLevel + '  ' + gameRuntime.distance.toFixed(1) + '/' + level.targetDistance.toFixed(0) + ' AU', barX + 2, cpY + 7);
+                }
+            }
+
+            // ── Active power-up (below surge, only when active) ──
+            if (gameRuntime.activePowerUp) {
+                const puY = surgeY + 14;
+                const remaining = Math.max(0, (gameRuntime.powerUpEndTime - Date.now()) / 1000);
+                const puW = (remaining / (gameRuntime.activePowerUp.duration / 1000)) * 80;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                drawRoundRect(M, puY, 80, 14, 7);
+                ctx.fill();
+                ctx.fillStyle = gameRuntime.activePowerUp.color;
+                ctx.globalAlpha = 0.6;
+                drawRoundRect(M, puY, puW, 14, 7);
+                ctx.fill();
                 ctx.globalAlpha = 1;
+                ctx.font = "bold 9px Arial";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(gameRuntime.activePowerUp.icon + ' ' + gameRuntime.activePowerUp.name, M + 40, puY + 7);
+            }
+
+            // ── Kills counter (bottom-right, subtle) ──
+            if (gameRuntime.aliensKilled > 0) {
+                ctx.font = "10px Arial";
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.fillStyle = 'rgba(0, 220, 255, 0.5)';
+                ctx.fillText(gameRuntime.aliensKilled + ' kills', W - M, DESIGN_HEIGHT - 10);
+            }
+
+            // ── Combo (center, only at high combos, elegant) ──
+            if (gameRuntime.combo > 5) {
+                const comboAlpha = Math.min(1, (gameRuntime.combo - 5) * 0.15);
+                ctx.save();
+                ctx.globalAlpha = comboAlpha * 0.8;
+                ctx.font = "bold 18px Arial";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#ffdd00';
+                ctx.shadowColor = '#ffaa00';
+                ctx.shadowBlur = 12;
+                ctx.fillText('x' + gameRuntime.combo, W / 2, 90);
                 ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
                 ctx.restore();
             }
 
-            // Alien kill counter
-            if (gameRuntime.aliensKilled > 0) {
-                ctx.font = "12px 'Orbitron', monospace";
-                ctx.textAlign = 'right';
-                ctx.fillStyle = '#00e5ff';
-                ctx.fillText('KILLS: ' + gameRuntime.aliensKilled, DESIGN_WIDTH - safeRight - 10, safeTop + 80);
+            // ── Pause button (top-right corner, minimal) ──
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = "16px Arial";
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⏸', W - 28, T + leftH / 2);
+
+            // ── Low health warning (subtle red edge pulse) ──
+            if (gameRuntime.energy.current < 25) {
+                const pulse = Math.sin(animationTime * 5) * 0.5 + 0.5;
+                const edgeGrad = ctx.createRadialGradient(W / 2, DESIGN_HEIGHT / 2, DESIGN_HEIGHT * 0.35, W / 2, DESIGN_HEIGHT / 2, DESIGN_HEIGHT * 0.55);
+                edgeGrad.addColorStop(0, 'rgba(200, 30, 30, 0)');
+                edgeGrad.addColorStop(1, 'rgba(200, 30, 30, ' + (pulse * 0.12) + ')');
+                ctx.fillStyle = edgeGrad;
+                ctx.fillRect(0, 0, W, DESIGN_HEIGHT);
             }
 
-            // Alien warning indicator
-            if (gameRuntime.aliens.length > 0) {
-                const warningAlpha = 0.5 + Math.sin(Date.now() * 0.005) * 0.3;
-                ctx.fillStyle = 'rgba(255,34,68,' + warningAlpha + ')';
-                ctx.font = "bold 11px 'Orbitron', monospace";
-                ctx.textAlign = 'center';
-                ctx.fillText('ALIENS: ' + gameRuntime.aliens.filter(a => a._active).length, DESIGN_WIDTH / 2, safeTop + 18);
-            }
-
-            // Active power-up indicator
-            if (gameRuntime.activePowerUp) {
-                const remaining = Math.max(0, (gameRuntime.powerUpEndTime - Date.now()) / 1000);
-                ctx.fillStyle = gameRuntime.activePowerUp.color;
-                ctx.font = "bold 12px 'Orbitron', monospace";
-                ctx.textAlign = 'left';
-                ctx.fillText(gameRuntime.activePowerUp.icon + ' ' + gameRuntime.activePowerUp.name + ' ' + remaining.toFixed(1) + 's', 20, safeTop + 95);
-            }
-
-            // Commentary box
-            if (gameRuntime.commentary.text && Date.now() < gameRuntime.commentary.endTime) {
-                const alpha = Math.max(0, (gameRuntime.commentary.endTime - Date.now()) / 1000);
-                ctx.fillStyle = `rgba(30, 30, 30, ${Math.min(1, alpha)})`;
-                drawRoundRect(DESIGN_WIDTH / 2 - 120, DESIGN_HEIGHT - 100, 240, 50, 12);
-                ctx.fill();
-
-                ctx.fillStyle = COLORS.text;
-                ctx.globalAlpha = alpha;
-                ctx.font = "bold 14px 'Orbitron', monospace";
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(gameRuntime.commentary.text, DESIGN_WIDTH / 2, DESIGN_HEIGHT - 75);
-                ctx.globalAlpha = 1;
-            }
-
-            // Pause button
-            ctx.fillStyle = COLORS.ui;
-            ctx.font = 'bold 20px Arial';
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'top';
-            ctx.fillText('⏸', DESIGN_WIDTH - 20, safeTop);
-
-            // Red vignette flash when health is low
-            if (gameRuntime.energy.current < 30) {
-                const lowHealthFlash = Math.sin(animationTime * 6) * 0.5 + 0.5;
-                ctx.fillStyle = 'rgba(200, 50, 50, ' + (lowHealthFlash * 0.1) + ')';
-                ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
-            }
-
-            // Screen-edge red pulse when taking damage
+            // ── Damage flash (brief red edge) ──
             if (gameRuntime.cameraShakeIntensity > 0) {
-                const pulseIntensity = gameRuntime.cameraShakeIntensity / 10;
-                ctx.strokeStyle = 'rgba(255, 100, 100, ' + (pulseIntensity * 0.3) + ')';
-                ctx.lineWidth = Math.max(1, pulseIntensity * 3);
-                ctx.beginPath();
-                const offset = pulseIntensity * 2;
-                ctx.rect(offset, offset, DESIGN_WIDTH - offset * 2, DESIGN_HEIGHT - offset * 2);
-                ctx.stroke();
+                const p = Math.min(1, gameRuntime.cameraShakeIntensity / 10);
+                ctx.fillStyle = 'rgba(255, 80, 80, ' + (p * 0.08) + ')';
+                ctx.fillRect(0, 0, W, DESIGN_HEIGHT);
             }
 
             drawToasts();
@@ -3779,117 +4050,123 @@
             ctx.fillStyle = fillColor;
             drawRoundRect(x, y, w, h, r);
             ctx.fill();
-
-            // Subtle gradient border for frosted glass effect
-            ctx.strokeStyle = 'rgba(150, 180, 220, 0.3)';
-            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = 'rgba(80, 140, 200, 0.2)';
+            ctx.lineWidth = 1;
             drawRoundRect(x, y, w, h, r);
             ctx.stroke();
         }
 
-        // Premium health bar with inner glow, gradient, and heart icon
-        function drawHealthBar(x, y) {
-            const energyPercent = gameRuntime.energy.current / MAX_ENERGY;
-            const energyColor = energyPercent > 0.5 ? COLORS.energy.full :
-                                 energyPercent > 0.2 ? COLORS.energy.mid : COLORS.energy.low;
+        // Elegant health bar — full-width with gradient, shine, and animated low-health pulse
+        function drawHealthBar(x, y, w, h) {
+            const maxE = gameRuntime.energy.max || MAX_ENERGY;
+            const pct = clamp(gameRuntime.energy.current / maxE, 0, 1);
+            const isLow = pct < 0.25;
+            const isMid = pct < 0.5;
 
-            // Background
-            ctx.fillStyle = '#1a1a2e';
-            drawRoundRect(x, y, 150, 20, 4);
+            // Track background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+            drawRoundRect(x, y, w, h, h / 2);
             ctx.fill();
 
-            // Gradient fill for health bar
-            const healthGrad = ctx.createLinearGradient(x, y, x, y + 20);
-            healthGrad.addColorStop(0, energyColor);
-            healthGrad.addColorStop(0.5, energyColor);
-            healthGrad.addColorStop(1, 'rgba(200, 200, 200, 0.3)');
-            ctx.fillStyle = healthGrad;
-            drawRoundRect(x, y, 150 * energyPercent, 20, 4);
-            ctx.fill();
+            // Fill gradient
+            if (pct > 0.005) {
+                const fillW = w * pct;
+                const grad = ctx.createLinearGradient(x, y, x + fillW, y);
+                if (isLow) {
+                    grad.addColorStop(0, '#ff3333');
+                    grad.addColorStop(1, '#ff6644');
+                } else if (isMid) {
+                    grad.addColorStop(0, '#dd8800');
+                    grad.addColorStop(1, '#ffbb33');
+                } else {
+                    grad.addColorStop(0, '#00bb55');
+                    grad.addColorStop(1, '#44dd88');
+                }
+                ctx.fillStyle = grad;
+                drawRoundRect(x, y, fillW, h, h / 2);
+                ctx.fill();
 
-            // Inner glow effect
-            const glowGrad = ctx.createLinearGradient(x, y, x, y + 20);
-            glowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
-            glowGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
-            glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = glowGrad;
-            drawRoundRect(x, y, 150 * energyPercent, 20, 4);
-            ctx.fill();
-
-            // Border
-            ctx.strokeStyle = energyColor;
-            ctx.lineWidth = 2;
-            drawRoundRect(x, y, 150, 20, 4);
-            ctx.stroke();
-
-            // Heart icon
-            drawHeartIcon(x - 12, y + 6, 8);
-
-            // Health percentage text with glow
-            ctx.fillStyle = COLORS.text;
-            ctx.font = "12px 'Orbitron', monospace";
-            ctx.textAlign = 'center';
-            ctx.globalAlpha = 0.8;
-            ctx.shadowColor = energyColor;
-            ctx.shadowBlur = 10;
-            ctx.fillText(gameRuntime.energy.current.toFixed(0) + '/' + MAX_ENERGY, x + 75, y + 14);
-            ctx.globalAlpha = 1;
-            ctx.shadowBlur = 0;
-        }
-
-        // Draw a small heart icon for health display
-        function drawHeartIcon(x, y, size) {
-            ctx.fillStyle = '#ff4444';
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(size / 8, size / 8);
-            ctx.beginPath();
-            ctx.moveTo(0, -2);
-            ctx.quadraticCurveTo(-3, -5, -5, -3);
-            ctx.quadraticCurveTo(-6, -2, -4, 0);
-            ctx.lineTo(0, 5);
-            ctx.lineTo(4, 0);
-            ctx.quadraticCurveTo(6, -2, 5, -3);
-            ctx.quadraticCurveTo(3, -5, 0, -2);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        }
-
-        // Surge bar with pulsation when near full
-        function drawSurgeBar(x, y) {
-            const surgePercent = gameRuntime.surge.bar / 100;
-            const surgeColor = COLORS.surge[gameRuntime.surge.tier];
-            const threshold = gameRuntime.surge.tier === 'L1' ? 20 : gameRuntime.surge.tier === 'L2' ? 50 : gameRuntime.surge.tier === 'L3' ? 75 : 100;
-            const isFull = gameRuntime.surge.bar >= threshold;
-
-            // Pulsation effect when surge bar is near full
-            let barWidth = 150;
-            if (isFull) {
-                barWidth = 150 + Math.sin(animationTime * 5) * 3;
+                // Top shine
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                drawRoundRect(x + 1, y + 1, fillW - 2, h * 0.4, h / 2);
+                ctx.fill();
             }
 
-            // Background
-            ctx.fillStyle = '#1a1a2e';
-            drawRoundRect(x, y, 150, 15, 3);
+            // Low health animated pulse on bar edge
+            if (isLow) {
+                const pulse = Math.sin(animationTime * 6) * 0.4 + 0.6;
+                ctx.strokeStyle = 'rgba(255, 60, 60, ' + pulse + ')';
+                ctx.lineWidth = 1.5;
+                drawRoundRect(x, y, w, h, h / 2);
+                ctx.stroke();
+            }
+
+            // Heart icon left of bar
+            const heartX = x + 8, heartY = y + h / 2;
+            const heartPulse = isLow ? 1 + Math.sin(animationTime * 8) * 0.15 : 1;
+            ctx.save();
+            ctx.translate(heartX, heartY);
+            ctx.scale(heartPulse, heartPulse);
+            ctx.fillStyle = isLow ? '#ff3333' : isMid ? '#ddaa00' : '#44dd88';
+            ctx.beginPath();
+            ctx.moveTo(0, -2.5);
+            ctx.bezierCurveTo(-3, -6, -7, -3, -4.5, 0);
+            ctx.lineTo(0, 4);
+            ctx.lineTo(4.5, 0);
+            ctx.bezierCurveTo(7, -3, 3, -6, 0, -2.5);
+            ctx.fill();
+            ctx.restore();
+
+            // Percentage text (right-aligned inside bar)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = "bold 8px Arial";
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(Math.round(pct * 100) + '%', x + w - 6, y + h / 2);
+        }
+
+        // Elegant surge bar — thin, colored, with tier label
+        function drawSurgeBar(x, y, w, h) {
+            const pct = clamp(gameRuntime.surge.bar / 100, 0, 1);
+            const surgeColor = COLORS.surge[gameRuntime.surge.tier];
+            const threshold = gameRuntime.surge.tier === 'L1' ? 20 : gameRuntime.surge.tier === 'L2' ? 50 : gameRuntime.surge.tier === 'L3' ? 75 : 100;
+            const isReady = gameRuntime.surge.bar >= threshold;
+
+            // Track
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+            drawRoundRect(x, y, w, h, h / 2);
             ctx.fill();
 
-            // Surge fill
-            ctx.fillStyle = surgeColor;
-            drawRoundRect(x, y, 150 * surgePercent, 15, 3);
-            ctx.fill();
+            // Fill
+            if (pct > 0.005) {
+                ctx.fillStyle = surgeColor;
+                ctx.globalAlpha = isReady ? 0.9 + Math.sin(animationTime * 6) * 0.1 : 0.7;
+                drawRoundRect(x, y, w * pct, h, h / 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
 
-            // Border
-            ctx.strokeStyle = surgeColor;
-            ctx.lineWidth = 1.5;
-            drawRoundRect(x, y, barWidth, 15, 3);
-            ctx.stroke();
+                // Shine
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                drawRoundRect(x + 1, y + 1, w * pct - 2, h * 0.35, h / 2);
+                ctx.fill();
+            }
 
-            // Text label
-            ctx.fillStyle = COLORS.text;
-            ctx.font = "bold 10px 'Orbitron', monospace";
-            ctx.textAlign = 'center';
-            ctx.fillText('SURGE ' + gameRuntime.surge.tier, x + 75, y + 10);
+            // Tier label (right end)
+            ctx.fillStyle = isReady ? surgeColor : 'rgba(255, 255, 255, 0.3)';
+            ctx.font = "bold 7px Arial";
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(gameRuntime.surge.tier + ' ' + Math.round(pct * 100) + '%', x + w - 4, y + h / 2);
+
+            // Ready glow
+            if (isReady) {
+                ctx.strokeStyle = surgeColor;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.4 + Math.sin(animationTime * 4) * 0.2;
+                drawRoundRect(x, y, w, h, h / 2);
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
         }
 
         function drawSurgeZone() {
@@ -3961,15 +4238,15 @@
                     continue;
                 }
                 const alpha = Math.max(0, Math.min(1, toast.timer));
-                ctx.fillStyle = `rgba(100, 200, 100, ${alpha * 0.8})`;
-                drawRoundRect(30, yPos - 30, DESIGN_WIDTH - 60, 30, 6);
+                ctx.fillStyle = `rgba(20, 40, 60, ${alpha * 0.8})`;
+                drawRoundRect(30, yPos - 24, DESIGN_WIDTH - 60, 24, 6);
                 ctx.fill();
                 ctx.fillStyle = COLORS.text;
                 ctx.globalAlpha = alpha;
-                ctx.font = '14px Arial';
+                ctx.font = '11px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(toast.text, DESIGN_WIDTH / 2, yPos - 15);
+                ctx.fillText(toast.text, DESIGN_WIDTH / 2, yPos - 12);
                 ctx.globalAlpha = 1;
                 yPos -= 40;
             }
@@ -5937,7 +6214,8 @@
             const targetDist = level.targetDistance;
             const ratio = distAchieved / targetDist;
 
-            let stars = ratio >= 1.5 ? 3 : ratio >= 1.2 ? 2 : ratio >= 1 ? 1 : 0;
+            // If the player died, they fail regardless of distance traveled
+            let stars = gameRuntime.playerDied ? 0 : (ratio >= 1.5 ? 3 : ratio >= 1.2 ? 2 : ratio >= 1 ? 1 : 0);
             const oldStars = gameState.levelStars[gameState.currentCampaignLevel] || 0;
             stars = Math.max(oldStars, stars);
             gameState.levelStars[gameState.currentCampaignLevel] = stars;
@@ -5948,7 +6226,9 @@
             const totalStars = Object.values(gameState.levelStars).reduce((a, b) => a + b, 0);
             voyagerConvex.syncCampaign(gameState.currentCampaignLevel, totalStars, JSON.stringify(gameState.levelStars)).catch(() => {});
 
-            if (ratio >= 1) {
+            const passed = stars > 0;
+
+            if (passed) {
                 audioManager.playLevelComplete();
             } else {
                 audioManager.playGameOver();
@@ -5958,15 +6238,20 @@
             ctx.font = 'bold 32px Arial';
             ctx.textAlign = 'center';
             let resultText = 'LEVEL ' + gameState.currentCampaignLevel;
-            if (ratio >= 1) resultText += ' COMPLETE';
+            if (passed) resultText += ' COMPLETE';
             else resultText += ' FAILED';
             ctx.fillText(resultText, DESIGN_WIDTH / 2, 150);
 
             ctx.font = '18px Arial';
-            ctx.fillText('Distance: ' + distAchieved.toFixed(1) + ' / ' + targetDist.toFixed(1), DESIGN_WIDTH / 2, 220);
+            if (gameRuntime.playerDied) {
+                ctx.fillStyle = '#ff5555';
+                ctx.fillText('Ship Destroyed!', DESIGN_WIDTH / 2, 200);
+                ctx.fillStyle = COLORS.text;
+            }
+            ctx.fillText('Distance: ' + distAchieved.toFixed(1) + ' / ' + targetDist.toFixed(1), DESIGN_WIDTH / 2, 230);
             ctx.fillText('Stars: ' + stars, DESIGN_WIDTH / 2, 270);
 
-            if (ratio >= 1) {
+            if (passed) {
                 drawButton(DESIGN_WIDTH / 2 - 120, DESIGN_HEIGHT - 120, 100, 50, 'NEXT');
                 drawButton(DESIGN_WIDTH / 2 + 20, DESIGN_HEIGHT - 120, 100, 50, 'LEVELS');
             } else {
@@ -5974,7 +6259,7 @@
             }
 
             consumeTap((tap) => {
-                if (ratio >= 1) {
+                if (passed) {
                     if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 120, DESIGN_HEIGHT - 120, 100, 50)) {
                         audioManager.playButtonClick();
                         gameState.missionProgress.levelsCompleted++;
@@ -6030,19 +6315,12 @@
         // Control Functions
         // ============================================
 
-        function endGame() {
-            recordDeath(); // AI Director tracks recent deaths for stealth assist
+        function saveRunStats() {
             gameState.bestDistance = Math.max(gameState.bestDistance, gameRuntime.distance);
             gameState.totalDistance += gameRuntime.distance;
             let coinsEarned = Math.floor(gameRuntime.distance * 50);
-            // Apply coin magnet boost
-            if (gameRuntime.coinMagnetActive) {
-                coinsEarned = Math.floor(coinsEarned * 1.5);
-            }
-            // Apply VIP 2x coins
-            if (gameState.isVIP) {
-                coinsEarned *= 2;
-            }
+            if (gameRuntime.coinMagnetActive) coinsEarned = Math.floor(coinsEarned * 1.5);
+            if (gameState.isVIP) coinsEarned *= 2;
             gameState.coins += coinsEarned;
             gameState.stats.totalRuns++;
             gameState.stats.totalDistance += gameRuntime.distance;
@@ -6052,35 +6330,27 @@
             const survivalTime = (Date.now() - gameRuntime.gameStartTime) / 1000;
             gameState.stats.totalPlayTime += survivalTime;
             gameState.stats.bestSurvivalTime = Math.max(gameState.stats.bestSurvivalTime, survivalTime);
-
-            // Track challenge progress
             for (const ch of WEEKLY_CHALLENGES) {
-                if (!gameState.challengeProgress[ch.id]) {
-                    gameState.challengeProgress[ch.id] = {};
-                }
+                if (!gameState.challengeProgress[ch.id]) gameState.challengeProgress[ch.id] = {};
                 const prog = gameState.challengeProgress[ch.id];
-                if (ch.stat === 'survival') {
-                    prog.survival = Math.max(prog.survival || 0, survivalTime);
-                }
-                if (ch.stat === 'combo') {
-                    prog.combo = Math.max(prog.combo || 0, gameRuntime.combo || 0);
-                }
+                if (ch.stat === 'survival') prog.survival = Math.max(prog.survival || 0, survivalTime);
+                if (ch.stat === 'combo') prog.combo = Math.max(prog.combo || 0, gameRuntime.combo || 0);
             }
-
-            // Track session best
             gameRuntime.sessionBest = Math.max(gameRuntime.sessionBest, gameRuntime.distance);
-
             awardXP(Math.floor(gameRuntime.distance * 10));
             checkAchievements();
-
-            // Store promo popup every N games
             gameState.gamesPlayedSincePromo++;
             if (gameState.gamesPlayedSincePromo >= STORE_PROMO_INTERVAL) {
                 gameState.gamesPlayedSincePromo = 0;
                 gameRuntime.showStorePromo = true;
             }
-
             saveToStorage();
+        }
+
+        function endGame() {
+            gameRuntime.playerDied = true;
+            recordDeath();
+            saveRunStats();
 
             if (gameState.isCampaignMode) {
                 gameRuntime.state = STATES.campaign_result;
