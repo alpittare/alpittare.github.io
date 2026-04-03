@@ -11,7 +11,7 @@ import { v } from "convex/values";
 export const syncCampaign = mutation({
   args: {
     playerId: v.id("players"),
-    game: v.union(v.literal("crickbot"), v.literal("goalbot"), v.literal("basehit")),
+    game: v.union(v.literal("crickbot"), v.literal("goalbot"), v.literal("basehit"), v.literal("survivalarena")),
     currentLevel: v.number(),
     totalStars: v.number(),
     levelStars: v.any(), // { "1": 3, "2": 2, ... }
@@ -68,7 +68,7 @@ export const syncCampaign = mutation({
 export const getCampaignProgress = query({
   args: {
     playerId: v.id("players"),
-    game: v.union(v.literal("crickbot"), v.literal("goalbot"), v.literal("basehit")),
+    game: v.union(v.literal("crickbot"), v.literal("goalbot"), v.literal("basehit"), v.literal("survivalarena")),
   },
   handler: async (ctx, { playerId, game }) => {
     return ctx.db

@@ -58,52 +58,76 @@ export const registerPlayer = mutation({
 export const updatePlayerStats = mutation({
   args: {
     playerId: v.id("players"),
-    totalGamesPlayed: v.number(),
-    totalCoinsEarned: v.number(),
-    level: v.number(),
-    xp: v.number(),
-    bestScores: v.object({
-      crickbot: v.number(),
-      goalbot: v.number(),
-      basehit: v.number(),
-    }),
-    crickbotStats: v.object({
+    totalGamesPlayed: v.optional(v.number()),
+    totalCoinsEarned: v.optional(v.number()),
+    level: v.optional(v.number()),
+    xp: v.optional(v.number()),
+    bestScores: v.optional(v.object({
+      crickbot: v.optional(v.number()),
+      goalbot: v.optional(v.number()),
+      basehit: v.optional(v.number()),
+      survivalarena: v.optional(v.number()),
+    })),
+    crickbotStats: v.optional(v.object({
       totalRuns: v.number(),
       totalFours: v.number(),
       totalSixes: v.number(),
       totalBallsFaced: v.number(),
       totalWins: v.number(),
       legendWins: v.number(),
-    }),
-    goalbotStats: v.object({
+    })),
+    goalbotStats: v.optional(v.object({
       totalGoals: v.number(),
       totalShots: v.number(),
       totalSaves: v.number(),
       shotAccuracy: v.number(),
-    }),
-    basehitStats: v.object({
+    })),
+    basehitStats: v.optional(v.object({
       totalHRs: v.number(),
       totalSwings: v.number(),
       totalGoodHits: v.number(),
       totalFouls: v.number(),
       totalStrikes: v.number(),
       bestStreak: v.number(),
-    }),
+    })),
+    survivalarenaStats: v.optional(v.object({
+      totalKills: v.number(),
+      totalWins: v.number(),
+      bestKills: v.number(),
+      bestStreak: v.number(),
+      levelsCompleted: v.number(),
+    })),
   },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
     if (!player) throw new Error("Player not found");
 
-    await ctx.db.patch(args.playerId, {
-      totalGamesPlayed: args.totalGamesPlayed,
-      totalCoinsEarned: args.totalCoinsEarned,
-      level: args.level,
-      xp: args.xp,
-      bestScores: args.bestScores,
-      crickbotStats: args.crickbotStats,
-      goalbotStats: args.goalbotStats,
-      basehitStats: args.basehitStats,
-    });
+    // Build patch object — only include fields that were sent
+    const patch: Record<string, any> = {};
+    if (args.totalGamesPlayed != null) patch.totalGamesPlayed = args.totalGamesPlayed;
+    if (args.totalCoinsEarned != null) patch.totalCoinsEarned = args.totalCoinsEarned;
+    if (args.level != null) patch.level = args.level;
+    if (args.xp != null) patch.xp = args.xp;
+
+    // Merge bestScores — preserve existing, overlay new
+    if (args.bestScores) {
+      const merged = { ...player.bestScores };
+      if (args.bestScores.crickbot != null) merged.crickbot = Math.max(merged.crickbot ?? 0, args.bestScores.crickbot);
+      if (args.bestScores.goalbot != null) merged.goalbot = Math.max(merged.goalbot ?? 0, args.bestScores.goalbot);
+      if (args.bestScores.basehit != null) merged.basehit = Math.max(merged.basehit ?? 0, args.bestScores.basehit);
+      if (args.bestScores.survivalarena != null) merged.survivalarena = Math.max(merged.survivalarena ?? 0, args.bestScores.survivalarena);
+      patch.bestScores = merged;
+    }
+
+    // Game-specific stats — only patch if provided
+    if (args.crickbotStats) patch.crickbotStats = args.crickbotStats;
+    if (args.goalbotStats) patch.goalbotStats = args.goalbotStats;
+    if (args.basehitStats) patch.basehitStats = args.basehitStats;
+    if (args.survivalarenaStats) patch.survivalarenaStats = args.survivalarenaStats;
+
+    if (Object.keys(patch).length > 0) {
+      await ctx.db.patch(args.playerId, patch);
+    }
 
     return { success: true };
   },

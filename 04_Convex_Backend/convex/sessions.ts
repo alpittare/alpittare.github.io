@@ -17,16 +17,20 @@ export const submitGameSession = mutation({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena"),
+      v.literal("infinitevoyager")
     ),
     score: v.number(),
     difficulty: v.string(),
     won: v.boolean(),
     duration: v.optional(v.number()),
     // Game-specific stats payload:
-    // CrickBot: { runs, wickets, overs, target, fours, sixes }
-    // GoalBot:  { goalsFor, goalsAgainst, totalShots, round }
-    // BaseHit:  { homeRuns, swings, streak, perfectHits }
+    // CrickBot:       { runs, wickets, overs, target, fours, sixes }
+    // GoalBot:        { goalsFor, goalsAgainst, totalShots, round }
+    // BaseHit:        { homeRuns, swings, streak, perfectHits }
+    // SurvivalArena:  { kills, bestStreak, surgeLevel, usedRage, placement }
+    // InfiniteVoyager: { distance, aliensKilled, bossesDefeated, stormsCollected, bestCombo, powerUpsUsed, companionLevel }
     stats: v.any(),
   },
   handler: async (ctx, args) => {
@@ -115,7 +119,9 @@ export const getMatchHistory = query({
       v.union(
         v.literal("crickbot"),
         v.literal("goalbot"),
-        v.literal("basehit")
+        v.literal("basehit"),
+        v.literal("survivalarena"),
+        v.literal("infinitevoyager")
       )
     ),
     limit: v.optional(v.number()),
@@ -147,7 +153,9 @@ export const getRecentSessions = query({
       v.union(
         v.literal("crickbot"),
         v.literal("goalbot"),
-        v.literal("basehit")
+        v.literal("basehit"),
+        v.literal("survivalarena"),
+        v.literal("infinitevoyager")
       )
     ),
     limit: v.optional(v.number()),

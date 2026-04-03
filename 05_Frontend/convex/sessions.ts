@@ -17,7 +17,8 @@ export const submitGameSession = mutation({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena")
     ),
     score: v.number(),
     difficulty: v.string(),

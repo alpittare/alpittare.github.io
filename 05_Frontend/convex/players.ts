@@ -25,7 +25,7 @@ export const registerPlayer = mutation({
     if (existing) throw new Error(`Player "${trimmed}" already exists`);
 
     const now = Date.now();
-    const zeroBestScores = { crickbot: 0, goalbot: 0, basehit: 0 };
+    const zeroBestScores = { crickbot: 0, goalbot: 0, basehit: 0, survivalarena: 0 };
     const zeroCrickbot = {
       totalRuns: 0, totalFours: 0, totalSixes: 0,
       totalBallsFaced: 0, totalWins: 0, legendWins: 0,
@@ -36,6 +36,10 @@ export const registerPlayer = mutation({
     const zeroBasehit = {
       totalHRs: 0, totalSwings: 0, totalGoodHits: 0,
       totalFouls: 0, totalStrikes: 0, bestStreak: 0,
+    };
+    const zeroSurvivalarena = {
+      totalKills: 0, totalWins: 0, bestKills: 0,
+      bestStreak: 0, levelsCompleted: 0,
     };
 
     const playerId = await ctx.db.insert("players", {
@@ -49,6 +53,7 @@ export const registerPlayer = mutation({
       crickbotStats: zeroCrickbot,
       goalbotStats: zeroGoalbot,
       basehitStats: zeroBasehit,
+      survivalarenaStats: zeroSurvivalarena,
     });
 
     return playerId;
@@ -66,6 +71,7 @@ export const updatePlayerStats = mutation({
       crickbot: v.number(),
       goalbot: v.number(),
       basehit: v.number(),
+      survivalarena: v.optional(v.number()),
     }),
     crickbotStats: v.object({
       totalRuns: v.number(),
@@ -89,6 +95,13 @@ export const updatePlayerStats = mutation({
       totalStrikes: v.number(),
       bestStreak: v.number(),
     }),
+    survivalarenaStats: v.optional(v.object({
+      totalKills: v.number(),
+      totalWins: v.number(),
+      bestKills: v.number(),
+      bestStreak: v.number(),
+      levelsCompleted: v.number(),
+    })),
   },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
@@ -103,6 +116,7 @@ export const updatePlayerStats = mutation({
       crickbotStats: args.crickbotStats,
       goalbotStats: args.goalbotStats,
       basehitStats: args.basehitStats,
+      ...(args.survivalarenaStats ? { survivalarenaStats: args.survivalarenaStats } : {}),
     });
 
     return { success: true };

@@ -14,7 +14,8 @@ export const getLeaderboard = query({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena")
     ),
     limit: v.optional(v.number()),
   },
@@ -91,7 +92,8 @@ export const getPlayerRank = query({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena")
     ),
   },
   handler: async (ctx, { playerId, game }) => {

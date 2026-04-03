@@ -199,7 +199,7 @@ function LandingScreen() {
         </SignUpButton>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 pt-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12">
         {[
           {
             emoji: "🏏",
@@ -221,6 +221,20 @@ function LandingScreen() {
             desc: "AI home run derby game",
             color: "text-orange-600",
             bg: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300",
+          },
+          {
+            emoji: "⚔️",
+            name: "Survival Arena IO 2026",
+            desc: "AI battle royale survival game",
+            color: "text-emerald-600",
+            bg: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-300",
+          },
+          {
+            emoji: "🚀",
+            name: "Infinite Voyager",
+            desc: "AI space exploration adventure",
+            color: "text-cyan-600",
+            bg: "bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-300",
           },
         ].map((game) => (
           <div
@@ -340,6 +354,42 @@ function GamesTab() {
         { label: "Campaign", icon: "🗺️" },
         { label: "Power-ups", icon: "💥" },
         { label: "Coming Soon", icon: "🔜" },
+      ],
+    },
+    {
+      id: "survivalarena",
+      emoji: "⚔️",
+      name: "Survival Arena IO 2026",
+      description: "AI battle royale with shrinking arena, surge powers, rage mode, and 100-level campaign",
+      color: "from-emerald-400 to-emerald-600",
+      textColor: "text-emerald-700",
+      badgeColor: "bg-emerald-100 text-emerald-700",
+      banner: "",
+      highScore: 5200,
+      gamesPlayed: 45,
+      winRate: 52,
+      features: [
+        { label: "Campaign", icon: "🗺️" },
+        { label: "Rage Mode", icon: "🔥" },
+        { label: "Surge Powers", icon: "⚡" },
+      ],
+    },
+    {
+      id: "infinitevoyager",
+      emoji: "🚀",
+      name: "Infinite Voyager",
+      description: "AI space exploration adventure with alien encounters, boss battles, and cosmic challenges",
+      color: "from-cyan-400 to-cyan-600",
+      textColor: "text-cyan-700",
+      badgeColor: "bg-cyan-100 text-cyan-700",
+      banner: "",
+      highScore: 4850,
+      gamesPlayed: 38,
+      winRate: 59,
+      features: [
+        { label: "Campaign", icon: "🗺️" },
+        { label: "Boss Battles", icon: "👾" },
+        { label: "Power-ups", icon: "⭐" },
       ],
     },
   ];
@@ -567,7 +617,7 @@ function ProfileTab() {
 
 // ─── Leaderboard Tab ──────────────────────────────────────────
 function LeaderboardTab() {
-  const [filter, setFilter] = useState<"all" | "cricket" | "soccer" | "baseball">("all");
+  const [filter, setFilter] = useState<"all" | "cricket" | "soccer" | "baseball" | "survivalarena" | "infinitevoyager">("all");
 
   const mockLeaderboard = [
     { rank: 1, name: "Pro Gamer Alex", score: 24500, games: 158 },
@@ -598,6 +648,8 @@ function LeaderboardTab() {
           { id: "cricket", label: "Cricket AI", icon: "🏏" },
           { id: "soccer", label: "Football AI", icon: "⚽" },
           { id: "baseball", label: "Baseball AI", icon: "⚾" },
+          { id: "survivalarena", label: "Survival Arena", icon: "⚔️" },
+          { id: "infinitevoyager", label: "Infinite Voyager", icon: "🚀" },
         ].map((f) => (
           <button
             key={f.id}
@@ -814,6 +866,7 @@ function ChatTab() {
     "Tips for winning penalty shootouts against the AI?",
     "Best power-up strategy for Cricket AI 2026 high scores?",
     "How do I outsmart the Pitcher Bot in Baseball AI 2026?",
+    "Best strategy for surviving the shrinking arena in Survival Arena IO?",
   ];
 
   return (

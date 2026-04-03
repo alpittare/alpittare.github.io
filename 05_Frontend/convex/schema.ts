@@ -1,7 +1,7 @@
 /**
  * Convex Schema — Unified Game Backend
  *
- * Supports: CrickBot, GoalBot, BaseHit
+ * Supports: CrickBot, GoalBot, BaseHit, SurvivalArena
  *
  * Tables:
  *   players          – Player profiles with cross-game lifetime stats
@@ -37,6 +37,7 @@ export default defineSchema({
       crickbot: v.number(),          // best innings score
       goalbot: v.number(),           // best match goals
       basehit: v.number(),           // best game score
+      survivalarena: v.optional(v.number()),  // best arena score
     }),
 
     // Per-game career stats
@@ -62,6 +63,13 @@ export default defineSchema({
       totalStrikes: v.number(),
       bestStreak: v.number(),
     }),
+    survivalarenaStats: v.optional(v.object({
+      totalKills: v.number(),
+      totalWins: v.number(),
+      bestKills: v.number(),
+      bestStreak: v.number(),
+      levelsCompleted: v.number(),
+    })),
   })
     .index("by_name", ["name"])
     .index("by_level", ["level"]),
@@ -73,7 +81,8 @@ export default defineSchema({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena")
     ),
     score: v.number(),               // primary score for this session
     difficulty: v.string(),          // easy | medium | hard | legend
@@ -100,7 +109,8 @@ export default defineSchema({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena")
     ),
     score: v.number(),               // best score for this game
     gamesPlayed: v.number(),
@@ -116,7 +126,8 @@ export default defineSchema({
     game: v.union(
       v.literal("crickbot"),
       v.literal("goalbot"),
-      v.literal("basehit")
+      v.literal("basehit"),
+      v.literal("survivalarena")
     ),
     currentLevel: v.number(),        // BaseHit: 1-100, CrickBot: phase index
     totalStars: v.number(),
