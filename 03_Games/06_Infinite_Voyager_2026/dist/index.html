@@ -262,11 +262,11 @@
         // ============================================
 
         const SHOP_SKINS = [
-            { id: 'default', name: 'Voyager Mk-I', cost: 0, levelReq: 1, desc: 'Standard explorer craft' },
-            { id: 'neon', name: 'Neon Striker', cost: 200, levelReq: 3, desc: 'Sleek neon-lit racer' },
-            { id: 'solar', name: 'Solar Phoenix', cost: 500, levelReq: 5, desc: 'Wings of solar fire' },
-            { id: 'stealth', name: 'Shadow Blade', cost: 800, levelReq: 8, desc: 'Dark angular stealth ship' },
-            { id: 'aurora', name: 'Aurora Sentinel', cost: 1200, levelReq: 12, desc: 'Ancient cosmic guardian' },
+            { id: 'default', name: 'Voyager Mk-I', cost: 0, levelReq: 1, desc: 'The trusty explorer that started it all. Balanced thrust and agility.', rarity: 'COMMON', color: '#4488cc' },
+            { id: 'neon', name: 'Neon Striker', cost: 200, levelReq: 3, desc: 'Built for speed junkies. Neon-lit edges cut through dark matter like butter.', rarity: 'RARE', color: '#00ffff' },
+            { id: 'solar', name: 'Solar Phoenix', cost: 500, levelReq: 5, desc: 'Forged in a dying star. Its solar wings burn brighter the faster you fly.', rarity: 'EPIC', color: '#ff6600' },
+            { id: 'stealth', name: 'Shadow Blade', cost: 800, levelReq: 8, desc: 'Invisible to alien scanners. Whisper-quiet engines leave no trace.', rarity: 'EPIC', color: '#8844aa' },
+            { id: 'aurora', name: 'Aurora Sentinel', cost: 1200, levelReq: 12, desc: 'Ancient tech from a lost civilization. Channels cosmic energy through crystalline armor.', rarity: 'LEGENDARY', color: '#00ff88' },
         ];
 
         // Ship drawing functions — each skin gets a unique detailed spaceship
@@ -523,20 +523,49 @@
         }
 
         const SHOP_THEMES = [
-            { id: 'deep_space', name: 'Deep Space', cost: 0, levelReq: 1 },
-            { id: 'nebula', name: 'Nebula', cost: 300, levelReq: 4 },
-            { id: 'void', name: 'The Void', cost: 600, levelReq: 7 },
-            { id: 'sunset', name: 'Cosmic Sunset', cost: 1000, levelReq: 10 },
+            { id: 'deep_space', name: 'Deep Space', cost: 0, levelReq: 1, desc: 'The endless dark between stars. Classic deep blue with distant twinkling lights.', preview: '#001a2e', rarity: 'COMMON' },
+            { id: 'nebula', name: 'Crimson Nebula', cost: 300, levelReq: 4, desc: 'Fly through clouds of ionized hydrogen. Pink and purple gas swirls all around you.', preview: '#2a0a2a', rarity: 'RARE' },
+            { id: 'void', name: 'The Void', cost: 600, levelReq: 7, desc: 'Pure nothingness. No stars, no light — just you and the abyss staring back.', preview: '#050505', rarity: 'EPIC' },
+            { id: 'sunset', name: 'Cosmic Sunset', cost: 1000, levelReq: 10, desc: 'Binary star system paints the sky in molten gold and amber. Breathtaking.', preview: '#2a1500', rarity: 'EPIC' },
+            { id: 'aurora', name: 'Aurora Storm', cost: 1500, levelReq: 15, desc: 'Magnetic fields from a pulsar create dazzling curtains of green and violet light.', preview: '#001a10', rarity: 'LEGENDARY' },
         ];
 
         // ============================================
         // COMPANION DRONE (P3)
         // ============================================
         const SHOP_COMPANIONS = [
-            { id: 'drone_l1', name: 'Companion L1', cost: 100, levelReq: 2, desc: 'Auto-collect nearby coins' },
-            { id: 'drone_l2', name: 'Companion L2', cost: 250, levelReq: 5, desc: 'L1 + Absorb 1 hit every 30s' },
-            { id: 'drone_l3', name: 'Companion L3', cost: 500, levelReq: 8, desc: 'L2 + Fire bolts at aliens' },
+            { id: 'drone_l1', name: 'SPARK — Scout Drone', cost: 100, levelReq: 2, desc: 'Your first buddy in the void. Zips around collecting nearby coins so you can focus on dodging.', rarity: 'RARE', ability: 'Auto-collect coins within range', color: '#00ccff' },
+            { id: 'drone_l2', name: 'AEGIS — Guardian Drone', cost: 250, levelReq: 5, desc: 'Upgraded with a micro-shield generator. Takes a hit for you every 30 seconds. Loyal to the end.', rarity: 'EPIC', ability: 'Coin magnet + Absorb 1 hit / 30s', color: '#ff8800' },
+            { id: 'drone_l3', name: 'NOVA — War Drone', cost: 500, levelReq: 8, desc: 'Armed with a plasma cannon and attitude. Hunts aliens, collects loot, and watches your six.', rarity: 'LEGENDARY', ability: 'All L2 perks + Fire at aliens', color: '#ff00ff' },
         ];
+
+        // ============================================
+        // IN-APP PURCHASES & STORE
+        // ============================================
+        const COIN_PACKS = [
+            { id: 'starter_pack', name: 'Starter Pack', coins: 500, bonus: 0, price: '$0.49', placement: 'coin_pack_starter', color: '#c8a0e8', tag: '' },
+            { id: 'value_pack', name: 'Value Pack', coins: 1200, bonus: 200, price: '$0.99', placement: 'coin_pack_value', color: '#e8a0bf', tag: '+200 BONUS' },
+            { id: 'super_pack', name: 'Super Pack', coins: 2500, bonus: 0, price: '$1.99', placement: 'coin_pack_super', color: '#d4a574', tag: 'BEST VALUE' },
+        ];
+
+        const PLACEMENT_REWARDS = {
+            'coin_pack_starter': 500,
+            'coin_pack_value': 1400,
+            'coin_pack_super': 2500,
+            'vip_yearly_pass': 'vip',
+        };
+
+        const VIP_PRODUCT = { id: 'vip_yearly', name: 'VIP Pass', price: '$0.99/year', placement: 'vip_yearly_pass' };
+
+        const POWERUP_SHOP = [
+            { id: 'energy_boost', name: 'Energy Boost', cost: 50, icon: '⚡', desc: 'Start with 150% energy', color: '#00ff88' },
+            { id: 'shield_start', name: 'Shield Start', cost: 75, icon: '🛡', desc: 'Shield active for first 10s', color: '#00ccff' },
+            { id: 'coin_magnet', name: 'Coin Magnet', cost: 40, icon: '🧲', desc: '+50% coin earnings for 1 run', color: '#ff44ff' },
+            { id: 'double_xp', name: '2x XP', cost: 60, icon: '✨', desc: 'Double XP for 1 game', color: '#ffdd00' },
+            { id: 'alien_scanner', name: 'Alien Scanner', cost: 100, icon: '👁', desc: 'See cloaked aliens for 1 run', color: '#ff4466' },
+        ];
+
+        const STORE_PROMO_INTERVAL = 3;
 
         // ============================================
         // ALIEN ENCOUNTERS (P4)
@@ -1130,6 +1159,8 @@
             tutorialSeen: false,
             isVIP: false,
             companionLevel: 0, // 0 = not unlocked, 1-3 = upgrade levels
+            powerUps: { energy_boost: 0, shield_start: 0, coin_magnet: 0, double_xp: 0, alien_scanner: 0 },
+            gamesPlayedSincePromo: 0,
         };
 
         function saveToStorage() {
@@ -1817,6 +1848,35 @@
             gameRuntime.powerUpEndTime = 0;
             gameRuntime.powerUpSpawnTimer = 0;
 
+            // Apply purchased power-ups (consume one of each active)
+            if (gameState.powerUps.energy_boost > 0) {
+                gameState.powerUps.energy_boost--;
+                gameRuntime.energy.current = MAX_ENERGY * 1.5;
+                gameRuntime.energy.max = MAX_ENERGY * 1.5;
+                showToast('⚡ Energy Boost Active!');
+            }
+            if (gameState.powerUps.shield_start > 0) {
+                gameState.powerUps.shield_start--;
+                gameRuntime.shield.active = true;
+                gameRuntime.shieldStartTimer = 10; // 10 second shield
+                showToast('🛡 Shield Start Active!');
+            }
+            if (gameState.powerUps.coin_magnet > 0) {
+                gameState.powerUps.coin_magnet--;
+                gameRuntime.coinMagnetActive = true;
+                showToast('🧲 Coin Magnet Active!');
+            }
+            if (gameState.powerUps.double_xp > 0) {
+                gameState.powerUps.double_xp--;
+                gameRuntime.doubleXPActive = true;
+                showToast('✨ 2x XP Active!');
+            }
+            if (gameState.powerUps.alien_scanner > 0) {
+                gameState.powerUps.alien_scanner--;
+                gameRuntime.alienScannerActive = true;
+                showToast('👁 Alien Scanner Active!');
+            }
+
             // Initialize boss if campaign level is a boss level
             gameRuntime.boss = null;
             gameRuntime.bossPhase = 0;
@@ -1838,6 +1898,7 @@
 
             initStars();
             initAIShips();
+            saveToStorage();
         }
 
         function startCampaignLevel(levelNumber) {
@@ -2141,7 +2202,15 @@
             gameRuntime.aliensKilled++;
             const def = ALIEN_TYPES[a.type];
             const coinAmount = def.coinDrop[0] + Math.floor(Math.random() * (def.coinDrop[1] - def.coinDrop[0]));
-            const finalCoins = Math.floor(coinAmount * gameRuntime.multiplier);
+            let finalCoins = Math.floor(coinAmount * gameRuntime.multiplier);
+            // Apply coin magnet
+            if (gameRuntime.coinMagnetActive) {
+                finalCoins = Math.floor(finalCoins * 1.5);
+            }
+            // Apply VIP 2x
+            if (gameState.isVIP) {
+                finalCoins *= 2;
+            }
             gameState.coins += finalCoins;
             gameRuntime.aiDirector.totalCoinsCollected += finalCoins;
             particles.spawnBurst(a.x, a.y, 20, def.color, 160, 0.5, 3);
@@ -3349,7 +3418,12 @@
 
                 // Cloak effect for phantom
                 if (a.isCloaked) {
-                    ctx.globalAlpha = 0.15 + Math.sin(a.time * 6) * 0.1;
+                    // If alien scanner is active, show at reduced alpha instead of fully cloaked
+                    if (gameRuntime.alienScannerActive) {
+                        ctx.globalAlpha = 0.4;
+                    } else {
+                        ctx.globalAlpha = 0.15 + Math.sin(a.time * 6) * 0.1;
+                    }
                 }
 
                 switch (a.type) {
@@ -4960,6 +5034,240 @@
             });
         }
 
+        // ============================================
+        // STORE TAB RENDERING
+        // ============================================
+        function drawStoreTab(yPos) {
+            // Coin packs
+            const packW = (DESIGN_WIDTH - 50) / 3;
+            const packH = 180;
+
+            for (let i = 0; i < COIN_PACKS.length; i++) {
+                const pack = COIN_PACKS[i];
+                const x = 20 + i * (packW + 5);
+
+                // Gradient background
+                const grd = ctx.createLinearGradient(x, yPos, x, yPos + packH);
+                grd.addColorStop(0, pack.color + '44');
+                grd.addColorStop(1, pack.color + '11');
+                ctx.fillStyle = grd;
+                drawRoundRect(x, yPos, packW, packH, 12);
+                ctx.fill();
+
+                // Border
+                ctx.strokeStyle = pack.color;
+                ctx.lineWidth = 2;
+                drawRoundRect(x, yPos, packW, packH, 12);
+                ctx.stroke();
+
+                // Coin emoji
+                ctx.font = '32px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('💰', x + packW / 2, yPos + 30);
+
+                // Coin amount
+                ctx.fillStyle = pack.color;
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText(pack.coins.toString(), x + packW / 2, yPos + 70);
+
+                // Bonus tag
+                if (pack.tag) {
+                    ctx.fillStyle = pack.color;
+                    ctx.font = 'bold 9px Arial';
+                    ctx.fillText(pack.tag, x + packW / 2, yPos + 90);
+                }
+
+                // Price button
+                ctx.fillStyle = COLORS.ui;
+                drawRoundRect(x + 5, yPos + packH - 35, packW - 10, 30, 6);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(pack.price, x + packW / 2, yPos + packH - 20);
+            }
+
+            yPos += 200;
+
+            // VIP card
+            const vipCardW = DESIGN_WIDTH - 40;
+            const vipCardH = 140;
+
+            // Gold gradient
+            const vipGrad = ctx.createLinearGradient(20, yPos, 20, yPos + vipCardH);
+            vipGrad.addColorStop(0, '#ffdd0044');
+            vipGrad.addColorStop(1, '#dd8800ff');
+            ctx.fillStyle = vipGrad;
+            drawRoundRect(20, yPos, vipCardW, vipCardH, 12);
+            ctx.fill();
+
+            // Gold border
+            ctx.strokeStyle = '#ffdd00';
+            ctx.lineWidth = 2;
+            drawRoundRect(20, yPos, vipCardW, vipCardH, 12);
+            ctx.stroke();
+
+            // VIP title
+            ctx.fillStyle = '#ffdd00';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('👑 VIP PASS', 40, yPos + 30);
+
+            // Benefits
+            ctx.fillStyle = '#fff';
+            ctx.font = '11px Arial';
+            const benefits = ['✓ All skins free', '✓ 2x coins', '✓ VIP badge', '✓ Exclusive ship'];
+            let bY = yPos + 50;
+            for (const b of benefits) {
+                ctx.fillText(b, 50, bY);
+                bY += 16;
+            }
+
+            // Status
+            if (gameState.isVIP) {
+                ctx.fillStyle = '#00ff88';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText('ACTIVE ✓', DESIGN_WIDTH - 40, yPos + 55);
+            } else {
+                // Price button
+                ctx.fillStyle = COLORS.ui;
+                drawRoundRect(DESIGN_WIDTH - 130, yPos + vipCardH - 35, 110, 30, 6);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('$0.99/year', DESIGN_WIDTH - 75, yPos + vipCardH - 20);
+            }
+
+            yPos += 160;
+
+            // Restore link
+            ctx.fillStyle = '#0088ff';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Restore Purchases', DESIGN_WIDTH / 2, yPos + 20);
+        }
+
+        // ============================================
+        // BOOSTS TAB RENDERING
+        // ============================================
+        function drawBoostsTab(yPos) {
+            for (let i = 0; i < POWERUP_SHOP.length; i++) {
+                const boost = POWERUP_SHOP[i];
+                const affordable = gameState.coins >= boost.cost;
+                const owned = gameState.powerUps[boost.id] || 0;
+
+                // Card
+                ctx.fillStyle = 'rgba(15, 15, 25, 0.85)';
+                drawRoundRect(20, yPos, DESIGN_WIDTH - 40, 80, 12);
+                ctx.fill();
+
+                ctx.strokeStyle = boost.color;
+                ctx.lineWidth = 1;
+                drawRoundRect(20, yPos, DESIGN_WIDTH - 40, 80, 12);
+                ctx.stroke();
+
+                // Icon
+                ctx.font = '28px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(boost.icon, 50, yPos + 45);
+
+                // Name
+                ctx.fillStyle = boost.color;
+                ctx.font = 'bold 13px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(boost.name, 85, yPos + 25);
+
+                // Description
+                ctx.fillStyle = '#aaa';
+                ctx.font = '10px Arial';
+                ctx.fillText(boost.desc, 85, yPos + 42);
+
+                // Owned count
+                if (owned > 0) {
+                    ctx.fillStyle = boost.color;
+                    ctx.font = 'bold 11px Arial';
+                    ctx.fillText('x' + owned, 85, yPos + 60);
+                }
+
+                // Buy button
+                const btnW = 65, btnH = 30;
+                const btnX = DESIGN_WIDTH - 105, btnY = yPos + 25;
+                ctx.fillStyle = affordable ? COLORS.ui : '#444';
+                drawRoundRect(btnX, btnY, btnW, btnH, 6);
+                ctx.fill();
+                ctx.fillStyle = affordable ? '#fff' : '#666';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('BUY', btnX + btnW / 2, btnY + btnH / 2);
+
+                // Cost
+                ctx.font = 'bold 9px Arial';
+                ctx.fillStyle = '#ffdd00';
+                ctx.fillText(boost.cost, btnX + btnW / 2, btnY + btnH + 12);
+
+                yPos += 95;
+            }
+        }
+
+        // ============================================
+        // STORE & BOOSTS TAP HANDLERS
+        // ============================================
+        function handleStoreTap(tap) {
+            const packW = (DESIGN_WIDTH - 50) / 3;
+            const packH = 180;
+
+            // Check coin pack buttons
+            for (let i = 0; i < COIN_PACKS.length; i++) {
+                const pack = COIN_PACKS[i];
+                const x = 20 + i * (packW + 5);
+                const btnY = 160 + packH - 35;
+                if (pointInRect(tap.x, tap.y, x + 5, btnY, packW - 10, 30)) {
+                    audioManager.playPurchase();
+                    triggerPurchase(pack.id);
+                    return;
+                }
+            }
+
+            // Check VIP button
+            const vipBtnX = DESIGN_WIDTH - 130;
+            const vipBtnY = 360;
+            if (pointInRect(tap.x, tap.y, vipBtnX, vipBtnY, 110, 30) && !gameState.isVIP) {
+                audioManager.playPurchase();
+                triggerPurchase('vip_yearly');
+                return;
+            }
+
+            // Check restore link
+            if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 60, 540, 120, 20)) {
+                audioManager.playButtonClick();
+                triggerRestore();
+            }
+        }
+
+        function handleBoostsTap(tap) {
+            const btnW = 65, btnH = 30;
+            let yPos = 160;
+
+            for (let i = 0; i < POWERUP_SHOP.length; i++) {
+                const boost = POWERUP_SHOP[i];
+                const affordable = gameState.coins >= boost.cost;
+                const btnX = DESIGN_WIDTH - 105, btnY = yPos + 25;
+
+                if (pointInRect(tap.x, tap.y, btnX, btnY, btnW, btnH) && affordable) {
+                    audioManager.playPurchase();
+                    gameState.coins -= boost.cost;
+                    gameState.powerUps[boost.id] = (gameState.powerUps[boost.id] || 0) + 1;
+                    showToast(boost.name + ' purchased!');
+                    saveToStorage();
+                    return;
+                }
+
+                yPos += 95;
+            }
+        }
+
         function drawShopScreen() {
             ctx.fillStyle = COLORS.bg;
             ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
@@ -4971,15 +5279,18 @@
 
             const tabY = 100;
             const tabH = 40;
-            const tabW = 100;
+            const tabW = 70;
+            const tabGap = 6;
             const skinsTab = { x: 20, y: tabY, w: tabW, h: tabH, label: 'SKINS' };
-            const themesTab = { x: 20 + tabW + 10, y: tabY, w: tabW, h: tabH, label: 'THEMES' };
-            const companionTab = { x: 20 + 2 * (tabW + 10), y: tabY, w: tabW, h: tabH, label: 'DRONE' };
+            const themesTab = { x: 20 + tabW + tabGap, y: tabY, w: tabW, h: tabH, label: 'THEMES' };
+            const companionTab = { x: 20 + 2 * (tabW + tabGap), y: tabY, w: tabW, h: tabH, label: 'DRONE' };
+            const boostsTab = { x: 20 + 3 * (tabW + tabGap), y: tabY, w: tabW, h: tabH, label: 'BOOSTS' };
+            const storeTab = { x: 20 + 4 * (tabW + tabGap), y: tabY, w: tabW, h: tabH, label: 'STORE' };
             const currentTab = gameRuntime.shopTab || 'skins';
 
             // Draw tabs
-            for (const tab of [skinsTab, themesTab, companionTab]) {
-                const isActive = currentTab === (tab.label === 'SKINS' ? 'skins' : tab.label === 'THEMES' ? 'themes' : 'companion');
+            for (const tab of [skinsTab, themesTab, companionTab, boostsTab, storeTab]) {
+                const isActive = currentTab === (tab.label === 'SKINS' ? 'skins' : tab.label === 'THEMES' ? 'themes' : tab.label === 'DRONE' ? 'companion' : tab.label === 'BOOSTS' ? 'boosts' : 'store');
                 ctx.fillStyle = isActive ? COLORS.ui : '#333333';
                 drawRoundRect(tab.x, tab.y, tab.w, tab.h, 6);
                 ctx.fill();
@@ -4996,18 +5307,30 @@
             ctx.textAlign = 'right';
             ctx.fillText(gameState.coins + ' coins', DESIGN_WIDTH - 40, 60);
 
-            let items;
-            if (currentTab === 'skins') items = SHOP_SKINS;
-            else if (currentTab === 'themes') items = SHOP_THEMES;
-            else items = SHOP_COMPANIONS;
             let yPos = 160;
-            const cardH = currentTab === 'skins' ? 80 : 55;
+            const cardH = 105; // taller cards for all tabs
+            const rarityColors = { COMMON: '#aaaaaa', RARE: '#00aaff', EPIC: '#cc44ff', LEGENDARY: '#ffaa00' };
+
+            // Handle different tab content
+            if (currentTab === 'store') {
+                drawStoreTab(yPos);
+            } else if (currentTab === 'boosts') {
+                drawBoostsTab(yPos);
+            } else {
+                // Skins, Themes, Companion
+                let items;
+                if (currentTab === 'skins') items = SHOP_SKINS;
+                else if (currentTab === 'themes') items = SHOP_THEMES;
+                else items = SHOP_COMPANIONS;
+
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                const canAfford = gameState.coins >= item.cost && gameState.level >= item.levelReq;
+                // VIP makes all skins free
+                const effectiveCost = (currentTab === 'skins' && gameState.isVIP) ? 0 : item.cost;
+                const canAfford = gameState.coins >= effectiveCost && gameState.level >= item.levelReq;
                 let isOwned, isEquipped;
                 if (currentTab === 'skins') {
-                    isOwned = gameState.unlockedSkins.includes(item.id);
+                    isOwned = gameState.unlockedSkins.includes(item.id) || gameState.isVIP;
                     isEquipped = gameState.equippedSkin === item.id;
                 } else if (currentTab === 'themes') {
                     isOwned = gameState.unlockedThemes.includes(item.id);
@@ -5017,85 +5340,171 @@
                     isEquipped = false;
                 }
 
-                // Card background — highlight if equipped
-                ctx.fillStyle = isEquipped ? '#1a2a3a' : '#181818';
-                drawRoundRect(30, yPos, DESIGN_WIDTH - 60, cardH, 10);
+                // Card background with rarity-tinted border
+                const rc = rarityColors[item.rarity] || '#444';
+                ctx.fillStyle = isEquipped ? 'rgba(0, 40, 60, 0.8)' : 'rgba(15, 15, 25, 0.85)';
+                drawRoundRect(20, yPos, DESIGN_WIDTH - 40, cardH, 12);
                 ctx.fill();
-                if (isEquipped) {
-                    ctx.strokeStyle = '#00ff88';
-                    ctx.lineWidth = 1.5;
-                    drawRoundRect(30, yPos, DESIGN_WIDTH - 60, cardH, 10);
-                    ctx.stroke();
-                }
+                ctx.strokeStyle = isEquipped ? '#00ff88' : rc;
+                ctx.lineWidth = isEquipped ? 2 : 1;
+                drawRoundRect(20, yPos, DESIGN_WIDTH - 40, cardH, 12);
+                ctx.stroke();
 
-                // Ship preview thumbnail (skins tab only)
+                // Preview area (left side)
+                const previewW = 58, previewH = cardH - 16;
+                ctx.fillStyle = item.preview || '#0a0a1a';
+                drawRoundRect(30, yPos + 8, previewW, previewH, 8);
+                ctx.fill();
+
                 if (currentTab === 'skins') {
                     ctx.save();
-                    // Preview area
-                    ctx.fillStyle = '#0a0a1a';
-                    drawRoundRect(40, yPos + 8, 55, cardH - 16, 8);
-                    ctx.fill();
-                    // Draw mini ship
-                    ctx.translate(67, yPos + cardH / 2);
+                    ctx.translate(30 + previewW / 2, yPos + cardH / 2);
                     if (isOwned || item.cost === 0) {
-                        drawShipSkin(ctx, item.id, 0.7);
+                        drawShipSkin(ctx, item.id, 0.75);
                     } else {
-                        // Locked — draw silhouette
-                        ctx.globalAlpha = 0.25;
-                        drawShipSkin(ctx, item.id, 0.7);
+                        ctx.globalAlpha = 0.2;
+                        drawShipSkin(ctx, item.id, 0.75);
                         ctx.globalAlpha = 1;
-                        ctx.fillStyle = '#888';
-                        ctx.font = 'bold 14px Arial';
+                        ctx.fillStyle = '#666';
+                        ctx.font = 'bold 18px Arial';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
                         ctx.fillText('?', 0, 0);
                     }
                     ctx.restore();
+                } else if (currentTab === 'themes') {
+                    // Theme preview — mini gradient swatch
+                    const grd = ctx.createLinearGradient(30, yPos + 8, 30, yPos + 8 + previewH);
+                    grd.addColorStop(0, item.preview || '#001a2e');
+                    grd.addColorStop(1, '#000000');
+                    ctx.fillStyle = grd;
+                    drawRoundRect(30, yPos + 8, previewW, previewH, 8);
+                    ctx.fill();
+                    // Mini stars
+                    ctx.fillStyle = '#ffffff';
+                    for (let s = 0; s < 8; s++) {
+                        const sx = 35 + Math.sin(s * 4.7) * 22 + 22;
+                        const sy = yPos + 15 + Math.cos(s * 3.1) * (previewH * 0.35) + previewH * 0.35;
+                        ctx.globalAlpha = 0.4 + Math.sin(animationTime * 2 + s) * 0.3;
+                        ctx.beginPath();
+                        ctx.arc(sx, sy, 1 + Math.sin(s) * 0.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1;
+                } else {
+                    // Companion drone preview — colored orb with glow
+                    const droneColor = item.color || '#00ccff';
+                    const dGlow = ctx.createRadialGradient(30 + previewW / 2, yPos + cardH / 2, 3, 30 + previewW / 2, yPos + cardH / 2, 22);
+                    dGlow.addColorStop(0, droneColor);
+                    dGlow.addColorStop(0.5, droneColor + '44');
+                    dGlow.addColorStop(1, 'transparent');
+                    ctx.fillStyle = dGlow;
+                    ctx.beginPath();
+                    ctx.arc(30 + previewW / 2, yPos + cardH / 2, 22, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Inner drone body
+                    ctx.fillStyle = droneColor;
+                    ctx.beginPath();
+                    ctx.arc(30 + previewW / 2, yPos + cardH / 2, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Orbiting ring
+                    ctx.strokeStyle = droneColor;
+                    ctx.lineWidth = 1.5;
+                    ctx.globalAlpha = 0.5;
+                    ctx.beginPath();
+                    ctx.ellipse(30 + previewW / 2, yPos + cardH / 2, 16, 6, animationTime * 1.5 + i, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
                 }
 
-                // Text info — offset right for skins tab
-                const textLeft = currentTab === 'skins' ? 108 : 50;
-                ctx.fillStyle = COLORS.text;
-                ctx.font = 'bold 14px Arial';
+                // Text area
+                const textLeft = 100;
+                const textWidth = DESIGN_WIDTH - textLeft - 85;
+
+                // Rarity badge
+                ctx.fillStyle = rc;
+                ctx.font = 'bold 9px Arial';
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'top';
-                ctx.fillText(item.name, textLeft, yPos + 10);
-                ctx.font = '11px Arial';
+                ctx.fillText(item.rarity || '', textLeft, yPos + 8);
+
+                // Name
+                ctx.fillStyle = item.color || COLORS.text;
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(item.name, textLeft, yPos + 20);
+
+                // Description — word-wrapped
                 ctx.fillStyle = COLORS.textAlt;
-                if (currentTab === 'skins' && item.desc) {
-                    ctx.fillText(item.desc, textLeft, yPos + 28);
-                    ctx.fillText('Lv.' + item.levelReq + ' | ' + item.cost + ' coins', textLeft, yPos + 44);
-                } else {
-                    ctx.fillText('Lv.' + item.levelReq + ' | ' + item.cost + ' coins', textLeft, yPos + 30);
+                ctx.font = '10px Arial';
+                const desc = item.desc || '';
+                const words = desc.split(' ');
+                let line = '', lineY = yPos + 38;
+                for (let w = 0; w < words.length; w++) {
+                    const test = line + words[w] + ' ';
+                    if (ctx.measureText(test).width > textWidth && line) {
+                        ctx.fillText(line.trim(), textLeft, lineY);
+                        line = words[w] + ' ';
+                        lineY += 13;
+                    } else {
+                        line = test;
+                    }
                 }
+                if (line.trim()) ctx.fillText(line.trim(), textLeft, lineY);
+
+                // Ability line (for companions)
+                if (item.ability) {
+                    ctx.fillStyle = '#00ddaa';
+                    ctx.font = 'bold 9px Arial';
+                    ctx.fillText('ABILITY: ' + item.ability, textLeft, yPos + cardH - 28);
+                }
+
+                // Cost + level requirement
+                ctx.fillStyle = '#888';
+                ctx.font = '10px Arial';
+                const costText = effectiveCost === 0 ? 'FREE' : effectiveCost + ' coins | Lv.' + item.levelReq;
+                ctx.fillText(costText, textLeft, yPos + cardH - 14);
 
                 // Status badge on right
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'middle';
                 if (isEquipped) {
                     ctx.fillStyle = '#00ff88';
-                    ctx.font = 'bold 12px Arial';
-                    ctx.fillText('EQUIPPED', DESIGN_WIDTH - 48, yPos + cardH / 2);
+                    ctx.font = 'bold 11px Arial';
+                    ctx.fillText('EQUIPPED', DESIGN_WIDTH - 32, yPos + 24);
+                    ctx.fillStyle = '#00ff8844';
+                    ctx.font = '18px Arial';
+                    ctx.fillText('✓', DESIGN_WIDTH - 32, yPos + 50);
                 } else if (item.cost === 0 || isOwned) {
                     ctx.fillStyle = '#0088ff';
-                    ctx.font = 'bold 12px Arial';
-                    ctx.fillText('SELECT', DESIGN_WIDTH - 48, yPos + cardH / 2);
-                } else if (canAfford) {
-                    // Buy button
-                    ctx.fillStyle = '#0066cc';
-                    drawRoundRect(DESIGN_WIDTH - 100, yPos + cardH / 2 - 14, 55, 28, 6);
+                    drawRoundRect(DESIGN_WIDTH - 90, yPos + cardH / 2 - 14, 55, 28, 6);
                     ctx.fill();
                     ctx.fillStyle = '#fff';
-                    ctx.font = 'bold 12px Arial';
+                    ctx.font = 'bold 11px Arial';
                     ctx.textAlign = 'center';
-                    ctx.fillText('BUY', DESIGN_WIDTH - 72, yPos + cardH / 2);
+                    ctx.fillText('EQUIP', DESIGN_WIDTH - 62, yPos + cardH / 2);
+                } else if (canAfford) {
+                    ctx.fillStyle = '#00aa44';
+                    drawRoundRect(DESIGN_WIDTH - 90, yPos + cardH / 2 - 14, 55, 28, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 11px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('BUY', DESIGN_WIDTH - 62, yPos + cardH / 2);
+                    ctx.font = '9px Arial';
+                    ctx.fillStyle = '#ffdd00';
+                    ctx.fillText(effectiveCost, DESIGN_WIDTH - 62, yPos + cardH / 2 + 18);
                 } else {
-                    ctx.fillStyle = '#555';
-                    ctx.font = '11px Arial';
-                    ctx.fillText('Lv.' + item.levelReq, DESIGN_WIDTH - 48, yPos + cardH / 2);
+                    ctx.fillStyle = '#444';
+                    drawRoundRect(DESIGN_WIDTH - 90, yPos + cardH / 2 - 14, 55, 28, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#777';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Lv.' + item.levelReq, DESIGN_WIDTH - 62, yPos + cardH / 2);
                 }
 
-                yPos += cardH + 8;
+                yPos += cardH + 10;
+            }
             }
 
             drawButton(DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50, 'BACK');
@@ -5110,25 +5519,37 @@
                 } else if (pointInRect(tap.x, tap.y, companionTab.x, companionTab.y, companionTab.w, companionTab.h)) {
                     audioManager.playButtonClick();
                     gameRuntime.shopTab = 'companion';
+                } else if (pointInRect(tap.x, tap.y, boostsTab.x, boostsTab.y, boostsTab.w, boostsTab.h)) {
+                    audioManager.playButtonClick();
+                    gameRuntime.shopTab = 'boosts';
+                } else if (pointInRect(tap.x, tap.y, storeTab.x, storeTab.y, storeTab.w, storeTab.h)) {
+                    audioManager.playButtonClick();
+                    gameRuntime.shopTab = 'store';
                 } else if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 50, DESIGN_HEIGHT - 80, 100, 50)) {
                     audioManager.playButtonClick();
                     gameRuntime.currentScreen = 'menu';
-                } else {
-                    const tapCardH = currentTab === 'skins' ? 80 : 55;
+                } else if (currentTab !== 'store' && currentTab !== 'boosts') {
+                    // Handle item selection for skins/themes/companion tabs
+                    let items;
+                    if (currentTab === 'skins') items = SHOP_SKINS;
+                    else if (currentTab === 'themes') items = SHOP_THEMES;
+                    else items = SHOP_COMPANIONS;
+                    const tapCardH = 105;
                     yPos = 160;
                     for (let i = 0; i < items.length; i++) {
-                        if (pointInRect(tap.x, tap.y, 30, yPos, DESIGN_WIDTH - 60, tapCardH)) {
+                        if (pointInRect(tap.x, tap.y, 20, yPos, DESIGN_WIDTH - 40, tapCardH)) {
                             const item = items[i];
                             let isOwned;
                             if (currentTab === 'skins') {
-                                isOwned = gameState.unlockedSkins.includes(item.id);
+                                isOwned = gameState.unlockedSkins.includes(item.id) || gameState.isVIP;
                             } else if (currentTab === 'themes') {
                                 isOwned = gameState.unlockedThemes.includes(item.id);
                             } else {
                                 isOwned = gameState.companionLevel >= (i + 1);
                             }
-                            const canAfford = gameState.coins >= item.cost && gameState.level >= item.levelReq;
-                            if (item.cost === 0 || isOwned) {
+                            const effectiveCost = (currentTab === 'skins' && gameState.isVIP) ? 0 : item.cost;
+                            const canAfford = gameState.coins >= effectiveCost && gameState.level >= item.levelReq;
+                            if (effectiveCost === 0 || isOwned) {
                                 audioManager.playButtonClick();
                                 if (currentTab === 'skins') {
                                     gameState.equippedSkin = item.id;
@@ -5137,7 +5558,7 @@
                                 }
                             } else if (canAfford) {
                                 audioManager.playPurchase();
-                                gameState.coins -= item.cost;
+                                gameState.coins -= effectiveCost;
                                 if (currentTab === 'skins') {
                                     gameState.unlockedSkins.push(item.id);
                                     gameState.equippedSkin = item.id;
@@ -5152,8 +5573,95 @@
                             saveToStorage();
                             break;
                         }
-                        yPos += tapCardH + 8;
+                        yPos += tapCardH + 10;
                     }
+                } else if (currentTab === 'store') {
+                    handleStoreTap(tap);
+                } else if (currentTab === 'boosts') {
+                    handleBoostsTap(tap);
+                }
+            });
+        }
+
+        // ============================================
+        // STORE PROMO POPUP
+        // ============================================
+        function drawStorePromo() {
+            // Semi-transparent dark background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+
+            // Centered card
+            const cardW = 280, cardH = 400;
+            const cardX = (DESIGN_WIDTH - cardW) / 2;
+            const cardY = (DESIGN_HEIGHT - cardH) / 2;
+
+            // Gradient border effect
+            const grd = ctx.createLinearGradient(cardX, cardY, cardX, cardY + cardH);
+            grd.addColorStop(0, '#e8a0bf');
+            grd.addColorStop(1, '#c8a0e8');
+            ctx.fillStyle = grd;
+            drawRoundRect(cardX - 2, cardY - 2, cardW + 4, cardH + 4, 16);
+            ctx.fill();
+
+            // Main card bg
+            ctx.fillStyle = '#0a0a1a';
+            drawRoundRect(cardX, cardY, cardW, cardH, 14);
+            ctx.fill();
+
+            // Title
+            const titles = ['NEED MORE COINS?', 'POWER UP!'];
+            const title = titles[Math.floor(Math.random() * titles.length)];
+            ctx.fillStyle = '#ffdd00';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, DESIGN_WIDTH / 2, cardY + 40);
+
+            // Featured pack (Value Pack)
+            const packColor = '#e8a0bf';
+            ctx.font = '48px Arial';
+            ctx.fillText('💰', DESIGN_WIDTH / 2, cardY + 100);
+
+            ctx.fillStyle = packColor;
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('1,400', DESIGN_WIDTH / 2, cardY + 160);
+
+            ctx.fillStyle = '#aaa';
+            ctx.font = '12px Arial';
+            ctx.fillText('coins', DESIGN_WIDTH / 2, cardY + 185);
+
+            // Buy button
+            ctx.fillStyle = COLORS.ui;
+            drawRoundRect(cardX + 20, cardY + 220, cardW - 40, 45, 8);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('GET $0.99', DESIGN_WIDTH / 2, cardY + 250);
+
+            // No thanks button
+            ctx.fillStyle = '#333';
+            drawRoundRect(cardX + 30, cardY + 280, cardW - 60, 35, 6);
+            ctx.fill();
+            ctx.fillStyle = '#aaa';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillText('No thanks', DESIGN_WIDTH / 2, cardY + 305);
+
+            // VIP teaser
+            ctx.fillStyle = '#ffdd00';
+            ctx.font = '10px Arial';
+            ctx.fillText('Or VIP for $0.99/year', DESIGN_WIDTH / 2, cardY + 370);
+
+            consumeTap((tap) => {
+                // Buy button
+                if (pointInRect(tap.x, tap.y, cardX + 20, cardY + 220, cardW - 40, 45)) {
+                    audioManager.playPurchase();
+                    triggerPurchase('value_pack');
+                    gameRuntime.showStorePromo = false;
+                }
+                // No thanks
+                else if (pointInRect(tap.x, tap.y, cardX + 30, cardY + 280, cardW - 60, 35)) {
+                    audioManager.playButtonClick();
+                    gameRuntime.showStorePromo = false;
                 }
             });
         }
@@ -5526,7 +6034,15 @@
             recordDeath(); // AI Director tracks recent deaths for stealth assist
             gameState.bestDistance = Math.max(gameState.bestDistance, gameRuntime.distance);
             gameState.totalDistance += gameRuntime.distance;
-            const coinsEarned = Math.floor(gameRuntime.distance * 50);
+            let coinsEarned = Math.floor(gameRuntime.distance * 50);
+            // Apply coin magnet boost
+            if (gameRuntime.coinMagnetActive) {
+                coinsEarned = Math.floor(coinsEarned * 1.5);
+            }
+            // Apply VIP 2x coins
+            if (gameState.isVIP) {
+                coinsEarned *= 2;
+            }
             gameState.coins += coinsEarned;
             gameState.stats.totalRuns++;
             gameState.stats.totalDistance += gameRuntime.distance;
@@ -5556,6 +6072,14 @@
 
             awardXP(Math.floor(gameRuntime.distance * 10));
             checkAchievements();
+
+            // Store promo popup every N games
+            gameState.gamesPlayedSincePromo++;
+            if (gameState.gamesPlayedSincePromo >= STORE_PROMO_INTERVAL) {
+                gameState.gamesPlayedSincePromo = 0;
+                gameRuntime.showStorePromo = true;
+            }
+
             saveToStorage();
 
             if (gameState.isCampaignMode) {
@@ -5729,6 +6253,9 @@
                     ctx.fillStyle = COLORS.bg;
                     ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
                     drawGameOverScreen();
+                    if (gameRuntime.showStorePromo) {
+                        drawStorePromo();
+                    }
                 } else if (gameRuntime.state === STATES.pause) {
                     drawGame();
                     drawPauseScreen();
@@ -5781,6 +6308,50 @@
         // CONVEX BACKEND INTEGRATION
         // ============================================
         const CONVEX_URL = "https://gallant-kingfisher-867.convex.cloud";
+
+        // ============================================
+        // IN-APP PURCHASE HANDLERS
+        // ============================================
+        function triggerPurchase(productId) {
+            // Native bridge (Expo/Capacitor)
+            if (window.NativePurchase) {
+                window.NativePurchase.buy(productId);
+                return;
+            }
+            // Web fallback — simulate purchase for testing
+            const pack = COIN_PACKS.find(p => p.id === productId);
+            if (pack) {
+                const reward = PLACEMENT_REWARDS[pack.placement] || pack.coins;
+                gameState.coins += reward;
+                showToast('+' + reward + ' coins!');
+                saveToStorage();
+            } else if (productId === 'vip_yearly') {
+                gameState.isVIP = true;
+                showToast('VIP Activated!');
+                saveToStorage();
+            }
+        }
+
+        function triggerRestore() {
+            if (window.NativePurchase) {
+                window.NativePurchase.restore();
+                return;
+            }
+            showToast('No purchases to restore');
+        }
+
+        // Listen for native purchase success events
+        window.addEventListener('purchaseSuccess', function(e) {
+            const d = e.detail;
+            if (d.productId === 'vip_yearly') {
+                gameState.isVIP = true;
+                showToast('VIP Activated!');
+            } else if (d.coins) {
+                gameState.coins += d.coins;
+                showToast('+' + d.coins + ' coins!');
+            }
+            saveToStorage();
+        });
 
         const voyagerConvex = {
             _url: CONVEX_URL,
