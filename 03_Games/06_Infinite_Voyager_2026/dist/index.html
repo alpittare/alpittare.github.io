@@ -107,13 +107,13 @@
         const ALIEN_TYPES = {
             scout: {
                 name: 'Scout', hp: 1, speed: 120, radius: 14, color: '#00e5ff',
-                coinDrop: [5, 10], spawnWeight: 0.4,
+                coinDrop: [2, 5], spawnWeight: 0.4,
                 minDistance: 0, // spawns from start
                 behavior: 'weave', // side-to-side weaving
             },
             drone: {
                 name: 'Drone', hp: 2, speed: 80, radius: 18, color: '#aa44ff',
-                coinDrop: [15, 25], spawnWeight: 0.3,
+                coinDrop: [5, 10], spawnWeight: 0.3,
                 minDistance: 1.5, // after 1.5 AU
                 behavior: 'track', // tracks player X
                 fireRate: 3.0, // seconds between shots
@@ -121,7 +121,7 @@
             },
             mothership: {
                 name: 'Mothership', hp: 5, speed: 40, radius: 30, color: '#00ff66',
-                coinDrop: [50, 100], spawnWeight: 0.15,
+                coinDrop: [15, 30], spawnWeight: 0.15,
                 minDistance: 4.0, // after 4 AU
                 behavior: 'hover', // slow descent, spawns scouts
                 spawnRate: 8.0, // seconds between scout spawns
@@ -129,7 +129,7 @@
             },
             phantom: {
                 name: 'Phantom', hp: 3, speed: 90, radius: 16, color: '#ff2244',
-                coinDrop: [30, 50], spawnWeight: 0.15,
+                coinDrop: [8, 15], spawnWeight: 0.15,
                 minDistance: 3.0,
                 behavior: 'mirror', // mirrors player with offset
                 cloakInterval: 4.0, // seconds per cloak cycle
@@ -178,15 +178,15 @@
         const BOSS_TYPES = {
             void_sentinel: {
                 name: 'Void Sentinel', hp: 18, radius: 45, color: '#4400ff',
-                level: 10, reward: 500, skinUnlock: null,
+                level: 10, reward: 100, skinUnlock: null,
             },
             architect: {
                 name: 'The Architect', hp: 25, radius: 35, color: '#ff00ff',
-                level: 25, reward: 1500, skinUnlock: null,
+                level: 25, reward: 250, skinUnlock: null,
             },
             leviathan: {
                 name: 'Leviathan', hp: 30, radius: 50, color: '#00ffaa',
-                level: 50, reward: 3000, skinUnlock: null,
+                level: 50, reward: 500, skinUnlock: null,
             },
         };
 
@@ -223,7 +223,7 @@
                     isMilestone,
                     targetDistance: 25 + i * 3.5 + (isBoss ? 30 : 0),
                     maxTime: 120 + i * 3,
-                    coinReward: 10 + i * 3 + (isBoss ? 50 : 0),
+                    coinReward: 5 + i * 1 + (isBoss ? 20 : 0),
                     starsRequired: isBoss ? 2 : 1,
                 });
             }
@@ -263,10 +263,10 @@
 
         const SHOP_SKINS = [
             { id: 'default', name: 'Voyager Mk-I', cost: 0, levelReq: 1, desc: 'The trusty explorer that started it all. Balanced thrust and agility.', rarity: 'COMMON', color: '#4488cc' },
-            { id: 'neon', name: 'Neon Striker', cost: 200, levelReq: 3, desc: 'Built for speed junkies. Neon-lit edges cut through dark matter like butter.', rarity: 'RARE', color: '#00ffff' },
-            { id: 'solar', name: 'Solar Phoenix', cost: 500, levelReq: 5, desc: 'Forged in a dying star. Its solar wings burn brighter the faster you fly.', rarity: 'EPIC', color: '#ff6600' },
-            { id: 'stealth', name: 'Shadow Blade', cost: 800, levelReq: 8, desc: 'Invisible to alien scanners. Whisper-quiet engines leave no trace.', rarity: 'EPIC', color: '#8844aa' },
-            { id: 'aurora', name: 'Aurora Sentinel', cost: 1200, levelReq: 12, desc: 'Ancient tech from a lost civilization. Channels cosmic energy through crystalline armor.', rarity: 'LEGENDARY', color: '#00ff88' },
+            { id: 'neon', name: 'Neon Striker', cost: 500, levelReq: 3, desc: 'Built for speed junkies. Neon-lit edges cut through dark matter like butter.', rarity: 'RARE', color: '#00ffff' },
+            { id: 'solar', name: 'Solar Phoenix', cost: 1500, levelReq: 5, desc: 'Forged in a dying star. Its solar wings burn brighter the faster you fly.', rarity: 'EPIC', color: '#ff6600' },
+            { id: 'stealth', name: 'Shadow Blade', cost: 3000, levelReq: 8, desc: 'Invisible to alien scanners. Whisper-quiet engines leave no trace.', rarity: 'EPIC', color: '#8844aa' },
+            { id: 'aurora', name: 'Aurora Sentinel', cost: 5000, levelReq: 12, desc: 'Ancient tech from a lost civilization. Channels cosmic energy through crystalline armor.', rarity: 'LEGENDARY', color: '#00ff88' },
         ];
 
         // Ship drawing functions — each skin gets a unique detailed spaceship
@@ -534,35 +534,43 @@
         // COMPANION DRONE (P3)
         // ============================================
         const SHOP_COMPANIONS = [
-            { id: 'drone_l1', name: 'SPARK — Scout Drone', cost: 100, levelReq: 2, desc: 'Your first buddy in the void. Zips around collecting nearby coins so you can focus on dodging.', rarity: 'RARE', ability: 'Auto-collect coins within range', color: '#00ccff' },
-            { id: 'drone_l2', name: 'AEGIS — Guardian Drone', cost: 250, levelReq: 5, desc: 'Upgraded with a micro-shield generator. Takes a hit for you every 30 seconds. Loyal to the end.', rarity: 'EPIC', ability: 'Coin magnet + Absorb 1 hit / 30s', color: '#ff8800' },
-            { id: 'drone_l3', name: 'NOVA — War Drone', cost: 500, levelReq: 8, desc: 'Armed with a plasma cannon and attitude. Hunts aliens, collects loot, and watches your six.', rarity: 'LEGENDARY', ability: 'All L2 perks + Fire at aliens', color: '#ff00ff' },
+            { id: 'drone_l1', name: 'SPARK — Scout Drone', cost: 800, levelReq: 2, desc: 'Your first buddy in the void. Zips around collecting nearby coins so you can focus on dodging.', rarity: 'RARE', ability: 'Auto-collect coins within range', color: '#00ccff' },
+            { id: 'drone_l2', name: 'AEGIS — Guardian Drone', cost: 2500, levelReq: 5, desc: 'Upgraded with a micro-shield generator. Takes a hit for you every 15 seconds. Loyal to the end.', rarity: 'EPIC', ability: 'Coin magnet + Absorb 1 hit / 15s', color: '#ff8800' },
+            { id: 'drone_l3', name: 'NOVA — War Drone', cost: 6000, levelReq: 8, desc: 'Armed with a plasma cannon and attitude. Hunts aliens, collects loot, and watches your six.', rarity: 'LEGENDARY', ability: 'All L2 perks + Fire at aliens', color: '#ff00ff' },
         ];
 
         // ============================================
         // IN-APP PURCHASES & STORE
         // ============================================
+        // ── MONETIZATION: Coin Packs (max $3.99) ──
+        // Base ratio: ~1,000 coins per $1 — bonus scales 10-40% on larger packs
         const COIN_PACKS = [
-            { id: 'starter_pack', name: 'Starter Pack', coins: 500, bonus: 0, price: '$0.49', placement: 'coin_pack_starter', color: '#c8a0e8', tag: '' },
-            { id: 'value_pack', name: 'Value Pack', coins: 1200, bonus: 200, price: '$0.99', placement: 'coin_pack_value', color: '#e8a0bf', tag: '+200 BONUS' },
-            { id: 'super_pack', name: 'Super Pack', coins: 2500, bonus: 0, price: '$1.99', placement: 'coin_pack_super', color: '#d4a574', tag: 'BEST VALUE' },
+            { id: 'handful',  name: 'Handful',       coins: 400,  bonus: 0,    price: '$0.49', placement: 'coin_pack_handful',  color: '#90b8f8', tag: '',            priceVal: 0.49 },
+            { id: 'pouch',    name: 'Coin Pouch',    coins: 900,  bonus: 100,  price: '$0.99', placement: 'coin_pack_pouch',    color: '#c8a0e8', tag: '+100 BONUS',  priceVal: 0.99 },
+            { id: 'chest',    name: 'Treasure Chest', coins: 2000, bonus: 300, price: '$1.99', placement: 'coin_pack_chest',    color: '#e8c060', tag: 'POPULAR',     priceVal: 1.99 },
+            { id: 'vault',    name: 'Star Vault',    coins: 3500, bonus: 700,  price: '$2.99', placement: 'coin_pack_vault',    color: '#ff8844', tag: '+20% BONUS',  priceVal: 2.99 },
+            { id: 'galaxy',   name: 'Galaxy Crate',  coins: 5000, bonus: 1500, price: '$3.99', placement: 'coin_pack_galaxy',   color: '#ffcc00', tag: 'BEST VALUE',  priceVal: 3.99 },
         ];
 
         const PLACEMENT_REWARDS = {
-            'coin_pack_starter': 500,
-            'coin_pack_value': 1400,
-            'coin_pack_super': 2500,
-            'vip_yearly_pass': 'vip',
+            'coin_pack_handful':  400,
+            'coin_pack_pouch':    1000,
+            'coin_pack_chest':    2300,
+            'coin_pack_vault':    4200,
+            'coin_pack_galaxy':   6500,
+            'vip_monthly_pass':   'vip',
         };
 
-        const VIP_PRODUCT = { id: 'vip_yearly', name: 'VIP Pass', price: '$0.99/year', placement: 'vip_yearly_pass' };
+        // ── MONETIZATION: VIP Subscription ──
+        // $1.99/month — 2x coin earnings, all skins unlocked, 2x daily rewards, no ads
+        const VIP_PRODUCT = { id: 'vip_monthly', name: 'VIP Pass', price: '$1.99/mo', placement: 'vip_monthly_pass', perks: ['2x coin earnings', 'All skins unlocked', '2x daily rewards', 'No ads', 'VIP badge'] };
 
         const POWERUP_SHOP = [
-            { id: 'energy_boost', name: 'Energy Boost', cost: 50, icon: '⚡', desc: 'Start with 150% energy', color: '#00ff88' },
-            { id: 'shield_start', name: 'Shield Start', cost: 75, icon: '🛡', desc: 'Shield active for first 10s', color: '#00ccff' },
-            { id: 'coin_magnet', name: 'Coin Magnet', cost: 40, icon: '🧲', desc: '+50% coin earnings for 1 run', color: '#ff44ff' },
-            { id: 'double_xp', name: '2x XP', cost: 60, icon: '✨', desc: 'Double XP for 1 game', color: '#ffdd00' },
-            { id: 'alien_scanner', name: 'Alien Scanner', cost: 100, icon: '👁', desc: 'See cloaked aliens for 1 run', color: '#ff4466' },
+            { id: 'energy_boost', name: 'Energy Boost', cost: 150, icon: '⚡', desc: 'Start with 150% energy', color: '#00ff88' },
+            { id: 'shield_start', name: 'Shield Start', cost: 200, icon: '🛡', desc: 'Shield active for first 10s', color: '#00ccff' },
+            { id: 'coin_magnet', name: 'Coin Magnet', cost: 100, icon: '🧲', desc: '+50% coin earnings for 1 run', color: '#ff44ff' },
+            { id: 'double_xp', name: '2x XP', cost: 175, icon: '✨', desc: 'Double XP for 1 game', color: '#ffdd00' },
+            { id: 'alien_scanner', name: 'Alien Scanner', cost: 250, icon: '👁', desc: 'See cloaked aliens for 1 run', color: '#ff4466' },
         ];
 
         const STORE_PROMO_INTERVAL = 3;
@@ -578,16 +586,16 @@
         };
 
         const ACHIEVEMENTS = [
-            { id: 'first_flight', name: 'First Flight', desc: 'Complete your first run', icon: '🚀', check: () => gameState.stats.totalRuns >= 1, reward: 50 },
-            { id: 'explorer', name: 'Explorer', desc: 'Travel 10 AU total', icon: '🌟', check: () => gameState.totalDistance >= 10, reward: 100 },
-            { id: 'storm_chaser', name: 'Storm Chaser', desc: 'Collect 20 storms', icon: '⚡', check: () => gameState.stats.totalStormsCollected >= 20, reward: 150 },
-            { id: 'survivor', name: 'Survivor', desc: 'Survive 120 seconds', icon: '🛡️', check: () => gameState.stats.bestSurvivalTime >= 120, reward: 200 },
-            { id: 'deep_space', name: 'Deep Space', desc: 'Reach 5 AU in one run', icon: '🌌', check: () => gameState.bestDistance >= 5, reward: 250 },
-            { id: 'campaign_10', name: 'Campaigner', desc: 'Complete 10 campaign levels', icon: '🏆', check: () => gameState.missionProgress.levelsCompleted >= 10, reward: 300 },
-            { id: 'rich', name: 'Space Tycoon', desc: 'Earn 5000 coins', icon: '💰', check: () => gameState.coins >= 5000, reward: 500 },
+            { id: 'first_flight', name: 'First Flight', desc: 'Complete your first run', icon: '🚀', check: () => gameState.stats.totalRuns >= 1, reward: 25 },
+            { id: 'explorer', name: 'Explorer', desc: 'Travel 50 AU total', icon: '🌟', check: () => gameState.totalDistance >= 50, reward: 50 },
+            { id: 'storm_chaser', name: 'Storm Chaser', desc: 'Collect 20 storms', icon: '⚡', check: () => gameState.stats.totalStormsCollected >= 20, reward: 75 },
+            { id: 'survivor', name: 'Survivor', desc: 'Survive 120 seconds', icon: '🛡️', check: () => gameState.stats.bestSurvivalTime >= 120, reward: 100 },
+            { id: 'deep_space', name: 'Deep Space', desc: 'Reach 30 AU in one run', icon: '🌌', check: () => gameState.bestDistance >= 30, reward: 150 },
+            { id: 'campaign_10', name: 'Campaigner', desc: 'Complete 10 campaign levels', icon: '🏆', check: () => gameState.missionProgress.levelsCompleted >= 10, reward: 200 },
+            { id: 'rich', name: 'Space Tycoon', desc: 'Earn 5,000 coins', icon: '💰', check: () => gameState.coins >= 5000, reward: 300 },
         ];
 
-        const DAILY_REWARDS = [25, 50, 75, 100, 150, 200, 350];
+        const DAILY_REWARDS = [10, 20, 30, 50, 75, 100, 200];
 
         const TUTORIAL_STEPS = [
             { title: 'MOVE YOUR SHIP', desc: 'Touch and drag to steer', icon: '👆' },
@@ -2898,38 +2906,152 @@
             const comp = gameRuntime.companion;
             const orbitX = gameRuntime.ship.x + Math.cos(comp.angle) * comp.orbitRadius;
             const orbitY = gameRuntime.ship.y + Math.sin(comp.angle) * comp.orbitRadius;
+            const t = animationTime;
+            const lvl = gameState.companionLevel;
 
-            // Determine color based on level
-            let color = '#00ffff'; // L1: cyan
-            if (gameState.companionLevel >= 2) color = '#00ff88'; // L2: green
-            if (gameState.companionLevel >= 3) color = '#ffdd00'; // L3: gold
+            ctx.save();
+            ctx.translate(orbitX, orbitY);
 
-            // Small glowing orb
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(orbitX, orbitY, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Glow effect
-            const grd = ctx.createRadialGradient(orbitX, orbitY, 4, orbitX, orbitY, 12);
-            grd.addColorStop(0, 'rgba(0, 255, 255, 0.3)');
-            grd.addColorStop(1, 'rgba(0, 255, 255, 0)');
-            ctx.fillStyle = grd;
-            ctx.beginPath();
-            ctx.arc(orbitX, orbitY, 12, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Shield ring when available (L2)
-            if (gameState.companionLevel >= 2 && comp.shieldCooldown <= 0) {
-                ctx.strokeStyle = 'rgba(0, 255, 200, 0.4)';
-                ctx.lineWidth = 1;
+            if (lvl === 1) {
+                // ── SPARK: Scout Drone — small satellite dish with spinning antenna ──
+                const spin = t * 3;
+                // Body — rounded square
+                ctx.fillStyle = '#00ccff';
+                drawRoundRect(-6, -5, 12, 10, 3);
+                ctx.fill();
+                // Core light
+                ctx.fillStyle = '#aaeeff';
                 ctx.beginPath();
-                ctx.arc(orbitX, orbitY, 18, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.arc(0, 0, 3, 0, Math.PI * 2);
+                ctx.fill();
+                // Rotating antenna arms (2 prongs)
+                ctx.strokeStyle = '#00ddff';
+                ctx.lineWidth = 1.5;
+                for (let a = 0; a < 2; a++) {
+                    const angle = spin + a * Math.PI;
+                    const ax = Math.cos(angle) * 10, ay = Math.sin(angle) * 10;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(ax, ay);
+                    ctx.stroke();
+                    // Tip dot
+                    ctx.fillStyle = '#88eeff';
+                    ctx.beginPath();
+                    ctx.arc(ax, ay, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                // Glow
+                const g1 = ctx.createRadialGradient(0, 0, 3, 0, 0, 14);
+                g1.addColorStop(0, 'rgba(0, 200, 255, 0.2)');
+                g1.addColorStop(1, 'rgba(0, 200, 255, 0)');
+                ctx.fillStyle = g1;
+                ctx.beginPath();
+                ctx.arc(0, 0, 14, 0, Math.PI * 2);
+                ctx.fill();
+                // Trail
+                particles.spawnBurst(orbitX, orbitY, 1, '#00ccff', 30, 0.15, 1);
+
+            } else if (lvl === 2) {
+                // ── AEGIS: Guardian Drone — hexagonal shield generator ──
+                const pulse = Math.sin(t * 4) * 0.15 + 1;
+                // Hexagonal body
+                ctx.fillStyle = '#ff8800';
+                ctx.beginPath();
+                for (let h = 0; h < 6; h++) {
+                    const angle = (Math.PI / 3) * h - Math.PI / 6;
+                    const hx = Math.cos(angle) * 8 * pulse, hy = Math.sin(angle) * 8 * pulse;
+                    h === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
+                ctx.fill();
+                // Inner core
+                ctx.fillStyle = '#ffcc44';
+                ctx.beginPath();
+                ctx.arc(0, 0, 4, 0, Math.PI * 2);
+                ctx.fill();
+                // Shield hex ring (when ready)
+                if (comp.shieldCooldown <= 0) {
+                    ctx.strokeStyle = 'rgba(0, 255, 200, ' + (0.3 + Math.sin(t * 5) * 0.2) + ')';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    for (let h = 0; h < 6; h++) {
+                        const angle = (Math.PI / 3) * h - Math.PI / 6 + t * 0.5;
+                        const hx = Math.cos(angle) * 16, hy = Math.sin(angle) * 16;
+                        h === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                } else {
+                    // Cooldown indicator — dim ring
+                    ctx.strokeStyle = 'rgba(255, 100, 0, 0.15)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 16, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                // Glow
+                const g2 = ctx.createRadialGradient(0, 0, 4, 0, 0, 16);
+                g2.addColorStop(0, 'rgba(255, 136, 0, 0.25)');
+                g2.addColorStop(1, 'rgba(255, 136, 0, 0)');
+                ctx.fillStyle = g2;
+                ctx.beginPath();
+                ctx.arc(0, 0, 16, 0, Math.PI * 2);
+                ctx.fill();
+                particles.spawnBurst(orbitX, orbitY, 1, '#ff8800', 35, 0.18, 1);
+
+            } else if (lvl === 3) {
+                // ── NOVA: War Drone — aggressive angular fighter with gun barrels ──
+                const bob = Math.sin(t * 5) * 1.5;
+                // Main body — diamond/arrow shape
+                ctx.fillStyle = '#cc00ff';
+                ctx.beginPath();
+                ctx.moveTo(0, -10 + bob);
+                ctx.lineTo(8, 2 + bob);
+                ctx.lineTo(5, 8 + bob);
+                ctx.lineTo(-5, 8 + bob);
+                ctx.lineTo(-8, 2 + bob);
+                ctx.closePath();
+                ctx.fill();
+                // Cockpit
+                ctx.fillStyle = '#ff66ff';
+                ctx.beginPath();
+                ctx.arc(0, 0 + bob, 3, 0, Math.PI * 2);
+                ctx.fill();
+                // Gun barrels (left + right)
+                ctx.fillStyle = '#aa00dd';
+                ctx.fillRect(-10, -2 + bob, 3, 8);
+                ctx.fillRect(7, -2 + bob, 3, 8);
+                // Muzzle flash when recently fired
+                if (comp.fireCooldown > 1.5) {
+                    ctx.fillStyle = 'rgba(255, 100, 255, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(-8.5, -4 + bob, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(8.5, -4 + bob, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                // Shield hex (inherited from L2)
+                if (comp.shieldCooldown <= 0) {
+                    ctx.strokeStyle = 'rgba(200, 0, 255, ' + (0.25 + Math.sin(t * 6) * 0.15) + ')';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(0, bob, 18, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                // Aggressive glow
+                const g3 = ctx.createRadialGradient(0, bob, 5, 0, bob, 18);
+                g3.addColorStop(0, 'rgba(200, 0, 255, 0.3)');
+                g3.addColorStop(1, 'rgba(200, 0, 255, 0)');
+                ctx.fillStyle = g3;
+                ctx.beginPath();
+                ctx.arc(0, bob, 18, 0, Math.PI * 2);
+                ctx.fill();
+                // Exhaust particles
+                particles.spawnBurst(orbitX, orbitY + 10, 1, '#ff00ff', 50, 0.2, 1.5);
             }
 
-            // Trailing particles
-            particles.spawnBurst(orbitX, orbitY, 1, color, 40, 0.2, 1);
+            ctx.restore();
         }
 
         // ============================================
@@ -2978,7 +3100,7 @@
                 } else if (enc.type === 'distress_signal') {
                     // Check if aliens destroy the signal or if player protects it for 10s
                     if (enc.timer > 10) {
-                        gameState.coins += 150;
+                        gameState.coins += 30;
                         showToast('Distress Signal Protected! +150 coins');
                         gameRuntime.activeEncounter = null;
                         gameRuntime.encounterTimer = 0;
@@ -3494,7 +3616,7 @@
             const intensity = Math.min(1, (speed - 60) / 120);
             const count = Math.floor(intensity * 8);
             for (let i = 0; i < count; i++) {
-                const seed = (i * 137.5 + gameRuntime.distance * 50) % DESIGN_WIDTH;
+                const seed = (i * 137.5 + gameRuntime.distance * 8) % DESIGN_WIDTH;
                 const scrollY = ((i * 97.3 + gameRuntime.distance * 200) % (DESIGN_HEIGHT + 100)) - 50;
                 const len = 8 + intensity * 15;
                 const alpha = intensity * 0.15;
@@ -5315,114 +5437,141 @@
         // STORE TAB RENDERING
         // ============================================
         function drawStoreTab(yPos) {
-            // Coin packs
-            const packW = (DESIGN_WIDTH - 50) / 3;
-            const packH = 180;
+            // Coin packs — 2 columns x 3 rows grid
+            const cols = 2, gap = 8, padX = 16;
+            const packW = (DESIGN_WIDTH - padX * 2 - gap) / cols;
+            const packH = 120;
 
             for (let i = 0; i < COIN_PACKS.length; i++) {
                 const pack = COIN_PACKS[i];
-                const x = 20 + i * (packW + 5);
+                const col = i % cols, row = Math.floor(i / cols);
+                const x = padX + col * (packW + gap);
+                const py = yPos + row * (packH + gap);
 
-                // Gradient background
-                const grd = ctx.createLinearGradient(x, yPos, x, yPos + packH);
-                grd.addColorStop(0, pack.color + '44');
-                grd.addColorStop(1, pack.color + '11');
+                // Gradient bg
+                const grd = ctx.createLinearGradient(x, py, x, py + packH);
+                grd.addColorStop(0, pack.color + '33');
+                grd.addColorStop(1, pack.color + '0a');
                 ctx.fillStyle = grd;
-                drawRoundRect(x, yPos, packW, packH, 12);
+                drawRoundRect(x, py, packW, packH, 10);
                 ctx.fill();
-
-                // Border
-                ctx.strokeStyle = pack.color;
-                ctx.lineWidth = 2;
-                drawRoundRect(x, yPos, packW, packH, 12);
+                ctx.strokeStyle = pack.color + '88';
+                ctx.lineWidth = 1.5;
+                drawRoundRect(x, py, packW, packH, 10);
                 ctx.stroke();
 
-                // Coin emoji
-                ctx.font = '32px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('💰', x + packW / 2, yPos + 30);
-
-                // Coin amount
-                ctx.fillStyle = pack.color;
-                ctx.font = 'bold 18px Arial';
-                ctx.fillText(pack.coins.toString(), x + packW / 2, yPos + 70);
-
-                // Bonus tag
+                // Tag ribbon
                 if (pack.tag) {
                     ctx.fillStyle = pack.color;
-                    ctx.font = 'bold 9px Arial';
-                    ctx.fillText(pack.tag, x + packW / 2, yPos + 90);
+                    ctx.font = 'bold 8px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const tagW = ctx.measureText(pack.tag).width + 12;
+                    drawRoundRect(x + packW - tagW - 4, py + 4, tagW, 14, 4);
+                    ctx.fill();
+                    ctx.fillStyle = '#000';
+                    ctx.fillText(pack.tag, x + packW - tagW / 2 - 4, py + 11);
                 }
 
+                // Coin icon + amount
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = '#ffdd44';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('💰', x + 10, py + 12);
+                ctx.fillStyle = pack.color;
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText(pack.coins.toLocaleString(), x + 36, py + 15);
+
+                // Bonus line
+                if (pack.bonus > 0) {
+                    ctx.fillStyle = '#00ff88';
+                    ctx.font = '10px Arial';
+                    ctx.fillText('+' + pack.bonus.toLocaleString() + ' bonus', x + 36, py + 36);
+                }
+
+                // Pack name
+                ctx.fillStyle = 'rgba(200, 220, 255, 0.5)';
+                ctx.font = '9px Arial';
+                ctx.fillText(pack.name, x + 10, py + 55);
+
+                // $/coin ratio
+                const totalCoins = pack.coins + pack.bonus;
+                const perDollar = Math.round(totalCoins / pack.priceVal);
+                ctx.fillStyle = 'rgba(150, 200, 255, 0.35)';
+                ctx.font = '8px Arial';
+                ctx.fillText(perDollar.toLocaleString() + ' coins/$', x + 10, py + 68);
+
                 // Price button
-                ctx.fillStyle = COLORS.ui;
-                drawRoundRect(x + 5, yPos + packH - 35, packW - 10, 30, 6);
+                ctx.fillStyle = '#1166cc';
+                drawRoundRect(x + 8, py + packH - 30, packW - 16, 24, 6);
                 ctx.fill();
-                ctx.fillStyle = '#fff';
+                ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 12px Arial';
-                ctx.fillText(pack.price, x + packW / 2, yPos + packH - 20);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pack.price, x + packW / 2, py + packH - 18);
             }
 
-            yPos += 200;
+            yPos += Math.ceil(COIN_PACKS.length / cols) * (packH + gap) + 12;
 
-            // VIP card
-            const vipCardW = DESIGN_WIDTH - 40;
-            const vipCardH = 140;
-
-            // Gold gradient
-            const vipGrad = ctx.createLinearGradient(20, yPos, 20, yPos + vipCardH);
-            vipGrad.addColorStop(0, '#ffdd0044');
-            vipGrad.addColorStop(1, '#dd8800ff');
+            // ── VIP CARD ──
+            const vipW = DESIGN_WIDTH - padX * 2;
+            const vipH = 130;
+            const vipGrad = ctx.createLinearGradient(padX, yPos, padX, yPos + vipH);
+            vipGrad.addColorStop(0, '#ffdd0033');
+            vipGrad.addColorStop(1, '#dd880088');
             ctx.fillStyle = vipGrad;
-            drawRoundRect(20, yPos, vipCardW, vipCardH, 12);
+            drawRoundRect(padX, yPos, vipW, vipH, 12);
             ctx.fill();
-
-            // Gold border
             ctx.strokeStyle = '#ffdd00';
             ctx.lineWidth = 2;
-            drawRoundRect(20, yPos, vipCardW, vipCardH, 12);
+            drawRoundRect(padX, yPos, vipW, vipH, 12);
             ctx.stroke();
 
-            // VIP title
+            // Title
             ctx.fillStyle = '#ffdd00';
-            ctx.font = 'bold 20px Arial';
+            ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText('👑 VIP PASS', 40, yPos + 30);
+            ctx.textBaseline = 'top';
+            ctx.fillText('👑 VIP PASS', padX + 14, yPos + 10);
 
-            // Benefits
-            ctx.fillStyle = '#fff';
-            ctx.font = '11px Arial';
-            const benefits = ['✓ All skins free', '✓ 2x coins', '✓ VIP badge', '✓ Exclusive ship'];
-            let bY = yPos + 50;
-            for (const b of benefits) {
-                ctx.fillText(b, 50, bY);
-                bY += 16;
+            // Perks
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '10px Arial';
+            const perks = VIP_PRODUCT.perks;
+            for (let p = 0; p < perks.length; p++) {
+                const col = p < 3 ? 0 : 1;
+                const row = p < 3 ? p : p - 3;
+                ctx.fillText('✓ ' + perks[p], padX + 14 + col * 170, yPos + 35 + row * 14);
             }
 
-            // Status
+            // Status / Buy
             if (gameState.isVIP) {
                 ctx.fillStyle = '#00ff88';
                 ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText('ACTIVE ✓', DESIGN_WIDTH - 40, yPos + 55);
+                ctx.textBaseline = 'top';
+                ctx.fillText('ACTIVE ✓', DESIGN_WIDTH - padX - 10, yPos + 12);
             } else {
-                // Price button
-                ctx.fillStyle = COLORS.ui;
-                drawRoundRect(DESIGN_WIDTH - 130, yPos + vipCardH - 35, 110, 30, 6);
+                ctx.fillStyle = '#cc8800';
+                drawRoundRect(DESIGN_WIDTH - padX - 100, yPos + vipH - 34, 90, 26, 6);
                 ctx.fill();
                 ctx.fillStyle = '#fff';
                 ctx.font = 'bold 11px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('$0.99/year', DESIGN_WIDTH - 75, yPos + vipCardH - 20);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(VIP_PRODUCT.price, DESIGN_WIDTH - padX - 55, yPos + vipH - 21);
             }
 
-            yPos += 160;
+            yPos += vipH + 14;
 
             // Restore link
-            ctx.fillStyle = '#0088ff';
+            ctx.fillStyle = '#4488cc';
             ctx.font = '10px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('Restore Purchases', DESIGN_WIDTH / 2, yPos + 20);
+            ctx.textBaseline = 'top';
+            ctx.fillText('Restore Purchases', DESIGN_WIDTH / 2, yPos);
         }
 
         // ============================================
@@ -5492,32 +5641,41 @@
         // STORE & BOOSTS TAP HANDLERS
         // ============================================
         function handleStoreTap(tap) {
-            const packW = (DESIGN_WIDTH - 50) / 3;
-            const packH = 180;
+            // Coin packs — 2 column grid (must match drawStoreTab layout)
+            const cols = 2, gap = 8, padX = 16;
+            const packW = (DESIGN_WIDTH - padX * 2 - gap) / cols;
+            const packH = 120;
+            const storeYStart = 160; // same yPos passed to drawStoreTab
 
-            // Check coin pack buttons
             for (let i = 0; i < COIN_PACKS.length; i++) {
                 const pack = COIN_PACKS[i];
-                const x = 20 + i * (packW + 5);
-                const btnY = 160 + packH - 35;
-                if (pointInRect(tap.x, tap.y, x + 5, btnY, packW - 10, 30)) {
+                const col = i % cols, row = Math.floor(i / cols);
+                const x = padX + col * (packW + gap);
+                const py = storeYStart + row * (packH + gap);
+                // Price button area
+                if (pointInRect(tap.x, tap.y, x + 8, py + packH - 30, packW - 16, 24)) {
                     audioManager.playPurchase();
                     triggerPurchase(pack.id);
                     return;
                 }
             }
 
-            // Check VIP button
-            const vipBtnX = DESIGN_WIDTH - 130;
-            const vipBtnY = 360;
-            if (pointInRect(tap.x, tap.y, vipBtnX, vipBtnY, 110, 30) && !gameState.isVIP) {
-                audioManager.playPurchase();
-                triggerPurchase('vip_yearly');
-                return;
+            // VIP button
+            const gridEndY = storeYStart + Math.ceil(COIN_PACKS.length / cols) * (packH + gap) + 12;
+            const vipH = 130;
+            if (!gameState.isVIP) {
+                const vipBtnX = DESIGN_WIDTH - padX - 100;
+                const vipBtnY = gridEndY + vipH - 34;
+                if (pointInRect(tap.x, tap.y, vipBtnX, vipBtnY, 90, 26)) {
+                    audioManager.playPurchase();
+                    triggerPurchase('vip_monthly');
+                    return;
+                }
             }
 
-            // Check restore link
-            if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 60, 540, 120, 20)) {
+            // Restore link
+            const restoreY = gridEndY + vipH + 14;
+            if (pointInRect(tap.x, tap.y, DESIGN_WIDTH / 2 - 60, restoreY, 120, 20)) {
                 audioManager.playButtonClick();
                 triggerRestore();
             }
@@ -5614,7 +5772,7 @@
                     isEquipped = gameState.equippedTheme === item.id;
                 } else {
                     isOwned = gameState.companionLevel >= (i + 1);
-                    isEquipped = false;
+                    isEquipped = gameState.companionLevel === (i + 1);
                 }
 
                 // Card background with rarity-tinted border
@@ -5669,29 +5827,79 @@
                     }
                     ctx.globalAlpha = 1;
                 } else {
-                    // Companion drone preview — colored orb with glow
+                    // Companion drone preview — unique per tier
+                    const cx = 30 + previewW / 2, cy = yPos + cardH / 2;
                     const droneColor = item.color || '#00ccff';
-                    const dGlow = ctx.createRadialGradient(30 + previewW / 2, yPos + cardH / 2, 3, 30 + previewW / 2, yPos + cardH / 2, 22);
-                    dGlow.addColorStop(0, droneColor);
-                    dGlow.addColorStop(0.5, droneColor + '44');
-                    dGlow.addColorStop(1, 'transparent');
-                    ctx.fillStyle = dGlow;
-                    ctx.beginPath();
-                    ctx.arc(30 + previewW / 2, yPos + cardH / 2, 22, 0, Math.PI * 2);
-                    ctx.fill();
-                    // Inner drone body
-                    ctx.fillStyle = droneColor;
-                    ctx.beginPath();
-                    ctx.arc(30 + previewW / 2, yPos + cardH / 2, 8, 0, Math.PI * 2);
-                    ctx.fill();
-                    // Orbiting ring
-                    ctx.strokeStyle = droneColor;
-                    ctx.lineWidth = 1.5;
-                    ctx.globalAlpha = 0.5;
-                    ctx.beginPath();
-                    ctx.ellipse(30 + previewW / 2, yPos + cardH / 2, 16, 6, animationTime * 1.5 + i, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.globalAlpha = 1;
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    const s = 1.3; // preview scale
+
+                    if (i === 0) {
+                        // SPARK — satellite with spinning arms
+                        const spin = animationTime * 2;
+                        ctx.fillStyle = '#00ccff';
+                        drawRoundRect(-6 * s, -5 * s, 12 * s, 10 * s, 3);
+                        ctx.fill();
+                        ctx.fillStyle = '#aaeeff';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 3 * s, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#00ddff';
+                        ctx.lineWidth = 1.5;
+                        for (let a = 0; a < 2; a++) {
+                            const angle = spin + a * Math.PI;
+                            ctx.beginPath();
+                            ctx.moveTo(0, 0);
+                            ctx.lineTo(Math.cos(angle) * 12 * s, Math.sin(angle) * 12 * s);
+                            ctx.stroke();
+                        }
+                    } else if (i === 1) {
+                        // AEGIS — hexagonal shield
+                        const pulse = Math.sin(animationTime * 3) * 0.1 + 1;
+                        ctx.fillStyle = '#ff8800';
+                        ctx.beginPath();
+                        for (let h = 0; h < 6; h++) {
+                            const angle = (Math.PI / 3) * h - Math.PI / 6;
+                            const hx = Math.cos(angle) * 10 * s * pulse, hy = Math.sin(angle) * 10 * s * pulse;
+                            h === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+                        }
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.fillStyle = '#ffcc44';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 4 * s, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = 'rgba(0, 255, 200, 0.4)';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        for (let h = 0; h < 6; h++) {
+                            const angle = (Math.PI / 3) * h - Math.PI / 6 + animationTime * 0.5;
+                            const hx = Math.cos(angle) * 18 * s, hy = Math.sin(angle) * 18 * s;
+                            h === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+                        }
+                        ctx.closePath();
+                        ctx.stroke();
+                    } else {
+                        // NOVA — angular fighter
+                        const bob = Math.sin(animationTime * 4) * 2;
+                        ctx.fillStyle = '#cc00ff';
+                        ctx.beginPath();
+                        ctx.moveTo(0, -12 * s + bob);
+                        ctx.lineTo(9 * s, 2 * s + bob);
+                        ctx.lineTo(6 * s, 10 * s + bob);
+                        ctx.lineTo(-6 * s, 10 * s + bob);
+                        ctx.lineTo(-9 * s, 2 * s + bob);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.fillStyle = '#ff66ff';
+                        ctx.beginPath();
+                        ctx.arc(0, bob, 3.5 * s, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#aa00dd';
+                        ctx.fillRect(-12 * s, -2 * s + bob, 3 * s, 10 * s);
+                        ctx.fillRect(9 * s, -2 * s + bob, 3 * s, 10 * s);
+                    }
+                    ctx.restore();
                 }
 
                 // Text area
@@ -5832,6 +6040,9 @@
                                     gameState.equippedSkin = item.id;
                                 } else if (currentTab === 'themes') {
                                     gameState.equippedTheme = item.id;
+                                } else {
+                                    // Companion — equip this tier
+                                    showToast(item.name + ' equipped!');
                                 }
                             } else if (canAfford) {
                                 audioManager.playPurchase();
@@ -5967,7 +6178,7 @@
 
             ctx.fillStyle = COLORS.text;
             ctx.font = '16px Arial';
-            const coinsEarned = Math.floor(gameRuntime.distance * 50);
+            const coinsEarned = Math.floor(gameRuntime.distance * 8);
             ctx.fillText('Coins: +' + coinsEarned, DESIGN_WIDTH / 2, 280);
 
             const survivalTime = (Date.now() - gameRuntime.gameStartTime) / 1000;
@@ -6318,7 +6529,7 @@
         function saveRunStats() {
             gameState.bestDistance = Math.max(gameState.bestDistance, gameRuntime.distance);
             gameState.totalDistance += gameRuntime.distance;
-            let coinsEarned = Math.floor(gameRuntime.distance * 50);
+            let coinsEarned = Math.floor(gameRuntime.distance * 8);
             if (gameRuntime.coinMagnetActive) coinsEarned = Math.floor(coinsEarned * 1.5);
             if (gameState.isVIP) coinsEarned *= 2;
             gameState.coins += coinsEarned;
@@ -6595,7 +6806,7 @@
                 gameState.coins += reward;
                 showToast('+' + reward + ' coins!');
                 saveToStorage();
-            } else if (productId === 'vip_yearly') {
+            } else if (productId === 'vip_monthly') {
                 gameState.isVIP = true;
                 showToast('VIP Activated!');
                 saveToStorage();
@@ -6613,7 +6824,7 @@
         // Listen for native purchase success events
         window.addEventListener('purchaseSuccess', function(e) {
             const d = e.detail;
-            if (d.productId === 'vip_yearly') {
+            if (d.productId === 'vip_monthly') {
                 gameState.isVIP = true;
                 showToast('VIP Activated!');
             } else if (d.coins) {
@@ -6801,6 +7012,403 @@
             voyagerConvex.getOrRegister(playerName).catch(() => {});
             requestAnimationFrame(gameLoop);
         });
-    </script>
+    
+// ===== AAA FEEL PACK (AUTO INJECTED) =====
+gameRuntime.hitFreeze = { active: false, timer: 0 };
+gameRuntime.timeScale = 1;
+gameRuntime.cameraZoom = 1;
+
+function triggerHitFreeze(duration = 0.06) {
+    gameRuntime.hitFreeze.active = true;
+    gameRuntime.hitFreeze.timer = duration;
+}
+
+function triggerSlowMo(duration = 0.4, scale = 0.4) {
+    gameRuntime.timeScale = scale;
+    setTimeout(() => { gameRuntime.timeScale = 1; }, duration * 1000);
+}
+
+function triggerShake(intensity = 6, duration = 0.3) {
+    gameRuntime.cameraShakeIntensity = intensity;
+    gameRuntime.cameraShakeDuration = duration;
+}
+
+function drawGlow(x, y, radius, color) {
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    grad.addColorStop(0, color);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+// Patch main update loop (lightweight hook)
+const originalUpdate = update;
+update = function(dt) {
+    if (gameRuntime.hitFreeze.active) {
+        gameRuntime.hitFreeze.timer -= dt;
+        if (gameRuntime.hitFreeze.timer <= 0) {
+            gameRuntime.hitFreeze.active = false;
+        }
+        return;
+    }
+    dt *= gameRuntime.timeScale;
+    originalUpdate(dt);
+}
+
+// Patch render for zoom + shake
+const originalDraw = draw;
+draw = function() {
+    ctx.save();
+
+    if (gameRuntime.cameraShakeDuration > 0) {
+        const shake = gameRuntime.cameraShakeIntensity * gameRuntime.cameraShakeDuration;
+        ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
+        gameRuntime.cameraShakeDuration -= 0.016;
+    }
+
+    const targetZoom = 1 + Math.min(0.15, gameRuntime.velocity / 500);
+    gameRuntime.cameraZoom += (targetZoom - gameRuntime.cameraZoom) * 0.05;
+    ctx.scale(gameRuntime.cameraZoom, gameRuntime.cameraZoom);
+
+    originalDraw();
+
+    ctx.restore();
+}
+// ===== END AAA PACK =====
+
+
+// ===== AAA LEVEL 2 (JUICE BOOST) =====
+
+// Near-miss cinematic effect
+function triggerNearMissFX(x, y) {
+    triggerSlowMo(0.25, 0.5);
+    triggerShake(4, 0.25);
+
+    // burst particles
+    for (let i = 0; i < 10; i++) {
+        particles.spawn(x, y, (Math.random()-0.5)*200, (Math.random()-0.5)*200, 0.4, '#00ccff', 2);
+    }
+}
+
+// Explosion FX
+function triggerExplosion(x, y) {
+    triggerHitFreeze(0.06);
+    triggerShake(10, 0.4);
+
+    particles.spawnBurst(x, y, 20, '#ff5500', 150, 0.6);
+    particles.spawnBurst(x, y, 10, '#ffaa00', 100, 0.5);
+
+    // glow blast
+    drawGlow(x, y, 60, 'rgba(255,100,0,0.5)');
+}
+
+// UI Pulse effect (for buttons or rewards)
+function pulseValue(val, time) {
+    return val + Math.sin(time * 6) * 0.1 * val;
+}
+
+// Enhance ship draw with glow (override safely)
+const originalShipDraw = Ship.prototype.draw;
+Ship.prototype.draw = function() {
+    drawGlow(this.x, this.y + 20, 50, 'rgba(255,120,0,0.25)');
+    originalShipDraw.call(this);
+};
+
+// ===== END AAA LEVEL 2 =====
+
+
+// ===== AAA LEVEL 3 (CINEMATIC + RETENTION) =====
+
+// Cinematic explosion upgrade
+function triggerCinematicExplosion(x, y) {
+    triggerHitFreeze(0.08);
+    triggerShake(14, 0.5);
+
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            particles.spawnBurst(x, y, 25, '#ff3300', 180, 0.7);
+            particles.spawnBurst(x, y, 15, '#ffaa00', 120, 0.6);
+        }, i * 80);
+    }
+}
+
+// Enhanced near-miss (viral feel)
+function triggerViralNearMiss(x, y) {
+    triggerSlowMo(0.35, 0.4);
+    triggerShake(5, 0.3);
+
+    for (let i = 0; i < 12; i++) {
+        particles.spawn(x, y, (Math.random()-0.5)*250, (Math.random()-0.5)*250, 0.5, '#00e5ff', 2);
+    }
+}
+
+// UI animation boost (buttons breathing effect)
+function uiPulseScale(base, time) {
+    return base * (1 + Math.sin(time * 5) * 0.05);
+}
+
+// Retention loop boost (reward feedback)
+function showRewardBurst(x, y, amount) {
+    triggerShake(3, 0.2);
+    for (let i = 0; i < 8; i++) {
+        particles.spawn(x, y, (Math.random()-0.5)*150, (Math.random()-0.5)*150, 0.6, '#ffdd00', 2);
+    }
+}
+
+// Combo feedback (addiction loop)
+function triggerComboFX(combo, x, y) {
+    if (combo % 5 === 0) {
+        triggerShake(6, 0.3);
+        triggerSlowMo(0.2, 0.6);
+        particles.spawnBurst(x, y, 15, '#ff9900', 120, 0.5);
+    }
+}
+
+// ===== END AAA LEVEL 3 =====
+
+
+// ===== AAA UI REDESIGN SYSTEM =====
+
+// Modern Background
+function drawModernBackground() {
+    const grad = ctx.createLinearGradient(0, 0, 0, DESIGN_HEIGHT);
+    grad.addColorStop(0, '#020617');
+    grad.addColorStop(1, '#020617');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+
+    for (let i = 0; i < 100; i++) {
+        const x = (i * 73 + gameRuntime.time * 30) % DESIGN_WIDTH;
+        const y = (i * 97) % DESIGN_HEIGHT;
+        const size = (i % 3) + 1;
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillRect(x, y, size, size);
+    }
+}
+
+// Modern Panel
+function drawModernPanel(x,y,w,h){
+    ctx.fillStyle='rgba(20,30,60,0.6)';
+    drawRoundRect(x,y,w,h,14);
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.1)';
+    ctx.stroke();
+}
+
+// Modern Button Override
+const oldButton = drawButton;
+drawButton = function(x,y,w,h,label,hover=false,pulse=false){
+    const scale = 1 + (pulse ? Math.sin(animationTime*4)*0.05 : 0);
+    const cx = x+w/2, cy=y+h/2;
+    x = cx - (w*scale)/2;
+    y = cy - (h*scale)/2;
+    w*=scale; h*=scale;
+
+    const glow = ctx.createRadialGradient(cx,cy,10,cx,cy,80);
+    glow.addColorStop(0,'rgba(0,150,255,0.3)');
+    glow.addColorStop(1,'transparent');
+    ctx.fillStyle=glow;
+    ctx.fillRect(x-20,y-20,w+40,h+40);
+
+    ctx.fillStyle='rgba(20,30,60,0.7)';
+    drawRoundRect(x,y,w,h,14);
+    ctx.fill();
+
+    ctx.strokeStyle=hover?'#00ccff':'rgba(255,255,255,0.2)';
+    ctx.lineWidth=hover?3:1;
+    ctx.stroke();
+
+    ctx.fillStyle='#fff';
+    ctx.font='bold 16px Arial';
+    ctx.textAlign='center';
+    ctx.fillText(label,x+w/2,y+h/2+5);
+}
+
+// Title Glow Override
+function drawTitle(text,x,y){
+    ctx.shadowColor='#00ccff';
+    ctx.shadowBlur=25;
+    ctx.fillStyle='#fff';
+    ctx.font='bold 28px Arial';
+    ctx.textAlign='center';
+    ctx.fillText(text,x,y);
+    ctx.shadowBlur=0;
+}
+
+// Patch main draw to include background
+const oldDrawMain = draw;
+draw = function(){
+    ctx.save();
+    drawModernBackground();
+    oldDrawMain();
+    ctx.restore();
+}
+
+// ===== END UI REDESIGN =====
+
+
+// ===== VIRAL + RETENTION SYSTEM =====
+
+// Daily reward popup trigger
+function checkDailyReward() {
+    const today = new Date().toDateString();
+    if (gameState.lastDailyDate !== today) {
+        gameState.dailyStreak = (gameState.dailyStreak || 0) + 1;
+        gameState.lastDailyDate = today;
+        showToast("Daily Reward +" + DAILY_REWARDS[gameState.dailyStreak % DAILY_REWARDS.length]);
+        gameState.coins += DAILY_REWARDS[gameState.dailyStreak % DAILY_REWARDS.length];
+    }
+}
+
+// Rage → Retry loop
+function triggerGameOverLoop() {
+    setTimeout(() => {
+        showToast("Try Again! Almost there 🚀");
+    }, 800);
+}
+
+// Reward feedback loop
+function rewardFeedback(amount,x,y){
+    showToast("+"+amount+" coins");
+    for(let i=0;i<10;i++){
+        particles.spawn(x,y,(Math.random()-0.5)*200,(Math.random()-0.5)*200,0.6,'#ffdd00',2);
+    }
+}
+
+// Progress bar animation
+function drawXPBar(x,y,w,h,progress){
+    ctx.fillStyle='rgba(255,255,255,0.1)';
+    drawRoundRect(x,y,w,h,10);
+    ctx.fill();
+
+    ctx.fillStyle='#00ffcc';
+    drawRoundRect(x,y,w*progress,h,10);
+    ctx.fill();
+}
+
+// Hook into game start
+const oldInit = initGame || function(){};
+initGame = function(){
+    checkDailyReward();
+    oldInit();
+}
+
+// Hook game over
+const oldGameOver = gameOver || function(){};
+gameOver = function(){
+    triggerGameOverLoop();
+    oldGameOver();
+}
+
+// ===== END VIRAL SYSTEM =====
+
+
+// ===== FINAL VERIFIED FIX (UI BUTTON BASED) =====
+
+// ensure arrays
+if(!gameRuntime.uiButtons) gameRuntime.uiButtons = [];
+
+// override drawButton to support clicks
+const originalDrawButton = drawButton;
+drawButton = function(x, y, w, h, label, hover=false, pulse=false, onClick=null){
+    // register clickable
+    if(onClick){
+        gameRuntime.uiButtons.push({x, y, w, h, action:onClick});
+    }
+    originalDrawButton(x, y, w, h, label, hover, pulse);
+};
+
+// process taps correctly
+const oldProcessInputFinal = processInput;
+processInput = function(){
+    oldProcessInputFinal();
+
+    gameRuntime.taps.forEach(t=>{
+        gameRuntime.uiButtons.forEach(btn=>{
+            if(t.x > btn.x && t.x < btn.x+btn.w &&
+               t.y > btn.y && t.y < btn.y+btn.h){
+                btn.action();
+            }
+        });
+    });
+
+    gameRuntime.taps = [];
+    gameRuntime.uiButtons = []; // reset each frame
+};
+
+// equip logic
+function equipCompanionFinal(id){
+    const comp = SHOP_COMPANIONS.find(c=>c.id===id);
+    if(!comp) return;
+
+    if(!gameState.unlockedCompanions) gameState.unlockedCompanions = [];
+
+    if(!gameState.unlockedCompanions.includes(id)){
+        if(gameState.coins < comp.cost){
+            showToast("Not enough coins");
+            return;
+        }
+        gameState.coins -= comp.cost;
+        gameState.unlockedCompanions.push(id);
+    }
+
+    gameState.equippedCompanion = id;
+    showToast("Equipped " + comp.name);
+    saveToStorage();
+}
+
+// PATCH SHOP RENDER (safe override)
+const oldDrawShop = drawShopScreen;
+drawShopScreen = function(){
+    oldDrawShop();
+
+    let startY = 260;
+
+    SHOP_COMPANIONS.forEach((c,i)=>{
+        const y = startY + i*120;
+
+        drawButton(250, y, 120, 50,
+            gameState.equippedCompanion === c.id ? "EQUIPPED" : "EQUIP",
+            false, true,
+            () => equipCompanionFinal(c.id)
+        );
+    });
+};
+
+// companion rendering
+const oldUpdateFinal = update;
+update = function(dt){
+    oldUpdateFinal(dt);
+
+    if(gameRuntime.state === STATES.playing && gameState.equippedCompanion){
+        if(!gameRuntime.companion){
+            gameRuntime.companion = {x:0,y:0};
+        }
+
+        const c = gameRuntime.companion;
+
+        c.x += (gameRuntime.ship.x + 20 - c.x)*0.1;
+        c.y += (gameRuntime.ship.y + 20 - c.y)*0.1;
+    }
+};
+
+const oldDrawFinal = draw;
+draw = function(){
+    oldDrawFinal();
+
+    if(gameRuntime.state === STATES.playing && gameState.equippedCompanion){
+        const c = gameRuntime.companion;
+        ctx.fillStyle = '#00ffcc';
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, 6, 0, Math.PI*2);
+        ctx.fill();
+    }
+};
+
+// ===== END FINAL FIX =====
+
+</script>
 </body>
 </html>
