@@ -1443,27 +1443,30 @@
             gap: 1.5rem;
         }
         .ai-power-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(73, 39, 85, 0.25);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-card);
             padding: 2rem 1.75rem;
             text-align: center;
-            transition: transform 0.5s var(--transition-smooth), border-color 0.3s, box-shadow 0.5s;
-            backdrop-filter: var(--blur-glass);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
         .ai-power-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--primary-gradient);
-            opacity: 0;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
+            pointer-events: none;
+            opacity: 0.5;
             transition: opacity 0.3s;
         }
         .ai-power-card:hover {
-            transform: translateY(-8px);
             border-color: rgba(255, 255, 255, 0.22);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 50px rgba(155, 48, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
         }
@@ -1473,6 +1476,7 @@
         .ai-power-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
             transition: transform 0.3s;
         }
         .ai-power-card:hover .ai-power-icon {
@@ -3171,14 +3175,14 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
             if (hour >= 5 && hour < 12) timeGreet = 'Good morning';
             else if (hour >= 12 && hour < 17) timeGreet = 'Good afternoon';
             else if (hour >= 17 && hour < 21) timeGreet = 'Good evening';
-            else timeGreet = 'Burning the midnight oil?';
+            else timeGreet = 'Welcome, night owl';
             const isMobile = /Mobi|Android/i.test(navigator.userAgent);
             const visits = parseInt(sessionStorage.getItem('exafabs_visits') || '0') + 1;
             sessionStorage.setItem('exafabs_visits', visits);
             let msg = '';
-            if (visits === 1) msg = `${timeGreet} — welcome to EXAFABS.AI`;
-            else if (visits === 2) msg = `${timeGreet} — good to see you again`;
-            else msg = `${timeGreet} — welcome back, explorer`;
+            if (visits === 1) msg = `${timeGreet} — discover what AI can build`;
+            else if (visits === 2) msg = `${timeGreet} — the platform is evolving, explore what's new`;
+            else msg = `${timeGreet} — welcome back to the future of AI`;
             if (isMobile) msg += ' 📱';
             let i = 0;
             function typeChar() {
