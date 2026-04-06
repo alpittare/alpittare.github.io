@@ -9,14 +9,24 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
       "ios": {
         "autoIncrement": true
+      },
+      "android": {
+        "autoIncrement": true,
+        "buildType": "app-bundle"
       }
     }
   },
@@ -26,6 +36,10 @@
         "appleId": "alpit@exafabs.ai",
         "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
         "appleTeamId": "YOUR_APPLE_TEAM_ID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "YOUR_GOOGLE_SERVICE_ACCOUNT_KEY.json",
+        "track": "internal"
       }
     }
   }

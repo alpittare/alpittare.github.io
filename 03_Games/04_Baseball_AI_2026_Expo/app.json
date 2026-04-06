@@ -20,11 +20,28 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
+    "android": {
+      "package": "com.alpittare.basehit",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#000000"
+      },
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000000"
+      }
+    },
     "owner": "alpittare",
     "plugins": [
       ["expo-build-properties", {
         "ios": {
           "deploymentTarget": "15.1"
+        },
+        "android": {
+          "minSdkVersion": 24,
+          "targetSdkVersion": 34
         }
       }]
     ]
