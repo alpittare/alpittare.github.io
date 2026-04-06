@@ -1315,135 +1315,6 @@
             transform: translateY(0) translateX(0) scale(1);
         }
 
-        /* ===== LIGHT THEME ===== */
-        [data-theme="light"] {
-            --bg-base: #f5f0fa;
-            --bg-surface: #ffffff;
-            --bg-surface-low: #ece4f4;
-            --bg-surface-high: #f9f5ff;
-            --text-primary: #5a2d82;
-            --text-surface: #1a0a2e;
-            --text-secondary: #6b5a7a;
-            --text-muted: #9a8aab;
-            --outline: #c4b3d4;
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-bg-hover: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(90, 45, 130, 0.12);
-            --glass-border-hover: rgba(90, 45, 130, 0.25);
-            --shadow-card: 0 4px 24px rgba(90, 45, 130, 0.08);
-            --shadow-card-hover: 0 24px 48px rgba(90, 45, 130, 0.12);
-        }
-        [data-theme="light"] body {
-            background-color: var(--bg-base);
-        }
-        [data-theme="light"] nav {
-            background: rgba(245, 240, 250, 0.85);
-            border-bottom-color: rgba(90, 45, 130, 0.08);
-        }
-        [data-theme="light"] section.hero {
-            background-color: var(--bg-base);
-        }
-        [data-theme="light"] section.hero::after {
-            background-image:
-                linear-gradient(rgba(90,45,130,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(90,45,130,0.04) 1px, transparent 1px);
-        }
-        [data-theme="light"] .hero-brand {
-            color: #1a0a2e;
-        }
-        [data-theme="light"] .hero-brand .brand-main {
-            background: linear-gradient(90deg, #2a1040 0%, #5a2d82 15%, #2a1040 30%, #7B2FBE 45%, #2a1040 60%, #5a2d82 75%, #2a1040 100%);
-            background-size: 200% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-        [data-theme="light"] .hero h1 {
-            color: rgba(26, 10, 46, 0.5);
-        }
-        [data-theme="light"] .product-card,
-        [data-theme="light"] .feature-card,
-        [data-theme="light"] .blog-card {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(90, 45, 130, 0.1);
-        }
-        [data-theme="light"] .product-card:hover,
-        [data-theme="light"] .feature-card:hover,
-        [data-theme="light"] .blog-card:hover {
-            background: rgba(255, 255, 255, 0.9);
-            border-color: rgba(90, 45, 130, 0.2);
-            box-shadow: 0 20px 50px rgba(90, 45, 130, 0.1);
-        }
-        [data-theme="light"] .contact-form {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(90, 45, 130, 0.1);
-        }
-        [data-theme="light"] .form-group input,
-        [data-theme="light"] .form-group textarea {
-            background: rgba(90, 45, 130, 0.04);
-            border-color: rgba(90, 45, 130, 0.12);
-            color: #1a0a2e;
-        }
-        [data-theme="light"] .form-group input:focus,
-        [data-theme="light"] .form-group textarea:focus {
-            background: rgba(90, 45, 130, 0.06);
-            border-color: rgba(155, 48, 255, 0.4);
-        }
-        [data-theme="light"] footer {
-            background: #ece4f4;
-            border-top-color: rgba(90, 45, 130, 0.08);
-        }
-        [data-theme="light"] .nav-links a,
-        [data-theme="light"] .footer-column a,
-        [data-theme="light"] .social-links a {
-            color: var(--text-secondary);
-        }
-        [data-theme="light"] .nav-links a:hover,
-        [data-theme="light"] .footer-column a:hover,
-        [data-theme="light"] .social-links a:hover {
-            color: #7B2FBE;
-        }
-        [data-theme="light"] .stat-pill {
-            background: rgba(255,255,255,0.7);
-            border-color: rgba(90,45,130,0.1);
-        }
-        [data-theme="light"] .tab-btn {
-            color: var(--text-secondary);
-            border-color: rgba(90,45,130,0.12);
-        }
-        [data-theme="light"] .tab-btn:hover {
-            color: var(--text-surface);
-            background: rgba(90,45,130,0.06);
-        }
-        [data-theme="light"] ::selection {
-            background: rgba(155, 48, 255, 0.15);
-            color: #1a0a2e;
-        }
-        [data-theme="light"] .hamburger span {
-            background: #1a0a2e;
-        }
-
-        /* Theme Toggle Button */
-        .theme-toggle {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-surface);
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            transition: background 0.3s, border-color 0.3s, transform 0.3s;
-            flex-shrink: 0;
-        }
-        .theme-toggle:hover {
-            background: var(--glass-bg-hover);
-            border-color: var(--glass-border-hover);
-            transform: rotate(30deg);
-        }
-
         /* ===== AI CHATBOX ===== */
         .chat-fab {
             position: fixed;
@@ -1495,10 +1366,7 @@
             opacity: 1;
             pointer-events: auto;
         }
-        [data-theme="light"] .chat-panel {
-            background: #ffffff;
-            box-shadow: 0 24px 64px rgba(90, 45, 130, 0.15);
-        }
+
 
         .chat-panel-header {
             padding: 1rem 1.25rem;
@@ -1508,9 +1376,6 @@
             background: rgba(36, 3, 49, 0.6);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--glass-border);
-        }
-        [data-theme="light"] .chat-panel-header {
-            background: rgba(236, 228, 244, 0.8);
         }
         .chat-panel-avatar {
             width: 2.25rem;
@@ -1621,9 +1486,6 @@
             align-items: flex-end;
             background: rgba(0,0,0,0.08);
         }
-        [data-theme="light"] .chat-input-area {
-            background: rgba(90,45,130,0.03);
-        }
         .chat-input {
             flex: 1;
             background: var(--glass-bg);
@@ -1675,7 +1537,6 @@
                 height: calc(100vh - 3rem);
                 border-radius: 1.25rem 1.25rem 0 0;
             }
-            .theme-toggle { width: 2.25rem; height: 2.25rem; font-size: 1rem; }
         }
     </style>
 
@@ -1713,7 +1574,6 @@
             </ul>
         </div>
         <div class="nav-cta">
-            <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle theme">☀️</button>
             <a href="#contact" class="btn-get-started">Get Started</a>
             <button class="hamburger" id="hamburger">
                 <span></span>
@@ -2407,31 +2267,6 @@
                 card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
             });
         }
-        // ===== THEME TOGGLE =====
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            // Check system preference or stored preference
-            let currentTheme = 'dark';
-            try {
-                const stored = window.sessionStorage?.getItem?.('exafabs-theme');
-                if (stored) currentTheme = stored;
-                else if (window.matchMedia('(prefers-color-scheme: light)').matches) currentTheme = 'light';
-            } catch(e) {}
-
-            function applyTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-                themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
-                try { window.sessionStorage?.setItem?.('exafabs-theme', theme); } catch(e) {}
-            }
-            applyTheme(currentTheme);
-
-            themeToggle.addEventListener('click', () => {
-                currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                applyTheme(currentTheme);
-            });
-        }
-
         // ===== AI CHATBOX =====
         const chatFab = document.getElementById('chatFab');
         const chatPanel = document.getElementById('chatPanel');
