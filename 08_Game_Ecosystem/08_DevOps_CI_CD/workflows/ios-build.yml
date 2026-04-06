@@ -83,7 +83,7 @@ jobs:
         run: |
           cd ios
           xcodebuild archive \
-            -scheme "Cricket AI 2026" \
+            -scheme "CrickBot AI" \
             -configuration Release \
             -archivePath build/CricketAI.xcarchive \
             -derivedDataPath build/DerivedData \
@@ -165,7 +165,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Cricket AI 2026 - iOS Build*\nStatus: ${{ job.status }}\nRef: ${{ github.ref }}\nCommit: ${{ github.sha }}"
+                    "text": "*CrickBot AI - iOS Build*\nStatus: ${{ job.status }}\nRef: ${{ github.ref }}\nCommit: ${{ github.sha }}"
                   }
                 }
               ]

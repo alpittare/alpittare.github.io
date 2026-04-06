@@ -1,4 +1,4 @@
-# Game Design Document: Baseball AI 2026 (BaseHit)
+# Game Design Document: BaseHit AI
 
 **Version:** 1.0
 **Date:** March 2026

@@ -1,7 +1,7 @@
 # DevOps & CI/CD Documentation
 
 **Game Ecosystem DevOps Guide**
-Cricket AI 2026 | Football AI 2026 | Baseball AI 2026
+CrickBot AI | GoalBot AI | BaseHit AI
 
 ---
 

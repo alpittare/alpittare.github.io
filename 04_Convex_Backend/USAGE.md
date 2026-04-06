@@ -1,6 +1,6 @@
 # Convex Unified Game Backend — Usage Guide
 
-Supports: **Cricket AI 2026** | **Football AI 2026** | **Baseball AI 2026**
+Supports: **CrickBot AI** | **GoalBot AI** | **BaseHit AI**
 
 Deployment: `tidy-weasel-627` — https://tidy-weasel-627.convex.cloud
 

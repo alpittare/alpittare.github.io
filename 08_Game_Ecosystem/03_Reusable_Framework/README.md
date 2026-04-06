@@ -1,6 +1,6 @@
 # Reusable Game Framework
 
-**Production-ready HTML5 Canvas game engine** extracted and refined from 3 shipping games (Cricket AI 2026, Football AI 2026, Baseball AI 2026).
+**Production-ready HTML5 Canvas game engine** extracted and refined from 3 shipping games (CrickBot AI, GoalBot AI, BaseHit AI).
 
 ![Status](https://img.shields.io/badge/status-production-blue) ![ES6+](https://img.shields.io/badge/javascript-ES6+-yellow) ![Mobile](https://img.shields.io/badge/platform-mobile-green) ![Zero_Deps](https://img.shields.io/badge/dependencies-zero-brightgreen)
 

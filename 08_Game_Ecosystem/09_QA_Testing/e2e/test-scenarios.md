@@ -1,6 +1,6 @@
 # E2E Test Scenarios
 
-**Game Ecosystem: Cricket AI 2026 | Football AI 2026 | Baseball AI 2026**
+**Game Ecosystem: CrickBot AI | GoalBot AI | BaseHit AI**
 
 Production-ready end-to-end test scenarios covering happy paths, edge cases, performance, and memory management.
 

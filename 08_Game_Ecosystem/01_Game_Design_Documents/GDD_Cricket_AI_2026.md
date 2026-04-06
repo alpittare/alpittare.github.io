@@ -1,5 +1,5 @@
 # GAME DESIGN DOCUMENT
-## Cricket AI 2026 (CrickBot)
+## CrickBot AI
 
 **Document Version:** 2.0
 **Last Updated:** March 30, 2026
@@ -26,7 +26,7 @@
 
 ## 1. EXECUTIVE SUMMARY
 
-**Project Title:** Cricket AI 2026 (CrickBot)
+**Project Title:** CrickBot AI
 **Genre:** Sports / Cricket Simulator
 **Target Audience:** Casual cricket fans aged 16-45, mobile gamers, esports enthusiasts
 **Platforms:** iOS (native via Capacitor), Android PWA, Web PWA

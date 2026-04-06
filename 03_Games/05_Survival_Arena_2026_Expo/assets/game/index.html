@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Survivor Arena">
+    <meta name="apple-mobile-web-app-title" content="Survival Arena">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <title>Survivor Arena — AI Battle Royale</title>
+    <title>Survival Arena - IO Battle AI</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #000; display: flex; justify-content: center; align-items: center;
@@ -27,7 +27,7 @@
 
 // === GAME CONFIG ===
 const GAME_CONFIG = {
-    name: 'Survivor Arena',
+    name: 'Survival Arena',
     genre: 'multiplayer-survival',
     canvasSize: { W: 414, H: 896 },
     coreMechanic: 'drag-to-move in shrinking arena with auto-attack',
@@ -87,7 +87,7 @@ const APP_CONFIG = {
     studio: '',
     developer: 'Alpit Tare',
     support: 'alpit@exafabs.ai',
-    bundleId: 'com.alpittare.survivalarena',
+    bundleId: 'com.survivalarenaio.app',
     releaseDate: '2026-03-30',
 };
 
@@ -7892,9 +7892,9 @@ function updateReferral(dt) {
     }
     // Share button
     if (hitTest(tap, W / 2 - 100, 245, 200, 50)) {
-        const shareText = `Join me in Survivor Arena! Use my code: ${gameState.referralCode}`;
+        const shareText = `Join me in Survival Arena! Use my code: ${gameState.referralCode}`;
         if (navigator.share) {
-            navigator.share({ title: 'Survivor Arena', text: shareText }).catch(() => {});
+            navigator.share({ title: 'Survival Arena', text: shareText }).catch(() => {});
         } else {
             try { navigator.clipboard.writeText(shareText); showToast('Share text copied!', '#00ff88', 1.5); }
             catch (e) { showToast('Share: ' + shareText, '#fff', 4); }

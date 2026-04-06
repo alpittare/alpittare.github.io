@@ -2,7 +2,7 @@
 
 **Document Version:** 1.0
 **Date:** March 30, 2026
-**Scope:** Unified Architecture for Cricket AI 2026, Football AI 2026, Baseball AI 2026
+**Scope:** Unified Architecture for CrickBot AI, GoalBot AI, BaseHit AI
 **Classification:** Production Reference Architecture
 
 ---
@@ -31,7 +31,7 @@
 
 ### Unified Architecture Pattern
 
-All three production games (Cricket AI 2026, Football AI 2026, Baseball AI 2026) share an identical architectural foundation despite their domain differences. This unified approach enables:
+All three production games (CrickBot AI, GoalBot AI, BaseHit AI) share an identical architectural foundation despite their domain differences. This unified approach enables:
 
 - **Code reusability** across sports titles
 - **Consistent player experience** and UI patterns
@@ -1605,7 +1605,7 @@ const Capabilities = {
 // app.json
 {
   "expo": {
-    "name": "Cricket AI 2026",
+    "name": "CrickBot AI",
     "slug": "cricket-ai-2026",
     "version": "1.0.0",
     "assetBundlePatterns": [
@@ -1799,7 +1799,7 @@ eas build --status
 ├──────────────────────────────────────────┤
 │                                          │
 │ public/manifest.json                     │
-│ ├─ name: "Cricket AI 2026"               │
+│ ├─ name: "CrickBot AI"                   │
 │ ├─ start_url: "/"                        │
 │ ├─ display: "standalone"                 │
 │ ├─ icons: [{src, sizes, type}]           │

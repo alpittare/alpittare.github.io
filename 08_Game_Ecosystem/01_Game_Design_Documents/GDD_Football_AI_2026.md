@@ -1,8 +1,8 @@
-# Game Design Document: Football AI 2026 (GoalBot)
+# Game Design Document: GoalBot AI
 
 ## Executive Summary
 
-**Game Title:** Football Pro Bot AI (GoalBot)
+**Game Title:** GoalBot AI
 **Genre:** Sports Simulation / Penalty Shootout
 **Platform:** iOS (Capacitor/Expo), Progressive Web App (PWA)
 **Target Audience:** Sports enthusiasts, mobile gamers, competitive players (ages 13+)

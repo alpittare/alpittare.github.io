@@ -1,4 +1,4 @@
-/* Baseball Pro Bot AI — Service Worker for offline play */
+/* BaseHit Service Worker — Service Worker for offline play */
 const CACHE = 'basehit-v1';
 const ASSETS = [
   './',

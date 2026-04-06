@@ -1,6 +1,6 @@
 # Apple App Store Compliance Checklist
 
-**Cricket AI 2026 | Football AI 2026 | Baseball AI 2026**
+**CrickBot AI | GoalBot AI | BaseHit AI**
 
 **Last Updated:** March 30, 2026
 
@@ -218,7 +218,7 @@
 ## 6. Required Metadata
 
 ### 6.1 App Name & Subtitle
-- [x] "Cricket AI 2026" (unique, matches bundle ID)
+- [x] "CrickBot AI" (unique, matches bundle ID)
 - [x] Subtitle: "AI Sports Simulator" (optional)
 - [x] No misleading keywords in name
 
@@ -433,7 +433,7 @@
 
 ## Document Version
 
-**Prepared for:** Cricket AI 2026, Football AI 2026, Baseball AI 2026
+**Prepared for:** CrickBot AI, GoalBot AI, BaseHit AI
 **Developer:** Alpit Tare (alpit@exafabs.ai)
 **Date:** March 30, 2026
 **Status:** Ready for submission

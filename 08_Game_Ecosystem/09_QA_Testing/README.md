@@ -1,7 +1,7 @@
 # QA & Testing Documentation
 
 **Game Ecosystem Testing Framework**
-Cricket AI 2026 | Football AI 2026 | Baseball AI 2026
+CrickBot AI | GoalBot AI | BaseHit AI
 
 ---
 
@@ -681,7 +681,7 @@ node -e "
 
 ## Support & Contact
 
-**QA Lead:** qa@alpittare.com
+**QA Lead:** alpit@exafabs.ai
 **Test Framework Issues:** GitHub Issues with `testing` label
 **Performance Questions:** github.com/alpittare/[game]/discussions
 

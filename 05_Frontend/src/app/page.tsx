@@ -179,7 +179,7 @@ function LandingScreen() {
           Welcome to Game Hub
         </h2>
         <p className="text-lg font-semibold text-gray-700">
-          🏏 Cricket AI 2026 &middot; ⚽ Football AI 2026 &middot; ⚾ Baseball AI 2026
+          🏏 CrickBot AI &middot; ⚽ GoalBot AI &middot; ⚾ BaseHit AI
         </p>
         <p className="text-gray-600">
           Sign in to play, track your stats, chat with your AI coach, and dominate the leaderboard!
@@ -203,21 +203,21 @@ function LandingScreen() {
         {[
           {
             emoji: "🏏",
-            name: "Cricket AI 2026",
+            name: "CrickBot AI",
             desc: "AI-powered cricket batting challenge",
             color: "text-green-600",
             bg: "bg-gradient-to-br from-green-50 to-green-100 border-green-300",
           },
           {
             emoji: "⚽",
-            name: "Football AI 2026",
+            name: "GoalBot AI",
             desc: "AI penalty shootout game",
             color: "text-blue-600",
             bg: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300",
           },
           {
             emoji: "⚾",
-            name: "Baseball AI 2026",
+            name: "BaseHit AI",
             desc: "AI home run derby game",
             color: "text-orange-600",
             bg: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300",
@@ -305,7 +305,7 @@ function GamesTab() {
     {
       id: "cricket",
       emoji: "🏏",
-      name: "Cricket AI 2026",
+      name: "CrickBot AI",
       description: "AI-powered cricket batting with smart bowler bot, power-ups, and competitive gameplay",
       color: "from-green-400 to-green-600",
       textColor: "text-green-700",
@@ -323,7 +323,7 @@ function GamesTab() {
     {
       id: "soccer",
       emoji: "⚽",
-      name: "Football AI 2026",
+      name: "GoalBot AI",
       description: "AI penalty shootout with smart keeper bot, power shots, and competitive streaks",
       color: "from-blue-400 to-blue-600",
       textColor: "text-blue-700",
@@ -341,7 +341,7 @@ function GamesTab() {
     {
       id: "baseball",
       emoji: "⚾",
-      name: "Baseball AI 2026",
+      name: "BaseHit AI",
       description: "AI home run derby with smart pitcher bot, power-ups, and progressive difficulty",
       color: "from-orange-400 to-orange-600",
       textColor: "text-orange-700",
@@ -862,10 +862,10 @@ function ChatTab() {
   };
 
   const suggestions = [
-    "How do I beat the Keeper Bot in Football AI 2026?",
+    "How do I beat the Keeper Bot in GoalBot AI?",
     "Tips for winning penalty shootouts against the AI?",
-    "Best power-up strategy for Cricket AI 2026 high scores?",
-    "How do I outsmart the Pitcher Bot in Baseball AI 2026?",
+    "Best power-up strategy for CrickBot AI high scores?",
+    "How do I outsmart the Pitcher Bot in BaseHit AI?",
     "Best strategy for surviving the shrinking arena in Survival Arena IO?",
   ];
 

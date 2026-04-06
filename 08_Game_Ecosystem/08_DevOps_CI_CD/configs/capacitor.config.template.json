@@ -1,6 +1,6 @@
 {
   "appId": "com.alpittare.cricket.ai",
-  "appName": "Cricket AI 2026",
+  "appName": "CrickBot AI",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {

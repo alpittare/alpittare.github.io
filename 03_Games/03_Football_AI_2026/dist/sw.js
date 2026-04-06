@@ -1,4 +1,4 @@
-// Football Pro Bot AI Service Worker — enables offline play
+// GoalBot Service Worker — enables offline play
 const CACHE_NAME = 'goalbot-v1';
 const ASSETS = [
   '/',

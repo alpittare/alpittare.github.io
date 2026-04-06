@@ -1,7 +1,7 @@
 @echo off
 title Game Test Server - Port 8080
 echo ============================================
-echo   Survivor Arena - Local Game Server
+echo   Survival Arena - Local Game Server
 echo ============================================
 echo.
 
