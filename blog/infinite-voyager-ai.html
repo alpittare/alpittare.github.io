@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infinite Voyager: Procedural Galaxies Powered by AI</title>
-    <meta name="description" content="Exploring how AI creates meaningful experiences in infinite procedural universes.">
+    <title>Infinite Voyager: Adaptive Difficulty in Space Combat</title>
+    <meta name="description" content="Inside the AI Director that powers intelligent pacing in a vertical scrolling space shooter.">
     <style>
         * {
             margin: 0;
@@ -411,157 +411,189 @@
                 <span class="meta-item"><span class="dot"></span></span>
                 <span class="meta-item">2026</span>
             </div>
-            <h1>Infinite Voyager: Procedural Galaxies Powered by AI</h1>
-            <p class="subtitle">Exploring how AI creates meaningful experiences in infinite procedural universes.</p>
+            <h1>Infinite Voyager: Adaptive Difficulty in Space Combat</h1>
+            <p class="subtitle">How the AI Director maintains perfect pacing in a 100-level campaign across vertical space combat.</p>
         </header>
 
         <div class="divider"></div>
 
         <section>
-            <h2>The Promise of Infinite Exploration</h2>
-            <p><em>No Man's Sky</em> proved something powerful: players crave infinite exploration. But <span class="highlight-cyan">Infinite Voyager</span> takes it further. It doesn't just generate worlds — it crafts meaningful experiences <em>within</em> them.</p>
-            <p>Imagine traversing a universe where every galaxy, star system, and planet is procedurally generated. Not just random pixels, but coherent, explorable worlds. Where the alien civilizations you encounter behave autonomously. Where your exploration choices ripple across regions of space, fundamentally changing what future explorers will find.</p>
-            <p>This is the vision of Infinite Voyager. And the core enabler? <strong>Artificial Intelligence</strong>.</p>
+            <h2>The Challenge of Pacing</h2>
+            <p><span class="highlight-cyan">Infinite Voyager</span> is a vertical scrolling space shooter with 100 levels spanning 4 phases — a campaign of significant length. The core challenge: how do you maintain perfect difficulty pacing across such a journey without feeling scripted or railroad-like?</p>
+            <p>The answer lies in <strong>the AI Director</strong> — a system borrowed from <em>Left 4 Dead</em> that dynamically adjusts enemy spawning, accuracy, and encounters based on real-time player performance. It doesn't control the narrative; it controls <em>tension</em>. When you're dominating, it escalates. When you're struggling, it breathes. The game feels alive because it's <em>responding</em> to you.</p>
+            <p>This is the vision of Infinite Voyager: a polished arcade space shooter where intelligent adaptive systems create emergent difficulty curves, not handcrafted ones.</p>
         </section>
 
         <section>
-            <h2>Consumer-Friendly Features</h2>
+            <h2>Core Game Features</h2>
             <div class="feature-list">
                 <div class="feature-item">
-                    <strong>Truly Infinite Universe</strong>
-                    <p>Every galaxy, star system, and planet is procedurally generated. No limits. No repeats. An infinite frontier waiting to be explored.</p>
+                    <strong>Touch-Responsive Ship Control</strong>
+                    <p>Player controls ship position by following finger with smooth lerp interpolation. No directional buttons — pure spatial awareness. Solar sail physics scale thrust by inverse-square distance from obstacles.</p>
                 </div>
                 <div class="feature-item">
-                    <strong>Unique Alien Civilizations</strong>
-                    <p>AI creates distinct alien cultures with their own behaviors, trade practices, conflicts, and growth patterns. Each feels alive and reactive.</p>
+                    <strong>Four Distinct Enemy Types</strong>
+                    <p>Scout (weaving, HP:1), Drone (tracking + projectiles, HP:2), Mothership (spawns scouts, HP:5), Phantom (cloaking, HP:3). Each requires different tactical responses.</p>
                 </div>
                 <div class="feature-item">
-                    <strong>Dynamic Event System</strong>
-                    <p>Encounters aren't scripted — they emerge naturally. Trade routes form and falter. Factions conflict. New discoveries reshape regional politics. You experience real galactic history as it unfolds.</p>
+                    <strong>Random Encounter System</strong>
+                    <p>Every 45–90 seconds: Wormhole (teleport), Distress Signal (protect ship), Solar Flare (double thrust), Alien Market (shop). Encounters inject variety without feeling forced.</p>
                 </div>
                 <div class="feature-item">
-                    <strong>Universe Responds to You</strong>
-                    <p>The universe remembers your choices. Regions you visit evolve based on your actions. Create trading partnerships, ignite wars, or broker peace. Your exploration leaves a permanent mark.</p>
+                    <strong>Boss Fights at Campaign Milestones</strong>
+                    <p>Void Sentinel (level 10, lasers + gravity wells), The Architect (level 25, control reversal + clones), Leviathan (level 50, tentacles + shockwaves). Each has unique behavioral patterns and requires skill progression.</p>
                 </div>
             </div>
         </section>
 
         <section>
-            <h2>The AI Systems Powering Infinite Voyager</h2>
-            <p>Behind every infinite galaxy lies a sophisticated stack of AI systems. Let's break them down.</p>
+            <h2>The AI Director: Adaptive Difficulty at Work</h2>
+            <p>The magic happens in the <strong>AI Director</strong> — a real-time system that updates every 5 seconds, evaluating your performance and adjusting challenge accordingly.</p>
 
             <div class="ai-systems">
                 <div class="ai-system">
-                    <h4>Procedural Galaxy Generator</h4>
-                    <p>Hierarchical generation creates coherent, explorable space. Galaxy → Star Systems → Planets → Biomes → Features. Each level uses the seed from the level above, ensuring consistency across the infinite universe.</p>
+                    <h4>Performance Tracking</h4>
+                    <p>Director monitors: dodge rate (obstacles dodged vs encountered), coin efficiency (coins collected vs available), and recent deaths. These form a performance vector that drives all difficulty decisions.</p>
                 </div>
                 <div class="ai-system">
-                    <h4>AI Encounter Director</h4>
-                    <p>Borrowed from game design theory, this system controls the pacing of encounters based on your recent experiences. It knows when you need combat, when you're due for discovery, and when to let you breathe.</p>
+                    <h4>Spawn Rate Multiplier</h4>
+                    <p>If dodge rate > 0.8 (dominating), spawn rate increases. If < 0.3 (struggling), it decreases. Formula: baseSpawnInterval = 6.0 / diffMultiplier / directorMultiplier. Smooth transitions maintain flow.</p>
                 </div>
                 <div class="ai-system">
-                    <h4>Civilization Simulator</h4>
-                    <p>A lightweight agent-based model where alien factions make autonomous decisions. Each faction evaluates available actions and chooses based on utility scores derived from resources, proximity, and relations with you.</p>
+                    <h4>Alien Accuracy Scaling</h4>
+                    <p>Scales between 0.5x (easier) to 1.0x (normal). Combined with spawn adjustments, this creates exponential difficulty curves. Players feel challenged, not cheaply punished.</p>
                 </div>
                 <div class="ai-system">
-                    <h4>Narrative AI</h4>
-                    <p>Generates contextual missions and lore on the fly. It understands local galactic conditions and creates stories that feel native to the region you're exploring.</p>
+                    <h4>Stealth Assist & Power-Up Boost</h4>
+                    <p>After 3 deaths in 60 seconds, Stealth Assist triggers: alien accuracy drops 50% for 30s. When survival time falls below 15s, power-up spawn rate jumps 1.4x. The director reads desperation.</p>
                 </div>
             </div>
         </section>
 
         <section>
-            <h2>Technical Deep Dive</h2>
-            <p>For the technically curious, here's how Infinite Voyager actually works under the hood.</p>
+            <h2>Technical Deep Dive: AI Director Architecture</h2>
+            <p>For the technically curious, here's how the Infinite Voyager AI Director maintains perfect pacing across 100 levels.</p>
 
             <div class="tech-deep">
                 <div class="tech-item">
-                    <h4>Noise-Based Generation</h4>
-                    <p>Terrain, climate, and resource distribution are built from layered Perlin and Simplex noise. Higher octaves add fine detail; lower octaves define large-scale features.</p>
-                    <div class="formula">
-terrain(x,y) = Σ (amplitude_i × noise(frequency_i × x, frequency_i × y))
-                    </div>
-                    <p>Here's a practical implementation:</p>
-                    <pre><code>function generateTerrain(x, y, seed) {
-  let height = 0;
-  let amplitude = 1;
-  let frequency = 1;
-  let maxValue = 0;
+                    <h4>AI Director Update Loop (Every 5 seconds)</h4>
+                    <p>The Director runs a tight evaluation cycle, reading player state and adjusting difficulty multipliers:</p>
+                    <pre><code>function updateDirector(playerState, gameState) {
+  const dodgeRate = playerState.obstaclesDodged / playerState.obstaclesEncountered;
+  const coinEfficiency = playerState.coinsCollected / playerState.coinsAvailable;
+  const recentDeaths = playerState.deathsInLast60s;
 
-  for (let i = 0; i < 6; i++) {
-    height += amplitude * perlinNoise(
-      (x * frequency) + seed,
-      (y * frequency) + seed
-    );
-    maxValue += amplitude;
-    amplitude *= 0.5;
-    frequency *= 2;
+  // Spawn rate adjustment
+  let spawnMultiplier = 1.0;
+  if (dodgeRate > 0.8) spawnMultiplier += 0.3;      // Dominating
+  else if (dodgeRate < 0.3) spawnMultiplier -= 0.3; // Struggling
+
+  // Accuracy adjustment
+  let accuracyMultiplier = 1.0;
+  if (dodgeRate > 0.8) accuracyMultiplier = 1.0;   // Full difficulty
+  else if (dodgeRate < 0.3) accuracyMultiplier = 0.5; // Half difficulty
+
+  // Stealth Assist: after 3 deaths in 60s
+  if (recentDeaths >= 3) {
+    accuracyMultiplier *= 0.5;
+    stealthAssistActive = true;
+    stealthAssistTimer = 30;
   }
 
-  return height / maxValue;
-}</code></pre>
-                    <p>This creates natural-looking terrain with both large formations and small details. Adjusting amplitude and frequency ratios produces dramatically different landscapes — from flat plains to jagged mountains.</p>
-                </div>
-
-                <div class="tech-item">
-                    <h4>L-System Flora</h4>
-                    <p>Plant life is generated using Lindenmayer systems. A simple string rewriting system produces organic branching patterns. Vary the parameters per biome and you get rainforest density, desert sparseness, or frozen tundra bleakness.</p>
-                </div>
-
-                <div class="tech-item">
-                    <h4>AI Director Pattern</h4>
-                    <p>Infinite Voyager borrows the <strong>"Encounter Director"</strong> concept from Left 4 Dead. The system tracks an intensity curve and spawns encounters to maintain target pacing.</p>
-                    <div class="diagram-box">Intensity Curve:
-
-  Intensity
-     |     ___
-     |    /   \
-     |   /     \___
-     |__/          \___
-       low → build → peak → relief → repeat
-     |
-  Time →
-
-The Director evaluates your recent experience:
-  - Too many combats recently? → Offer discovery
-  - Long peaceful stretch? → Escalate encounters
-  - Just had major conflict? → Let tension release
-     </div>
-                    <p>This creates natural narrative pacing without explicit scripting. Players feel guided, but never railroaded.</p>
-                </div>
-
-                <div class="tech-item">
-                    <h4>Seed-Based Determinism</h4>
-                    <p>The universe is deterministic. Provide the same seed and you get the same galaxy every time. This allows consistency while maintaining the illusion of infinite procedural generation.</p>
-                    <div class="formula">
-systemSeed = hash(galaxySeed + systemCoords)
-                    </div>
-                    <p>A player can share coordinates with a friend and both will find identical worlds. The universe is reproducible, explorable, and shareable.</p>
-                </div>
-
-                <div class="tech-item">
-                    <h4>Faction AI</h4>
-                    <p>Alien civilizations make decisions through simple utility AI. Each faction evaluates available actions and scores them:</p>
-                    <pre><code>function evaluateAction(faction, action) {
-  let utility = 0;
-
-  // Resource evaluation
-  utility += (resourceValue(action) * 0.4);
-
-  // Proximity cost
-  utility -= (distance(faction, action) * 0.2);
-
-  // Player relations bonus
-  utility += (playerRelations[faction] * 0.3);
-
-  // Expansion pressure
-  if (faction.territory < faction.desired) {
-    utility += 0.1;
+  // Power-up Boost when survival < 15s
+  let powerUpMultiplier = 1.0;
+  if (playerState.survivalTime < 15) {
+    powerUpMultiplier = 1.4;
   }
 
-  return utility;
+  return {spawnMultiplier, accuracyMultiplier, powerUpMultiplier};
 }</code></pre>
-                    <p>This produces emergent behavior: factions naturally form trade partners, rivalries, and military alliances based on their evaluations.</p>
+                    <p>This creates a feedback loop: performance → difficulty → challenge → motivation. Players always face the "right" difficulty.</p>
+                </div>
+
+                <div class="tech-item">
+                    <h4>Enemy Behavior: Alien Types</h4>
+                    <p>Each of the 4 enemy types has distinct behavioral logic:</p>
+                    <pre><code>// Scout: Weaving side-to-side
+function moveScout(scout, time) {
+  scout.x += Math.sin(time * 2) * 120 * deltaTime;
+}
+
+// Drone: Tracks player, fires every 3s
+function moveDrone(drone, playerX) {
+  drone.x = lerp(drone.x, playerX, 0.1);
+  if ((gameTime % 3000) < 100) spawnBolt(drone);
+}
+
+// Mothership: Spawns scouts every 8s (max 12)
+function moveMotherShip(ship) {
+  if ((gameTime % 8000) < 100 && ship.scouts.length < 12) {
+    ship.scouts.push(new Scout());
+  }
+}
+
+// Phantom: Mirrors player X, cloaks 2s every 4s
+function movePhantom(phantom, playerX, time) {
+  phantom.x = playerX;
+  phantom.cloaked = (Math.floor(time / 4) % 2 === 1);
+}</code></pre>
+                    <p>Behavior variety forces tactical adaptation. Players can't use the same strategy for all enemies.</p>
+                </div>
+
+                <div class="tech-item">
+                    <h4>Procedural Visuals: Star Field & Parallax</h4>
+                    <p>The background uses positional seeding (not Perlin noise) for deterministic star placement:</p>
+                    <div class="formula">
+starColor = ["#FFD700", "#87CEEB", "#FFA500", "#FFFFFF"][seed % 4]
+starPosition = {x: (seed * 12345) % screenWidth, y: (seed * 67890) % screenHeight}
+                    </div>
+                    <p>Each screen position generates the same stars consistently. Multiple depth layers with different scroll speeds create parallax depth. Velocity-based speed lines enhance the sense of forward motion.</p>
+                </div>
+
+                <div class="tech-item">
+                    <h4>Encounter System: Timing & Variety</h4>
+                    <p>Encounters spawn every 45–90 seconds with four types:</p>
+                    <ul>
+                        <li><strong>Wormhole</strong> — Teleports player +200m, triggers enemy spawn cluster</li>
+                        <li><strong>Distress Signal</strong> — Protect NPC ship for 10s, earn 150 coins</li>
+                        <li><strong>Solar Flare</strong> — 8s of 2x thrust + 50% alien slowdown</li>
+                        <li><strong>Alien Market</strong> — Rotating station for purchasing upgrades</li>
+                    </ul>
+                    <p>Encounter selection is probabilistic but weighted by level phase. Campaign phases naturally introduce encounters that suit progression.</p>
+                </div>
+
+                <div class="tech-item">
+                    <h4>Boss Fight State Machines</h4>
+                    <p>Three unique boss types at campaign milestones:</p>
+                    <div class="diagram-box">Void Sentinel (Level 10):
+  State: LASER_SWEEP → creates sweeping beam attack
+  State: GRAVITY_WELL → spawns wells every 5s pulling player inward
+
+The Architect (Level 25):
+  State: TELEPORT → vanishes, reappears at random location
+  State: REVERSE_CONTROLS → player controls inverted for 4s
+  State: CLONE_MIRROR → spawns 2-3 mirror clones that mimic player actions
+
+Leviathan (Level 50):
+  State: TENTACLE_STRIKE → extends 4 tentacles in phases
+  State: CHARGE_ATTACK → accelerates toward player
+  State: SHOCKWAVE → releases expanding damage wave after charge
+                    </div>
+                    <p>Each boss teaches a lesson: learn attack patterns, adapt to role reversals, manage clones. Boss fights act as skill gates for progression.</p>
+                </div>
+
+                <div class="tech-item">
+                    <h4>Difficulty Scaling Formula</h4>
+                    <p>The ultimate spawn interval combines base level difficulty with real-time Director adjustments:</p>
+                    <div class="formula">
+baseSpawnInterval = 6.0 / diffMultiplier / directorMultiplier
+                    </div>
+                    <p><code>diffMultiplier</code> increases with campaign level (harder late-game). <code>directorMultiplier</code> adjusts based on performance. Result: enemies spawn more frequently and accurately as you prove competence, creating smooth progression curves without artificial walls.</p>
+                </div>
+
+                <div class="tech-item">
+                    <h4>Backend: Convex Integration</h4>
+                    <p>Campaign progress, leaderboard scores, and achievement tracking sync through Convex. Players can resume campaigns mid-level. Session logging enables post-mortem analytics: which encounters killed players most? Which boss has the highest skip rate? Data drives balance updates.</p>
                 </div>
             </div>
         </section>
@@ -569,15 +601,16 @@ systemSeed = hash(galaxySeed + systemCoords)
         <section>
             <h2>What's Next</h2>
             <ul>
-                <li><strong>Multiplayer Shared Universe</strong> — Explore a single galaxy with other players. Your discoveries persist. Faction conflicts involve human players choosing sides.</li>
-                <li><strong>AI-Generated Alien Languages</strong> — Each civilization speaks a unique procedurally-generated language. Decipher it over time as you interact with species.</li>
-                <li><strong>Player-Influenced Galactic Evolution</strong> — The long-term state of regions shifts based on collective player actions. Build a shared history across a region's lifetime.</li>
+                <li><strong>Procedural Boss Variations</strong> — Boss patterns seeded by campaign level. Void Sentinel variations at level 10, 35, 60, 85 with escalating complexity.</li>
+                <li><strong>Cooperative Campaign Mode</strong> — Two players controlling separate ships in the same run. Synchronized difficulty scaling across both players.</li>
+                <li><strong>Challenge Runs &amp; Leaderboards</strong> — Fixed seed campaigns competing for high scores. Replay identical difficulty curves on global leaderboards.</li>
+                <li><strong>Alien Ship Acquisition</strong> — Rare power-up to pilot captured alien craft with unique physics and abilities for 15 seconds.</li>
             </ul>
         </section>
 
         <div class="cta-section">
-            <h3>Ready to Explore the Infinite?</h3>
-            <p>Infinite Voyager is built by ExaFabs, where procedural generation meets AI-driven narrative.</p>
+            <h3>Experience the Adaptive Challenge</h3>
+            <p>Infinite Voyager: A vertical space shooter where the AI Director ensures every run feels perfectly tuned to your skill level.</p>
             <a href="#" class="cta-button">Back to ExaFabs</a>
         </div>
 

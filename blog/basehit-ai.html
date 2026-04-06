@@ -406,31 +406,31 @@
         <!-- Intro Section -->
         <section>
             <div class="intro-box">
-                <p>Baseball is a game of chess at 90mph. BaseHit's AI pitcher doesn't throw randomly — it sequences pitches like a veteran, setting you up and exploiting your weaknesses.</p>
+                <p>Baseball is a game of chess at 90mph. BaseHit's AI pitcher doesn't throw randomly — it watches your timing, learns your habits, and adjusts pitch selection with remarkable precision. No machine learning required.</p>
             </div>
         </section>
 
         <!-- Consumer-Friendly Features -->
         <section>
             <h2>What Makes Our AI Different</h2>
-            <p>The BaseHit AI pitcher transforms the hitting experience by introducing genuine strategic depth. Unlike traditional game AI, our system actively learns and adapts to your playing style in real-time.</p>
+            <p>The BaseHit AI pitcher creates an intelligent opponent through elegant rule-based design. It watches your timing patterns in real-time and adapts pitch selection strategically—all without machine learning.</p>
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <h3>Adaptive Learning</h3>
-                    <p>AI builds a mental model of your hitting zones—your strengths and weaknesses—updating its strategy with every pitch.</p>
+                    <h3>Timing Bias Detection</h3>
+                    <p>AI analyzes your last 5 swings to detect if you're consistently early, late, or balanced. Then it selects pitches that exploit those patterns.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Strategic Sequencing</h3>
-                    <p>Pitch sequences aren't random. Setup pitches set traps for devastating putaway pitches, just like real veteran pitchers.</p>
+                    <h3>Adaptive Speed Adjustment</h3>
+                    <p>Pitch velocities adjust based on your swing timing. Early swings get slower pitches, late swings get faster ones. It feels like the pitcher is reading you.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Dynamic Defense</h3>
-                    <p>Fielders shift based on your spray chart data, forcing you to think about where you hit, not just how hard.</p>
+                    <h3>Smart Zone Targeting</h3>
+                    <p>Five pitch zones (center, inside, outside, high, low) with varying home run multipliers. Difficulty-based zone distribution means harder opponents pitch to tougher locations.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Natural Difficulty</h3>
-                    <p>Difficulty feels organic—like facing pitchers of different calibers—without artificial handicaps or unfair advantages.</p>
+                    <h3>Pitch Variety Prevention</h3>
+                    <p>The AI never throws the same pitch 3 times consecutively. Strategic sequencing keeps you honest without requiring complex models.</p>
                 </div>
             </div>
         </section>
@@ -438,24 +438,24 @@
         <!-- AI Systems Overview -->
         <section>
             <h2>The AI Systems Under the Hood</h2>
-            <p>BaseHit's AI pitcher is powered by four interconnected systems that work together to create a cohesive, intelligent opponent:</p>
+            <p>BaseHit's AI pitcher is powered by three interconnected systems that work together to create a cohesive, intelligent opponent:</p>
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <h3>Pitch Sequencing Engine</h3>
-                    <p>A Markov chain-based system that considers the count, score, runner positions, and batter tendencies to select strategically optimal pitches.</p>
+                    <h3>Timing Bias Detector</h3>
+                    <p>Tracks your last 5 swing timings and classifies you as 'early', 'late', or 'balanced'. Automatically selects pitch distributions that exploit this bias.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Batter Profiling</h3>
-                    <p>Machine learning classifies hitter tendencies—pull hitter, opposite field specialist, high ball hitter—to inform pitch selection strategy.</p>
+                    <h3>Pitch Selection Engine</h3>
+                    <p>Rule-based decision-making that considers difficulty level, pitch variety prevention, and timing bias to choose the next pitch type and zone.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Fielding Shift AI</h3>
-                    <p>Kernel density estimation analyzes your spray chart, identifying hot and cold zones to drive defensive alignment in real-time.</p>
+                    <h3>Adaptive Speed Calculator</h3>
+                    <p>Adjusts pitch velocity based on your swing timing patterns. Early swings trigger slower pitches; late swings get speed boosts. Perfect swings trigger penalty speeds.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Pitch Execution Engine</h3>
-                    <p>Variance in pitch execution creates realism—no pitcher is perfect. Higher difficulty increases command precision.</p>
+                    <h3>Reactive Fielding</h3>
+                    <p>Simple reactive fielders (3 outfielders) that chase hits and play animated reactions. No shift AI or spray chart analysis—pure reactive animation.</p>
                 </div>
             </div>
         </section>
@@ -463,143 +463,181 @@
         <!-- Technical Deep Dive -->
         <section>
             <h2>Technical Deep Dive</h2>
-            <p>For the technically curious, here's how these systems work in detail:</p>
+            <p>For the technically curious, here's how the timing bias detection system creates genuine adaptive AI without complex machine learning:</p>
 
-            <h3>Markov Chain Pitch Selection</h3>
-            <p>The core of the pitch sequencing engine uses a Markov chain model. Each state represents the current situation:</p>
+            <h3>Timing Bias Detection Algorithm</h3>
+            <p>The core innovation: analyzing swing timing to detect and exploit patterns. The system tracks the last 5 swing events:</p>
 
-            <pre><code><span class="code-keyword">State</span> = (pitch_count, last_pitch_type, batter_tendency) → <span class="code-keyword">Next Pitch Probability</span>
+            <pre><code><span class="code-comment">// Calculate swing timing relative to perfect window</span>
+<span class="code-keyword">const</span> timingBias = analyzeLastFiveSwings([
+  { swing_time: 245, perfect_window: [250, 318] },  <span class="code-comment">// 5ms EARLY</span>
+  { swing_time: 260, perfect_window: [250, 318] },  <span class="code-comment">// 10ms EARLY</span>
+  { swing_time: 255, perfect_window: [250, 318] },  <span class="code-comment">// BALANCED</span>
+  { swing_time: 248, perfect_window: [250, 318] },  <span class="code-comment">// 2ms EARLY</span>
+  { swing_time: 330, perfect_window: [250, 318] },  <span class="code-comment">// 12ms LATE</span>
+]);
 
-<span class="code-keyword">Example:</span>
-  (0-1, Fastball, Pull_Hitter) → {
-    Curveball: 0.45,      <span class="code-comment">// Setup pitch, attack weakness</span>
-    Fastball: 0.30,       <span class="code-comment">// Get ahead</span>
-    Slider: 0.25          <span class="code-comment">// Putaway pitch</span>
+<span class="code-comment">// Result: Player classified as 'early' bias</span>
+<span class="code-keyword">const</span> classification = classifyBias(timingBias);
+<span class="code-comment">// Returns: 'early' | 'late' | 'balanced'</span></code></pre>
+
+            <h3>Pitch Selection Based on Timing Bias</h3>
+            <p>Once bias is detected, the AI selects pitch distributions that exploit it:</p>
+
+            <pre><code><span class="code-keyword">function</span> decidePitch(timingBias, difficulty) {
+  <span class="code-keyword">let</span> pitchDistribution;
+
+  <span class="code-keyword">if</span> (timingBias === 'early') {
+    <span class="code-comment">// Throw more breaking balls (slower)</span>
+    <span class="code-comment">// 35% curveball, 20% changeup, 45% fastball</span>
+    pitchDistribution = {
+      curveball: 0.35,
+      changeup: 0.20,
+      fastball: 0.45
+    };
+  }
+  <span class="code-keyword">else if</span> (timingBias === 'late') {
+    <span class="code-comment">// Throw more fastballs (faster)</span>
+    <span class="code-comment">// Exploit late timing with velocity</span>
+    pitchDistribution = {
+      fastball: 0.60,
+      curveball: 0.20,
+      changeup: 0.20
+    };
+  }
+  <span class="code-keyword">else</span> {
+    <span class="code-comment">// Balanced: use difficulty-based distribution</span>
+    pitchDistribution = getDifficultyPitchDistribution(difficulty);
   }
 
-  (0-2, Curveball, Pull_Hitter) → {
-    Fastball_High: 0.65,  <span class="code-comment">// Putaway - out of zone</span>
-    Slider: 0.35          <span class="code-comment">// Alternative putaway</span>
-  }</code></pre>
+  <span class="code-comment">// Prevent same pitch 3x consecutively</span>
+  <span class="code-keyword">if</span> (lastThreePitches.allSame()) {
+    <span class="code-keyword">return</span> selectDifferentPitch(pitchDistribution);
+  }
 
-            <p>Transition probabilities are optimized to minimize expected run value—the pitcher always chooses the pitch most likely to prevent runs.</p>
+  <span class="code-keyword">return</span> selectRandomFromDistribution(pitchDistribution);
+}</code></pre>
 
-            <h3>Spray Chart Analysis</h3>
-            <p>Kernel density estimation transforms your hit locations into a heat map:</p>
+            <h3>Adaptive Speed Calculation</h3>
+            <p>Pitch speed adjusts in real-time based on swing patterns. This creates the illusion of an opponent that reads you:</p>
+
+            <pre><code><span class="code-keyword">function</span> getAdaptiveSpeed(basePitchSpeed, timingBias) {
+  <span class="code-keyword">let</span> speedMultiplier = 1.0;
+
+  <span class="code-keyword">if</span> (timingBias === 'early') {
+    <span class="code-comment">// 20% slower for early swings</span>
+    speedMultiplier = 0.80;
+  }
+  <span class="code-keyword">else if</span> (timingBias === 'late') {
+    <span class="code-comment">// 4-12% faster for late swings</span>
+    speedMultiplier = 1.04 + Math.random() * 0.08;
+  }
+
+  <span class="code-comment">// Penalty speed boost for recent perfect swings</span>
+  <span class="code-keyword">if</span> (recentPerfectSwings >= 2) {
+    <span class="code-comment">// Boost 10% if pitcher "responds" to perfect contact</span>
+    speedMultiplier *= 1.10;
+  }
+
+  <span class="code-keyword">const</span> finalSpeed = basePitchSpeed * speedMultiplier;
+
+  <span class="code-comment">// Clamp to valid range: 150-800 px/sec</span>
+  <span class="code-keyword">return</span> Math.max(150, Math.min(800, finalSpeed));
+}</code></pre>
+
+            <h3>Five Pitch Zones & Home Run Multipliers</h3>
+            <p>Pitch zones vary in difficulty and home run potential. Harder difficulties favor tougher zones:</p>
 
             <div class="diagram">
-                <div class="diagram-title">Example Batter Hot Zone Map</div>
+                <div class="diagram-title">Pitch Zones & HR Multipliers</div>
                 <div class="diagram-content">
-     Left Field    Center Field    Right Field
-        |              |               |
-       ◆◆             ◆               ◆
-      ◆◆◆◆           ◆◆◆            ◆◆◆
-     ◆◆◆◆◆◆  [PLATE]  ◆◆◆◆◆        ◆◆◆◆◆
-      ◆◆◆◆◆           ◆◆◆◆          ◆◆◆◆
-       ◆◆◆             ◆◆◆            ◆◆◆
+          HIGH (0.8x HR)
+               |
+    INSIDE   CENTER   OUTSIDE
+    (1.3x)   (1.0x)   (0.7x)
+               |
+          LOW (0.6x HR)
 
-◆ = Hit frequency (brighter = more hits in this zone)
-
-This left-heavy hitter is vulnerable to:
-- Inside pitches (forcing weak contact to right side)
-- High fastballs (difficult to pull for power)
-- Off-speed away (induces chase and weak opposite field contact)
-                </div>
+Zone Selection by Difficulty:
+- Easy:   70% CENTER, 10% each corner
+- Medium: 50% CENTER, 15% each side, 10% high/low
+- Hard:   30% CENTER, 20% INSIDE, 20% OUTSIDE,
+          15% HIGH, 15% LOW (toughest zones)
+- Legend: 10% CENTER, 25% INSIDE, 25% OUTSIDE,
+          20% HIGH, 20% LOW (nearly unplayable)</div>
             </div>
 
-            <p>The AI uses this data to strategically position fielders and select pitches that exploit these weaknesses. A pull hitter with a dead right field becomes a predictable, targetable opponent.</p>
-
-            <h3>Expected Run Value</h3>
-            <p>Every pitch decision is evaluated against one metric: <span class="highlight">expected run value</span>. This is the predicted number of runs the opposing team will score in the current inning if a given pitch is thrown.</p>
+            <h3>Pitch Types</h3>
+            <p>Four pitch types with different characteristics:</p>
 
             <ul>
-                <li><strong>High expected run value:</strong> Risky pitch that could lead to runs</li>
-                <li><strong>Low expected run value:</strong> Safe pitch that limits run potential</li>
-                <li><strong>Decision rule:</strong> Always choose the pitch that minimizes expected run value</li>
+                <li><strong>Fastball:</strong> Straight, velocity-based. Most common in early counts.</li>
+                <li><strong>Curveball:</strong> Breaks with direction (left/right) and magnitude. Effective against early swings.</li>
+                <li><strong>Slider:</strong> Hybrid between fastball and curve. Mid-tier complexity.</li>
+                <li><strong>Changeup:</strong> Lower velocity. Sets up batter for slower approach, exploits timing.</li>
             </ul>
 
-            <h3>Difficulty as Pitcher Skill</h3>
-            <p>Difficulty doesn't make the AI "smarter"—it makes the AI more <em>precise</em>:</p>
+            <h3>Difficulty Tiers</h3>
+            <p>Difficulty scales four key variables: pitch speed, perfect window size, curve percentage, and zone difficulty:</p>
 
             <ul>
-                <li><strong>Easy:</strong> Large variance around intended pitch location; high miss rate</li>
-                <li><strong>Normal:</strong> Moderate variance; realistic control</li>
-                <li><strong>Hard:</strong> Tight variance; pinpoint command that's nearly impossible to exploit</li>
-                <li><strong>Legendary:</strong> Ultra-tight variance; perfect execution within fractions of an inch</li>
+                <li><strong>Easy:</strong> 340 px/sec, 115ms perfect window, 0% curves, forgiving zones</li>
+                <li><strong>Medium:</strong> 500 px/sec, 68ms window, 20% curves, balanced zones</li>
+                <li><strong>Hard:</strong> 680 px/sec, 40ms window, 40% curves, tough outer zones</li>
+                <li><strong>Legend:</strong> 900 px/sec, 22ms window, 62% curves, nearly all difficult zones</li>
             </ul>
 
-            <p>This creates a natural difficulty curve: a hard pitcher is harder not because they're strategic geniuses, but because they execute their strategy with near-perfect precision.</p>
+            <h3>Game Mechanics: Player as Batter Only</h3>
+            <p>BaseHit is fundamentally about batting strategy. The player controls one action: swinging with two stances:</p>
+
+            <ul>
+                <li><strong>Contact Stance:</strong> Wider timing window, fewer home runs. Better for consistent contact and learning pitch patterns.</li>
+                <li><strong>Power Stance:</strong> Narrow timing window, more home runs. High risk/reward for aggressive play.</li>
+            </ul>
+
+            <p>5 at-bats per game (7 for boss levels). The 100-level campaign includes combo multipliers and power-ups that boost scoring without changing pitch selection.</p>
 
             <div class="callout">
-                <p><strong>Key Insight:</strong> The pitch selection strategy is identical across all difficulties. What changes is the variance in execution. This ensures that learning to read a pitcher's strategy on Easy carries over to Hard—you're just playing against a more precise version of the same intelligence.</p>
+                <p><strong>Key Design Insight:</strong> This timing bias system is elegant game design that feels intelligent without requiring neural networks. By adapting pitch selection and speed based on observable swing timing, the AI creates the <em>perception</em> of machine learning while remaining fully rule-based and transparent to the player.</p>
             </div>
         </section>
 
-        <!-- Code Snippet -->
+        <!-- Data Logging Note -->
         <section>
-            <h3>Pitch Selection Algorithm (Simplified)</h3>
-            <pre><code><span class="code-keyword">function</span> selectPitch(gameState) {
-  <span class="code-comment">// Step 1: Get batter profile</span>
-  <span class="code-keyword">const</span> batterProfile = getBatterProfile(gameState.batter);
-
-  <span class="code-comment">// Step 2: Look up transition probabilities</span>
-  <span class="code-keyword">const</span> state = {
-    count: gameState.count,
-    lastPitch: gameState.lastPitch,
-    tendency: batterProfile.tendency
-  };
-
-  <span class="code-keyword">const</span> pitchProbabilities =
-    markovChain[state.toString()];
-
-  <span class="code-comment">// Step 3: Evaluate expected run value</span>
-  <span class="code-keyword">let</span> bestPitch = null;
-  <span class="code-keyword">let</span> lowestERV = Infinity;
-
-  <span class="code-keyword">for</span> (<span class="code-keyword">const</span> pitch of Object.keys(pitchProbabilities)) {
-    <span class="code-keyword">const</span> erv = calculateExpectedRunValue(
-      pitch,
-      batterProfile,
-      gameState
-    );
-
-    <span class="code-keyword">if</span> (erv < lowestERV) {
-      lowestERV = erv;
-      bestPitch = pitch;
-    }
-  }
-
-  <span class="code-comment">// Step 4: Add execution variance based on difficulty</span>
-  <span class="code-keyword">const</span> variance = getDifficultyVariance(
-    gameState.difficulty
-  );
-  <span class="code-keyword">const</span> location = addNoise(
-    pitchLocations[bestPitch],
-    variance
-  );
-
-  <span class="code-keyword">return</span> {
-    type: bestPitch,
-    location: location,
-    velocity: addNoise(pitchVelocities[bestPitch], variance)
-  };
-}</code></pre>
+            <h3>What About mlDataStore?</h3>
+            <p>You'll notice BaseHit has an <span class="highlight">mlDataStore</span> that logs swing events: timing, pitch type, and result. This is for analytics and future reference only. <strong>The AI never reads from this data.</strong> Pitch decisions are made purely from the current game's last 5 swings, not historical patterns across sessions.</p>
+            <p>This separation is intentional: it keeps the AI transparent and ensures every game is fair, without hidden training from your past mistakes.</p>
         </section>
 
-        <!-- What's Next -->
+        <!-- Why No ML? -->
         <section>
-            <h2>What's Next: Roadmap</h2>
-            <p>We're constantly pushing the boundaries of AI-driven baseball. Here's what we're building:</p>
+            <h2>Why Rule-Based > Machine Learning (for Baseball)</h2>
+            <p>BaseHit deliberately avoids neural networks and complex ML models. Here's why this rule-based approach is superior for baseball game design:</p>
 
             <ul>
-                <li><strong>AI Umpire with Variable Strike Zones:</strong> Umpires with realistic personality quirks and zone tendencies. Some call high strikes, others have tight zones. Learn to adjust just like real players.</li>
-                <li><strong>Career Mode with AI Scouting Reports:</strong> Opponents prepare scouting reports on your tendencies. Face rivals who evolve between matchups, remembering your patterns and adjusting strategy.</li>
-                <li><strong>Pitch Recognition Training:</strong> A dedicated mode to train your ability to recognize pitch types early, with AI feedback on your decision-making patterns.</li>
+                <li><strong>Transparency:</strong> Players can learn the pitcher's patterns. They see swings classified as 'early' and can adjust. The AI isn't a black box.</li>
+                <li><strong>Fairness:</strong> No hidden training on your mistakes. Every game starts fresh with the same rules. No algorithmic bias toward particular playstyles.</li>
+                <li><strong>Performance:</strong> Rule-based systems are instant and require zero computational overhead. Pitches are selected in microseconds.</li>
+                <li><strong>Design Clarity:</strong> Developers understand exactly how the AI behaves. Balancing is straightforward: tweak percentages, difficulty thresholds, speed multipliers.</li>
+                <li><strong>Depth Without Complexity:</strong> Simple rules create emergent complexity. Timing bias detection + adaptive speed + pitch variety prevention = surprisingly intelligent opponent.</li>
             </ul>
 
             <div class="callout">
-                <p>Our mission is to make BaseHit the most intelligent baseball game ever created—where every at-bat is a chess match against an opponent that thinks.</p>
+                <p><strong>Core Philosophy:</strong> Baseball is about reading the pitcher. BaseHit's AI is designed to be read—it has consistent, learnable patterns. That's good game design.</p>
             </div>
+        </section>
+
+        <!-- Future Enhancements -->
+        <section>
+            <h2>Future Enhancements</h2>
+            <p>The rule-based foundation is solid and extensible. Future updates might include:</p>
+
+            <ul>
+                <li><strong>Multi-Inning Pitch Memory:</strong> Instead of just last 5 swings, remember patterns across 3+ at-bats within a single game. Adds depth without ML.</li>
+                <li><strong>Stance-Based Adaptation:</strong> Different pitch distributions for contact vs. power stance. Harder to exploit if pitcher knows your stance.</li>
+                <li><strong>Combo Multiplier Penalties:</strong> When player builds a combo, pitcher shifts to tougher zones earlier, forcing risk/reward trades.</li>
+                <li><strong>Boss Pitcher Quirks:</strong> 100-level bosses with exaggerated timing biases and unique speed profiles. Each boss teaches a different discipline.</li>
+            </ul>
         </section>
 
         <!-- CTA Section -->

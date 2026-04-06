@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survival Arena: Enemy AI That Hunts Intelligently</title>
-    <meta name="description" content="Explore how Survival Arena uses sophisticated AI systems including swarm intelligence, behavior trees, and tactical coordination to create enemies that hunt intelligently.">
+    <meta name="description" content="Discover how Survival Arena uses eight AI personality archetypes driven by a weighted state machine to create emergent enemy behaviors without behavior trees, pathfinding, or machine learning.">
     <meta name="author" content="ExaFabs">
-    <meta name="keywords" content="AI, game development, survival games, enemy AI, behavior trees, swarm intelligence">
+    <meta name="keywords" content="AI, game development, survival games, enemy AI, state machine, personality systems, game design">
     <style>
         * {
             margin: 0;
@@ -421,184 +421,275 @@
     <main>
         <!-- Intro Section -->
         <section class="intro">
-            <p>Most survival games throw dumb enemies at you in waves. Survival Arena's enemies coordinate, flank, and learn — making every wave a puzzle to solve.</p>
+            <p>Most survival games use hardcoded enemy patterns. Survival Arena's eight AI personality archetypes use a weighted state machine to create genuinely emergent behaviors—each personality hunts differently, reacts unpredictably, and creates tactical depth through elegant system design rather than scripting.</p>
         </section>
 
-        <!-- Consumer-Friendly Features -->
+        <!-- Eight Personality Archetypes -->
         <section>
-            <h2>What Makes Our Enemies Different</h2>
+            <h2>Eight AI Personalities That Hunt Differently</h2>
+            <p>Rather than scripted behaviors, each enemy archetype is defined by weighted personality traits that feed into a unified decision-making system. The same state machine, eight different hunters:</p>
             <div class="features">
                 <div class="feature-card">
-                    <h4>🎯 Coordinated Attacks</h4>
-                    <p>Enemies communicate and coordinate attacks — flanking, surrounding, and baiting you into traps. No more predictable patterns.</p>
+                    <h4>🔥 Berserker</h4>
+                    <p>Relentless aggression. Chase bias 70%, aggression boost +40%. Enters rage mode at low HP and <strong>never retreats</strong>—designed to overwhelm through sheer momentum.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>🔄 Distinct Archetypes</h4>
-                    <p>Different enemy types have distinct AI behaviors: rushers charge directly, snipers find high ground, tanks absorb damage, and healers support their allies.</p>
+                    <h4>🛡️ Guardian</h4>
+                    <p>Defensive and tactical. Flee bias 30%, power-up hunter (35% priority). Retreats intelligently and hunts power-ups when health drops—the thinking player's nightmare.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>🧠 Adaptive Waves</h4>
-                    <p>Waves adapt to your strategy in real-time. Camp in a corner and they'll flush you out. Hug the walls? They'll surround you.</p>
+                    <h4>🗡️ Assassin</h4>
+                    <p>Precision striker. Targets the weakest enemy first, then switches to burst speed (1.3x) when within 2x attack range. Hit-and-run lethality.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>⚔️ Boss Learning</h4>
-                    <p>Boss enemies observe your combat patterns—preferred position, weapon choice, movement habits—and exploit weaknesses you didn't know you had.</p>
+                    <h4>🏕️ Camper</h4>
+                    <p>Edge-dwelling opportunist. Passive first 20 seconds, hugs arena boundaries, then unleashes aggressive flanking attacks. Patience paid off.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎯 Hunter</h4>
+                    <p>Lock-and-load specialist. Target locks for 12 frames with 40% chance to lock the player. +20% accuracy boost. Once fixed, rarely misses.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🃏 Trickster</h4>
+                    <p>Chaos incarnate. Erratic zigzag movement (±1.2 radian rotation at 5Hz), random dodge angles. Unpredictable and slippery.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🐺 Predator</h4>
+                    <p>Pack tactics. Circle-strafe using sinusoidal orbital movement. Hunts isolated enemies. Creates encirclement patterns through pure geometry.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🦅 Scavenger</h4>
+                    <p>Opportunistic hoarder. 50% power-up priority bias. Only engages in combat when powered up. Passive but extremely dangerous when buffed.</p>
                 </div>
             </div>
         </section>
 
-        <!-- AI Systems Overview -->
+        <!-- Core System Architecture -->
         <section>
-            <h2>The AI Systems Behind the Threat</h2>
-            <p>Our enemies aren't scripted. Four core systems work together to create truly intelligent adversaries:</p>
+            <h2>Core System Architecture</h2>
+            <p>The magic isn't in complex AI—it's in a unified weighted state machine. Four core mechanics drive all eight personalities:</p>
 
             <div class="feature-card">
-                <h4>🐦 Swarm Intelligence</h4>
-                <p>Boid-like flocking with tactical overlays for coordinated movement. Enemies move like a flock of birds, maintaining formation while responding to tactical goals.</p>
+                <h4>⚙️ Weighted State Machine</h4>
+                <p>Four states (Chase, Flee, Powerup, Wander) compete based on personality weights and current HP. State decisions update every 0.4-0.6 seconds plus 0.3s random jitter. Same engine, different weights = different hunters.</p>
             </div>
 
             <div class="feature-card">
-                <h4>🌳 Behavior Trees</h4>
-                <p>Each enemy type has a behavior tree defining priorities and decision-making. Behavior trees allow enemies to switch between attacking, retreating, patrolling, and flanking based on dynamic conditions.</p>
+                <h4>🎯 Polymorphic Target Selection</h4>
+                <p>Each personality selects targets differently: nearest enemy, weakest player, locked target, isolated prey, or random. Assassins hunt weak; Predators hunt isolated; Hunters lock and track.</p>
             </div>
 
             <div class="feature-card">
-                <h4>📍 Tactical Coordinator</h4>
-                <p>A central AI system assigns roles (attacker, flanker, distractor) to groups of enemies. This ensures coordinated strategies rather than individual behaviors.</p>
+                <h4>🏃 Chase Variants by Personality</h4>
+                <p><strong>Standard:</strong> Direct pursuit with mild prediction. <strong>Predator:</strong> Circle-strafe with sinusoidal orbit. <strong>Trickster:</strong> Erratic juke at 5Hz. <strong>Assassin:</strong> 1.3x burst speed within range. <strong>Camper:</strong> Edge-hugging retreat.</p>
             </div>
 
             <div class="feature-card">
-                <h4>🎓 Player Adaptation</h4>
-                <p>Tracks player's preferred position, weapon choice, and movement patterns. Over time, enemies learn your habits and adjust their strategies accordingly.</p>
+                <h4>📈 Aggression Ramping</h4>
+                <p>Aggression scales 0→1 over 12 seconds (20 seconds for Camper). Guarantees initial patience, eventual ferocity. Movement speed and attack frequency tie to aggression value.</p>
             </div>
         </section>
 
         <!-- Technical Deep Dive -->
         <section>
-            <h2>Technical Deep Dive</h2>
+            <h2>Technical Deep Dive: Weighted State Machine</h2>
 
-            <h3>Behavior Trees: Decision Making from the Ground Up</h3>
-            <p>Each enemy archetype uses a behavior tree—a hierarchical decision-making structure that evaluates conditions and selects actions in priority order.</p>
+            <h3>The Decision Loop</h3>
+            <p>Rather than behavior trees or pathfinding, Survival Arena uses a single, unified weighted state machine. Every 0.4-0.6 seconds (plus 0.3s jitter), each enemy recalculates state weights and acts:</p>
+
+            <pre><code>// Simplified AI Decision Loop (every 0.4-0.6s + 0.3s random)
+function updateEnemyState(enemy) {
+    // Calculate state weights based on personality + HP
+    let chaseWeight = personality.chaseWeight * (1 + aggression);
+    let fleeWeight = personality.fleeWeight * (1 - hp/maxHp);
+    let powerupWeight = personality.puWeight * (1 - hp/maxHp);
+    let wanderWeight = 1.0; // baseline
+
+    // Select state with highest weight
+    let nextState = argmax([chaseWeight, fleeWeight, powerupWeight, wanderWeight]);
+
+    // Execute state action
+    switch(nextState) {
+        case CHASE:
+            let target = selectTarget(enemy.personality);
+            chaseTarget(enemy, target);
+            break;
+        case FLEE:
+            fleeTowardSafety(enemy);
+            break;
+        case POWERUP:
+            moveTowardClosestPowerup(enemy);
+            break;
+        case WANDER:
+            randomWalk(enemy);
+            break;
+    }
+
+    // Every update: try ability (2% chance when chasing)
+    if (state === CHASE && Math.random() < 0.02) {
+        useAbility(enemy, randomizedCooldown());
+    }
+
+    // Ramp aggression over 12s (20s for Camper)
+    aggression = Math.min(1.0, time / aggressionRampTime);
+}</code></pre>
+
+            <h3>State Weights and Personality Modulation</h3>
+            <p>The personality archetype is baked directly into state weights. Here's how the eight personalities emerge from the same state machine:</p>
 
             <div class="tech-spec">
-                <h4>Basic Structure:</h4>
-                <p>Root → Selector [Attack, Retreat, Patrol, Flank] → each with conditions and actions</p>
+                <h4>Berserker Personality:</h4>
+                <p><code>chaseWeight: 3.0, fleeWeight: 0.1, puWeight: 0.0, wanderWeight: 0.5</code> — Always chases, never retreats.</p>
             </div>
 
-            <p>Here's a simplified example of a rusher enemy's behavior tree node in pseudocode:</p>
+            <div class="tech-spec">
+                <h4>Guardian Personality:</h4>
+                <p><code>chaseWeight: 1.0, fleeWeight: 2.0, puWeight: 1.5, wanderWeight: 1.0</code> — Balances aggression with retreat and power-up hunting.</p>
+            </div>
 
-            <pre><code>class BehaviorNode {
-    execute(enemy, context) {
-        if (context.playerDistance < ENGAGE_RANGE) {
-            return this.attack(enemy, context);
-        } else if (context.health < RETREAT_THRESHOLD) {
-            return this.retreat(enemy, context);
-        } else if (context.canFlank) {
-            return this.flank(enemy, context);
-        } else {
-            return this.patrol(enemy, context);
-        }
+            <div class="tech-spec">
+                <h4>Assassin Personality:</h4>
+                <p><code>chaseWeight: 2.5, fleeWeight: 1.5, puWeight: 0.5, wanderWeight: 0.8</code> + target selection: weakest enemy first.</p>
+            </div>
+
+            <p><strong>The key insight:</strong> Instead of separate decision trees per archetype, one unified state machine with different weight configurations creates eight distinct hunting behaviors. No branching logic, no duplication—just weighted competition between four states.</p>
+
+            <h3>Target Selection Variants</h3>
+            <p>When in CHASE state, each personality selects targets differently:</p>
+
+            <ul>
+                <li><strong>Nearest:</strong> Default. Find closest enemy (Berserker, Guardian).</li>
+                <li><strong>Weakest:</strong> Minimum HP. Burst damage specialist (Assassin).</li>
+                <li><strong>Locked:</strong> 12-frame lock with 40% chance to lock player (Hunter).</li>
+                <li><strong>Isolated:</strong> Circle-strafe target in low-density areas (Predator).</li>
+                <li><strong>Random:</strong> Pure chaos (Trickster).</li>
+            </ul>
+
+            <h3>Chase Movement Variants</h3>
+            <p>Movement is direct vector-based (no A* pathfinding, no grid systems). Direction varies by personality:</p>
+
+            <pre><code>function chaseTarget(enemy, target) {
+    let direction = normalize(target.pos - enemy.pos);
+
+    // Apply personality-specific movement
+    switch(enemy.personality) {
+        case STANDARD:
+            // Direct pursuit with mild prediction
+            let predictedPos = target.pos + (target.vx * prediction * 0.5);
+            direction = normalize(predictedPos - enemy.pos);
+            break;
+
+        case PREDATOR:
+            // Sinusoidal circle-strafe (perpendicular orbit)
+            let angle = Math.atan2(direction.y, direction.x);
+            angle += Math.sin(time * 2) * 0.4; // orbital modulation
+            direction = {x: Math.cos(angle), y: Math.sin(angle)};
+            break;
+
+        case TRICKSTER:
+            // Erratic juke: rotate ±1.2 radians at 5Hz
+            let randomAngle = (Math.random() - 0.5) * 1.2;
+            direction = rotateVector(direction, randomAngle + Math.sin(time * 5) * 0.3);
+            break;
+
+        case ASSASSIN:
+            // Burst speed within 2x attack range
+            let distance = length(target.pos - enemy.pos);
+            let burstSpeed = (distance < attackRange * 2) ? 1.3 : 1.0;
+            enemy.speed = baseSpeed * burstSpeed;
+            break;
+
+        case CAMPER:
+            // Flee toward arena edges
+            direction = normalize(getArenaEdge() - enemy.pos);
+            break;
     }
 
-    attack(enemy, context) {
-        // Move toward player, dodge obstacles
-        enemy.position += moveToward(context.player, enemy.speed);
-        enemy.fire(context.player);
-        return Status.RUNNING;
-    }
+    // Move: direct vector movement (dx/len * speed)
+    enemy.pos += direction * enemy.speed;
+}</code></pre>
 
-    flank(enemy, context) {
-        // Calculate flank position
-        let flankPos = calculateFlankPosition(
-            context.player,
-            enemy.position,
-            FLANK_DISTANCE
-        );
-        enemy.position += moveToward(flankPos, enemy.speed);
-        return Status.RUNNING;
+            <h3>Aggression Ramping Timeline</h3>
+            <p>Aggression value ramps from 0 → 1.0 linearly over time. This affects movement speed, ability frequency, and state weight bias:</p>
+
+            <ul>
+                <li><strong>Berserker, Guardian, Assassin, Predator, Trickster, Hunter, Scavenger:</strong> 12-second ramp</li>
+                <li><strong>Camper:</strong> 20-second ramp (deliberately patient)</li>
+            </ul>
+
+            <p>Formula: <code>aggression = min(1.0, elapsedTime / rampDuration)</code></p>
+
+            <h3>Movement System: No Pathfinding</h3>
+            <p>Enemies don't use A* pathfinding, grid-based movement, or influence maps. Movement is <strong>pure vector math:</strong></p>
+
+            <pre><code>// All movement is direct vector calculation
+function updatePosition(enemy) {
+    let dx = targetDirection.x * enemy.speed;
+    let dy = targetDirection.y * enemy.speed;
+
+    // Normalize and apply speed
+    let length = Math.sqrt(dx * dx + dy * dy);
+    if (length > 0) {
+        enemy.pos.x += (dx / length) * enemy.speed;
+        enemy.pos.y += (dy / length) * enemy.speed;
     }
 }</code></pre>
 
-            <h3>A* Pathfinding with Tactical Layers</h3>
-            <p>Standard A* pathfinding augmented with <strong>influence maps</strong>: a 2D grid scoring system where each cell is evaluated for tactical advantage.</p>
+            <p>This simplicity enables smooth, responsive movement and eliminates the computational overhead of pathfinding. The emergent tactical behavior comes from personality-modulated chase variants, not from grid-based spatial reasoning.</p>
 
-            <div class="tech-spec">
-                <h4>Grid Scoring:</h4>
-                <p>Each cell accumulates scores from: safety (distance from player's weapon range), ally positions (bonus for proximity), cover positions (bonus for defensive spots).</p>
-            </div>
+            <h3>Bot Abilities and Cooldowns</h3>
+            <p>When in CHASE state, enemies have a 2% chance per frame to activate an ability. Cooldowns are randomized per activation, creating unpredictable ability timing:</p>
 
-            <p>Enemies don't just find the shortest path—they find the path that maximizes tactical advantage.</p>
+            <pre><code>if (inChaseState && Math.random() < 0.02) {
+    // Select random ability
+    let ability = randomChoice([Shockwave, Teleport, Heal, ShadowClone]);
 
-            <h3>Influence Maps: Spatial Strategy</h3>
-            <p>The tactical backbone of our AI. Influence maps are 2D grids where each cell represents tactical value:</p>
+    // Randomize cooldown between 3-8 seconds
+    ability.cooldown = 3 + Math.random() * 5;
 
-            <div class="diagram">
-                <div class="diagram-label">Influence Map Concept</div>
-                <pre>
-Player Position: X (weapon range = 3 cells)
+    executeAbility(enemy, ability);
+}</code></pre>
 
-    [  ] [-1] [-2] [-3] [-2] [-1] [  ]
-    [-1] [-2] [-3] [-4] [-3] [-2] [-1]
-    [-2] [-3] [-4] [ X] [-4] [-3] [-2]
-    [-1] [-2] [-3] [-4] [-3] [-2] [-1]
-    [  ] [-1] [-2] [-3] [-2] [-1] [  ]
-
-Legend:
-  X  = Player (danger zone)
-  -N = Danger level (negative = bad, enemy avoids)
-  [  ] = Neutral (safe, but no tactical advantage)
-
-Enemies calculate path to LOWEST value (safest)
-while maintaining line of sight or cover.
-
-Example: Enemy chooses flanking route (value +2)
-over direct approach (value -3) for tactical advantage.
-                </pre>
-            </div>
-
-            <h3>Wave Difficulty Scaling</h3>
-            <p>Difficulty scales exponentially based on wave number and player performance:</p>
-
-            <div class="tech-spec">
-                <h4>Formula:</h4>
-                <p><code>waveStrength = baseStrength × (1 + log(wave) × difficultyMultiplier) + adaptationBonus</code></p>
-            </div>
-
-            <p>Where <code>adaptationBonus</code> increases when the player dominates a wave, ensuring progressive challenge without sudden difficulty spikes.</p>
-
-            <h3>Flocking + Tactical Movement</h3>
-            <p>Enemies use <strong>Reynolds boids</strong> (separation, alignment, cohesion) combined with tactical goals:</p>
-
-            <ul>
-                <li><strong>Separation:</strong> Enemies maintain spacing to avoid collision</li>
-                <li><strong>Alignment:</strong> Move in coordinated directions as a group</li>
-                <li><strong>Cohesion:</strong> Attracted to the center of the swarm</li>
-                <li><strong>Tactical Goals:</strong> Overlay flocking with tactical priorities (attack, flank, distract)</li>
-            </ul>
-
-            <p>This creates realistic group movement that appears intelligent and coordinated, not scripted.</p>
+            <h3>Boss Hunt: ONI BOSS</h3>
+            <p>When a Boss Hunt event triggers, the first spawned enemy becomes the ONI BOSS with 500 HP and 20 damage. But critically: <strong>same personality AI applies</strong>. The boss isn't a special case with unique logic—it's just a high-HP, high-damage instance of whatever personality archetype it inherited. This means a Berserker boss is a relentless, unkillable juggernaut, while a Trickster boss is chaos at scale.</p>
 
             <div class="callout">
-                <div class="callout-title">Why This Matters</div>
-                <p>Traditional enemy AI uses fixed patterns: patrol → chase → attack. Our system creates emergent behavior. Enemies adapt to player strategy, learn from repeated encounters, and coordinate like real tactical teams. Every wave feels different, challenging, and fair.</p>
+                <div class="callout-title">What This System Is NOT</div>
+                <p><strong>No behavior trees.</strong> No hierarchical decision branching. <strong>No A* pathfinding.</strong> No grid-based shortest paths or tactical overlays. <strong>No influence maps.</strong> No spatial scoring grids. <strong>No swarm coordination.</strong> Bots are independent; no formation flying or team tactics. <strong>No machine learning.</strong> mlStore logs behavior but never trains. <strong>No adaptive difficulty.</strong> Waves don't learn your patterns—they're scaled only by level.</p>
+            </div>
+
+            <div class="callout">
+                <div class="callout-title">Why This Works</div>
+                <p>Eight weighted configurations applied to one unified state machine create eight distinct personalities. Each personality hunts differently—Berserkers rush, Guardians retreat, Assassins pick weak targets, Predators circle, Tricksters juke, Campers lurk, Hunters lock, Scavengers camp power-ups. The variation feels intelligent because the weights are distributed across meaningful behavioral axes (aggression, retreat bias, target preference, movement style). Emergent complexity from elegant constraints.</p>
             </div>
         </section>
 
-        <!-- What's Next -->
+        <!-- Core Game Features -->
         <section>
-            <h2>What's Next</h2>
-            <p>We're expanding the AI systems to deliver new experiences:</p>
+            <h2>Full Game Feature Set</h2>
+            <p>The weighted state machine is embedded in a complete survival arena game:</p>
+
+            <h3>Game Mechanics</h3>
             <ul>
-                <li><strong>PvP with AI-Assisted Teammates:</strong> Play alongside intelligent AI partners that adapt to your playstyle</li>
-                <li><strong>Procedural Arena Generation:</strong> Randomized arenas that dynamically influence enemy tactics</li>
-                <li><strong>AI-Driven Narrative Events:</strong> Enemy behaviors that tell stories—betrayals, alliances, and emergent drama</li>
+                <li><strong>Drag-to-move</strong> in a shrinking arena</li>
+                <li><strong>Auto-attack:</strong> Nearest enemy takes damage automatically</li>
+                <li><strong>Double-tap dodge:</strong> 0.12-second i-frame window for invincibility</li>
+                <li><strong>4 Abilities:</strong> Shockwave, Teleport, Heal Burst, Shadow Clone with combo system</li>
+                <li><strong>Rage Mode:</strong> Triggered at 100 surge for power surge gameplay</li>
+            </ul>
+
+            <h3>Campaign & Events</h3>
+            <ul>
+                <li><strong>100-Level Campaign:</strong> Boss encounters at levels 25, 50, 75, and 100</li>
+                <li><strong>4 Event Modes:</strong> Giant (oversized enemies), Dash Fury (speed runs), Shrink Rush (accelerated arena shrink), Boss Hunt (survive the ONI)</li>
+                <li><strong>Online Multiplayer:</strong> Powered by Convex backend for real-time play</li>
             </ul>
         </section>
 
         <!-- CTA Section -->
         <section class="cta-section">
-            <h2>Experience Intelligent Combat</h2>
-            <p>Survival Arena delivers AI enemies that think, adapt, and hunt. Are you ready for a challenge that hunts back?</p>
+            <h2>Eight Personalities, One Elegant System</h2>
+            <p>Survival Arena's weighted state machine proves that sophisticated AI doesn't require complex systems—just elegant architecture. Eight personalities emerge from four states and personality weights. No trees, no pathfinding, no learning. Just pure game design.</p>
             <a href="#" class="cta-button">Back to ExaFabs</a>
         </section>
     </main>

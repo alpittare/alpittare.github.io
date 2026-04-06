@@ -398,113 +398,263 @@
         <article>
             <!-- Introduction -->
             <h2>Introduction</h2>
-            <p>Cricket is one of the most strategically complex sports. From analyzing pitch conditions to predicting batsman behavior, the sport demands both technical precision and tactical adaptability. CrickBot brings that complexity to mobile with AI opponents that don't just follow scripts — they learn, adapt, and evolve with every match you play.</p>
-            <p>This blog explores the AI systems powering CrickBot and how they create intelligent, unpredictable opponents that make every game feel fresh and challenging.</p>
+            <p>CrickBot is a mobile cricket game featuring intelligent AI opponents powered by a sophisticated rule-based probabilistic system. Rather than relying on reinforcement learning or neural networks, the AI uses a 4-phase architecture combining static rules, player modeling, Bayesian probability estimation, and optional Claude API integration to create adaptive, challenging opponents.</p>
+            <p>This blog explores the engineering behind CrickBot's 4-phase AI system and how it delivers intelligent cricket gameplay across 100 campaign levels, six difficulty tiers, and a surge system that escalates from Power Play to Legend Mode.</p>
 
-            <!-- How AI Makes CrickBot Different -->
-            <h2>How AI Makes CrickBot Different</h2>
-            <p>Traditional cricket games rely on pre-programmed behaviors. CrickBot takes a different approach by embedding real artificial intelligence into the game mechanics:</p>
+            <!-- Game Mechanics and Campaign -->
+            <h2>Game Mechanics and Campaign</h2>
+            <p>CrickBot features swipe-based batting mechanics (loft, drive, cut, pull, sweep, defend) against AI bowlers. The campaign spans 100 levels across themed locations with escalating difficulty. A surge system adds strategic depth: players progress from Power Play through Super Over, Ultra Smash, and Legend Mode, each tier applying power multipliers to make later campaign levels more engaging.</p>
 
             <div class="feature-list">
                 <ul>
-                    <li><strong>AI bowlers analyze your batting patterns</strong> and adjust their deliveries accordingly. Play too many cover drives? Expect the ball to move away. Too many pulls? The AI will bowl shorter.</li>
-                    <li><strong>Difficulty scales naturally</strong> — the better you play, the smarter the AI gets. This dynamic difficulty adjustment (DDA) maintains that perfect "flow state" where the game is challenging but never frustrating.</li>
-                    <li><strong>Each match feels unique</strong> because the AI never plays the same way twice. Your opponent learns from your previous matches and adapts its strategy.</li>
-                    <li><strong>AI fielders position themselves</strong> based on your hitting tendencies, creating a more authentic cricket experience where field placement matters.</li>
+                    <li><strong>Difficulty Tiers:</strong> Easy, Medium, Hard, Legend, plus adaptive scaling that adjusts in real-time during gameplay.</li>
+                    <li><strong>Ball Speed Scaling:</strong> Ranges from 2-3 px/frame on Easy to 5-8 px/frame on Legend, creating clear progression challenges.</li>
+                    <li><strong>Phase-Based AI:</strong> Four interconnected systems (Rules Engine, Player Modeling, Probability Predictors, Claude API) that work together to deliver intelligent bowling decisions.</li>
+                    <li><strong>Variation Penalties:</strong> The Rules Engine prevents repetitive deliveries, ensuring bowlers don't spam the same delivery type consecutively.</li>
                 </ul>
             </div>
 
-            <!-- The AI Systems at Work -->
-            <h2>The AI Systems at Work</h2>
-            <p>Under the hood, CrickBot runs several interconnected AI systems that work together to create an intelligent opponent:</p>
+            <!-- The 4-Phase AI Architecture -->
+            <h2>The 4-Phase AI Architecture</h2>
+            <p>CrickBot's AI is built on a four-phase system that separates concerns for maintainability and mobile performance. Each phase builds on the previous one:</p>
 
-            <h3>Adaptive Bowling Engine</h3>
-            <p>The bowling AI is the heart of CrickBot's intelligence. It tracks your shot selection across matches—how often you play cover drives, pulls, sweeps, defensive pushes—and adjusts its bowling strategy in real-time. If you're struggling against yorkers, the AI won't spam them; instead, it will use them strategically to keep you guessing.</p>
+            <h3>Phase 1: Rules Engine</h3>
+            <p>The foundation layer uses static lookup tables mapping shot effectiveness by ball type and length. The Rules Engine defines four bowling strategies: wicket_hunting (aim for dismissals), defensive (accumulate dot balls), balanced, and aggressive. A variation penalty mechanism prevents the same delivery type from being bowled consecutively, creating more realistic bowling sequences and keeping batsmen guessing.</p>
 
-            <h3>Difficulty Scaling</h3>
-            <p>CrickBot uses dynamic difficulty adjustment (DDA) to maintain optimal challenge. The system monitors your success rate (runs scored, wickets lost) and gradually increases AI intelligence as you improve. This prevents the game from becoming either too easy or unfairly difficult.</p>
+            <h3>Phase 2: Player Modeling</h3>
+            <p>This phase builds a lightweight behavioral profile of the batsman. It tracks shot selection patterns per ball type (e.g., how often the player pulls short deliveries vs. drives full ones) and calculates an aggression score using exponential moving average (EMA). The system identifies the player's primary weakness—the ball type with the highest miss rate—and feeds this intelligence back to Phase 1 to inform future bowling selections. Memory usage is capped at 2-4KB to ensure mobile performance isn't impacted.</p>
 
-            <h3>Shot Prediction</h3>
-            <p>By analyzing the last N shots you've played, the AI predicts your next move with increasing accuracy. Is the batsman likely to attack or defend? Will they go for a drive or rotate strike? These predictions help the AI position fielders and set up bowling plans.</p>
+            <h3>Phase 3: Probability Predictors</h3>
+            <p>Three complementary predictors work together to estimate shot likelihood and difficulty scaling:</p>
+            <ul>
+                <li><strong>BayesPredictor:</strong> Uses Laplace smoothing to estimate P(shot | delivery context). This Bayesian approach handles sparse data elegantly and avoids overconfidence on rare deliveries.</li>
+                <li><strong>SequencePredictor:</strong> A first-order Markov chain estimating P(next shot | current shot). Captures temporal patterns in batting behavior.</li>
+                <li><strong>AdaptiveDifficulty:</strong> Monitors win rate with EMA, targets 45% win rate as the "flow" point. Includes frustration guards (auto-downscaling after -4 loss streak) and boredom guards (auto-upscaling after +5 win streak). Produces scaling multipliers for ball speed, accuracy, reaction time, and AI aggression.</li>
+            </ul>
 
-            <h3>Field Placement AI</h3>
-            <p>Fielders don't stand in fixed positions. Instead, they reposition based on your wagon wheel data—where you've been scoring runs. The AI learns which areas you favor and adjusts field placement to restrict your scoring options while creating opportunities for breakthroughs.</p>
+            <h3>Phase 4: Claude API Integration (Optional)</h3>
+            <p>An optional async, non-blocking AI advisor that provides commentary and strategy suggestions. The system uses a circuit breaker pattern (opens after 3 errors for 60 seconds) and LRU cache with TTL for reliability. Critically, the game remains fully playable without this phase—API failures don't impact gameplay.</p>
 
             <!-- Technical Deep Dive -->
             <h2>Technical Deep Dive</h2>
-            <p>For those interested in the engineering behind CrickBot's AI, here's a glimpse at the core systems:</p>
+            <p>CrickBot's AI is fundamentally a rule-based probabilistic system—not machine learning. This section covers the actual implementation patterns:</p>
 
-            <h3>Reinforcement Learning for Bowling</h3>
-            <p>The bowling AI uses a simplified reinforcement learning (RL) approach. The system receives rewards for taking wickets and penalties for conceding boundaries. Over time, through repeated matches, it learns which bowling strategies work best against different player types. The learning algorithm continuously refines its decision-making:</p>
-
-            <div class="highlight-box">
-                <p><strong>Reward Structure:</strong> +10 points for a wicket, +2 points for dot balls, -5 points per boundary. The AI adjusts its strategy to maximize cumulative rewards over multiple overs.</p>
-            </div>
-
-            <h3>Pattern Recognition</h3>
-            <p>A sliding window of the player's last N shots (typically N=8-12) feeds into a decision tree classifier that categorizes player tendencies:</p>
+            <h3>BayesPredictor Implementation</h3>
+            <p>The BayesPredictor estimates the probability a batsman will play a specific shot given a delivery context. It uses Laplace smoothing to handle sparse data gracefully:</p>
 
             <div class="code-block">
-                <div class="code-label">Player Tendency Classification</div>
-                <code>// Pseudocode for tendency classification
-function classifyBattingStyle(lastNShots):
-    defensiveCount = countShots(lastNShots, "defensive")
-    aggressiveCount = countShots(lastNShots, "aggressive")
-    rotationCount = countShots(lastNShots, "rotation")
+                <div class="code-label">JavaScript / Python - BayesPredictor</div>
+                <code>class BayesPredictor:
+    def __init__(self, alpha=1.0):
+        self.shot_counts = {}  # {(delivery_type, delivery_length): {shot: count}}
+        self.delivery_counts = {}  # {(delivery_type, delivery_length): total}
+        self.alpha = alpha  # Laplace smoothing parameter
+        self.shots = ["loft", "drive", "cut", "pull", "sweep", "defend"]
 
-    if defensiveCount > 60%:
-        return "DEFENSIVE"
-    elif aggressiveCount > 60%:
-        return "AGGRESSIVE"
-    elif rotationCount > 50%:
-        return "ROTATOR"
-    else:
-        return "BALANCED"
+    def update(self, delivery_type, delivery_length, observed_shot):
+        key = (delivery_type, delivery_length)
+        if key not in self.shot_counts:
+            self.shot_counts[key] = {shot: 0 for shot in self.shots}
+            self.delivery_counts[key] = 0
 
-    // Adjust bowling strategy based on tendency
-    switch (battingStyle):
-        case "AGGRESSIVE":
-            return bowlShort() // Restrict scoring
-        case "DEFENSIVE":
-            return bowlDot() // Build pressure
-        case "ROTATOR":
-            return bowlWide() // Force shot-making
+        self.shot_counts[key][observed_shot] += 1
+        self.delivery_counts[key] += 1
+
+    def predict(self, delivery_type, delivery_length):
+        """Returns {shot: probability} for all possible shots"""
+        key = (delivery_type, delivery_length)
+        if key not in self.delivery_counts:
+            return {shot: 1/len(self.shots) for shot in self.shots}  # Uniform
+
+        total = self.delivery_counts[key]
+        num_shots = len(self.shots)
+
+        probabilities = {}
+        for shot in self.shots:
+            count = self.shot_counts[key].get(shot, 0)
+            # Laplace smoothing: (count + alpha) / (total + alpha*num_shots)
+            prob = (count + self.alpha) / (total + self.alpha * num_shots)
+            probabilities[shot] = prob
+
+        return probabilities
 </code>
             </div>
 
-            <h3>State Machine Architecture</h3>
-            <p>The game is managed through a finite state machine with distinct states: Bowling, Batting, Fielding, and Decision. At each transition, the AI evaluates the current game state and makes decisions based on learned patterns.</p>
-
-            <h3>Difficulty Curves</h3>
-            <p>The difficulty scaling uses a sigmoid-based function to ensure smooth progression:</p>
+            <h3>AdaptiveDifficulty and Win Rate Tracking</h3>
+            <p>The adaptive difficulty system uses exponential moving average (EMA) to smoothly track win rate and applies scaling multipliers to four game parameters:</p>
 
             <div class="code-block">
-                <div class="code-label">Sigmoid Difficulty Function</div>
-                <code>// Difficulty scaling function
-difficulty = 1 / (1 + e^(-k * (playerSkill - midpoint)))
+                <div class="code-label">JavaScript / Python - AdaptiveDifficulty</div>
+                <code>class AdaptiveDifficulty:
+    def __init__(self, target_win_rate=0.45, ema_alpha=0.2):
+        self.target_win_rate = target_win_rate
+        self.ema_alpha = ema_alpha
+        self.ema_win_rate = 0.5
+        self.win_streak = 0
+        self.loss_streak = 0
+        self.base_difficulty = 1.0
 
-where:
-  - k = 0.5 (controls curve steepness)
-  - playerSkill = player's calculated skill rating
-  - midpoint = 50 (skill level at 50% difficulty)
-  - difficulty ∈ [0, 1]
+    def update(self, game_result):
+        """game_result: 1 for win, 0 for loss"""
+        # Update EMA
+        self.ema_win_rate = (self.ema_alpha * game_result +
+                            (1 - self.ema_alpha) * self.ema_win_rate)
 
-// Example values:
-playerSkill = 30 → difficulty ≈ 0.27 (Easy)
-playerSkill = 50 → difficulty ≈ 0.50 (Medium)
-playerSkill = 70 → difficulty ≈ 0.73 (Hard)
-playerSkill = 90 → difficulty ≈ 0.95 (Expert)</code>
+        # Track streaks
+        if game_result == 1:
+            self.win_streak += 1
+            self.loss_streak = 0
+        else:
+            self.loss_streak += 1
+            self.win_streak = 0
+
+        # Frustration guard: -4 loss streak triggers downscale
+        if self.loss_streak >= 4:
+            self.base_difficulty *= 0.85
+            self.loss_streak = 0
+
+        # Boredom guard: +5 win streak triggers upscale
+        if self.win_streak >= 5:
+            self.base_difficulty *= 1.15
+            self.win_streak = 0
+
+    def get_scaling_multipliers(self):
+        """Returns multipliers for ball_speed, accuracy, reaction_time, ai_aggression"""
+        # Sigmoid-like scaling based on deviation from target
+        deviation = self.ema_win_rate - self.target_win_rate
+        # If winning too much, increase difficulty; if losing, decrease it
+        difficulty_scale = 1.0 + (deviation * -2.0)  # -2.0 is sensitivity
+
+        return {
+            'ball_speed': max(0.5, min(2.0, difficulty_scale)),
+            'accuracy': max(0.5, min(1.5, difficulty_scale)),
+            'reaction_time': max(0.5, min(2.0, difficulty_scale)),
+            'ai_aggression': max(0.3, min(1.5, difficulty_scale))
+        }
+</code>
             </div>
 
-            <!-- What's Next -->
-            <h2>What's Next</h2>
-            <p>CrickBot's AI is constantly evolving. Here's what we're working on:</p>
+            <h3>Player Modeling with EMA</h3>
+            <p>Phase 2 tracks batsman aggression and identifies weaknesses using exponential moving average for smooth, responsive adaptation:</p>
+
+            <div class="code-block">
+                <div class="code-label">JavaScript / Python - PlayerModeling</div>
+                <code>class PlayerModeling:
+    def __init__(self, ema_alpha=0.15, memory_limit_bytes=4096):
+        self.shot_by_delivery = {}  # {delivery_type: {shot: count}}
+        self.ema_aggression = 0.5  # 0=defensive, 1=aggressive
+        self.ema_alpha = ema_alpha
+        self.memory_limit = memory_limit_bytes
+
+    def update(self, delivery_type, shot_played, is_aggressive):
+        """Update player profile after each ball"""
+        if delivery_type not in self.shot_by_delivery:
+            self.shot_by_delivery[delivery_type] = {}
+
+        if shot_played not in self.shot_by_delivery[delivery_type]:
+            self.shot_by_delivery[delivery_type][shot_played] = 0
+
+        self.shot_by_delivery[delivery_type][shot_played] += 1
+        self.ema_aggression = (self.ema_alpha * is_aggressive +
+                              (1 - self.ema_alpha) * self.ema_aggression)
+
+        # Implement memory cap for mobile efficiency
+        self._enforce_memory_limit()
+
+    def find_weakness(self):
+        """Identify delivery type with highest miss rate"""
+        miss_rates = {}
+        for delivery_type, shots in self.shot_by_delivery.items():
+            total = sum(shots.values())
+            misses = shots.get('miss', 0)
+            miss_rates[delivery_type] = misses / total if total > 0 else 0
+
+        if not miss_rates:
+            return None
+        return max(miss_rates, key=miss_rates.get)
+
+    def _enforce_memory_limit(self):
+        """Prune oldest data if memory exceeds limit"""
+        # Simplified: in production, serialize and measure actual size
+        if len(self.shot_by_delivery) > 20:
+            oldest_key = list(self.shot_by_delivery.keys())[0]
+            del self.shot_by_delivery[oldest_key]
+</code>
+            </div>
+
+            <h3>Rules Engine: Bowling Strategy Selection</h3>
+            <p>Phase 1 uses static lookup tables and variation penalties to select deliveries:</p>
+
+            <div class="code-block">
+                <div class="code-label">JavaScript / Python - RulesEngine</div>
+                <code>class RulesEngine:
+    def __init__(self):
+        # Static effectiveness lookup: {strategy: {shot_type: effectiveness_score}}
+        self.strategy_effectiveness = {
+            'wicket_hunting': {'yorker': 8, 'bouncer': 7, 'dot': 3},
+            'defensive': {'dot': 9, 'length': 7, 'line': 6},
+            'balanced': {'length': 7, 'dot': 6, 'variation': 6},
+            'aggressive': {'short': 8, 'width': 7, 'pace': 8}
+        }
+        self.last_delivery = None
+        self.variation_penalty = 0.3  # Penalize same delivery repetition
+
+    def select_delivery(self, strategy, player_weakness=None):
+        """Select next delivery type based on strategy and weakness"""
+        candidates = self.strategy_effectiveness[strategy]
+
+        # Apply variation penalty to last delivery type
+        if self.last_delivery:
+            candidates = candidates.copy()
+            candidates[self.last_delivery] *= self.variation_penalty
+
+        # Bias toward player weakness if identified
+        if player_weakness and player_weakness in candidates:
+            candidates[player_weakness] *= 1.3
+
+        # Normalize and pick weighted random
+        total = sum(candidates.values())
+        probabilities = {k: v/total for k, v in candidates.items()}
+
+        selected = self._weighted_random_choice(probabilities)
+        self.last_delivery = selected
+        return selected
+
+    def _weighted_random_choice(self, probabilities):
+        import random
+        r = random.random()
+        cumsum = 0
+        for choice, prob in probabilities.items():
+            cumsum += prob
+            if r <= cumsum:
+                return choice
+        return list(probabilities.keys())[-1]
+</code>
+            </div>
+
+            <!-- What CrickBot Does NOT Have -->
+            <h2>What CrickBot Does NOT Have</h2>
+            <p>It's important to be clear about what technologies CrickBot deliberately avoids, given the emphasis on mobile performance and determinism:</p>
+
+            <div class="highlight-box">
+                <ul>
+                    <li><strong>No Reinforcement Learning or Neural Networks:</strong> CrickBot doesn't use RL, DQN, Q-learning, or policy gradients. These would require significant compute overhead and make AI behavior harder to debug and tune.</li>
+                    <li><strong>No Field Placement AI:</strong> Fielders use static line offsets based on shot history rather than dynamic position optimization.</li>
+                    <li><strong>No Online Learning:</strong> Player models reset between sessions (though Phase 2 memory is preserved during campaign play). Global learning across players is not implemented.</li>
+                </ul>
+            </div>
+
+            <h2>Why Rule-Based + Probabilistic?</h2>
+            <p>CrickBot's architecture prioritizes transparency, mobile performance, and determinism. Every AI decision is traceable: you can log exactly why the bowler chose a yorker (it scored 8 points against aggressive batsmen), why the accuracy scaled up (win rate exceeded target), and what the probability distribution looked like for that shot. This makes balancing and debugging far easier than debugging opaque neural network decisions, and ensures the game runs smoothly on mid-range phones with sub-50MB memory budgets.</p>
+
+            <h2>Future Directions</h2>
+            <p>While the current system is sophisticated and effective, potential enhancements could include:</p>
 
             <div class="feature-list">
                 <ul>
-                    <li><strong>Multiplayer AI Learning:</strong> Future versions will enable the AI to learn from global player data, creating opponents that adapt to evolving meta-strategies across the entire player base.</li>
-                    <li><strong>Voice-Controlled Batting:</strong> Natural Language Processing (NLP) will power voice commands, allowing players to call shots naturally ("play a cover drive", "defend this one").</li>
-                    <li><strong>Advanced Analytics Dashboard:</strong> A detailed analytics screen showing AI decision history, your performance trends, and personalized recommendations for improvement.</li>
+                    <li><strong>Cross-Match Learning:</strong> Retaining player models across multiple campaign sessions to deepen adaptation.</li>
+                    <li><strong>Field Placement Optimization:</strong> Using constraint satisfaction or genetic algorithms to compute optimal fielder positions without neural networks.</li>
+                    <li><strong>Claude API Integration Expansion:</strong> Richer commentary that understands game context and provides tactical insights based on real-time match state.</li>
                 </ul>
             </div>
 

@@ -346,13 +346,13 @@
     <!-- Hero Banner -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Inside GoalBot: AI That Learns Your Shooting Style</h1>
+            <h1>Inside GoalBot: Neural Networks vs. Heuristics</h1>
             <div class="hero-meta">
                 <span class="meta-item">
-                    <span class="meta-badge">7 min read</span>
+                    <span class="meta-badge">8 min read</span>
                 </span>
                 <span class="meta-item">
-                    <span class="meta-badge">AI / Football</span>
+                    <span class="meta-badge">AI / Game Design</span>
                 </span>
                 <span class="meta-item">
                     <span>2026</span>
@@ -365,137 +365,189 @@
     <div class="container">
         <article>
             <!-- Introduction -->
-            <p><strong>Football is about reading the game.</strong> GoalBot's AI goalkeeper doesn't just react — it studies your shooting patterns and positions itself to shut down your favorite angles. Every shot teaches the keeper something new about your style, making each match progressively more challenging and rewarding.</p>
+            <p><strong>GoalBot isn't a penalty kick simulator—it's a machine learning sandbox.</strong> You're a penalty taker facing an AI goalkeeper that adapts to your style. The twist: the AI's sophistication depends entirely on difficulty. On Legend, a TensorFlow.js neural network predicts your next shot. On Easy and Medium, it uses simple heuristics. Hard splits the difference. Every save is calculated; every miss is deliberate.</p>
 
-            <!-- Section: How AI Makes GoalBot Different -->
-            <h2>How AI Makes GoalBot Different</h2>
+            <!-- Section: How GoalBot Actually Works -->
+            <h2>How GoalBot Actually Works</h2>
 
-            <p>Traditional goal-keeping in football games relies on scripted animations and basic heuristics. GoalBot changes that entirely by bringing machine learning to the goalkeeper position. Here's what makes it revolutionary:</p>
+            <p>GoalBot is a penalty kick shooter with rounds (8-15 based on difficulty). You swipe to shoot. The goalkeeper reacts. The AI doesn't learn your personality—it doesn't need to. Instead, it uses real-time pattern recognition on your last 10 shots to predict direction, injects strategic errors, and decides when to miss on purpose to keep the difficulty target (55% player success rate) steady.</p>
 
             <div class="feature-list">
                 <ul>
-                    <li><strong>Shot History Tracking:</strong> The AI goalkeeper maintains a complete history of your shot placement, angle, power, and spin. This data continuously updates a probability heat map of where you're most likely to shoot next.</li>
-                    <li><strong>Adaptive Defensive Walls:</strong> Free kick walls aren't static. They analyze your free kick tendencies — your preferred angles, power curves, and typical spin — then adjust formation and positioning in real-time to block your most dangerous shots.</li>
-                    <li><strong>Dynamic Difficulty Scaling:</strong> The AI difficulty adjusts intelligently. Score too easily? The keeper becomes more conservative. Struggling? The AI relaxes slightly. You're always challenged but never frustrated.</li>
-                    <li><strong>Distinct Keeper Personalities:</strong> Each goalkeeper has a unique AI personality. Some are aggressive shot-stoppers with quick reflexes. Others play a cautious, positioning-first style. Some are specialists at one-on-one situations. Your opponent matters.</li>
+                    <li><strong>Swipe-Based Shooting:</strong> Diagonal swipes bend the ball. Horizontal swipes shoot straight. The power bar charges, and the surge system unlocks at higher power levels (BOOST → HYPER → ULTRA → LEGEND), increasing shot complexity.</li>
+                    <li><strong>Adaptive Difficulty Scaling:</strong> Rolling 10-shot success window. Target = 55% player success. If you're winning too much, the keeper tightens (up to +0.5 difficulty modifier). If you're losing, the AI relaxes (-0.5 smoothing at 0.15 rate).</li>
+                    <li><strong>Legend Difficulty Uses Real ML:</strong> Only on Legend does a 12-input neural network activate. Easy/Medium use biased random. Hard uses heuristics. This isn't lazy design—it's intentional. Easier modes should feel fast and fair, not engineered.</li>
+                    <li><strong>Player Skill Profiling:</strong> The system tracks your accuracy, preferred direction (L/C/R), power tendency, and composite entropy score. This data is logged for analytics only—not fed back into the AI decisions (by design).</li>
                 </ul>
             </div>
 
-            <!-- Section: The AI Systems -->
-            <h2>The AI Systems Behind GoalBot</h2>
+            <!-- Section: The Three Components of Goalkeeper AI -->
+            <h2>The Three Components of Goalkeeper AI</h2>
 
-            <p>GoalBot's intelligence is built on four core systems that work together seamlessly:</p>
+            <p>GoalBot's goalkeeper system has three layers: a machine learning model, adaptive difficulty scaling, and a multi-step dive algorithm that ties it all together.</p>
 
-            <h3>Goalkeeper Prediction Model</h3>
-            <p>The keeper maintains a live probability heat map of your goal-mouth shots. Every time you shoot, this map updates to reflect your patterns. Corner shots? Top right corner? The keeper learns. The heat map is recalculated after every attempt.</p>
+            <h3>1. GoalkeeperML: The TensorFlow.js Neural Network</h3>
+            <p><strong>Architecture:</strong> 12 inputs → 32 hidden units (ReLU) → 16 hidden units (ReLU) → 3 outputs (softmax). The network only activates on Legend difficulty. On Easy and Medium, it's completely bypassed in favor of simpler random and heuristic approaches.</p>
 
-            <h3>Shot Pattern Analysis</h3>
-            <p>The system classifies your shooting style into archetypes: <strong>corner-shooters</strong> (prefer hitting the corners), <strong>power-shooters</strong> (favor high-velocity center shots), and <strong>placement-artists</strong> (aim for specific zones with precision). Classification guides keeper positioning strategy.</p>
+            <p><strong>The 12 Input Features:</strong></p>
+            <ul>
+                <li>Last shot angle, power, and position</li>
+                <li>Direction distribution from last 10 shots (L/C/R frequencies)</li>
+                <li>Same-direction streak count</li>
+                <li>Alternation pattern score (how often you switch directions)</li>
+                <li>Average power over last 5 shots</li>
+                <li>Success rate (saves vs. goals)</li>
+                <li>Round progress (which round of 8-15)</li>
+                <li>Momentum signal (trending harder or softer)</li>
+            </ul>
 
-            <h3>Dynamic Positioning</h3>
-            <p>Based on Bayesian probability of shot location, the goalkeeper pre-positions before you even shoot. If you're statistically likely to shoot top-right, the keeper drifts that direction. This creates meaningful mind-games between player and AI.</p>
+            <p>The network retrains every 3 shots when at least 5 training samples exist, running 8 epochs. When pattern detection fails (no clear alternating patterns), it falls back to statistical analysis. This hybrid approach means Legend mode has genuine adaptive intelligence without overfitting.</p>
 
-            <h3>Adaptive Walls</h3>
-            <p>Free kick walls adjust their height and spread based on your historical free kick data. Favor high shots? The wall drops slightly. Prefer ground passes? The wall tightens. This forces you to adapt your strategy rather than relying on repetition.</p>
+            <h3>2. Adaptive Difficulty Scaling</h3>
+            <p>Every match uses a rolling 10-shot success window. The target = 55% player success rate. If your success rate exceeds this, the keeper adjusts difficulty up (+0.5 modifier). If you're below target, it eases (−0.5). The smoothing rate is 0.15, so difficulty shifts gradually rather than jerking between extremes.</p>
+
+            <p><strong>Target save rates by difficulty:</strong></p>
+            <ul>
+                <li>Easy: 20–30% save rate (you win most matches)</li>
+                <li>Medium: 40–55% save rate (competitive)</li>
+                <li>Hard: 60–75% save rate (challenging)</li>
+                <li>Legend: 70–85% save rate (punishing)</li>
+            </ul>
+
+            <p>This ensures that regardless of difficulty, the match stays balanced around 55% expected player success. The AI isn't trying to beat you—it's trying to present a calibrated challenge.</p>
+
+            <h3>3. The Multi-Step Dive Algorithm (_computeKeeperDive)</h3>
+            <p>This is where prediction becomes action. The dive algorithm runs seven sequential steps:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Step 1: ML Prediction + Confidence.</strong> The neural network (or heuristics on lower difficulty) outputs a predicted shot direction. Confidence is scaled by difficulty: Easy gets 0.3x, Legend gets full 1.0x confidence weight. This means the keeper on Easy guesses; on Legend, it commits.</li>
+                    <li><strong>Step 2: Prediction Error Injection.</strong> Random chance to output a wrong direction. This prevents the keeper from being too perfect and keeps matches feel organic.</li>
+                    <li><strong>Step 3: Direction → Position Mapping.</strong> Convert the predicted direction into a dive position with accuracy bias (some directions are easier to defend than others).</li>
+                    <li><strong>Step 4: Overcommit Chance.</strong> 5–22% chance the keeper dives too far in one direction, leaving the other side exposed. Range depends on difficulty.</li>
+                    <li><strong>Step 5: Position Jitter.</strong> Add ±15px random noise to the dive position so the keeper doesn't land in pixel-perfect spots every time.</li>
+                    <li><strong>Step 6: Intentional Miss Chance.</strong> 2–28% chance the keeper simply doesn't make the save, even though they could. Range depends on difficulty. This preserves the 55% target success rate without feeling rigged.</li>
+                    <li><strong>Step 7: Confidence-Driven Behavior.</strong> High confidence = fast dive, early commitment. Low confidence = conservative positioning, late reaction.</li>
+                </ul>
+            </div>
 
             <!-- Section: Technical Deep Dive -->
-            <h2>Technical Deep Dive</h2>
+            <h2>Technical Deep Dive: How the Network Works</h2>
 
-            <p>For the technically inclined, here's what's actually happening under the hood:</p>
+            <p>The GoalkeeperML neural network is the heart of Legend difficulty. Here's how it works:</p>
 
-            <h3>Bayesian Shot Prediction</h3>
-            <p>The core algorithm uses Bayesian inference to update shot location probability with each attempt:</p>
+            <h3>Network Architecture</h3>
+            <p>A straightforward feedforward network optimized for mobile:</p>
 
             <div class="code-block">
-                <div class="code-block-label">Bayesian Update Formula</div>
-                <code>P(location|history) = P(history|location) × P(location) / P(history)</code>
+                <div class="code-block-label">GoalkeeperML Architecture</div>
+                <code>Input Layer (12 features)
+  ↓
+Dense(32, activation='relu')  // Feature extraction
+  ↓
+Dense(16, activation='relu')  // Pattern compression
+  ↓
+Dense(3, activation='softmax') // Predict: LEFT, CENTER, RIGHT
+  ↓
+Output: [P(left), P(center), P(right)]</code>
             </div>
 
-            <p>Breaking this down:</p>
+            <p>The 12 input features capture your shooting history:</p>
             <ul>
-                <li><code>P(location|history)</code> = posterior probability of a specific goal location given all your shot history</li>
-                <li><code>P(history|location)</code> = likelihood of observing your history if you actually prefer that location</li>
-                <li><code>P(location)</code> = prior belief about typical shot distribution (uniform if no data)</li>
-                <li><code>P(history)</code> = normalizing constant to ensure probabilities sum to 1</li>
+                <li><code>last_angle</code>, <code>last_power</code>, <code>last_position</code> — Your most recent shot</li>
+                <li><code>left_freq</code>, <code>center_freq</code>, <code>right_freq</code> — Distribution over last 10 shots</li>
+                <li><code>same_direction_streak</code> — How many times in a row you shot the same direction</li>
+                <li><code>alternation_score</code> — Likelihood you're alternating L→C→R patterns</li>
+                <li><code>avg_power_5</code> — Your average power over last 5 shots</li>
+                <li><code>success_rate</code> — Goals / total shots</li>
+                <li><code>round_progress</code> — Which round of the match (1–15)</li>
+                <li><code>momentum</code> — Trending harder or softer shots</li>
             </ul>
 
-            <p>In practice, the goal-mouth is divided into a 2D grid (center, left, right, top, bottom corners = 9 zones). After each shot, the posterior distribution shifts weight toward the zone where you actually shot, with intensity proportional to how similar this shot is to your historical shots.</p>
+            <h3>Training & Retraining</h3>
+            <p>The network trains incrementally. Every 3 shots, if at least 5 labeled examples exist, it retrains for 8 epochs using your shot history as ground truth. The output is a probability distribution over three zones (LEFT, CENTER, RIGHT). A softmax layer ensures probabilities sum to 1.</p>
 
-            <h3>Neural Network Approach</h3>
-            <p>In addition to Bayesian prediction, GoalBot uses a simple feedforward neural network for real-time reaction prediction:</p>
+            <p>When pattern detection fails (no clear alternation, random shooting), the network falls back to <strong>statistical alternation detection</strong>: if you shot LEFT then CENTER, it predicts RIGHT. This hybrid approach prevents overfitting on noisy input.</p>
+
+            <h3>Difficulty Scaling & Confidence</h3>
+            <p>The network's output is scaled by difficulty:</p>
 
             <div class="code-block">
-                <div class="code-block-label">Neural Network Architecture (Pseudocode)</div>
-                <code>class GoalkeeperReactionNet(nn.Module):
-    def __init__(self):
-        self.input = 6  # [shot_angle, power, spin, player_tendency_score, ball_height, ball_distance]
-        self.hidden1 = 32
-        self.hidden2 = 16
-        self.output = 2  # [dive_direction (normalized), timing_ms]
+                <div class="code-block-label">Confidence Scaling by Difficulty</div>
+                <code>confidence = network_probability[predicted_direction]
 
-    def forward(self, inputs):
-        x = ReLU(self.fc1(inputs))
-        x = ReLU(self.fc2(x))
-        return sigmoid(self.fc3(x))  # Normalize outputs to [0,1]</code>
+Easy:    confidence *= 0.3   // Keeper guesses, low commitment
+Medium:  confidence *= 0.6   // Keeper partially commits
+Hard:    confidence *= 0.8   // Keeper mostly trusts the net
+Legend:  confidence *= 1.0   // Full ML weight</code>
             </div>
 
-            <p>Inputs include shot angle, power, spin, your player-tendency score from historical data, ball height, and distance from goal. The network outputs dive direction (0-360 degrees normalized) and exact timing in milliseconds. This allows keeper reactions that feel natural and human-like rather than instant.</p>
+            <p>On Easy, the network might predict RIGHT with 0.8 probability, but 0.3× scaling drops confidence to 0.24. The keeper dives RIGHT weakly, still vulnerable to CENTER. On Legend, the keeper commits fully to the dive.</p>
 
-            <h3>Heat Map Generation</h3>
-            <p>The 2D goal-mouth grid is overlaid with a weighted distribution:</p>
+            <h3>The 7-Step Dive Execution</h3>
+            <p>Once the network predicts a direction, the dive algorithm executes in sequence:</p>
 
             <div class="diagram">
-┌─────────────────────┐
-│  TL(0.15) T(0.08) TR(0.22) │
-│  L(0.12)  C(0.05)  R(0.18) │
-│  BL(0.08) B(0.05) BR(0.07) │
-└─────────────────────┘
-(Example: Player favors top-right corner)
-
-Each zone weight = frequency_of_shots_in_zone / total_shots
-Goalkeeper bias shifts toward high-probability zones.
+STEP 1: ML Prediction + Confidence (scaled by difficulty)
+       ↓
+STEP 2: Error Injection (random wrong direction)
+       ↓
+STEP 3: Direction → Position Mapping (with accuracy bias)
+       ↓
+STEP 4: Overcommit Check (5–22% chance to overextend)
+       ↓
+STEP 5: Position Jitter (±15px noise)
+       ↓
+STEP 6: Intentional Miss (2–28% chance to miss anyway)
+       ↓
+STEP 7: Confidence-Driven Behavior (fast vs. conservative)
             </div>
 
-            <p>The keeper's positioning is directly influenced by this heat map. Higher weights pull the keeper's starting position toward that zone. Over time, as you adjust your strategy, the heat map adapts, forcing you to evolve.</p>
+            <p><strong>Why 7 steps?</strong> Step 1 generates a prediction. Steps 2–5 inject realism (errors, noise, overcommits). Step 6 enforces the difficulty target (55% success rate). Step 7 makes the dive feel responsive to how confident the keeper actually is.</p>
 
-            <h3>Personality System</h3>
-            <p>Each goalkeeper has tunable parameters that define their playing style:</p>
+            <p>The result: saves that feel earned, not unfair. Misses that feel possible, not handed to you.</p>
 
-            <div class="code-block">
-                <div class="code-block-label">Goalkeeper Personality Parameters</div>
-                <code>class GoalkeeperPersonality:
-    aggressiveness: float  # 0.0 (passive) to 1.0 (aggressive)
-    reaction_speed: float  # 0.3s to 0.1s dive time (faster = higher)
-    positioning_bias: float  # How aggressively to pre-position based on probability
-    risk_tolerance: float  # Willingness to play outside box or take risks
-    one_on_one_skill: float  # Special effectiveness in keeper-vs-player situations</code>
-            </div>
+            <h3>Why Legend Uses ML, Others Don't</h3>
+            <p>Easy and Medium modes skip the neural network entirely:</p>
 
-            <p><strong>Example personalities:</strong></p>
             <ul>
-                <li><strong>Marco (Aggressive):</strong> aggressiveness=0.9, reaction_speed=0.15s, positioning_bias=0.8, risk_tolerance=0.7. Rushes to meet you, takes chances.</li>
-                <li><strong>Elena (Conservative):</strong> aggressiveness=0.3, reaction_speed=0.25s, positioning_bias=0.4, risk_tolerance=0.2. Stays in box, reads the game patiently.</li>
-                <li><strong>Kai (Balanced):</strong> aggressiveness=0.5, reaction_speed=0.18s, positioning_bias=0.5, risk_tolerance=0.5. Flexible strategy adapts to your play.</li>
+                <li><strong>Easy:</strong> Biased random direction (60% CENTER, 20% LEFT, 20% RIGHT). No pattern tracking.</li>
+                <li><strong>Medium:</strong> Biased random + alternation detection. If you shot LEFT twice, boost RIGHT probability.</li>
+                <li><strong>Hard:</strong> Heuristics only. Track last 3 shots, detect trends, simple rule-based predictions.</li>
+                <li><strong>Legend:</strong> Full TensorFlow.js neural network. 12-feature input, real pattern learning.</li>
+            </ul>
+
+            <p>This is intentional. Easier modes prioritize speed and fairness. Legend is where the ML shine. On Legend, you're not fighting randomness—you're fighting a genuine adaptive opponent.</p>
+
+            <!-- Section: What GoalBot Doesn't Have -->
+            <h2>What GoalBot Doesn't Have (And Why That Matters)</h2>
+
+            <p>To be honest about what we built, here's what's NOT in GoalBot:</p>
+
+            <ul>
+                <li><strong>Bayesian Inference:</strong> The goalkeeper doesn't use Bayes' rule (that's in our cricket engine). Instead, it uses simpler pattern recognition and a feedforward neural net on Legend.</li>
+                <li><strong>Goalkeeper Personalities:</strong> There's no "aggressive keeper" vs. "conservative keeper" AI personalities. The keeper's behavior is controlled by difficulty scaling alone.</li>
+                <li><strong>Heat Maps or Visualization:</strong> No visual probability maps. The AI tracks direction distribution internally (L/C/R frequencies) but doesn't visualize it.</li>
+                <li><strong>Full Match Simulation:</strong> GoalBot is penalty kicks only. No open-play, no 90-minute simulation, no team tactics.</li>
+                <li><strong>Skill Profiling Feedback Loop:</strong> We track your accuracy, preferred direction, power tendency, and entropy score for analytics. This data is NOT fed back into AI decisions. Your profile doesn't automatically change the keeper's strategy.</li>
+            </ul>
+
+            <p>These aren't limitations—they're design choices. Keeping the system focused (penalty kicks only, pattern-based prediction, no personality matrix) makes it easier to test, balance, and iterate. Complexity has a cost in mobile game performance and maintainability.</p>
+
+            <!-- Section: What's Genuinely Impressive -->
+            <h2>What's Actually Impressive</h2>
+
+            <p>Let's be honest about what works well:</p>
+
+            <ul>
+                <li><strong>The TensorFlow.js Neural Network on Legend:</strong> Running a 12-input, 2-hidden-layer neural net that retrains every 3 shots on a mobile device without noticeable lag is genuinely solid engineering. The network learns your patterns in real-time.</li>
+                <li><strong>The Multi-Step Dive Algorithm:</strong> Seven sequential steps from prediction to execution is more sophisticated than it sounds. Prediction error injection, overcommit chance, position jitter, and intentional miss probability work together to create dives that feel organic and fair.</li>
+                <li><strong>Difficulty Scaling:</strong> Maintaining a rolling 10-shot success window and smoothly adjusting difficulty to hit a 55% target is a well-tested approach that keeps matches balanced without feeling gamed.</li>
+                <li><strong>The Hybrid Approach:</strong> Easy/Medium use heuristics (fast), Hard uses more complex rules (balanced), Legend uses ML (smart). This tiering is pragmatic—you give players the sophistication they want without burning CPU on modes where it doesn't matter.</li>
             </ul>
 
             <div class="highlight">
-                <strong>Why This Matters:</strong> Instead of one "hard mode," each keeper presents a unique challenge. You develop strategies against aggressive keepers, then must entirely rethink your approach against conservative opponents. The meta-game becomes about adapting to personalities, not just memorizing patterns.
-            </div>
-
-            <!-- Section: What's Next -->
-            <h2>What's Next</h2>
-
-            <p>We're just scratching the surface. The roadmap includes:</p>
-
-            <ul>
-                <li><strong>Multi-Player AI Tournaments:</strong> Play against AI teams with interconnected AI players who adapt to each other and your team's tactics.</li>
-                <li><strong>Gesture-Based Controls:</strong> Advanced input that teaches AI goalkeepers your shot patterns from body language and foot placement before you even strike the ball.</li>
-                <li><strong>AI Manager Mode:</strong> Coach a team where the AI learns from your tactical decisions, formations, and style—then suggests improvements based on performance analysis.</li>
-            </ul>
-
-            <!-- Final CTA -->
-            <div class="highlight">
-                <p>GoalBot isn't just a game. It's an AI system that learns you, challenges you, and evolves with every match you play. Football has always been about reading your opponent. Now your opponent reads you too.</p>
+                <strong>The Real Takeaway:</strong> GoalBot's AI isn't trying to fool you into thinking it's smarter than it is. On Legend, it genuinely learns your patterns. On Easy, it's honest randomness with fairness built in. That's the design.
             </div>
         </article>
     </div>
@@ -504,8 +556,8 @@ Goalkeeper bias shifts toward high-probability zones.
     <footer>
         <div class="footer-content">
             <a href="/" class="footer-cta">Back to ExaFabs</a>
-            <p class="footer-text">GoalBot: AI That Learns Your Game</p>
-            <p class="footer-text">Published 2026</p>
+            <p class="footer-text">GoalBot: Penalty Kicks × Neural Networks</p>
+            <p class="footer-text">Published 2026 | Legend Difficulty Powered by TensorFlow.js</p>
         </div>
     </footer>
 
