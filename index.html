@@ -1300,6 +1300,236 @@
             }
         }
 
+        /* ===== FEATURED PRODUCT SPOTLIGHT ===== */
+        .featured {
+            padding: 5rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .featured-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .featured-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .featured-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+        .featured-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 2.5rem;
+            backdrop-filter: var(--blur-glass);
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+        .featured-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .featured-info .featured-tagline {
+            color: var(--accent-cyan);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .featured-info p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        .featured-highlights {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .featured-highlights span {
+            background: rgba(100,200,255,0.06);
+            border: 1px solid rgba(100,200,255,0.12);
+            padding: 0.4rem 0.85rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .featured-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            background: var(--primary-gradient);
+            color: #fff;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.3s var(--transition-smooth), box-shadow 0.3s;
+        }
+        .featured-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(155, 48, 255, 0.3);
+        }
+        .featured-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            background: linear-gradient(135deg, rgba(155,48,255,0.08), rgba(100,200,255,0.06));
+            border-radius: 1rem;
+            border: 1px solid rgba(100,200,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-visual-icon {
+            font-size: 6rem;
+            filter: drop-shadow(0 0 40px rgba(155,48,255,0.3));
+        }
+        .featured-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(155,48,255,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            .featured-card { grid-template-columns: 1fr; gap: 2rem; padding: 1.5rem; }
+            .featured-visual { min-height: 200px; }
+            .featured-info h3 { font-size: 1.4rem; }
+        }
+
+        /* ===== HOW AI POWERS OUR PRODUCTS ===== */
+        .ai-powers {
+            padding: 5rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .ai-powers-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .ai-powers-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .ai-powers-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+        .ai-powers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        .ai-power-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 1.75rem;
+            text-align: center;
+            transition: transform 0.35s var(--transition-smooth), border-color 0.3s, box-shadow 0.3s;
+        }
+        .ai-power-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(100,200,255,0.2);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .ai-power-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .ai-power-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-surface);
+        }
+        .ai-power-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== FINAL CTA BANNER ===== */
+        .final-cta {
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .final-cta-inner {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 3rem 2rem;
+            backdrop-filter: var(--blur-glass);
+            position: relative;
+            overflow: hidden;
+        }
+        .final-cta-inner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+        .final-cta h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.75rem;
+        }
+        .final-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+        .final-cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .final-cta .btn-primary {
+            padding: 0.85rem 2rem;
+        }
+        .final-cta .btn-secondary {
+            padding: 0.85rem 2rem;
+        }
+
+        /* ===== PRODUCT BADGE ===== */
+        .product-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: var(--radius-pill);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: rgba(100,200,255,0.08);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(100,200,255,0.15);
+        }
+
         /* ===== SMART GREETING ===== */
         .greeting-banner {
             font-family: 'Space Grotesk', monospace;
@@ -1968,20 +2198,20 @@
                     </linearGradient>
                 </defs>
             </svg>
-            <h1>Next-Gen Apps <span class="hero-gradient">Powered by AI</span></h1>
+            <h1>Games & Apps That <span class="hero-gradient">Learn and Evolve</span></h1>
             <!-- Smart Greeting Banner -->
             <p class="greeting-banner" id="smartGreeting"><span class="greeting-text" id="greetingText"></span><span class="typing-cursor" id="typingCursor"></span></p>
 
-            <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
+            <p class="hero-subtitle">AI-powered games with adaptive opponents, intelligent tools that automate your workflow, and utilities that think ahead — all built on one platform.</p>
             <div class="hero-buttons">
-                <a href="#products" class="btn-primary">Explore Apps ↓</a>
-                <a href="#products" class="btn-secondary">App Store</a>
+                <a href="#featured" class="btn-primary">See Our Flagship ↓</a>
+                <a href="#products" class="btn-secondary">Browse All Products</a>
                 <button class="find-game-btn" id="findGameBtn">🚀 Find Your App</button>
             </div>
             <div class="hero-stats">
-                <div class="stat-pill" data-stat-type="count" data-target="5" data-suffix="+" data-start="0">
-                    <div class="stat-label">Apps</div>
-                    <div class="stat-value">5+</div>
+                <div class="stat-pill" data-stat-type="count" data-target="9" data-suffix="+" data-start="0">
+                    <div class="stat-label">Products</div>
+                    <div class="stat-value">9+</div>
                 </div>
                 <div class="stat-pill" data-stat-type="count" data-target="100" data-suffix="%" data-start="0">
                     <div class="stat-label">AI Powered</div>
@@ -1995,6 +2225,31 @@
                     <div class="stat-label">Launch</div>
                     <div class="stat-value">2026</div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURED PRODUCT SPOTLIGHT ===== -->
+    <section class="featured" id="featured">
+        <div class="featured-header reveal">
+            <h2>Our Flagship Product</h2>
+            <p>The game that started it all — and it's getting smarter every day.</p>
+        </div>
+        <div class="featured-card reveal">
+            <div class="featured-info">
+                <div class="featured-tagline">★ Featured Product</div>
+                <h3>CrickBot AI</h3>
+                <p>The most advanced AI-powered cricket game ever built. CrickBot uses Bayesian prediction models to analyze your batting patterns in real-time, adapting its bowling strategy every ball. The AI doesn't just react — it anticipates, learns, and evolves with every session you play.</p>
+                <div class="featured-highlights">
+                    <span>Adaptive AI</span>
+                    <span>Real-time Learning</span>
+                    <span>iOS + Android</span>
+                    <span>50+ AI Behaviors</span>
+                </div>
+                <a href="blog/crickbot-ai.html" class="featured-cta">Play Demo →</a>
+            </div>
+            <div class="featured-visual">
+                <div class="featured-visual-icon">🏏</div>
             </div>
         </div>
     </section>
@@ -2018,7 +2273,8 @@
                     <p class="product-desc">Master cricket with AI opponents that track your batting patterns and adapt their bowling strategy in real-time using Bayesian prediction.</p>
                 </div>
                 <div class="product-footer">
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <span class="product-badge">Flagship</span>
+                    <a href="#featured" class="product-btn">Play Demo →</a>
                 </div>
             </div>
 
@@ -2030,7 +2286,8 @@
                     <p class="product-desc">Take penalty kicks against an AI goalkeeper powered by TensorFlow.js that studies your shot placement and predicts your next move.</p>
                 </div>
                 <div class="product-footer">
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <span class="product-badge">Beta Ready</span>
+                    <a href="blog/goalbot-ai.html" class="product-btn">Play Demo →</a>
                 </div>
             </div>
 
@@ -2042,7 +2299,8 @@
                     <p class="product-desc">Face AI pitchers that analyze your swing timing and adjust pitch selection, speed, and placement to keep you off balance.</p>
                 </div>
                 <div class="product-footer">
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <span class="product-badge">Beta Ready</span>
+                    <a href="blog/basehit-ai.html" class="product-btn">Play Demo →</a>
                 </div>
             </div>
 
@@ -2054,7 +2312,8 @@
                     <p class="product-desc">Battle AI opponents with 8 unique personality archetypes — from aggressive Berserkers to strategic Predators — in a shrinking arena.</p>
                 </div>
                 <div class="product-footer">
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <span class="product-badge">Beta Ready</span>
+                    <a href="blog/survival-arena-ai.html" class="product-btn">Preview →</a>
                 </div>
             </div>
 
@@ -2066,7 +2325,8 @@
                     <p class="product-desc">Navigate procedurally spawned encounters in deep space with an AI Director that dynamically adjusts difficulty to your skill level.</p>
                 </div>
                 <div class="product-footer">
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <span class="product-badge">Beta Ready</span>
+                    <a href="blog/infinite-voyager-ai.html" class="product-btn">Preview →</a>
                 </div>
             </div>
 
@@ -2075,11 +2335,11 @@
                     <div class="product-icon">📡</div>
                     <div class="product-category">AIOps / Analytics</div>
                     <h3 class="product-title">NetSense AI</h3>
-                    <p class="product-desc">AI-powered network monitoring and predictive analytics for telecom infrastructure.</p>
+                    <p class="product-desc">AI-powered network monitoring and predictive analytics for telecom infrastructure. Detect anomalies before they become outages.</p>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge">In Development</span>
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <a href="#contact" class="product-btn">Get Notified →</a>
                 </div>
             </div>
 
@@ -2088,11 +2348,11 @@
                     <div class="product-icon">💻</div>
                     <div class="product-category">Developer Tools</div>
                     <h3 class="product-title">CodePilot</h3>
-                    <p class="product-desc">Intelligent code review and optimization powered by machine learning.</p>
+                    <p class="product-desc">Intelligent code review and optimization powered by machine learning. Catches bugs, suggests refactors, enforces best practices.</p>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge">In Development</span>
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <a href="#contact" class="product-btn">Get Notified →</a>
                 </div>
             </div>
 
@@ -2101,11 +2361,11 @@
                     <div class="product-icon">🔄</div>
                     <div class="product-category">Productivity</div>
                     <h3 class="product-title">QuickConvert</h3>
-                    <p class="product-desc">AI-enhanced file conversion with intelligent format detection and optimization.</p>
+                    <p class="product-desc">AI-enhanced file conversion with intelligent format detection. Drag, drop, convert — the AI handles the rest.</p>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge">In Development</span>
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <a href="#contact" class="product-btn">Get Notified →</a>
                 </div>
             </div>
 
@@ -2114,12 +2374,42 @@
                     <div class="product-icon">🔒</div>
                     <div class="product-category">Security / Storage</div>
                     <h3 class="product-title">VaultSync</h3>
-                    <p class="product-desc">Encrypted cloud backup with AI-powered deduplication and smart scheduling.</p>
+                    <p class="product-desc">Encrypted cloud backup with AI-powered deduplication and smart scheduling. Your files, protected and always in sync.</p>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge">In Development</span>
-                    <a href="#" class="product-btn">Coming Soon</a>
+                    <a href="#contact" class="product-btn">Get Notified →</a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== HOW AI POWERS OUR PRODUCTS ===== -->
+    <section class="ai-powers" id="ai-powers">
+        <div class="ai-powers-header reveal">
+            <h2>How AI Powers Everything We Build</h2>
+            <p>Every product in the EXAFABS ecosystem runs on intelligent systems — not scripted logic.</p>
+        </div>
+        <div class="ai-powers-grid">
+            <div class="ai-power-card reveal">
+                <div class="ai-power-icon">🧠</div>
+                <h3>Adaptive Opponents</h3>
+                <p>Game AI that studies your playstyle and adjusts difficulty, strategy, and behavior in real-time using Bayesian models.</p>
+            </div>
+            <div class="ai-power-card reveal">
+                <div class="ai-power-icon">📊</div>
+                <h3>Real-time Learning</h3>
+                <p>Models that train on every interaction — your data shapes a smarter experience with each session.</p>
+            </div>
+            <div class="ai-power-card reveal">
+                <div class="ai-power-icon">⚡</div>
+                <h3>Smart Automation</h3>
+                <p>Utilities that detect patterns, predict needs, and automate workflows without manual configuration.</p>
+            </div>
+            <div class="ai-power-card reveal">
+                <div class="ai-power-icon">🔮</div>
+                <h3>Predictive Analytics</h3>
+                <p>From network anomalies to user churn — our tools forecast problems before they surface.</p>
             </div>
         </div>
     </section>
@@ -2228,6 +2518,18 @@
                 <button type="submit" class="btn-submit">Notify Me</button>
                 <p id="formStatus" style="text-align:center;margin-top:1rem;font-size:0.9rem;display:none;" role="status" aria-live="polite"></p>
             </form>
+        </div>
+    </section>
+
+    <!-- ===== FINAL CTA BANNER ===== -->
+    <section class="final-cta">
+        <div class="final-cta-inner reveal">
+            <h2>Ready to Experience AI-Powered Apps?</h2>
+            <p>From adaptive games to intelligent tools — start exploring what EXAFABS has built for you.</p>
+            <div class="final-cta-buttons">
+                <a href="#featured" class="btn-primary">Try Our Flagship Game →</a>
+                <a href="#contact" class="btn-secondary">Get in Touch</a>
+            </div>
         </div>
     </section>
 
