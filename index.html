@@ -17,10 +17,12 @@
     <meta name="twitter:title" content="EXAFABS.AI — Next-Gen Apps Powered by AI">
     <meta name="twitter:description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
     <meta name="theme-color" content="#240331">
+    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://exafabs.ai/">
     <link rel="icon" type="image/png" href="logo-icon.png">
     <title>EXAFABS.AI — Next-Gen Apps Powered by AI</title>
 
+    <link rel="dns-prefetch" href="https://api.web3forms.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1188,9 +1190,26 @@
             }
         }
     </style>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "EXAFABS.AI",
+        "url": "https://exafabs.ai",
+        "logo": "https://exafabs.ai/logo-icon.png",
+        "description": "AI App Studio building intelligent applications — Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.",
+        "email": "alpit@exafabs.ai",
+        "sameAs": [
+            "https://github.com/alpittare"
+        ]
+    }
+    </script>
 </head>
 <body>
-    <nav>
+    <a href="#products" class="skip-link" style="position:absolute;top:-100%;left:0;padding:0.75rem 1.5rem;background:var(--primary-gradient);color:#fff;z-index:9999;border-radius:0 0 0.5rem 0;font-weight:700;transition:top 0.3s;" onfocus="this.style.top='0'" onblur="this.style.top='-100%'">Skip to content</a>
+    <nav role="navigation" aria-label="Main navigation">
         <div class="nav-container">
             <a href="#" class="nav-logo">
                 <img src="logo-icon.png" alt="EXAFABS.AI">
@@ -1457,8 +1476,13 @@
                 <input type="hidden" name="from_name" value="EXAFABS.AI">
 
                 <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="John Doe" required autocomplete="name">
+                </div>
+
+                <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
                 </div>
 
                 <div class="form-group">
@@ -1467,6 +1491,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit">Notify Me</button>
+                <p id="formStatus" style="text-align:center;margin-top:1rem;font-size:0.9rem;display:none;" role="status" aria-live="polite"></p>
             </form>
         </div>
     </section>
@@ -1520,9 +1545,9 @@
         <div class="footer-bottom">
             <p class="footer-copyright">© 2026 EXAFABS.AI. All rights reserved.</p>
             <div class="social-links">
-                <a href="https://x.com" target="_blank" rel="noopener noreferrer" title="X (Twitter)">𝕏</a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn">in</a>
-                <a href="https://github.com/alpittare" target="_blank" rel="noopener noreferrer" title="GitHub">gh</a>
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" title="X (Twitter)" aria-label="Follow us on X (Twitter)">𝕏</a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn" aria-label="Connect on LinkedIn">in</a>
+                <a href="https://github.com/alpittare" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="View our GitHub">gh</a>
             </div>
         </div>
     </footer>
@@ -1593,7 +1618,7 @@
             window.addEventListener('scroll', () => {
                 if (!scrollTicking) {
                     requestAnimationFrame(() => {
-                        const y = window.pageYOffset;
+                        const y = window.scrollY;
                         if (y > 60) {
                             navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.95)';
                             navbar.style.padding = '0.75rem 2.5rem';
@@ -1678,6 +1703,40 @@
                     }, 500);
                 });
                 card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
+            });
+        }
+        // ===== FORM SUBMISSION WITH FEEDBACK =====
+        const contactForm = document.querySelector('.contact-form');
+        const formStatus = document.getElementById('formStatus');
+        if (contactForm && formStatus) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = contactForm.querySelector('.btn-submit');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                formStatus.style.display = 'none';
+                try {
+                    const res = await fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        body: new FormData(contactForm)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        formStatus.textContent = '✓ Message sent successfully!';
+                        formStatus.style.color = 'var(--accent-lime)';
+                        formStatus.style.display = 'block';
+                        contactForm.reset();
+                    } else {
+                        throw new Error(data.message || 'Submission failed');
+                    }
+                } catch (err) {
+                    formStatus.textContent = 'Something went wrong. Please try again.';
+                    formStatus.style.color = 'var(--accent-pink)';
+                    formStatus.style.display = 'block';
+                }
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             });
         }
     </script>
