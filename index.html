@@ -264,43 +264,101 @@
             display: none;
         }
 
+        @keyframes shimmerFlow {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(155,48,255,0.25)) drop-shadow(0 0 60px rgba(201,64,128,0.1)); }
+            50% { filter: drop-shadow(0 0 50px rgba(155,48,255,0.4)) drop-shadow(0 0 100px rgba(201,64,128,0.25)) drop-shadow(0 0 140px rgba(245,148,58,0.1)); }
+        }
+
+        @keyframes swooshDraw {
+            0% { stroke-dashoffset: 300; opacity: 0; }
+            20% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 1; }
+        }
+
+        @keyframes swooshGlow {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(201,64,128,0.4)); }
+            50% { filter: drop-shadow(0 0 12px rgba(201,64,128,0.7)) drop-shadow(0 0 24px rgba(245,148,58,0.3)); }
+        }
+
         .hero-brand {
             font-family: 'Space Grotesk', sans-serif;
             font-size: clamp(3rem, 9vw, 6.5rem);
             font-weight: 700;
             letter-spacing: 0.08em;
             color: #ffffff;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.25rem;
             line-height: 1.1;
             position: relative;
             display: inline-block;
+            animation: glowPulse 4s ease-in-out infinite, fadeInUp 0.8s var(--transition-smooth) 0.1s forwards;
+            opacity: 0;
         }
 
         .hero-brand .brand-main {
-            background: linear-gradient(135deg, #ffffff 0%, #e0c3ff 40%, #ffffff 60%, #ffd6e8 100%);
+            background: linear-gradient(
+                90deg,
+                #ffffff 0%,
+                #e0c3ff 15%,
+                #ffffff 30%,
+                #ffd6e8 45%,
+                #ffffff 60%,
+                #c9b8ff 75%,
+                #ffffff 100%
+            );
+            background-size: 200% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 40px rgba(155,48,255,0.3)) drop-shadow(0 0 80px rgba(201,64,128,0.15));
+            animation: shimmerFlow 6s ease-in-out infinite;
         }
 
         .hero-brand .brand-dot {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A, #C94080);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             font-size: 1.1em;
+            animation: shimmerFlow 3s ease-in-out infinite;
         }
 
         .hero-brand .brand-ai {
-            background: linear-gradient(135deg, #C94080, #F5943A);
+            background: linear-gradient(
+                90deg,
+                #C94080 0%,
+                #F5943A 30%,
+                #ffb86c 50%,
+                #F5943A 70%,
+                #C94080 100%
+            );
+            background-size: 200% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: shimmerFlow 5s ease-in-out infinite reverse;
         }
 
         .hero-brand::after {
             display: none;
+        }
+
+        .brand-swoosh {
+            display: block;
+            width: clamp(200px, 50vw, 420px);
+            height: 28px;
+            margin: 0 auto;
+            overflow: visible;
+        }
+
+        .brand-swoosh path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: swooshDraw 1.5s ease-out 0.9s forwards, swooshGlow 3s ease-in-out 2.4s infinite;
         }
 
         .hero h1 {
@@ -1104,6 +1162,11 @@
                 letter-spacing: 0.04em;
             }
 
+            .brand-swoosh {
+                width: clamp(140px, 55vw, 260px);
+                height: 20px;
+            }
+
             .hero h1 {
                 font-size: clamp(0.75rem, 3vw, 1rem);
                 letter-spacing: 0.2em;
@@ -1182,8 +1245,8 @@
             opacity: 0;
         }
 
-        .hero-brand {
-            animation: fadeInUp 0.8s var(--transition-smooth) 0.1s forwards;
+        .brand-swoosh {
+            animation: fadeInUp 0.6s var(--transition-smooth) 0.2s forwards;
             opacity: 0;
         }
 
@@ -1214,10 +1277,18 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
-            .fade-in, .hero-brand, .hero h1, .hero-subtitle, .hero-buttons, .hero-stats {
+            .fade-in, .hero-brand, .brand-swoosh, .hero h1, .hero-subtitle, .hero-buttons, .hero-stats {
                 animation: none !important;
                 opacity: 1 !important;
                 transform: none !important;
+            }
+            .hero-brand .brand-main, .hero-brand .brand-dot, .hero-brand .brand-ai {
+                animation: none !important;
+            }
+            .brand-swoosh path {
+                animation: none !important;
+                stroke-dashoffset: 0 !important;
+                opacity: 1 !important;
             }
         }
 
@@ -1276,6 +1347,18 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-brand"><span class="brand-main">EXAFABS</span><span class="brand-dot">.</span><span class="brand-ai">AI</span></div>
+            <svg class="brand-swoosh" viewBox="0 0 420 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 22 C80 4, 160 2, 210 14 S340 26, 410 8" stroke="url(#swooshGrad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <defs>
+                    <linearGradient id="swooshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#7B2FBE" stop-opacity="0.1"/>
+                        <stop offset="25%" stop-color="#9B30FF" stop-opacity="0.6"/>
+                        <stop offset="50%" stop-color="#C94080" stop-opacity="0.9"/>
+                        <stop offset="75%" stop-color="#F5943A" stop-opacity="0.6"/>
+                        <stop offset="100%" stop-color="#F5943A" stop-opacity="0.1"/>
+                    </linearGradient>
+                </defs>
+            </svg>
             <h1>Next-Gen Apps <span class="hero-gradient">Powered by AI</span></h1>
             <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
             <div class="hero-buttons">
