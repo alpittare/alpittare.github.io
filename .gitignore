@@ -24,3 +24,11 @@ Thumbs.db
 __pycache__/
 *.pyc
 venv/
+
+# Private code — lives in exafabs-core (private repo)
+03_Games/
+04_Convex_Backend/
+05_Frontend/
+07_Knowledge_Base/
+08_Game_Ecosystem/
+_Archive/
