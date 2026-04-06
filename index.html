@@ -223,60 +223,34 @@
             padding-bottom: 4rem;
             position: relative;
             overflow: hidden;
-            background-color: #240331;
-            background-image:
-                radial-gradient(ellipse 45% 35% at 0% 0%, rgba(0,210,200,0.35) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 30% at 100% 0%, rgba(0,200,190,0.30) 0%, transparent 70%),
-                radial-gradient(ellipse 55% 40% at 30% 25%, rgba(220,50,120,0.28) 0%, transparent 70%),
-                radial-gradient(ellipse 50% 35% at 70% 20%, rgba(200,60,140,0.25) 0%, transparent 70%),
-                radial-gradient(ellipse 85% 25% at 50% 40%, rgba(245,148,58,0.20) 0%, transparent 70%),
-                radial-gradient(ellipse 65% 30% at 60% 35%, rgba(255,120,80,0.16) 0%, transparent 60%),
-                radial-gradient(ellipse 75% 55% at 50% 50%, rgba(120,30,180,0.30) 0%, transparent 70%),
-                linear-gradient(180deg, #1a0525 0%, #240331 30%, #240331 100%);
+            background-color: #0a0a12;
         }
 
+        /* Geometric tile background - TERAFAB style */
         section.hero::before {
             content: '';
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 0;
-            background-image:
-                radial-gradient(2px 2px at 10% 15%, rgba(255,255,255,0.9), transparent),
-                radial-gradient(1.5px 1.5px at 25% 8%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(2.5px 2.5px at 40% 22%, rgba(255,255,255,1), transparent),
-                radial-gradient(1.5px 1.5px at 55% 5%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1.5px 1.5px at 70% 18%, rgba(255,255,255,0.8), transparent),
-                radial-gradient(2px 2px at 85% 12%, rgba(255,255,255,0.9), transparent),
-                radial-gradient(1.5px 1.5px at 15% 35%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1.5px 1.5px at 90% 28%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1.5px 1.5px at 35% 42%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(2px 2px at 65% 38%, rgba(255,255,255,0.8), transparent),
-                radial-gradient(1.5px 1.5px at 50% 30%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1.5px 1.5px at 78% 45%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1.5px 1.5px at 5% 50%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1.5px 1.5px at 45% 55%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(2px 2px at 22% 48%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1.5px 1.5px at 92% 40%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1px 1px at 3% 70%, rgba(255,255,255,0.4), transparent),
-                radial-gradient(2px 2px at 18% 62%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1.5px 1.5px at 82% 58%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1px 1px at 60% 72%, rgba(255,255,255,0.4), transparent),
-                radial-gradient(2px 2px at 95% 65%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1.5px 1.5px at 48% 80%, rgba(255,255,255,0.5), transparent);
+            background:
+                linear-gradient(135deg, rgba(0,180,180,0.15) 0%, transparent 40%),
+                linear-gradient(315deg, rgba(120,30,180,0.12) 0%, transparent 40%),
+                radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,180,180,0.10) 0%, transparent 70%);
         }
 
+        /* Geometric grid tiles */
         section.hero::after {
             content: '';
             position: absolute;
-            bottom: 30%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(0,200,190,0.08), rgba(220,50,120,0.1), rgba(245,148,58,0.08), rgba(155,48,255,0.06), transparent);
-            filter: blur(8px);
+            inset: 0;
             pointer-events: none;
             z-index: 0;
+            opacity: 0.6;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
         }
 
         .hero-content {
@@ -287,46 +261,51 @@
         }
 
         .hero-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--glass-bg);
-            backdrop-filter: var(--blur-glass);
-            -webkit-backdrop-filter: var(--blur-glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            padding: 0.6rem 1.25rem;
-            border-radius: var(--radius-pill);
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .hero-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-weight: 700;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            text-shadow: 0 0 80px rgba(0,180,180,0.3), 0 0 40px rgba(120,30,180,0.15);
+        }
+
+        .hero-brand .brand-dot {
+            color: var(--accent-lime);
+            text-shadow: 0 0 30px rgba(152,241,49,0.5);
         }
 
         .hero h1 {
-            font-size: clamp(2.8rem, 8vw, 5rem);
-            line-height: 1.05;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            line-height: 1.4;
             margin-bottom: 0.5rem;
-            color: var(--text-surface);
-            font-weight: 700;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
         }
 
         .hero-gradient {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: brightness(1.15);
+            color: rgba(255,255,255,0.6);
+            -webkit-text-fill-color: unset;
+            background: none;
+            filter: none;
         }
 
         .hero-subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--text-secondary);
-            margin: 1.75rem auto 2.5rem;
+            margin: 2rem auto 2.5rem;
             line-height: 1.85;
             max-width: 640px;
             font-weight: 400;
+            letter-spacing: 0.02em;
         }
 
         .hero-buttons {
@@ -338,46 +317,47 @@
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
+            background: transparent;
             color: white;
             padding: 0.9rem 2.25rem;
-            border-radius: var(--radius-pill);
-            text-decoration: none;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            font-size: 0.95rem;
-            transition: box-shadow 0.3s;
-            will-change: transform;
-            box-shadow: 0 4px 16px rgba(155, 48, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-            letter-spacing: 0.01em;
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 16px 40px rgba(155, 48, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-secondary {
-            background: var(--glass-bg);
-            backdrop-filter: var(--blur-glass);
-            -webkit-backdrop-filter: var(--blur-glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-surface);
-            padding: 0.9rem 2.25rem;
-            border-radius: var(--radius-pill);
+            border-radius: 0;
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.95rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 0.85rem;
             transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
             will-change: transform;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            background: rgba(0,180,180,0.15);
+            border-color: rgba(0,180,180,0.6);
+            box-shadow: 0 0 30px rgba(0,180,180,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.7);
+            padding: 0.9rem 2.25rem;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+            will-change: transform;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
         }
 
         .btn-secondary:hover {
-            background: var(--glass-bg-hover);
-            border-color: var(--glass-border-hover);
-            box-shadow: 0 12px 32px rgba(155, 48, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.4);
+            color: #fff;
         }
 
         .hero-stats {
@@ -1072,8 +1052,14 @@
                 padding-top: 6rem;
             }
 
+            .hero-brand {
+                font-size: clamp(2.2rem, 10vw, 3.5rem);
+                letter-spacing: 0.15em;
+            }
+
             .hero h1 {
-                font-size: clamp(2rem, 10vw, 2.8rem);
+                font-size: clamp(0.75rem, 3vw, 1rem);
+                letter-spacing: 0.2em;
             }
 
             .hero-buttons {
@@ -1149,13 +1135,13 @@
             opacity: 0;
         }
 
-        .hero-label {
-            animation: fadeInUp 0.6s var(--transition-smooth) 0.1s forwards;
+        .hero-brand {
+            animation: fadeInUp 0.8s var(--transition-smooth) 0.1s forwards;
             opacity: 0;
         }
 
         .hero h1 {
-            animation: fadeInUp 0.6s var(--transition-smooth) 0.2s forwards;
+            animation: fadeInUp 0.6s var(--transition-smooth) 0.3s forwards;
             opacity: 0;
         }
 
@@ -1181,7 +1167,7 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
-            .fade-in, .hero-label, .hero h1, .hero-subtitle, .hero-buttons, .hero-stats {
+            .fade-in, .hero-brand, .hero h1, .hero-subtitle, .hero-buttons, .hero-stats {
                 animation: none !important;
                 opacity: 1 !important;
                 transform: none !important;
@@ -1242,8 +1228,8 @@
 
     <section class="hero">
         <div class="hero-content">
-            <div class="hero-label">⚡ EXAFABS.AI</div>
-            <h1>Next-Gen Apps<br><span class="hero-gradient">Powered by AI</span></h1>
+            <div class="hero-brand">EXAFABS<span class="brand-dot">.</span>AI</div>
+            <h1>Next-Gen Apps <span class="hero-gradient">Powered by AI</span></h1>
             <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
             <div class="hero-buttons">
                 <a href="#products" class="btn-primary">Explore Apps ↓</a>
@@ -1559,6 +1545,51 @@
     </footer>
 
     <script>
+        // ===== GEOMETRIC TILE BACKGROUND =====
+        (function() {
+            const hero = document.querySelector('section.hero');
+            if (!hero) return;
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+            hero.insertBefore(canvas, hero.firstChild);
+            const ctx = canvas.getContext('2d');
+            function resize() {
+                canvas.width = hero.offsetWidth;
+                canvas.height = hero.offsetHeight;
+                draw();
+            }
+            function draw() {
+                const w = canvas.width, h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                const tileSize = 80;
+                const cols = Math.ceil(w / tileSize) + 1;
+                const rows = Math.ceil(h / tileSize) + 1;
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const rand = Math.sin(r * 127.1 + c * 311.7) * 43758.5453 % 1;
+                        const absRand = Math.abs(rand);
+                        if (absRand > 0.6) {
+                            const alpha = 0.03 + absRand * 0.12;
+                            const isTeal = absRand > 0.85;
+                            const isPurple = absRand > 0.75 && absRand <= 0.85;
+                            if (isTeal) {
+                                ctx.fillStyle = `rgba(0, 180, 180, ${alpha * 0.8})`;
+                            } else if (isPurple) {
+                                ctx.fillStyle = `rgba(120, 30, 180, ${alpha * 0.6})`;
+                            } else {
+                                ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.15})`;
+                            }
+                            const gap = 2;
+                            const size = tileSize - gap * 2;
+                            ctx.fillRect(c * tileSize + gap, r * tileSize + gap, size, size);
+                        }
+                    }
+                }
+            }
+            resize();
+            window.addEventListener('resize', resize);
+        })();
+
         // ===== NULL-SAFE SELECTORS =====
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
