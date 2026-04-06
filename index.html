@@ -3171,18 +3171,17 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
             const cursorEl = document.getElementById('typingCursor');
             if (!greetEl) return;
             const hour = new Date().getHours();
-            let timeGreet = 'Welcome';
+            let timeGreet = '';
             if (hour >= 5 && hour < 12) timeGreet = 'Good morning';
             else if (hour >= 12 && hour < 17) timeGreet = 'Good afternoon';
             else if (hour >= 17 && hour < 21) timeGreet = 'Good evening';
-            else timeGreet = 'Welcome';
-            const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+            else timeGreet = 'Hello';
             const visits = parseInt(sessionStorage.getItem('exafabs_visits') || '0') + 1;
             sessionStorage.setItem('exafabs_visits', visits);
             let msg = '';
-            if (visits === 1) msg = `${timeGreet} — where AI meets innovation`;
-            else if (visits === 2) msg = `${timeGreet} — new updates are live, take a look`;
-            else msg = `${timeGreet} — building the future, one product at a time`;
+            if (visits === 1) msg = `${timeGreet} — explore the future of AI`;
+            else if (visits === 2) msg = `${timeGreet} — glad to have you back`;
+            else msg = `${timeGreet} — the platform keeps evolving`;
             let i = 0;
             function typeChar() {
                 if (i < msg.length) {
