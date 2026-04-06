@@ -1300,6 +1300,218 @@
             }
         }
 
+        /* ===== SMART GREETING ===== */
+        .greeting-banner {
+            font-family: 'Space Grotesk', monospace;
+            color: #64c8ff;
+            font-size: 1.1rem;
+            font-variant: small-caps;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+            min-height: 1.8rem;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+        .typing-cursor {
+            display: inline-block;
+            width: 0.15em;
+            height: 1.2em;
+            background-color: #64c8ff;
+            margin-left: 0.1em;
+            animation: cursorBlink 0.7s infinite;
+            vertical-align: middle;
+        }
+        @keyframes cursorBlink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* ===== ANIMATED STATS ===== */
+        .stat-pill.counting-complete {
+            animation: statGlow 0.8s ease-out 1 forwards;
+        }
+        @keyframes statGlow {
+            0% { box-shadow: 0 0 0 0 rgba(201, 64, 128, 0.6); }
+            50% { box-shadow: 0 0 20px 8px rgba(201, 64, 128, 0.25); }
+            100% { box-shadow: 0 0 0 0 rgba(201, 64, 128, 0); }
+        }
+        .stat-value { font-variant-numeric: tabular-nums; }
+
+        /* ===== GAME RECOMMENDER QUIZ ===== */
+        .find-game-btn {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.9rem 2.25rem;
+            border: 1.5px solid rgba(100,200,255,0.4);
+            background: transparent;
+            color: #64c8ff;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.04em;
+        }
+        .find-game-btn:hover {
+            background: rgba(100,200,255,0.1);
+            border-color: #64c8ff;
+            box-shadow: 0 0 24px rgba(100,200,255,0.2);
+        }
+        .quiz-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+        }
+        .quiz-overlay.active { display: flex; }
+        .quiz-modal {
+            background: linear-gradient(170deg, #0a0118, #0d0221, #120428);
+            border: 1.5px solid rgba(100,200,255,0.15);
+            border-radius: var(--radius-card);
+            max-width: 560px;
+            width: 100%;
+            padding: 2.25rem;
+            position: relative;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px rgba(100,200,255,0.05);
+        }
+        .quiz-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: none; border: none;
+            color: rgba(100,200,255,0.5); cursor: pointer; font-size: 1.25rem;
+            transition: color 0.2s;
+        }
+        .quiz-close:hover { color: #ff4466; }
+        .quiz-question { display: none; animation: fadeInUp 0.4s ease; }
+        .quiz-question.active { display: block; }
+        .quiz-progress { width: 100%; height: 2px; background: rgba(100,200,255,0.1); border-radius: 2px; margin-bottom: 1.25rem; }
+        .quiz-progress-fill { height: 100%; background: #64c8ff; transition: width 0.4s; border-radius: 2px; }
+        .quiz-step { font-size: 0.7rem; color: rgba(100,200,255,0.5); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .quiz-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; color: var(--text-surface); margin-bottom: 1.5rem; }
+        .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+        .quiz-opt {
+            background: rgba(100,200,255,0.03);
+            border: 1px solid rgba(100,200,255,0.1);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            color: var(--text-surface);
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.85rem;
+            text-align: left;
+        }
+        .quiz-opt:hover { background: rgba(100,200,255,0.08); border-color: rgba(100,200,255,0.3); transform: translateX(6px); }
+        .quiz-opt.selected { background: rgba(100,200,255,0.12); border-color: #64c8ff; box-shadow: 0 0 16px rgba(100,200,255,0.15); }
+        .quiz-opt-emoji { font-size: 1.5rem; min-width: 1.75rem; }
+        .quiz-next {
+            width: 100%; margin-top: 1.25rem;
+            background: transparent; border: 1.5px solid rgba(100,200,255,0.3);
+            color: #64c8ff; padding: 0.85rem; border-radius: var(--radius-pill);
+            font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .quiz-next:hover { background: rgba(100,200,255,0.08); border-color: #64c8ff; }
+        .quiz-next:disabled { opacity: 0.3; cursor: not-allowed; }
+        .quiz-result { display: none; text-align: center; animation: fadeInUp 0.4s ease; }
+        .quiz-result.active { display: block; }
+        .quiz-result-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+        .quiz-result-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.75rem; font-weight: 700; color: #64c8ff; margin-bottom: 0.75rem; }
+        .quiz-result-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.25rem; }
+        .quiz-result-reason { background: rgba(100,200,255,0.05); border-left: 2px solid #64c8ff; padding: 0.85rem 1rem; border-radius: 0.35rem; text-align: left; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .quiz-result-tags { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .quiz-result-tag { background: rgba(100,200,255,0.06); border: 1px solid rgba(100,200,255,0.2); color: #64c8ff; padding: 0.3rem 0.7rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-family: 'Space Grotesk', sans-serif; }
+        .quiz-actions { display: flex; gap: 0.75rem; }
+        .quiz-actions button { flex: 1; padding: 0.85rem; border-radius: var(--radius-pill); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+        .quiz-act-primary { background: var(--primary-gradient); border: none; color: white; }
+        .quiz-act-secondary { background: transparent; border: 1.5px solid rgba(100,200,255,0.3); color: #64c8ff; }
+
+        /* ===== BLOG TOOLTIPS ===== */
+        .blog-card { position: relative; overflow: hidden; }
+        .blog-tooltip {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(10, 1, 24, 0.88);
+            backdrop-filter: blur(10px);
+            border-top: 2px solid rgba(100,200,255,0.4);
+            padding: 0.85rem 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            z-index: 10;
+        }
+        .blog-card:hover .blog-tooltip { transform: translateY(0); }
+        .blog-tooltip-label { display: block; font-weight: 700; color: #64c8ff; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.35rem; }
+        .blog-tooltip-text { color: rgba(200,215,240,0.8); font-size: 0.78rem; line-height: 1.5; }
+
+        /* ===== COMMAND PALETTE ===== */
+        .cmd-palette {
+            display: none; position: fixed; inset: 0;
+            z-index: 10001;
+            backdrop-filter: blur(4px);
+            background: rgba(10,1,24,0.5);
+        }
+        .cmd-palette.active { display: flex; align-items: flex-start; justify-content: center; padding-top: 12vh; }
+        .cmd-modal {
+            width: 90%; max-width: 520px;
+            background: linear-gradient(170deg, #0a0118, #0d0221);
+            border: 1.5px solid rgba(100,200,255,0.2);
+            border-radius: var(--radius-card);
+            box-shadow: 0 0 60px rgba(100,200,255,0.08);
+            overflow: hidden;
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cmd-search {
+            width: 100%; padding: 0.85rem 1.15rem;
+            background: transparent;
+            border: none; border-bottom: 1px solid rgba(100,200,255,0.1);
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem;
+            letter-spacing: 0.03em; outline: none;
+        }
+        .cmd-search::placeholder { color: rgba(100,200,255,0.25); }
+        .cmd-list { list-style: none; padding: 0.5rem; max-height: 350px; overflow-y: auto; }
+        .cmd-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.7rem 0.85rem; margin-bottom: 2px;
+            border: 1px solid transparent; border-radius: 0.4rem;
+            cursor: pointer; color: var(--text-surface); transition: all 0.12s;
+        }
+        .cmd-item:hover, .cmd-item.selected { background: rgba(100,200,255,0.08); border-color: rgba(100,200,255,0.2); }
+        .cmd-item-left { display: flex; align-items: center; gap: 0.75rem; }
+        .cmd-item-icon { font-size: 1rem; min-width: 1.25rem; text-align: center; }
+        .cmd-item-label { font-size: 0.85rem; font-family: 'Space Grotesk', sans-serif; }
+        .cmd-item-hint { font-size: 0.65rem; color: rgba(100,200,255,0.4); background: rgba(100,200,255,0.06); padding: 0.15rem 0.45rem; border-radius: 0.2rem; border: 1px solid rgba(100,200,255,0.1); }
+        .cmd-empty { padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+        .cmd-hint-bar { padding: 0.5rem 1rem; border-top: 1px solid rgba(100,200,255,0.06); font-size: 0.6rem; color: rgba(100,200,255,0.3); text-align: center; letter-spacing: 0.1em; text-transform: uppercase; }
+
+        /* ===== VOICE MIC BUTTON ===== */
+        .chat-microphone {
+            background: transparent;
+            border: 1.5px solid rgba(100,200,255,0.3);
+            color: #64c8ff;
+            width: 2.25rem; height: 2.25rem;
+            border-radius: 0.45rem;
+            cursor: pointer; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.25s;
+        }
+        .chat-microphone:hover { background: rgba(100,200,255,0.08); border-color: rgba(100,200,255,0.6); box-shadow: 0 0 12px rgba(100,200,255,0.15); }
+        .chat-microphone.listening { animation: micPulse 1s infinite; border-color: #ff0055; color: #ff0055; }
+        @keyframes micPulse {
+            0%, 100% { box-shadow: 0 0 16px rgba(255,0,85,0.5); }
+            50% { box-shadow: 0 0 24px rgba(100,200,255,0.4); }
+        }
+        .chat-microphone:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            .greeting-banner { font-size: 0.95rem; }
+            .quiz-modal { padding: 1.75rem; }
+            .quiz-actions { flex-direction: column; }
+        }
+
         /* ===== SCROLL REVEAL ANIMATIONS ===== */
         .reveal {
             opacity: 0;
@@ -1756,25 +1968,29 @@
                 </defs>
             </svg>
             <h1>Next-Gen Apps <span class="hero-gradient">Powered by AI</span></h1>
+            <!-- Smart Greeting Banner -->
+            <p class="greeting-banner" id="smartGreeting"><span class="greeting-text" id="greetingText"></span><span class="typing-cursor" id="typingCursor"></span></p>
+
             <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
             <div class="hero-buttons">
                 <a href="#products" class="btn-primary">Explore Apps ↓</a>
                 <a href="#products" class="btn-secondary">App Store</a>
+                <button class="find-game-btn" id="findGameBtn">🎮 Find Your Game</button>
             </div>
             <div class="hero-stats">
-                <div class="stat-pill">
+                <div class="stat-pill" data-stat-type="count" data-target="5" data-suffix="+" data-start="0">
                     <div class="stat-label">Apps</div>
                     <div class="stat-value">5+</div>
                 </div>
-                <div class="stat-pill">
+                <div class="stat-pill" data-stat-type="count" data-target="100" data-suffix="%" data-start="0">
                     <div class="stat-label">AI Powered</div>
                     <div class="stat-value">100%</div>
                 </div>
-                <div class="stat-pill">
+                <div class="stat-pill" data-stat-type="text" data-target="Multi">
                     <div class="stat-label">Platforms</div>
                     <div class="stat-value">Multi</div>
                 </div>
-                <div class="stat-pill">
+                <div class="stat-pill" data-stat-type="count" data-target="2026" data-suffix="" data-start="2020">
                     <div class="stat-label">Launch</div>
                     <div class="stat-value">2026</div>
                 </div>
@@ -2127,7 +2343,56 @@
         </div>
         <div class="chat-input-area">
             <textarea class="chat-input" id="chatInput" placeholder="Transmit your query..." rows="1"></textarea>
+            <button class="chat-microphone" id="chatMicrophone" aria-label="Voice input">🎤</button>
             <button class="chat-send" id="chatSend" aria-label="Send message">⟩</button>
+        </div>
+    </div>
+
+    <!-- ===== GAME RECOMMENDER QUIZ MODAL ===== -->
+    <div class="quiz-overlay" id="quizOverlay">
+        <div class="quiz-modal" id="quizModal">
+            <button class="quiz-close" id="quizClose">✕</button>
+            <div class="quiz-question" id="quizQ1" style="display:block">
+                <h3>🎮 What's your play style?</h3>
+                <button class="quiz-opt" data-q="1" data-v="action">⚡ Fast-paced action</button>
+                <button class="quiz-opt" data-q="1" data-v="strategy">🧠 Strategic thinking</button>
+                <button class="quiz-opt" data-q="1" data-v="chill">🌊 Relaxed exploration</button>
+            </div>
+            <div class="quiz-question" id="quizQ2" style="display:none">
+                <h3>🎯 Favorite genre?</h3>
+                <button class="quiz-opt" data-q="2" data-v="sports">🏟️ Sports</button>
+                <button class="quiz-opt" data-q="2" data-v="adventure">🚀 Adventure / Sci-Fi</button>
+                <button class="quiz-opt" data-q="2" data-v="survival">🔥 Survival / Arena</button>
+            </div>
+            <div class="quiz-question" id="quizQ3" style="display:none">
+                <h3>⏱️ How long do you play?</h3>
+                <button class="quiz-opt" data-q="3" data-v="quick">⚡ Quick sessions (< 5 min)</button>
+                <button class="quiz-opt" data-q="3" data-v="medium">🎯 Medium (5-15 min)</button>
+                <button class="quiz-opt" data-q="3" data-v="long">🏆 Long deep sessions</button>
+            </div>
+            <div class="quiz-result" id="quizResult" style="display:none">
+                <h3 id="quizResultTitle">🎯 Your Perfect Game</h3>
+                <p id="quizResultDesc"></p>
+                <button class="quiz-opt quiz-retake" id="quizRetake">🔄 Retake Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== COMMAND PALETTE MODAL ===== -->
+    <div class="cmd-palette" id="cmdPalette">
+        <div class="cmd-modal">
+            <input class="cmd-search" id="cmdSearch" type="text" placeholder="Type a command..." autocomplete="off">
+            <div class="cmd-list" id="cmdList">
+                <div class="cmd-item" data-action="products">🚀 Go to Products</div>
+                <div class="cmd-item" data-action="games">🎮 Browse Games</div>
+                <div class="cmd-item" data-action="tools">🤖 AI Tools</div>
+                <div class="cmd-item" data-action="about">👤 About EXAFABS</div>
+                <div class="cmd-item" data-action="blog">📝 Read Blog</div>
+                <div class="cmd-item" data-action="contact">✉️ Contact Us</div>
+                <div class="cmd-item" data-action="chat">💬 Open AI Chat</div>
+                <div class="cmd-item" data-action="top">⬆️ Scroll to Top</div>
+            </div>
+            <div class="cmd-hint-bar">Press ↑↓ to navigate · Enter to select · Esc to close</div>
         </div>
     </div>
 
@@ -2607,6 +2872,252 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
                 submitBtn.disabled = false;
             });
         }
+
+        // ===== FEATURE 1: SMART GREETING =====
+        (function() {
+            const greetEl = document.getElementById('greetingText');
+            const cursorEl = document.getElementById('typingCursor');
+            if (!greetEl) return;
+            const hour = new Date().getHours();
+            let timeGreet = 'Welcome';
+            if (hour >= 5 && hour < 12) timeGreet = 'Good morning';
+            else if (hour >= 12 && hour < 17) timeGreet = 'Good afternoon';
+            else if (hour >= 17 && hour < 21) timeGreet = 'Good evening';
+            else timeGreet = 'Burning the midnight oil?';
+            const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+            const visits = parseInt(sessionStorage.getItem('exafabs_visits') || '0') + 1;
+            sessionStorage.setItem('exafabs_visits', visits);
+            let msg = '';
+            if (visits === 1) msg = `${timeGreet} — welcome to EXAFABS.AI`;
+            else if (visits === 2) msg = `${timeGreet} — good to see you again`;
+            else msg = `${timeGreet} — welcome back, explorer`;
+            if (isMobile) msg += ' 📱';
+            let i = 0;
+            function typeChar() {
+                if (i < msg.length) {
+                    greetEl.textContent += msg[i];
+                    i++;
+                    setTimeout(typeChar, 45 + Math.random() * 30);
+                } else if (cursorEl) {
+                    setTimeout(() => { cursorEl.style.display = 'none'; }, 1500);
+                }
+            }
+            setTimeout(typeChar, 600);
+        })();
+
+        // ===== FEATURE 2: ANIMATED STATS COUNTER =====
+        (function() {
+            const statPills = document.querySelectorAll('.stat-pill[data-stat-type]');
+            if (!statPills.length) return;
+            function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+            function animateCount(el, start, end, suffix, duration) {
+                const valEl = el.querySelector('.stat-value');
+                if (!valEl) return;
+                const startTime = performance.now();
+                function tick(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = easeOutExpo(progress);
+                    const current = Math.round(start + (end - start) * eased);
+                    valEl.textContent = current + suffix;
+                    if (progress < 1) requestAnimationFrame(tick);
+                    else el.classList.add('counting-complete');
+                }
+                requestAnimationFrame(tick);
+            }
+            function animateText(el, text, duration) {
+                const valEl = el.querySelector('.stat-value');
+                if (!valEl) return;
+                let i = 0;
+                const interval = duration / text.length;
+                valEl.textContent = '';
+                function nextChar() {
+                    if (i < text.length) {
+                        valEl.textContent += text[i];
+                        i++;
+                        setTimeout(nextChar, interval);
+                    } else el.classList.add('counting-complete');
+                }
+                nextChar();
+            }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const type = el.dataset.statType;
+                        const delay = [...statPills].indexOf(el) * 200;
+                        setTimeout(() => {
+                            if (type === 'count') {
+                                const start = parseInt(el.dataset.start || '0');
+                                const target = parseInt(el.dataset.target);
+                                const suffix = el.dataset.suffix || '';
+                                animateCount(el, start, target, suffix, 1800);
+                            } else if (type === 'text') {
+                                animateText(el, el.dataset.target, 800);
+                            }
+                        }, delay);
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.5 });
+            statPills.forEach(pill => observer.observe(pill));
+        })();
+
+        // ===== FEATURE 3: AI GAME RECOMMENDER QUIZ =====
+        (function() {
+            const overlay = document.getElementById('quizOverlay');
+            const openBtn = document.getElementById('findGameBtn');
+            const closeBtn = document.getElementById('quizClose');
+            const retakeBtn = document.getElementById('quizRetake');
+            if (!overlay || !openBtn) return;
+            const answers = {};
+            const games = [
+                { name: 'CrickBot AI', desc: 'AI-powered cricket with adaptive difficulty — fast swipes, real physics.', tags: { action: 2, sports: 3, quick: 2, medium: 1 } },
+                { name: 'GoalBot AI', desc: 'Football penalty shootouts with an AI goalkeeper that learns your patterns.', tags: { action: 2, sports: 3, quick: 3, strategy: 1 } },
+                { name: 'BaseHit AI', desc: 'Baseball batting with predictive AI pitching — time your swings perfectly.', tags: { action: 2, sports: 2, quick: 2, medium: 2 } },
+                { name: 'Survival Arena', desc: 'Wave-based survival combat with AI enemies that adapt to your tactics.', tags: { action: 3, survival: 3, medium: 2, long: 2, strategy: 1 } },
+                { name: 'Infinite Voyager', desc: 'Endless space exploration with procedural worlds and AI encounters.', tags: { chill: 3, adventure: 3, long: 3, strategy: 2 } }
+            ];
+            function showQ(n) {
+                for (let i = 1; i <= 3; i++) {
+                    const q = document.getElementById('quizQ' + i);
+                    if (q) q.style.display = i === n ? 'block' : 'none';
+                }
+                document.getElementById('quizResult').style.display = 'none';
+            }
+            function calcResult() {
+                let scores = games.map(g => ({ ...g, score: 0 }));
+                Object.values(answers).forEach(val => {
+                    scores.forEach(g => { if (g.tags[val]) g.score += g.tags[val]; });
+                });
+                scores.sort((a, b) => b.score - a.score);
+                return scores[0];
+            }
+            overlay.addEventListener('click', (e) => {
+                if (e.target.classList.contains('quiz-opt') && e.target.dataset.q) {
+                    const q = parseInt(e.target.dataset.q);
+                    answers[q] = e.target.dataset.v;
+                    if (q < 3) { showQ(q + 1); }
+                    else {
+                        const best = calcResult();
+                        document.getElementById('quizResultTitle').textContent = '🎯 ' + best.name;
+                        document.getElementById('quizResultDesc').textContent = best.desc;
+                        for (let i = 1; i <= 3; i++) {
+                            const qEl = document.getElementById('quizQ' + i);
+                            if (qEl) qEl.style.display = 'none';
+                        }
+                        document.getElementById('quizResult').style.display = 'block';
+                    }
+                }
+            });
+            openBtn.addEventListener('click', () => { overlay.style.display = 'flex'; showQ(1); });
+            closeBtn.addEventListener('click', () => { overlay.style.display = 'none'; });
+            retakeBtn.addEventListener('click', () => { Object.keys(answers).forEach(k => delete answers[k]); showQ(1); });
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
+        })();
+
+        // ===== FEATURE 4: BLOG TOOLTIPS =====
+        (function() {
+            const summaries = {
+                'crickbot-ai': 'AI-powered cricket game with adaptive bowling, real physics, and progressive difficulty.',
+                'goalbot-ai': 'Football penalty shootouts featuring an AI goalkeeper that learns your shooting patterns.',
+                'basehit-ai': 'Baseball batting challenge with predictive AI pitching and real swing mechanics.',
+                'survival-arena-ai': 'Wave-based survival combat where AI enemies adapt to your playstyle.',
+                'infinite-voyager-ai': 'Procedurally generated space exploration with AI-driven encounters and discoveries.'
+            };
+            document.querySelectorAll('.blog-card').forEach(card => {
+                const href = card.getAttribute('href') || '';
+                const slug = href.split('/').pop().replace('.html', '');
+                if (summaries[slug]) {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'blog-tooltip';
+                    tooltip.innerHTML = '<span class="blog-tooltip-label">AI Summary</span><span class="blog-tooltip-text">' + summaries[slug] + '</span>';
+                    card.appendChild(tooltip);
+                }
+            });
+        })();
+
+        // ===== FEATURE 5: COMMAND PALETTE =====
+        (function() {
+            const palette = document.getElementById('cmdPalette');
+            const search = document.getElementById('cmdSearch');
+            const list = document.getElementById('cmdList');
+            if (!palette || !search || !list) return;
+            let activeIdx = -1;
+            const actions = {
+                products: () => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }),
+                games: () => { document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }); document.querySelector('.tab-btn[data-filter="games"]')?.click(); },
+                tools: () => { document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }); document.querySelector('.tab-btn[data-filter="tools"]')?.click(); },
+                about: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }),
+                blog: () => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' }),
+                contact: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }),
+                chat: () => { const fab = document.getElementById('chatFab'); if (fab) fab.click(); },
+                top: () => window.scrollTo({ top: 0, behavior: 'smooth' })
+            };
+            function openPalette() { palette.style.display = 'flex'; search.value = ''; filterItems(''); activeIdx = -1; setTimeout(() => search.focus(), 50); }
+            function closePalette() { palette.style.display = 'none'; activeIdx = -1; }
+            function filterItems(query) {
+                const items = list.querySelectorAll('.cmd-item');
+                items.forEach(item => {
+                    item.style.display = item.textContent.toLowerCase().includes(query.toLowerCase()) ? 'flex' : 'none';
+                    item.classList.remove('active');
+                });
+                activeIdx = -1;
+            }
+            function getVisible() { return [...list.querySelectorAll('.cmd-item')].filter(i => i.style.display !== 'none'); }
+            function setActive(idx) {
+                const visible = getVisible();
+                visible.forEach(i => i.classList.remove('active'));
+                if (idx >= 0 && idx < visible.length) { visible[idx].classList.add('active'); activeIdx = idx; }
+            }
+            function executeItem(item) {
+                const action = item?.dataset?.action;
+                if (action && actions[action]) { closePalette(); actions[action](); }
+            }
+            search.addEventListener('input', () => filterItems(search.value));
+            search.addEventListener('keydown', (e) => {
+                const visible = getVisible();
+                if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min((activeIdx + 1), visible.length - 1)); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+                else if (e.key === 'Enter') { e.preventDefault(); const v = getVisible(); if (activeIdx >= 0 && v[activeIdx]) executeItem(v[activeIdx]); else if (v.length === 1) executeItem(v[0]); }
+                else if (e.key === 'Escape') closePalette();
+            });
+            list.addEventListener('click', (e) => { const item = e.target.closest('.cmd-item'); if (item) executeItem(item); });
+            palette.addEventListener('click', (e) => { if (e.target === palette) closePalette(); });
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); palette.style.display === 'flex' ? closePalette() : openPalette(); }
+            });
+        })();
+
+        // ===== FEATURE 6: VOICE INPUT =====
+        (function() {
+            const micBtn = document.getElementById('chatMicrophone');
+            const chatInput = document.getElementById('chatInput');
+            if (!micBtn || !chatInput) return;
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { micBtn.style.display = 'none'; return; }
+            let recognition = null;
+            let listening = false;
+            micBtn.addEventListener('click', () => {
+                if (listening) {
+                    recognition.stop();
+                    return;
+                }
+                recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                recognition.onstart = () => { listening = true; micBtn.classList.add('listening'); };
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    chatInput.value += (chatInput.value ? ' ' : '') + transcript;
+                    chatInput.dispatchEvent(new Event('input'));
+                };
+                recognition.onend = () => { listening = false; micBtn.classList.remove('listening'); };
+                recognition.onerror = () => { listening = false; micBtn.classList.remove('listening'); };
+                recognition.start();
+            });
+        })();
     </script>
 </body>
 </html>
