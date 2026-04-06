@@ -1,1684 +1,1262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
-  <meta name="theme-color" content="#7C3AED">
-
-  <!-- Open Graph / Social Meta Tags -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://exafabs.ai/">
-  <meta property="og:title" content="EXAFABS.AI — Next-Gen Apps Powered by AI">
-  <meta property="og:description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
-  <meta property="og:site_name" content="EXAFABS.AI">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="EXAFABS.AI — Next-Gen Apps Powered by AI">
-  <meta name="twitter:description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="logo-icon.png">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <title>EXAFABS.AI — Next-Gen Apps Powered by AI</title>
-
-  <style>
-    /* ===== ROOT / CSS VARIABLES ===== */
-    :root {
-      --primary: #7C3AED;
-      --primary-light: #8B5CF6;
-      --primary-dark: #6D28D9;
-      --cyan: #06B6D4;
-      --cyan-light: #22D3EE;
-      --lime: #84CC16;
-      --lime-light: #A3E635;
-      --pink: #EC4899;
-      --pink-light: #F472B6;
-      --orange: #F59E0B;
-      --bg-deep: #0A0A1A;
-      --bg-surface: #1A1A2E;
-      --bg-surface-alt: #16213E;
-      --text-primary: #F8FAFC;
-      --text-secondary: #94A3B8;
-      --text-muted: #64748B;
-      --border: rgba(148, 163, 184, 0.1);
-      --border-hover: rgba(124, 58, 237, 0.3);
-      --glass: rgba(26, 26, 46, 0.6);
-      --glass-border: rgba(148, 163, 184, 0.08);
-      --grad-primary: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
-      --grad-accent: linear-gradient(135deg, #7C3AED, #EC4899);
-      --grad-warm: linear-gradient(135deg, #EC4899, #F59E0B);
-      --grad-cool: linear-gradient(135deg, #06B6D4, #84CC16);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --radius-xs: 6px;
-      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
-      --glow-primary: 0 0 40px rgba(124, 58, 237, 0.15);
-      --glow-cyan: 0 0 40px rgba(6, 182, 212, 0.15);
-    }
-
-    /* ===== RESET & BASE ===== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-deep);
-      color: var(--text-primary);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    @media (min-width: 768px) {
-      .container {
-        padding: 0 32px;
-      }
-    }
-
-    /* ===== TYPOGRAPHY ===== */
-    h1, h2, h3, h4, h5, h6 {
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      line-height: 1.2;
-    }
-
-    h1 {
-      font-size: 48px;
-    }
-
-    h2 {
-      font-size: 36px;
-    }
-
-    h3 {
-      font-size: 24px;
-    }
-
-    p {
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 36px;
-      }
-      h2 {
-        font-size: 28px;
-      }
-      h3 {
-        font-size: 20px;
-      }
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 28px;
-      border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: var(--grad-primary);
-      color: white;
-      box-shadow: 0 2px 12px rgba(123, 47, 190, 0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(123, 47, 190, 0.4);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text-primary);
-      border: 1.5px solid var(--cyan-light);
-    }
-
-    .btn-outline:hover {
-      background: rgba(6, 182, 212, 0.1);
-      border-color: var(--cyan);
-    }
-
-    .btn-app-store {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-primary);
-      padding: 10px 20px;
-      font-size: 13px;
-    }
-
-    .btn-app-store:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-lg {
-      padding: 14px 32px;
-      font-size: 15px;
-    }
-
-    .btn-sm {
-      padding: 10px 20px;
-      font-size: 13px;
-    }
-
-    /* ===== NAVBAR ===== */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: rgba(10, 10, 26, 0.92);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-      transition: background 0.3s ease;
-    }
-
-    .navbar.scrolled {
-      background: rgba(10, 10, 26, 0.98);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .navbar .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 72px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .logo:hover {
-      opacity: 0.8;
-    }
-
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      flex-shrink: 0;
-      object-fit: contain;
-    }
-
-    .logo-text {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      background: linear-gradient(90deg, #7B2FBE, #C94080, #E8664D, #F5943A);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 32px;
-    }
-
-    .nav-links a {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--text-primary);
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-    }
-
-    .hamburger span {
-      width: 24px;
-      height: 2px;
-      background: var(--text-primary);
-      transition: all 0.3s;
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-
-      .nav-links.active {
-        position: absolute;
-        top: 72px;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        gap: 0;
-        padding: 20px;
-        background: var(--bg-deep);
-        border-bottom: 1px solid var(--border);
-        display: flex;
-      }
-
-      .nav-links.active a {
-        padding: 12px 0;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .hamburger {
-        display: flex;
-      }
-    }
-
-    /* ===== HERO SECTION ===== */
-    .hero {
-      padding: 100px 0 80px;
-      margin-top: 72px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.12), transparent);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -30%;
-      left: -10%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .hero .container {
-      max-width: 720px;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
-
-
-    .hero-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: rgba(123, 47, 190, 0.12);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: #C084FC;
-    }
-
-    .hero h1 {
-      font-size: 56px;
-      line-height: 1.1;
-      margin-bottom: 16px;
-      max-width: 600px;
-    }
-
-    .hero h1 .gradient {
-      background: var(--grad-primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-subtitle {
-      font-size: 18px;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin-bottom: 32px;
-      line-height: 1.7;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 48px;
-    }
-
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 24px;
-      max-width: 600px;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .stat-value {
-      font-size: 24px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    @media (max-width: 768px) {
-      .hero {
-        padding: 80px 0 60px;
-      }
-
-      .hero h1 {
-        font-size: 42px;
-      }
-
-      .hero-subtitle {
-        font-size: 16px;
-      }
-
-      .hero-buttons {
-        flex-direction: column;
-      }
-
-      .hero-stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    /* ===== SECTION STYLES ===== */
-    .section {
-      padding: 100px 0;
-      position: relative;
-    }
-
-    .section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(123, 47, 190, 0.05), transparent);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .section-divider {
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
-      margin: 0 auto 16px;
-      border-radius: 2px;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 60px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .section-label {
-      display: inline-block;
-      padding: 6px 14px;
-      background: rgba(123, 47, 190, 0.1);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #C084FC;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 16px;
-    }
-
-    .section-title {
-      margin-bottom: 16px;
-      background: var(--grad-primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section-desc {
-      max-width: 500px;
-      margin: 0 auto;
-      font-size: 16px;
-    }
-
-    /* ===== PRODUCTS / GAMES SECTION ===== */
-    .category-tabs {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .category-tab {
-      padding: 10px 20px;
-      background: transparent;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .category-tab:hover {
-      border-color: var(--border-hover);
-      color: var(--text-primary);
-    }
-
-    .category-tab.active {
-      background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
-      color: white;
-      border-color: transparent;
-    }
-
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .game-card {
-      position: relative;
-      border-radius: var(--radius);
-      background: var(--bg-surface);
-      border: 1px solid rgba(148, 163, 184, 0.12);
-      overflow: hidden;
-      transition: all 0.3s ease;
-      opacity: 1;
-      transform: translateY(0);
-      animation: fadeInUp 0.6s ease-out forwards;
-    }
-
-    .game-card.hidden {
-      display: none;
-    }
-
-    .game-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-8px);
-      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .game-accent {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-    }
-
-    .game-card[data-accent="purple"] .game-accent {
-      background: var(--primary);
-    }
-
-    .game-card[data-accent="lime"] .game-accent {
-      background: var(--lime);
-    }
-
-    .game-card[data-accent="pink"] .game-accent {
-      background: var(--pink);
-    }
-
-    .game-card[data-accent="cyan"] .game-accent {
-      background: var(--cyan);
-    }
-
-    .game-card[data-accent="orange"] .game-accent {
-      background: var(--orange);
-    }
-
-    .game-card[data-accent="purple"]:hover {
-      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.2), 0 0 0 1px rgba(124, 58, 237, 0.15);
-    }
-    .game-card[data-accent="lime"]:hover {
-      box-shadow: 0 12px 40px rgba(132, 204, 22, 0.15), 0 0 0 1px rgba(132, 204, 22, 0.12);
-    }
-    .game-card[data-accent="pink"]:hover {
-      box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15), 0 0 0 1px rgba(236, 72, 153, 0.12);
-    }
-    .game-card[data-accent="cyan"]:hover {
-      box-shadow: 0 12px 40px rgba(6, 182, 212, 0.15), 0 0 0 1px rgba(6, 182, 212, 0.12);
-    }
-    .game-card[data-accent="orange"]:hover {
-      box-shadow: 0 12px 40px rgba(245, 158, 11, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.12);
-    }
-
-    .game-card-body {
-      padding: 24px;
-    }
-
-    .game-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .game-icon {
-      font-size: 32px;
-      line-height: 1;
-    }
-
-    .game-info h3 {
-      margin-bottom: 4px;
-      color: var(--text-primary);
-    }
-
-    .game-genre {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .game-desc {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
-    .game-cta {
-      width: 100%;
-      padding: 10px 16px;
-      background: rgba(123, 47, 190, 0.1);
-      border: 1px solid rgba(123, 47, 190, 0.25);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .game-cta:hover {
-      background: rgba(123, 47, 190, 0.2);
-      border-color: #7B2FBE;
-    }
-
-    .app-logo {
-      width: 16px;
-      height: 16px;
-      color: white;
-    }
-
-    .coming-soon-badge {
-      display: inline-block;
-      padding: 6px 12px;
-      background: linear-gradient(135deg, #EC4899, #F59E0B);
-      color: white;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 20px;
-      margin-bottom: 12px;
-    }
-
-    /* ===== ABOUT SECTION ===== */
-    .about {
-      background: linear-gradient(180deg, rgba(124, 58, 237, 0.05) 0%, transparent 100%);
-    }
-
-    .about-content {
-      max-width: 700px;
-      margin: 0 auto 60px;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .about-content h2 {
-      margin-bottom: 24px;
-    }
-
-    .about-content p {
-      font-size: 16px;
-      line-height: 1.8;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .feature-card {
-      padding: 32px 24px;
-      border-radius: var(--radius);
-      background: var(--bg-surface);
-      border: 1px solid rgba(148, 163, 184, 0.12);
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .feature-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.12);
-    }
-
-    .feature-icon {
-      font-size: 40px;
-      margin-bottom: 16px;
-    }
-
-    .feature-card h3 {
-      margin-bottom: 12px;
-    }
-
-    .feature-card p {
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    /* ===== CONTACT SECTION ===== */
-    .contact {
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .contact h2 {
-      margin-bottom: 16px;
-    }
-
-    .contact-subtitle {
-      font-size: 18px;
-      color: var(--text-secondary);
-      margin-bottom: 32px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .contact-form {
-      max-width: 500px;
-      margin: 0 auto;
-      display: flex;
-      gap: 12px;
-    }
-
-    .contact-form input {
-      flex: 1;
-      padding: 12px 16px;
-      background: var(--bg-surface);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      transition: all 0.3s;
-    }
-
-    .contact-form input::placeholder {
-      color: var(--text-muted);
-    }
-
-    .contact-form input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: rgba(26, 26, 46, 0.8);
-    }
-
-    .contact-form button {
-      padding: 12px 32px;
-    }
-
-    @media (max-width: 768px) {
-      .contact-form {
-        flex-direction: column;
-      }
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 60px 0 24px;
-      background: rgba(10, 10, 26, 0.5);
-      position: relative;
-      z-index: 1;
-    }
-
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 40px;
-      margin-bottom: 40px;
-    }
-
-    .footer-section h4 {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-primary);
-    }
-
-    .footer-section ul {
-      list-style: none;
-    }
-
-    .footer-section ul li {
-      margin-bottom: 12px;
-    }
-
-    .footer-section a {
-      font-size: 13px;
-      color: var(--text-secondary);
-      transition: color 0.2s;
-    }
-
-    .footer-section a:hover {
-      color: var(--text-primary);
-    }
-
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-      gap: 24px;
-    }
-
-    .footer-copyright {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .footer-socials {
-      display: flex;
-      gap: 16px;
-    }
-
-    .footer-socials a {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      transition: all 0.3s;
-      color: var(--text-secondary);
-    }
-
-    .footer-socials a:hover {
-      background: rgba(124, 58, 237, 0.2);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .fade-in {
-      animation: fadeInUp 0.6s ease-out forwards;
-    }
-
-    .game-card.fade-in:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-
-    .game-card.fade-in:nth-child(3) {
-      animation-delay: 0.2s;
-    }
-
-    .game-card.fade-in:nth-child(4) {
-      animation-delay: 0.3s;
-    }
-
-    .game-card.fade-in:nth-child(5) {
-      animation-delay: 0.4s;
-    }
-
-    .game-card.fade-in:nth-child(6) {
-      animation-delay: 0.5s;
-    }
-
-    .game-card.fade-in:nth-child(7) {
-      animation-delay: 0.6s;
-    }
-
-    .game-card.fade-in:nth-child(8) {
-      animation-delay: 0.7s;
-    }
-
-    .game-card.fade-in:nth-child(9) {
-      animation-delay: 0.8s;
-    }
-
-    .fade-in-visible {
-      animation: fadeInUp 0.6s ease-out forwards !important;
-    }
-
-    /* ===== BLOG SECTION ===== */
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .blog-card {
-      position: relative;
-      border-radius: var(--radius);
-      background: var(--bg-surface);
-      border: 1px solid rgba(148, 163, 184, 0.12);
-      overflow: hidden;
-      transition: all 0.3s ease;
-      opacity: 1;
-      transform: translateY(0);
-      animation: fadeInUp 0.6s ease-out forwards;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .blog-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-8px);
-      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .blog-accent {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-    }
-
-    .blog-card[data-accent="purple"] .blog-accent {
-      background: var(--primary);
-    }
-
-    .blog-card[data-accent="lime"] .blog-accent {
-      background: var(--lime);
-    }
-
-    .blog-card[data-accent="pink"] .blog-accent {
-      background: var(--pink);
-    }
-
-    .blog-card[data-accent="orange"] .blog-accent {
-      background: var(--orange);
-    }
-
-    .blog-card[data-accent="cyan"] .blog-accent {
-      background: var(--cyan);
-    }
-
-    .blog-card-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .blog-category {
-      display: inline-block;
-      padding: 4px 10px;
-      background: rgba(123, 47, 190, 0.15);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: #C084FC;
-      margin-bottom: 12px;
-      width: fit-content;
-    }
-
-    .blog-card h3 {
-      margin-bottom: 12px;
-      color: var(--text-primary);
-      font-size: 18px;
-      line-height: 1.4;
-    }
-
-    .blog-excerpt {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 16px;
-      flex-grow: 1;
-    }
-
-    .blog-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .blog-read-more {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--primary);
-      text-decoration: none;
-      transition: color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .blog-card[data-accent="purple"] .blog-read-more {
-      color: var(--primary);
-    }
-
-    .blog-card[data-accent="lime"] .blog-read-more {
-      color: var(--lime);
-    }
-
-    .blog-card[data-accent="pink"] .blog-read-more {
-      color: var(--pink);
-    }
-
-    .blog-card[data-accent="orange"] .blog-read-more {
-      color: var(--orange);
-    }
-
-    .blog-card[data-accent="cyan"] .blog-read-more {
-      color: var(--cyan);
-    }
-
-    .blog-read-more:hover {
-      opacity: 0.8;
-    }
-
-    .blog-read-time {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    @media (max-width: 1024px) {
-      .blog-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .blog-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exafabs.ai/">
+    <meta property="og:title" content="EXAFABS.AI — Next-Gen Apps Powered by AI">
+    <meta property="og:description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
+    <meta property="og:site_name" content="EXAFABS.AI">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="EXAFABS.AI — Next-Gen Apps Powered by AI">
+    <meta name="twitter:description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
+    <link rel="icon" type="image/png" href="logo-icon.png">
+    <title>EXAFABS.AI — Next-Gen Apps Powered by AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #240331;
+            --bg-surface: #32103e;
+            --bg-surface-low: #2e0c3a;
+            --bg-surface-high: #3e1c49;
+            --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            --primary-solid: #9B30FF;
+            --accent-lime: #98f131;
+            --text-primary: #dcb8ff;
+            --text-surface: #fad7ff;
+            --text-secondary: #cfc2d8;
+            --outline: #988ca1;
+            --glass-bg: rgba(73, 39, 85, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --radius-pill: 9999px;
+            --blur-glass: blur(24px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-surface);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(36, 3, 49, 0.85);
+            backdrop-filter: var(--blur-glass);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .nav-logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-surface);
+        }
+
+        .nav-cta {
+            margin-left: auto;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-get-started {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-surface);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-get-started:hover {
+            background: rgba(73, 39, 85, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 0.35rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .hamburger span {
+            width: 1.5rem;
+            height: 0.2rem;
+            background: var(--text-surface);
+            border-radius: 0.1rem;
+            transition: all 0.3s;
+        }
+
+        /* HERO */
+        section.hero {
+            margin-top: 4.5rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: radial-gradient(ellipse 80% 80% at 50% 0%, rgba(123, 47, 190, 0.15) 0%, transparent 70%),
+                        radial-gradient(ellipse 60% 100% at 100% 100%, rgba(201, 64, 128, 0.1) 0%, transparent 50%),
+                        var(--bg-base);
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            color: var(--text-surface);
+        }
+
+        .hero-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin: 1.5rem 0 2rem;
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.25rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(123, 47, 190, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-surface);
+            padding: 1rem 2rem;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(73, 39, 85, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .stat-pill {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-pill);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: var(--text-surface);
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* PRODUCTS */
+        section.products {
+            padding: 5rem 2rem;
+            background: var(--bg-base);
+        }
+
+        .products-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .products-header h2 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 1rem;
+            color: var(--text-surface);
+        }
+
+        .products-tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .tab-btn {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-header {
+            padding: 1.75rem;
+            flex-grow: 1;
+        }
+
+        .product-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-surface);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-footer {
+            padding: 0 1.75rem 1.75rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .product-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--accent-lime);
+            padding: 0.4rem 0.9rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .product-btn {
+            flex-grow: 1;
+            background: rgba(155, 48, 255, 0.2);
+            border: 1px solid var(--primary-solid);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .accent-purple { background: linear-gradient(135deg, rgba(155, 48, 255, 0.3), rgba(155, 48, 255, 0.1)); }
+        .accent-lime { background: linear-gradient(135deg, rgba(152, 241, 49, 0.3), rgba(152, 241, 49, 0.1)); }
+        .accent-pink { background: linear-gradient(135deg, rgba(201, 64, 128, 0.3), rgba(201, 64, 128, 0.1)); }
+        .accent-orange { background: linear-gradient(135deg, rgba(245, 148, 58, 0.3), rgba(245, 148, 58, 0.1)); }
+        .accent-cyan { background: linear-gradient(135deg, rgba(100, 200, 255, 0.3), rgba(100, 200, 255, 0.1)); }
+
+        .border-purple { border-top: 3px solid #9B30FF; }
+        .border-lime { border-top: 3px solid #98f131; }
+        .border-pink { border-top: 3px solid #C94080; }
+        .border-orange { border-top: 3px solid #F5943A; }
+        .border-cyan { border-top: 3px solid #64c8ff; }
+
+        /* ABOUT */
+        section.about {
+            padding: 5rem 2rem;
+            background: radial-gradient(ellipse 100% 100% at 50% 100%, rgba(123, 47, 190, 0.1) 0%, transparent 60%),
+                        var(--bg-base);
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .about-header h2 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 1rem;
+            color: var(--text-surface);
+        }
+
+        .about-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--primary-solid);
+            padding: 2rem;
+            border-radius: 1rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-surface);
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* BLOG */
+        section.blog {
+            padding: 5rem 2rem;
+            background: var(--bg-base);
+        }
+
+        .blog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .blog-header h2 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 1rem;
+            color: var(--text-surface);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .blog-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            border-top: 3px solid var(--accent-lime);
+            padding: 2rem;
+            border-radius: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .blog-label {
+            font-size: 0.75rem;
+            color: var(--accent-lime);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .blog-card h3 {
+            font-size: 1.3rem;
+            color: var(--text-surface);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            margin-top: auto;
+        }
+
+        .blog-time {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .blog-link {
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .blog-card:hover .blog-link {
+            color: var(--accent-lime);
+        }
+
+        /* CONTACT */
+        section.contact {
+            padding: 5rem 2rem;
+            background: radial-gradient(ellipse 100% 100% at 50% 0%, rgba(201, 64, 128, 0.1) 0%, transparent 60%),
+                        var(--bg-base);
+        }
+
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .contact-header h2 {
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin-bottom: 1rem;
+            color: var(--text-surface);
+        }
+
+        .contact-form {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: var(--text-surface);
+            padding: 0.875rem;
+            border-radius: 0.75rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-solid);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--radius-pill);
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(123, 47, 190, 0.3);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--glass-border);
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h4 {
+            font-size: 0.85rem;
+            color: var(--text-surface);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .footer-column a:hover {
+            color: var(--text-surface);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--glass-border);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-lime);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(36, 3, 49, 0.95);
+                backdrop-filter: var(--blur-glass);
+                padding: 1.5rem;
+                gap: 1rem;
+                border-bottom: 1px solid var(--glass-border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-cta {
+                margin-left: 0;
+            }
+
+            .hero {
+                margin-top: 4rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .products-grid,
+            .features-grid,
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+    </style>
 </head>
 <body>
-  <!-- NAVBAR -->
-  <nav class="navbar" id="navbar">
-    <div class="container">
-      <a href="#top" class="logo" aria-label="EXAFABS.AI Home">
-        <img src="logo-icon.png" alt="EXAFABS.AI" class="logo-icon" width="36" height="36">
-        <span class="logo-text">EXAFABS.AI</span>
-      </a>
-
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#products">Products</a></li>
-        <li><a href="#products">Games</a></li>
-        <li><a href="#products">AI Tools</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#blog">Blog</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-
-      <div class="nav-buttons">
-        <a href="#contact" class="btn btn-primary">Get Started</a>
-      </div>
-
-      <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-label">
-          🚀
-          <span>AI App Studio</span>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <img src="logo-icon.png" alt="EXAFABS.AI">
+                <span>EXAFABS.AI</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#products">Products</a></li>
+                <li><a href="#products">Games</a></li>
+                <li><a href="#products">AI Tools</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-        <h1>Next-Gen Apps<br /><span class="gradient">Powered by AI</span></h1>
-        <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
-
-        <div class="hero-buttons">
-          <a href="#products" class="btn btn-primary btn-lg">Explore Apps ↓</a>
-          <a href="#products" class="btn btn-outline btn-lg">
-            <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-              <polyline points="23 13 23 23 13 23"></polyline>
-              <path d="M23 20L13 10"></path>
-            </svg>
-            App Store
-          </a>
-        </div>
-
-        <div class="hero-stats">
-          <div class="stat-item">
-            <div class="stat-value">5+</div>
-            <div class="stat-label">Apps</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">AI</div>
-            <div class="stat-label">Powered</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">Multi</div>
-            <div class="stat-label">Platform</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">2026</div>
-            <div class="stat-label">Launch</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- PRODUCTS SECTION -->
-  <section class="section" id="products">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label">OUR PRODUCTS</div>
-        <div class="section-divider"></div>
-        <h2 class="section-title">Built with Intelligence</h2>
-        <p class="section-desc">Explore our growing ecosystem of AI-powered applications</p>
-      </div>
-
-      <!-- Category Filter Tabs -->
-      <div class="category-tabs">
-        <button class="category-tab active" data-filter="all">All</button>
-        <button class="category-tab" data-filter="games">Games</button>
-        <button class="category-tab" data-filter="ai-tools">AI Tools</button>
-        <button class="category-tab" data-filter="utilities">Utilities</button>
-      </div>
-
-      <!-- Products Grid -->
-      <div class="games-grid">
-        <!-- GAMES -->
-        <div class="game-card fade-in" data-category="games" data-accent="purple">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="game-header">
-              <div class="game-icon">🏏</div>
-              <div class="game-info">
-                <h3>CrickBot</h3>
-                <span class="game-genre">Sports / AI</span>
-              </div>
-            </div>
-            <p class="game-desc">Master cricket with AI opponents that track your batting patterns and adapt their bowling strategy in real-time using Bayesian prediction.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon on App Store
+        <div class="nav-cta">
+            <a href="#contact" class="btn-get-started">Get Started</a>
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-          </div>
         </div>
+    </nav>
 
-        <div class="game-card fade-in" data-category="games" data-accent="lime">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="game-header">
-              <div class="game-icon">⚽</div>
-              <div class="game-info">
-                <h3>GoalBot</h3>
-                <span class="game-genre">Sports / AI</span>
-              </div>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-label">🚀 AI App Studio</div>
+            <h1>Next-Gen Apps<br><span class="hero-gradient">Powered by AI</span></h1>
+            <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
+            <div class="hero-buttons">
+                <a href="#products" class="btn-primary">Explore Apps ↓</a>
+                <a href="#products" class="btn-secondary">App Store</a>
             </div>
-            <p class="game-desc">Take penalty kicks against an AI goalkeeper powered by TensorFlow.js that studies your shot placement and predicts your next move.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon on App Store
-            </button>
-          </div>
-        </div>
-
-        <div class="game-card fade-in" data-category="games" data-accent="pink">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="game-header">
-              <div class="game-icon">⚾</div>
-              <div class="game-info">
-                <h3>BaseHit</h3>
-                <span class="game-genre">Sports / AI</span>
-              </div>
+            <div class="hero-stats">
+                <div class="stat-pill">
+                    <div class="stat-label">Apps</div>
+                    <div class="stat-value">5+</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="stat-label">AI Powered</div>
+                    <div class="stat-value">100%</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="stat-label">Platforms</div>
+                    <div class="stat-value">Multi</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="stat-label">Launch</div>
+                    <div class="stat-value">2026</div>
+                </div>
             </div>
-            <p class="game-desc">Face AI pitchers that analyze your swing timing and adjust pitch selection, speed, and placement to keep you off balance.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon on App Store
-            </button>
-          </div>
         </div>
+    </section>
 
-        <div class="game-card fade-in" data-category="games" data-accent="orange">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="game-header">
-              <div class="game-icon">⚔️</div>
-              <div class="game-info">
-                <h3>Survival Arena</h3>
-                <span class="game-genre">Action / Survival</span>
-              </div>
+    <section class="products" id="products">
+        <div class="products-header">
+            <h2>Our Apps</h2>
+        </div>
+        <div class="products-tabs">
+            <button class="tab-btn active" data-filter="all">All</button>
+            <button class="tab-btn" data-filter="games">Games</button>
+            <button class="tab-btn" data-filter="tools">AI Tools</button>
+            <button class="tab-btn" data-filter="utilities">Utilities</button>
+        </div>
+        <div class="products-grid">
+            <div class="product-card border-purple accent-purple" data-category="games">
+                <div class="product-header">
+                    <div class="product-icon">🏏</div>
+                    <div class="product-category">Sports / AI</div>
+                    <h3 class="product-title">CrickBot</h3>
+                    <p class="product-desc">Master cricket with AI opponents that track your batting patterns and adapt their bowling strategy in real-time using Bayesian prediction.</p>
+                </div>
+                <div class="product-footer">
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-            <p class="game-desc">Battle AI opponents with 8 unique personality archetypes — from aggressive Berserkers to strategic Predators — in a shrinking arena.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon on App Store
-            </button>
-          </div>
-        </div>
 
-        <div class="game-card fade-in" data-category="games" data-accent="cyan">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="game-header">
-              <div class="game-icon">🚀</div>
-              <div class="game-info">
-                <h3>Infinite Voyager</h3>
-                <span class="game-genre">Arcade / Space</span>
-              </div>
+            <div class="product-card border-lime accent-lime" data-category="games">
+                <div class="product-header">
+                    <div class="product-icon">⚽</div>
+                    <div class="product-category">Sports / AI</div>
+                    <h3 class="product-title">GoalBot</h3>
+                    <p class="product-desc">Take penalty kicks against an AI goalkeeper powered by TensorFlow.js that studies your shot placement and predicts your next move.</p>
+                </div>
+                <div class="product-footer">
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-            <p class="game-desc">Navigate procedurally spawned encounters in deep space with an AI Director that dynamically adjusts difficulty to your skill level.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon on App Store
-            </button>
-          </div>
-        </div>
 
-        <!-- AI TOOLS -->
-        <div class="game-card fade-in" data-category="ai-tools" data-accent="cyan">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="coming-soon-badge">In Development</div>
-            <div class="game-header">
-              <div class="game-icon">📡</div>
-              <div class="game-info">
-                <h3>NetSense AI</h3>
-                <span class="game-genre">AIOps / Analytics</span>
-              </div>
+            <div class="product-card border-pink accent-pink" data-category="games">
+                <div class="product-header">
+                    <div class="product-icon">⚾</div>
+                    <div class="product-category">Sports / AI</div>
+                    <h3 class="product-title">BaseHit</h3>
+                    <p class="product-desc">Face AI pitchers that analyze your swing timing and adjust pitch selection, speed, and placement to keep you off balance.</p>
+                </div>
+                <div class="product-footer">
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-            <p class="game-desc">AI-powered network monitoring and predictive analytics for telecom infrastructure.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon
-            </button>
-          </div>
-        </div>
 
-        <div class="game-card fade-in" data-category="ai-tools" data-accent="purple">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="coming-soon-badge">In Development</div>
-            <div class="game-header">
-              <div class="game-icon">💻</div>
-              <div class="game-info">
-                <h3>CodePilot</h3>
-                <span class="game-genre">Developer Tools</span>
-              </div>
+            <div class="product-card border-orange accent-orange" data-category="games">
+                <div class="product-header">
+                    <div class="product-icon">⚔️</div>
+                    <div class="product-category">Action / Survival</div>
+                    <h3 class="product-title">Survival Arena</h3>
+                    <p class="product-desc">Battle AI opponents with 8 unique personality archetypes — from aggressive Berserkers to strategic Predators — in a shrinking arena.</p>
+                </div>
+                <div class="product-footer">
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-            <p class="game-desc">Intelligent code review and optimization powered by machine learning.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon
-            </button>
-          </div>
-        </div>
 
-        <!-- UTILITIES -->
-        <div class="game-card fade-in" data-category="utilities" data-accent="lime">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="coming-soon-badge">In Development</div>
-            <div class="game-header">
-              <div class="game-icon">🔄</div>
-              <div class="game-info">
-                <h3>QuickConvert</h3>
-                <span class="game-genre">Productivity</span>
-              </div>
+            <div class="product-card border-cyan accent-cyan" data-category="games">
+                <div class="product-header">
+                    <div class="product-icon">🚀</div>
+                    <div class="product-category">Arcade / Space</div>
+                    <h3 class="product-title">Infinite Voyager</h3>
+                    <p class="product-desc">Navigate procedurally spawned encounters in deep space with an AI Director that dynamically adjusts difficulty to your skill level.</p>
+                </div>
+                <div class="product-footer">
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-            <p class="game-desc">AI-enhanced file conversion with intelligent format detection and optimization.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon
-            </button>
-          </div>
-        </div>
 
-        <div class="game-card fade-in" data-category="utilities" data-accent="pink">
-          <div class="game-accent"></div>
-          <div class="game-card-body">
-            <div class="coming-soon-badge">In Development</div>
-            <div class="game-header">
-              <div class="game-icon">🔒</div>
-              <div class="game-info">
-                <h3>VaultSync</h3>
-                <span class="game-genre">Security / Storage</span>
-              </div>
+            <div class="product-card border-cyan accent-cyan" data-category="tools">
+                <div class="product-header">
+                    <div class="product-icon">📡</div>
+                    <div class="product-category">AIOps / Analytics</div>
+                    <h3 class="product-title">NetSense AI</h3>
+                    <p class="product-desc">AI-powered network monitoring and predictive analytics for telecom infrastructure.</p>
+                </div>
+                <div class="product-footer">
+                    <span class="product-badge">In Development</span>
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-            <p class="game-desc">Encrypted cloud backup with AI-powered deduplication and smart scheduling.</p>
-            <button class="game-cta">
-              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
-                <polyline points="23 13 23 23 13 23"></polyline>
-                <path d="M23 20L13 10"></path>
-              </svg>
-              Coming Soon
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ABOUT SECTION -->
-  <section class="section about" id="about">
-    <div class="container">
-      <div class="about-content">
-        <h2>Built by Engineers,<br />Powered by AI</h2>
-        <p>ExaFabs is an AI app studio pushing the boundaries of intelligent software. Every product features adaptive AI that learns from user behavior, creating unique experiences that evolve with you. From mobile games to enterprise tools, we're building the future of intelligent applications.</p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🧠</div>
-          <h3>Adaptive AI</h3>
-          <p>Every app features AI that learns and adapts to user behavior, creating personalized experiences.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📱</div>
-          <h3>Multi-Platform</h3>
-          <p>Built for iOS today, expanding to Android, Web, and Enterprise platforms.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Engineering First</h3>
-          <p>Crafted with production-grade architecture, scalability, and reliability at the core.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BLOG SECTION -->
-  <section class="section" id="blog">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label">INSIGHTS</div>
-        <div class="section-divider"></div>
-        <h2 class="section-title">AI Behind the Apps</h2>
-        <p class="section-desc">Deep dives into how artificial intelligence powers our products</p>
-      </div>
-
-      <div class="blog-grid">
-        <!-- Blog Card 1 -->
-        <div class="blog-card" data-accent="purple">
-          <div class="blog-accent"></div>
-          <div class="blog-card-body">
-            <div class="blog-category">AI / Cricket</div>
-            <h3>How CrickBot Uses AI to Master Cricket</h3>
-            <p class="blog-excerpt">How a 4-phase AI system uses player modeling, Bayesian prediction, and adaptive difficulty to create cricket opponents that learn your batting patterns.</p>
-            <div class="blog-footer">
-              <a href="blog/crickbot-ai.html" class="blog-read-more">Read More →</a>
-              <span class="blog-read-time">8 min read</span>
+            <div class="product-card border-purple accent-purple" data-category="tools">
+                <div class="product-header">
+                    <div class="product-icon">💻</div>
+                    <div class="product-category">Developer Tools</div>
+                    <h3 class="product-title">CodePilot</h3>
+                    <p class="product-desc">Intelligent code review and optimization powered by machine learning.</p>
+                </div>
+                <div class="product-footer">
+                    <span class="product-badge">In Development</span>
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Blog Card 2 -->
-        <div class="blog-card" data-accent="lime">
-          <div class="blog-accent"></div>
-          <div class="blog-card-body">
-            <div class="blog-category">AI / Football</div>
-            <h3>Inside GoalBot: AI That Learns Your Shooting Style</h3>
-            <p class="blog-excerpt">Inside the TensorFlow.js neural network that powers GoalBot's goalkeeper — from shot pattern tracking to real-time dive prediction on Legend difficulty.</p>
-            <div class="blog-footer">
-              <a href="blog/goalbot-ai.html" class="blog-read-more">Read More →</a>
-              <span class="blog-read-time">7 min read</span>
+            <div class="product-card border-lime accent-lime" data-category="utilities">
+                <div class="product-header">
+                    <div class="product-icon">🔄</div>
+                    <div class="product-category">Productivity</div>
+                    <h3 class="product-title">QuickConvert</h3>
+                    <p class="product-desc">AI-enhanced file conversion with intelligent format detection and optimization.</p>
+                </div>
+                <div class="product-footer">
+                    <span class="product-badge">In Development</span>
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Blog Card 3 -->
-        <div class="blog-card" data-accent="pink">
-          <div class="blog-accent"></div>
-          <div class="blog-card-body">
-            <div class="blog-category">AI / Baseball</div>
-            <h3>BaseHit's AI: Pitching Intelligence That Adapts</h3>
-            <p class="blog-excerpt">How timing bias detection and adaptive pitch speed create baseball AI that responds to your swing patterns without machine learning.</p>
-            <div class="blog-footer">
-              <a href="blog/basehit-ai.html" class="blog-read-more">Read More →</a>
-              <span class="blog-read-time">7 min read</span>
+            <div class="product-card border-pink accent-pink" data-category="utilities">
+                <div class="product-header">
+                    <div class="product-icon">🔒</div>
+                    <div class="product-category">Security / Storage</div>
+                    <h3 class="product-title">VaultSync</h3>
+                    <p class="product-desc">Encrypted cloud backup with AI-powered deduplication and smart scheduling.</p>
+                </div>
+                <div class="product-footer">
+                    <span class="product-badge">In Development</span>
+                    <a href="#" class="product-btn">Coming Soon</a>
+                </div>
             </div>
-          </div>
         </div>
+    </section>
 
-        <!-- Blog Card 4 -->
-        <div class="blog-card" data-accent="orange">
-          <div class="blog-accent"></div>
-          <div class="blog-card-body">
-            <div class="blog-category">AI / Combat</div>
-            <h3>Survival Arena: Enemy AI That Hunts Intelligently</h3>
-            <p class="blog-excerpt">8 AI personality archetypes, weighted state machines, and dynamic aggression scaling — how Survival Arena's bots feel intelligent.</p>
-            <div class="blog-footer">
-              <a href="blog/survival-arena-ai.html" class="blog-read-more">Read More →</a>
-              <span class="blog-read-time">9 min read</span>
+    <section class="about" id="about">
+        <div class="about-header">
+            <h2>Built by Engineers, Powered by AI</h2>
+            <p>EXAFABS.AI is an AI App Studio dedicated to creating intelligent applications that push the boundaries of what's possible. We combine cutting-edge artificial intelligence with elegant design to deliver experiences that adapt, learn, and evolve.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Adaptive AI</h3>
+                <p>Our applications leverage advanced machine learning algorithms that continuously learn from user behavior and adapt their strategies in real-time.</p>
             </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 5 -->
-        <div class="blog-card" data-accent="cyan">
-          <div class="blog-accent"></div>
-          <div class="blog-card-body">
-            <div class="blog-category">AI / Space</div>
-            <h3>Infinite Voyager: Procedural Galaxies Powered by AI</h3>
-            <p class="blog-excerpt">The AI Director pattern behind Infinite Voyager — adaptive difficulty, 4 alien behavior types, and dynamic encounter pacing in a space shooter.</p>
-            <div class="blog-footer">
-              <a href="blog/infinite-voyager-ai.html" class="blog-read-more">Read More →</a>
-              <span class="blog-read-time">8 min read</span>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Multi-Platform</h3>
+                <p>Built for web, mobile, and desktop. Play and work seamlessly across all your devices with synchronized progress and cloud integration.</p>
             </div>
-          </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Engineering First</h3>
+                <p>Every app is engineered with performance, accessibility, and user experience at its core. No compromises, only excellence.</p>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CONTACT SECTION -->
-  <section class="section" id="contact">
-    <div class="container">
-      <div class="contact">
-        <h2>Ready to Experience AI?</h2>
-        <p class="contact-subtitle">Join the waitlist and be the first to know when our apps launch.</p>
-
-        <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
-          <input type="email" name="email" placeholder="Enter your email" required aria-label="Email address" />
-          <button type="submit" class="btn btn-primary">Notify Me</button>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h4>Games</h4>
-          <ul>
-            <li><a href="#products">CrickBot</a></li>
-            <li><a href="#products">GoalBot</a></li>
-            <li><a href="#products">BaseHit</a></li>
-            <li><a href="#products">Survival Arena</a></li>
-            <li><a href="#products">Infinite Voyager</a></li>
-          </ul>
+    <section class="blog" id="blog">
+        <div class="blog-header">
+            <h2>Latest Insights</h2>
         </div>
+        <div class="blog-grid">
+            <a href="blog/crickbot-ai.html" class="blog-card">
+                <div class="blog-label">AI / Sports</div>
+                <h3>How CrickBot Uses AI to Master Cricket</h3>
+                <div class="blog-meta">
+                    <span class="blog-time">8 min read</span>
+                    <span class="blog-link">Read →</span>
+                </div>
+            </a>
 
-        <div class="footer-section">
-          <h4>AI Tools</h4>
-          <ul>
-            <li><a href="#products">NetSense AI</a></li>
-            <li><a href="#products">CodePilot</a></li>
-          </ul>
+            <a href="blog/goalbot-ai.html" class="blog-card">
+                <div class="blog-label">AI / Sports</div>
+                <h3>Inside GoalBot: AI That Learns Your Shooting Style</h3>
+                <div class="blog-meta">
+                    <span class="blog-time">7 min read</span>
+                    <span class="blog-link">Read →</span>
+                </div>
+            </a>
+
+            <a href="blog/basehit-ai.html" class="blog-card">
+                <div class="blog-label">AI / Sports</div>
+                <h3>BaseHit's AI: Pitching Intelligence That Adapts</h3>
+                <div class="blog-meta">
+                    <span class="blog-time">7 min read</span>
+                    <span class="blog-link">Read →</span>
+                </div>
+            </a>
+
+            <a href="blog/survival-arena-ai.html" class="blog-card">
+                <div class="blog-label">AI / Game Design</div>
+                <h3>Survival Arena: Enemy AI That Hunts Intelligently</h3>
+                <div class="blog-meta">
+                    <span class="blog-time">9 min read</span>
+                    <span class="blog-link">Read →</span>
+                </div>
+            </a>
+
+            <a href="blog/infinite-voyager-ai.html" class="blog-card">
+                <div class="blog-label">AI / Procedural Generation</div>
+                <h3>Infinite Voyager: Procedural Galaxies Powered by AI</h3>
+                <div class="blog-meta">
+                    <span class="blog-time">8 min read</span>
+                    <span class="blog-link">Read →</span>
+                </div>
+            </a>
         </div>
+    </section>
 
-        <div class="footer-section">
-          <h4>Utilities</h4>
-          <ul>
-            <li><a href="#products">QuickConvert</a></li>
-            <li><a href="#products">VaultSync</a></li>
-          </ul>
+    <section class="contact" id="contact">
+        <div class="contact-container">
+            <div class="contact-header">
+                <h2>Ready to Experience AI?</h2>
+            </div>
+            <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY">
+                <input type="hidden" name="subject" value="New Inquiry from EXAFABS.AI">
+                <input type="hidden" name="from_name" value="EXAFABS.AI">
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Tell us what you're interested in..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Notify Me</button>
+            </form>
         </div>
+    </section>
 
-        <div class="footer-section">
-          <h4>Blog</h4>
-          <ul>
-            <li><a href="blog/crickbot-ai.html">CrickBot AI</a></li>
-            <li><a href="blog/goalbot-ai.html">GoalBot AI</a></li>
-            <li><a href="blog/basehit-ai.html">BaseHit AI</a></li>
-            <li><a href="blog/survival-arena-ai.html">Survival Arena AI</a></li>
-            <li><a href="blog/infinite-voyager-ai.html">Infinite Voyager AI</a></li>
-          </ul>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>Games</h4>
+                <ul>
+                    <li><a href="#products">CrickBot</a></li>
+                    <li><a href="#products">GoalBot</a></li>
+                    <li><a href="#products">BaseHit</a></li>
+                    <li><a href="#products">Survival Arena</a></li>
+                    <li><a href="#products">Infinite Voyager</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>AI Tools</h4>
+                <ul>
+                    <li><a href="#products">NetSense AI</a></li>
+                    <li><a href="#products">CodePilot</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Utilities</h4>
+                <ul>
+                    <li><a href="#products">QuickConvert</a></li>
+                    <li><a href="#products">VaultSync</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Blog</h4>
+                <ul>
+                    <li><a href="blog/crickbot-ai.html">CrickBot AI</a></li>
+                    <li><a href="blog/goalbot-ai.html">GoalBot AI</a></li>
+                    <li><a href="blog/basehit-ai.html">BaseHit AI</a></li>
+                    <li><a href="blog/survival-arena-ai.html">Survival Arena AI</a></li>
+                    <li><a href="blog/infinite-voyager-ai.html">Infinite Voyager AI</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="mailto:alpit@exafabs.ai">Email: alpit@exafabs.ai</a></li>
+                </ul>
+            </div>
         </div>
-
-        <div class="footer-section">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#blog">Blog</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="mailto:alpit@exafabs.ai">Email: alpit@exafabs.ai</a></li>
-          </ul>
+        <div class="footer-bottom">
+            <p class="footer-copyright">© 2026 EXAFABS.AI. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" title="X (Twitter)">𝕏</a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn">in</a>
+                <a href="https://github.com/alpittare" target="_blank" rel="noopener noreferrer" title="GitHub">gh</a>
+            </div>
         </div>
-      </div>
+    </footer>
 
-      <div class="footer-bottom">
-        <p class="footer-copyright">&copy; 2026 EXAFABS.AI. All rights reserved.</p>
-        <div class="footer-socials">
-          <a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">𝕏</a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
-          <a href="https://github.com/alpittare" target="_blank" rel="noopener noreferrer" aria-label="GitHub">gh</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
 
-  <script>
-    // ===== NAVBAR SCROLL & MOBILE MENU =====
-    const navbar = document.getElementById('navbar');
-    const navLinks = document.getElementById('navLinks');
-    const hamburger = document.getElementById('hamburger');
-
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
-    });
-
-    hamburger.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-    });
-
-    navLinks.addEventListener('click', () => {
-      navLinks.classList.remove('active');
-    });
-
-    // ===== FADE IN ON SCROLL =====
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('fade-in-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    document.querySelectorAll('.fade-in, .feature-card').forEach((el) => {
-      observer.observe(el);
-    });
-
-    // ===== CATEGORY FILTER =====
-    const categoryTabs = document.querySelectorAll('.category-tab');
-    const gameCards = document.querySelectorAll('.game-card');
-
-    categoryTabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        // Update active tab
-        categoryTabs.forEach((t) => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        const filterValue = tab.getAttribute('data-filter');
-
-        // Filter cards
-        gameCards.forEach((card) => {
-          const cardCategory = card.getAttribute('data-category');
-
-          if (filterValue === 'all' || cardCategory === filterValue) {
-            card.classList.remove('hidden');
-            setTimeout(() => {
-              card.style.opacity = '1';
-              card.style.transform = 'translateY(0)';
-            }, 10);
-          } else {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-              card.classList.add('hidden');
-            }, 300);
-          }
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
         });
-      });
-    });
-  </script>
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const productCards = document.querySelectorAll('.product-card');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.getAttribute('data-filter');
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                productCards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = card.getAttribute('data-category') === filter ? 'block' : 'none';
+                    }
+                });
+            });
+        });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.product-card, .feature-card, .blog-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        const navbar = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 100) {
+                navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.95)';
+                navbar.style.backdropFilter = 'blur(24px)';
+            } else {
+                navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.85)';
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
