@@ -1446,18 +1446,37 @@
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-card);
-            padding: 1.75rem;
+            padding: 2rem 1.75rem;
             text-align: center;
-            transition: transform 0.35s var(--transition-smooth), border-color 0.3s, box-shadow 0.3s;
+            transition: transform 0.5s var(--transition-smooth), border-color 0.3s, box-shadow 0.5s;
+            backdrop-filter: var(--blur-glass);
+            position: relative;
+            overflow: hidden;
+        }
+        .ai-power-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         .ai-power-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(100,200,255,0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 50px rgba(155, 48, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+        .ai-power-card:hover::before {
+            opacity: 1;
         }
         .ai-power-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
+            transition: transform 0.3s;
+        }
+        .ai-power-card:hover .ai-power-icon {
+            transform: scale(1.15);
         }
         .ai-power-card h3 {
             font-size: 1.1rem;
@@ -2168,7 +2187,7 @@
                 <li><a href="#products">Products</a></li>
                 <li><a href="#products">Games</a></li>
                 <li><a href="#products">AI Tools</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a href="#ai-powers">About</a></li>
                 <li><a href="#blog">Blog</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -2414,29 +2433,7 @@
         </div>
     </section>
 
-    <section class="about" id="about">
-        <div class="about-header reveal">
-            <h2>Built by Engineers, Powered by AI</h2>
-            <p>EXAFABS.AI is an AI App Studio dedicated to creating intelligent applications that push the boundaries of what's possible. We combine cutting-edge artificial intelligence with elegant design to deliver experiences that adapt, learn, and evolve.</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <h3>Adaptive AI</h3>
-                <p>Our applications leverage advanced machine learning algorithms that continuously learn from user behavior and adapt their strategies in real-time.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3>Multi-Platform</h3>
-                <p>Built for web, mobile, and desktop. Play and work seamlessly across all your devices with synchronized progress and cloud integration.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Engineering First</h3>
-                <p>Every app is engineered with performance, accessibility, and user experience at its core. No compromises, only excellence.</p>
-            </div>
-        </div>
-    </section>
+    <!-- About section replaced by AI Powers section above -->
 
     <section class="blog" id="blog">
         <div class="blog-header reveal">
@@ -2572,7 +2569,7 @@
             <div class="footer-column">
                 <h4>Company</h4>
                 <ul>
-                    <li><a href="#about">About</a></li>
+                    <li><a href="#ai-powers">About</a></li>
                     <li><a href="#blog">Blog</a></li>
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="/privacy-policy/">Privacy Policy</a></li>
@@ -3355,7 +3352,7 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
                 products: () => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }),
                 games: () => { document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }); document.querySelector('.tab-btn[data-filter="games"]')?.click(); },
                 tools: () => { document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }); document.querySelector('.tab-btn[data-filter="tools"]')?.click(); },
-                about: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }),
+                about: () => document.getElementById('ai-powers')?.scrollIntoView({ behavior: 'smooth' }),
                 blog: () => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' }),
                 contact: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }),
                 chat: () => { const fab = document.getElementById('chatFab'); if (fab) fab.click(); },
