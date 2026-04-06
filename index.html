@@ -19,7 +19,7 @@
   <meta name="twitter:description" content="EXAFABS — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%2306B6D4;stop-opacity:1' /></linearGradient></defs><rect width='40' height='40' rx='8' fill='url(%23g)'/><path d='M 12 12 L 28 12 L 20 20 L 28 28 L 12 28 Z' fill='white' opacity='0.9'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><defs><linearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%237C3AED' stop-opacity='0.9'/><stop offset='100%25' stop-color='%2306B6D4' stop-opacity='0.85'/></linearGradient><linearGradient id='b' x1='100%25' y1='0%25' x2='0%25' y2='100%25'><stop offset='0%25' stop-color='%23F59E0B' stop-opacity='0.85'/><stop offset='100%25' stop-color='%23EC4899' stop-opacity='0.6'/></linearGradient></defs><path d='M24 8C16 14 10 22 12 32C14 36 18 38 24 36C20 28 20 18 24 8Z' fill='url(%23a)'/><path d='M24 8C32 14 38 22 36 32C34 36 30 38 24 36C28 28 28 18 24 8Z' fill='url(%23b)'/></svg>">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -207,14 +207,13 @@
       left: 0;
       right: 0;
       z-index: 1000;
-      background: rgba(10, 10, 26, 0.7);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--glass-border);
+      background: rgba(10, 10, 26, 0.92);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
       transition: background 0.3s ease;
     }
 
     .navbar.scrolled {
-      background: rgba(10, 10, 26, 0.95);
+      background: rgba(10, 10, 26, 0.98);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
@@ -323,7 +322,7 @@
 
     /* ===== HERO SECTION ===== */
     .hero {
-      padding: 120px 0 80px;
+      padding: 100px 0 80px;
       margin-top: 72px;
       position: relative;
       overflow: hidden;
@@ -336,14 +335,110 @@
       right: -10%;
       width: 800px;
       height: 800px;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent);
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12), transparent);
       pointer-events: none;
       z-index: 0;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
     }
 
     .hero-content {
       position: relative;
       z-index: 1;
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-graphic {
+      width: 100%;
+      max-width: 420px;
+      aspect-ratio: 1;
+      position: relative;
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      animation: orbFloat 6s ease-in-out infinite;
+    }
+
+    .hero-orb-1 {
+      width: 280px;
+      height: 280px;
+      top: 10%;
+      left: 15%;
+      background: radial-gradient(circle at 30% 30%, rgba(124, 58, 237, 0.3), rgba(124, 58, 237, 0.05));
+      border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .hero-orb-2 {
+      width: 180px;
+      height: 180px;
+      top: 5%;
+      right: 5%;
+      background: radial-gradient(circle at 30% 30%, rgba(6, 182, 212, 0.25), rgba(6, 182, 212, 0.03));
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      animation-delay: -2s;
+    }
+
+    .hero-orb-3 {
+      width: 120px;
+      height: 120px;
+      bottom: 15%;
+      left: 25%;
+      background: radial-gradient(circle at 30% 30%, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.03));
+      border: 1px solid rgba(236, 72, 153, 0.12);
+      animation-delay: -4s;
+    }
+
+    .hero-orb-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      background: var(--grad-primary);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 60px rgba(124, 58, 237, 0.3), 0 0 120px rgba(124, 58, 237, 0.1);
+    }
+
+    .hero-orb-center svg {
+      width: 48px;
+      height: 48px;
+      fill: white;
+      opacity: 0.9;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-16px); }
     }
 
     .hero-label {
@@ -424,6 +519,14 @@
         padding: 80px 0 60px;
       }
 
+      .hero .container {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        display: none;
+      }
+
       .hero h1 {
         font-size: 42px;
       }
@@ -443,9 +546,8 @@
 
     /* ===== SECTION STYLES ===== */
     .section {
-      padding: 80px 0;
+      padding: 100px 0;
       position: relative;
-      overflow: hidden;
     }
 
     .section::before {
@@ -456,9 +558,17 @@
       transform: translateX(-50%);
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent);
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.06), transparent);
       pointer-events: none;
       z-index: 0;
+    }
+
+    .section-divider {
+      width: 80px;
+      height: 3px;
+      background: var(--grad-primary);
+      margin: 0 auto 16px;
+      border-radius: 2px;
     }
 
     .section-header {
@@ -541,11 +651,10 @@
     .game-card {
       position: relative;
       border-radius: var(--radius);
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
+      background: var(--bg-surface);
+      border: 1px solid rgba(148, 163, 184, 0.12);
       overflow: hidden;
       transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
       opacity: 1;
       transform: translateY(0);
       animation: fadeInUp 0.6s ease-out forwards;
@@ -558,7 +667,7 @@
     .game-card:hover {
       border-color: var(--border-hover);
       transform: translateY(-8px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3);
     }
 
     .game-accent {
@@ -566,7 +675,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 3px;
+      height: 4px;
     }
 
     .game-card[data-accent="purple"] .game-accent {
@@ -587,6 +696,22 @@
 
     .game-card[data-accent="orange"] .game-accent {
       background: var(--orange);
+    }
+
+    .game-card[data-accent="purple"]:hover {
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.2), 0 0 0 1px rgba(124, 58, 237, 0.15);
+    }
+    .game-card[data-accent="lime"]:hover {
+      box-shadow: 0 12px 40px rgba(132, 204, 22, 0.15), 0 0 0 1px rgba(132, 204, 22, 0.12);
+    }
+    .game-card[data-accent="pink"]:hover {
+      box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15), 0 0 0 1px rgba(236, 72, 153, 0.12);
+    }
+    .game-card[data-accent="cyan"]:hover {
+      box-shadow: 0 12px 40px rgba(6, 182, 212, 0.15), 0 0 0 1px rgba(6, 182, 212, 0.12);
+    }
+    .game-card[data-accent="orange"]:hover {
+      box-shadow: 0 12px 40px rgba(245, 158, 11, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.12);
     }
 
     .game-card-body {
@@ -695,16 +820,16 @@
     .feature-card {
       padding: 32px 24px;
       border-radius: var(--radius);
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
+      background: var(--bg-surface);
+      border: 1px solid rgba(148, 163, 184, 0.12);
       text-align: center;
       transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
     }
 
     .feature-card:hover {
       border-color: var(--border-hover);
       transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.12);
     }
 
     .feature-icon {
@@ -751,8 +876,8 @@
     .contact-form input {
       flex: 1;
       padding: 12px 16px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
+      background: var(--bg-surface);
+      border: 1px solid rgba(148, 163, 184, 0.15);
       border-radius: var(--radius-sm);
       color: var(--text-primary);
       font-family: 'Inter', sans-serif;
@@ -926,11 +1051,10 @@
     .blog-card {
       position: relative;
       border-radius: var(--radius);
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
+      background: var(--bg-surface);
+      border: 1px solid rgba(148, 163, 184, 0.12);
       overflow: hidden;
       transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
       opacity: 1;
       transform: translateY(0);
       animation: fadeInUp 0.6s ease-out forwards;
@@ -941,7 +1065,7 @@
     .blog-card:hover {
       border-color: var(--border-hover);
       transform: translateY(-8px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3);
     }
 
     .blog-accent {
@@ -1077,15 +1201,25 @@
     <div class="container">
       <a href="#top" class="logo" aria-label="EXAFABS Home">
         <div class="logo-icon">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
+              <linearGradient id="leaf1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:0.9"/>
+                <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.85"/>
+              </linearGradient>
+              <linearGradient id="leaf2" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.8"/>
+                <stop offset="100%" style="stop-color:#22D3EE;stop-opacity:0.7"/>
+              </linearGradient>
+              <linearGradient id="leaf3" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.85"/>
+                <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0.6"/>
               </linearGradient>
             </defs>
-            <rect width="40" height="40" rx="8" fill="url(#logo-grad)" />
-            <path d="M 12 12 L 28 12 L 20 20 L 28 28 L 12 28 Z" fill="white" opacity="0.9" />
+            <path d="M24 8 C16 14, 10 22, 12 32 C14 36, 18 38, 24 36 C20 28, 20 18, 24 8Z" fill="url(#leaf1)"/>
+            <path d="M24 6 C24 6, 20 16, 22 28 C23 33, 24 36, 26 38 C28 33, 29 28, 28 22 C27 14, 24 6, 24 6Z" fill="url(#leaf2)" opacity="0.8"/>
+            <path d="M24 8 C32 14, 38 22, 36 32 C34 36, 30 38, 24 36 C28 28, 28 18, 24 8Z" fill="url(#leaf3)"/>
+            <ellipse cx="24" cy="24" rx="3" ry="8" fill="white" opacity="0.15" transform="rotate(-5 24 24)"/>
           </svg>
         </div>
         <span class="logo-text">EXAFABS</span>
@@ -1154,6 +1288,21 @@
           </div>
         </div>
       </div>
+
+      <!-- Hero Visual -->
+      <div class="hero-visual">
+        <div class="hero-graphic">
+          <div class="hero-orb hero-orb-1"></div>
+          <div class="hero-orb hero-orb-2"></div>
+          <div class="hero-orb hero-orb-3"></div>
+          <div class="hero-orb-center">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 10C17 15 12 22 14 30C15 34 19 36 24 34C21 27 21 19 24 10Z" fill="white" opacity="0.85"/>
+              <path d="M24 10C31 15 36 22 34 30C33 34 29 36 24 34C27 27 27 19 24 10Z" fill="white" opacity="0.5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1162,6 +1311,7 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label">OUR PRODUCTS</div>
+        <div class="section-divider"></div>
         <h2 class="section-title">Built with Intelligence</h2>
         <p class="section-desc">Explore our growing ecosystem of AI-powered applications</p>
       </div>
@@ -1419,6 +1569,7 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label">INSIGHTS</div>
+        <div class="section-divider"></div>
         <h2 class="section-title">AI Behind the Apps</h2>
         <p class="section-desc">Deep dives into how artificial intelligence powers our products</p>
       </div>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="leaf1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.85"/>
+    </linearGradient>
+    <linearGradient id="leaf2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#22D3EE;stop-opacity:0.7"/>
+    </linearGradient>
+    <linearGradient id="leaf3" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0.6"/>
+    </linearGradient>
+  </defs>
+  <!-- Main petal - left, purple-cyan -->
+  <path d="M24 8 C16 14, 10 22, 12 32 C14 36, 18 38, 24 36 C20 28, 20 18, 24 8Z" fill="url(#leaf1)"/>
+  <!-- Middle petal - cyan -->
+  <path d="M24 6 C24 6, 20 16, 22 28 C23 33, 24 36, 26 38 C28 33, 29 28, 28 22 C27 14, 24 6, 24 6Z" fill="url(#leaf2)" opacity="0.8"/>
+  <!-- Right petal - orange-amber -->
+  <path d="M24 8 C32 14, 38 22, 36 32 C34 36, 30 38, 24 36 C28 28, 28 18, 24 8Z" fill="url(#leaf3)"/>
+  <!-- Center highlight -->
+  <ellipse cx="24" cy="24" rx="3" ry="8" fill="white" opacity="0.15" transform="rotate(-5 24 24)"/>
+</svg>
