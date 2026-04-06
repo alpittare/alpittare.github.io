@@ -30,6 +30,15 @@
       ]
     },
     {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/index.html",
       "headers": [
         {
@@ -37,25 +46,38 @@
           "value": "public, max-age=3600, must-revalidate"
         }
       ]
-    }
-  ],
-  "redirects": [
+    },
     {
-      "source": "/",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "www.exafabs.ai"
         }
       ],
-      "destination": "https://exafabs.ai",
-      "permanent": true
+      "headers": [
+        {
+          "key": "Location",
+          "value": "https://exafabs.ai$requestPath"
+        }
+      ],
+      "status": 301
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "redirects": [
+    {
+      "source": "^/(?:www\\.)?exafabs\\.ai(.*)",
+      "destination": "https://exafabs.ai$1",
+      "permanent": true
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "@site_url"
+  }
 }

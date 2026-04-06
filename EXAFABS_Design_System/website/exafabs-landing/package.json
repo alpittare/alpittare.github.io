@@ -1,0 +1,27 @@
+{
+  "name": "exafabs-website",
+  "version": "1.0.0",
+  "description": "ExaFabs - AI-Powered Gaming Studio",
+  "author": "ExaFabs Team",
+  "license": "MIT",
+  "scripts": {
+    "dev": "python3 -m http.server 3000",
+    "start": "python3 -m http.server 8080",
+    "preview": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "gaming",
+    "ai",
+    "studio",
+    "games",
+    "exafabs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/exafabs/exafabs-landing"
+  },
+  "bugs": {
+    "url": "https://github.com/exafabs/exafabs-landing/issues"
+  },
+  "homepage": "https://exafabs.ai"
+}
