@@ -913,6 +913,162 @@
     .fade-in-visible {
       animation: fadeInUp 0.6s ease-out forwards !important;
     }
+
+    /* ===== BLOG SECTION ===== */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .blog-card {
+      position: relative;
+      border-radius: var(--radius);
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeInUp 0.6s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .blog-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .blog-card[data-accent="purple"] .blog-accent {
+      background: var(--primary);
+    }
+
+    .blog-card[data-accent="lime"] .blog-accent {
+      background: var(--lime);
+    }
+
+    .blog-card[data-accent="pink"] .blog-accent {
+      background: var(--pink);
+    }
+
+    .blog-card[data-accent="orange"] .blog-accent {
+      background: var(--orange);
+    }
+
+    .blog-card[data-accent="cyan"] .blog-accent {
+      background: var(--cyan);
+    }
+
+    .blog-card-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .blog-category {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--cyan-light);
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+
+    .blog-card h3 {
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .blog-excerpt {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+
+    .blog-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .blog-read-more {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .blog-card[data-accent="purple"] .blog-read-more {
+      color: var(--primary);
+    }
+
+    .blog-card[data-accent="lime"] .blog-read-more {
+      color: var(--lime);
+    }
+
+    .blog-card[data-accent="pink"] .blog-read-more {
+      color: var(--pink);
+    }
+
+    .blog-card[data-accent="orange"] .blog-read-more {
+      color: var(--orange);
+    }
+
+    .blog-card[data-accent="cyan"] .blog-read-more {
+      color: var(--cyan);
+    }
+
+    .blog-read-more:hover {
+      opacity: 0.8;
+    }
+
+    .blog-read-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    @media (max-width: 1024px) {
+      .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -940,6 +1096,7 @@
         <li><a href="#products">Games</a></li>
         <li><a href="#products">AI Tools</a></li>
         <li><a href="#about">About</a></li>
+        <li><a href="#blog">Blog</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
 
@@ -1257,6 +1414,89 @@
     </div>
   </section>
 
+  <!-- BLOG SECTION -->
+  <section class="section" id="blog">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">INSIGHTS</div>
+        <h2 class="section-title">AI Behind the Apps</h2>
+        <p class="section-desc">Deep dives into how artificial intelligence powers our products</p>
+      </div>
+
+      <div class="blog-grid">
+        <!-- Blog Card 1 -->
+        <div class="blog-card" data-accent="purple">
+          <div class="blog-accent"></div>
+          <div class="blog-card-body">
+            <div class="blog-category">AI / Cricket</div>
+            <h3>How CrickBot Uses AI to Master Cricket</h3>
+            <p class="blog-excerpt">Discover how adaptive bowling AI and reinforcement learning create opponents that evolve with your skill level.</p>
+            <div class="blog-footer">
+              <a href="blog/crickbot-ai.html" class="blog-read-more">Read More →</a>
+              <span class="blog-read-time">8 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 2 -->
+        <div class="blog-card" data-accent="lime">
+          <div class="blog-accent"></div>
+          <div class="blog-card-body">
+            <div class="blog-category">AI / Football</div>
+            <h3>Inside GoalBot: AI That Learns Your Shooting Style</h3>
+            <p class="blog-excerpt">Explore the neural networks behind GoalBot's goalkeeper that predicts and adapts to your shooting patterns in real-time.</p>
+            <div class="blog-footer">
+              <a href="blog/goalbot-ai.html" class="blog-read-more">Read More →</a>
+              <span class="blog-read-time">7 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 3 -->
+        <div class="blog-card" data-accent="pink">
+          <div class="blog-accent"></div>
+          <div class="blog-card-body">
+            <div class="blog-category">AI / Baseball</div>
+            <h3>BaseHit's AI: Pitching Intelligence That Adapts</h3>
+            <p class="blog-excerpt">How machine learning drives pitch selection, fielding positions, and adaptive difficulty in BaseHit.</p>
+            <div class="blog-footer">
+              <a href="blog/basehit-ai.html" class="blog-read-more">Read More →</a>
+              <span class="blog-read-time">7 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 4 -->
+        <div class="blog-card" data-accent="orange">
+          <div class="blog-accent"></div>
+          <div class="blog-card-body">
+            <div class="blog-category">AI / Combat</div>
+            <h3>Survival Arena: Enemy AI That Hunts Intelligently</h3>
+            <p class="blog-excerpt">From swarm behavior to intelligent pathfinding — how Survival Arena's enemies coordinate to challenge you.</p>
+            <div class="blog-footer">
+              <a href="blog/survival-arena-ai.html" class="blog-read-more">Read More →</a>
+              <span class="blog-read-time">9 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 5 -->
+        <div class="blog-card" data-accent="cyan">
+          <div class="blog-accent"></div>
+          <div class="blog-card-body">
+            <div class="blog-category">AI / Space</div>
+            <h3>Infinite Voyager: Procedural Galaxies Powered by AI</h3>
+            <p class="blog-excerpt">How procedural generation and AI-driven encounters create infinite unique galaxies to explore.</p>
+            <div class="blog-footer">
+              <a href="blog/infinite-voyager-ai.html" class="blog-read-more">Read More →</a>
+              <span class="blog-read-time">8 min read</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT SECTION -->
   <section class="section" id="contact">
     <div class="container">
@@ -1304,9 +1544,21 @@
         </div>
 
         <div class="footer-section">
+          <h4>Blog</h4>
+          <ul>
+            <li><a href="blog/crickbot-ai.html">CrickBot AI</a></li>
+            <li><a href="blog/goalbot-ai.html">GoalBot AI</a></li>
+            <li><a href="blog/basehit-ai.html">BaseHit AI</a></li>
+            <li><a href="blog/survival-arena-ai.html">Survival Arena AI</a></li>
+            <li><a href="blog/infinite-voyager-ai.html">Infinite Voyager AI</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
           <h4>Company</h4>
           <ul>
             <li><a href="#about">About</a></li>
+            <li><a href="#blog">Blog</a></li>
             <li><a href="#contact">Contact</a></li>
             <li><a href="mailto:alpit@exafabs.ai">Email: alpit@exafabs.ai</a></li>
           </ul>

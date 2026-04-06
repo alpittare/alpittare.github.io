@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How CrickBot Uses AI to Master Cricket | ExaFabs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0A0A1A;
+            color: #F8FAFC;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7C3AED, #06B6D4);
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #06B6D4;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.1));
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: #94A3B8;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-badge {
+            background: rgba(124, 58, 237, 0.2);
+            color: #A78BFA;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        /* Article Container */
+        .article-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #F8FAFC;
+            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        article h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            color: #E2E8F0;
+        }
+
+        article p {
+            font-size: 18px;
+            color: #F8FAFC;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        article ul, article ol {
+            margin: 24px 0 24px 24px;
+            font-size: 18px;
+            color: #F8FAFC;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        article strong {
+            color: #F8FAFC;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1A1A2E;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #A78BFA;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #64748B;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid #7C3AED;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 16px;
+        }
+
+        .feature-list strong {
+            color: #06B6D4;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(6, 182, 212, 0.05);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 48px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 24px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            color: #F8FAFC;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 40px;
+            text-align: center;
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: #64748B;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #06B6D4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 50px 24px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .meta-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .article-container {
+                padding: 40px 24px;
+            }
+
+            article h2 {
+                font-size: 26px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            article p, article ul, article ol {
+                font-size: 16px;
+            }
+
+            .code-block {
+                padding: 16px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+                margin: 40px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EXAFABS</div>
+        <a href="../index.html" class="nav-link">← Back to Home</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>How CrickBot Uses AI to Master Cricket</h1>
+            <div class="meta-info">
+                <div class="meta-badge">
+                    <span>📖 8 min read</span>
+                </div>
+                <div class="meta-badge">
+                    <span class="category-badge">AI / Cricket</span>
+                </div>
+                <div class="meta-badge">
+                    <span>2026</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article -->
+    <div class="article-container">
+        <article>
+            <!-- Introduction -->
+            <h2>Introduction</h2>
+            <p>Cricket is one of the most strategically complex sports. From analyzing pitch conditions to predicting batsman behavior, the sport demands both technical precision and tactical adaptability. CrickBot brings that complexity to mobile with AI opponents that don't just follow scripts — they learn, adapt, and evolve with every match you play.</p>
+            <p>This blog explores the AI systems powering CrickBot and how they create intelligent, unpredictable opponents that make every game feel fresh and challenging.</p>
+
+            <!-- How AI Makes CrickBot Different -->
+            <h2>How AI Makes CrickBot Different</h2>
+            <p>Traditional cricket games rely on pre-programmed behaviors. CrickBot takes a different approach by embedding real artificial intelligence into the game mechanics:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>AI bowlers analyze your batting patterns</strong> and adjust their deliveries accordingly. Play too many cover drives? Expect the ball to move away. Too many pulls? The AI will bowl shorter.</li>
+                    <li><strong>Difficulty scales naturally</strong> — the better you play, the smarter the AI gets. This dynamic difficulty adjustment (DDA) maintains that perfect "flow state" where the game is challenging but never frustrating.</li>
+                    <li><strong>Each match feels unique</strong> because the AI never plays the same way twice. Your opponent learns from your previous matches and adapts its strategy.</li>
+                    <li><strong>AI fielders position themselves</strong> based on your hitting tendencies, creating a more authentic cricket experience where field placement matters.</li>
+                </ul>
+            </div>
+
+            <!-- The AI Systems at Work -->
+            <h2>The AI Systems at Work</h2>
+            <p>Under the hood, CrickBot runs several interconnected AI systems that work together to create an intelligent opponent:</p>
+
+            <h3>Adaptive Bowling Engine</h3>
+            <p>The bowling AI is the heart of CrickBot's intelligence. It tracks your shot selection across matches—how often you play cover drives, pulls, sweeps, defensive pushes—and adjusts its bowling strategy in real-time. If you're struggling against yorkers, the AI won't spam them; instead, it will use them strategically to keep you guessing.</p>
+
+            <h3>Difficulty Scaling</h3>
+            <p>CrickBot uses dynamic difficulty adjustment (DDA) to maintain optimal challenge. The system monitors your success rate (runs scored, wickets lost) and gradually increases AI intelligence as you improve. This prevents the game from becoming either too easy or unfairly difficult.</p>
+
+            <h3>Shot Prediction</h3>
+            <p>By analyzing the last N shots you've played, the AI predicts your next move with increasing accuracy. Is the batsman likely to attack or defend? Will they go for a drive or rotate strike? These predictions help the AI position fielders and set up bowling plans.</p>
+
+            <h3>Field Placement AI</h3>
+            <p>Fielders don't stand in fixed positions. Instead, they reposition based on your wagon wheel data—where you've been scoring runs. The AI learns which areas you favor and adjusts field placement to restrict your scoring options while creating opportunities for breakthroughs.</p>
+
+            <!-- Technical Deep Dive -->
+            <h2>Technical Deep Dive</h2>
+            <p>For those interested in the engineering behind CrickBot's AI, here's a glimpse at the core systems:</p>
+
+            <h3>Reinforcement Learning for Bowling</h3>
+            <p>The bowling AI uses a simplified reinforcement learning (RL) approach. The system receives rewards for taking wickets and penalties for conceding boundaries. Over time, through repeated matches, it learns which bowling strategies work best against different player types. The learning algorithm continuously refines its decision-making:</p>
+
+            <div class="highlight-box">
+                <p><strong>Reward Structure:</strong> +10 points for a wicket, +2 points for dot balls, -5 points per boundary. The AI adjusts its strategy to maximize cumulative rewards over multiple overs.</p>
+            </div>
+
+            <h3>Pattern Recognition</h3>
+            <p>A sliding window of the player's last N shots (typically N=8-12) feeds into a decision tree classifier that categorizes player tendencies:</p>
+
+            <div class="code-block">
+                <div class="code-label">Player Tendency Classification</div>
+                <code>// Pseudocode for tendency classification
+function classifyBattingStyle(lastNShots):
+    defensiveCount = countShots(lastNShots, "defensive")
+    aggressiveCount = countShots(lastNShots, "aggressive")
+    rotationCount = countShots(lastNShots, "rotation")
+
+    if defensiveCount > 60%:
+        return "DEFENSIVE"
+    elif aggressiveCount > 60%:
+        return "AGGRESSIVE"
+    elif rotationCount > 50%:
+        return "ROTATOR"
+    else:
+        return "BALANCED"
+
+    // Adjust bowling strategy based on tendency
+    switch (battingStyle):
+        case "AGGRESSIVE":
+            return bowlShort() // Restrict scoring
+        case "DEFENSIVE":
+            return bowlDot() // Build pressure
+        case "ROTATOR":
+            return bowlWide() // Force shot-making
+</code>
+            </div>
+
+            <h3>State Machine Architecture</h3>
+            <p>The game is managed through a finite state machine with distinct states: Bowling, Batting, Fielding, and Decision. At each transition, the AI evaluates the current game state and makes decisions based on learned patterns.</p>
+
+            <h3>Difficulty Curves</h3>
+            <p>The difficulty scaling uses a sigmoid-based function to ensure smooth progression:</p>
+
+            <div class="code-block">
+                <div class="code-label">Sigmoid Difficulty Function</div>
+                <code>// Difficulty scaling function
+difficulty = 1 / (1 + e^(-k * (playerSkill - midpoint)))
+
+where:
+  - k = 0.5 (controls curve steepness)
+  - playerSkill = player's calculated skill rating
+  - midpoint = 50 (skill level at 50% difficulty)
+  - difficulty ∈ [0, 1]
+
+// Example values:
+playerSkill = 30 → difficulty ≈ 0.27 (Easy)
+playerSkill = 50 → difficulty ≈ 0.50 (Medium)
+playerSkill = 70 → difficulty ≈ 0.73 (Hard)
+playerSkill = 90 → difficulty ≈ 0.95 (Expert)</code>
+            </div>
+
+            <!-- What's Next -->
+            <h2>What's Next</h2>
+            <p>CrickBot's AI is constantly evolving. Here's what we're working on:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Multiplayer AI Learning:</strong> Future versions will enable the AI to learn from global player data, creating opponents that adapt to evolving meta-strategies across the entire player base.</li>
+                    <li><strong>Voice-Controlled Batting:</strong> Natural Language Processing (NLP) will power voice commands, allowing players to call shots naturally ("play a cover drive", "defend this one").</li>
+                    <li><strong>Advanced Analytics Dashboard:</strong> A detailed analytics screen showing AI decision history, your performance trends, and personalized recommendations for improvement.</li>
+                </ul>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <h3>Ready to Experience AI Cricket?</h3>
+                <p>CrickBot brings intelligent opponents and real competition to your mobile device. Every match is a learning experience.</p>
+                <a href="../index.html" class="cta-link">← Back to ExaFabs</a>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">EXAFABS</div>
+            <div class="footer-links">
+                <a href="../index.html" class="footer-link">Home</a>
+                <a href="mailto:hello@exafabs.com" class="footer-link">hello@exafabs.com</a>
+            </div>
+            <p>&copy; 2026 EXAFABS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Reading Progress Bar Script -->
+    <script>
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>

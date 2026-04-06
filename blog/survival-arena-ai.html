@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survival Arena: Enemy AI That Hunts Intelligently</title>
+    <meta name="description" content="Explore how Survival Arena uses sophisticated AI systems including swarm intelligence, behavior trees, and tactical coordination to create enemies that hunt intelligently.">
+    <meta name="author" content="ExaFabs">
+    <meta name="keywords" content="AI, game development, survival games, enemy AI, behavior trees, swarm intelligence">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #0A0A1A;
+            color: #F8FAFC;
+            line-height: 1.7;
+            font-size: 18px;
+            overflow-x: hidden;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7C3AED, #06B6D4, #84CC16, #F59E0B);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, rgba(122, 58, 237, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+            border-bottom: 1px solid rgba(122, 58, 237, 0.2);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .breadcrumb {
+            color: #94A3B8;
+            font-size: 14px;
+            margin-bottom: 1rem;
+            text-decoration: none;
+        }
+
+        .breadcrumb a {
+            color: #F59E0B;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #06B6D4;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #F59E0B 0%, #EC4899 50%, #06B6D4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .meta {
+            display: flex;
+            gap: 2rem;
+            color: #94A3B8;
+            font-size: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-badge {
+            display: inline-block;
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 2.5rem 0 1rem 0;
+            color: #F59E0B;
+            border-left: 4px solid #F59E0B;
+            padding-left: 1rem;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem 0;
+            color: #06B6D4;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #E2E8F0;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+            color: #E2E8F0;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+        }
+
+        strong {
+            color: #F59E0B;
+            font-weight: 600;
+        }
+
+        em {
+            color: #06B6D4;
+            font-style: italic;
+        }
+
+        /* Intro Section */
+        .intro {
+            background: linear-gradient(135deg, rgba(122, 58, 237, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+            border-left: 4px solid #06B6D4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #E2E8F0;
+        }
+
+        /* Features List */
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background-color: #1A1A2E;
+            border: 1px solid rgba(122, 58, 237, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #F59E0B;
+            background-color: rgba(245, 158, 11, 0.05);
+            transform: translateX(4px);
+        }
+
+        .feature-card h4 {
+            color: #F59E0B;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #CBD5E1;
+            margin: 0;
+        }
+
+        /* Code Block */
+        code {
+            font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+            background-color: #0F0F1E;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: #84CC16;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: #0F0F1E;
+            border: 1px solid rgba(132, 204, 22, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #84CC16;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Diagram */
+        .diagram {
+            background-color: #1A1A2E;
+            border: 1px solid rgba(132, 204, 22, 0.3);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            color: #06B6D4;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .diagram-label {
+            color: #F59E0B;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        /* Tech Specs */
+        .tech-spec {
+            background-color: #1A1A2E;
+            border-left: 4px solid #06B6D4;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+
+        .tech-spec h4 {
+            color: #06B6D4;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .tech-spec p {
+            color: #CBD5E1;
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+        }
+
+        /* Callout */
+        .callout {
+            background-color: rgba(236, 72, 153, 0.1);
+            border-left: 4px solid #EC4899;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin: 2rem 0;
+        }
+
+        .callout-title {
+            color: #EC4899;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(122, 58, 237, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);
+            color: #0A0A1A;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0F0F1E;
+            border-top: 1px solid rgba(122, 58, 237, 0.2);
+            padding: 2rem;
+            text-align: center;
+            color: #94A3B8;
+            margin-top: 4rem;
+        }
+
+        footer a {
+            color: #F59E0B;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #06B6D4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            h3 {
+                font-size: 1.1rem;
+            }
+
+            body {
+                font-size: 16px;
+            }
+
+            .meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 1rem 0;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+            }
+
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            .diagram {
+                padding: 1rem;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Smooth transitions */
+        a {
+            transition: color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="#" class="breadcrumb">← Back to ExaFabs</a>
+            <h1>Survival Arena: Enemy AI That Hunts Intelligently</h1>
+            <div class="meta">
+                <span class="meta-item">
+                    <span class="meta-badge">9 min read</span>
+                </span>
+                <span class="meta-item">
+                    <span class="meta-badge">AI / Combat</span>
+                </span>
+                <span class="meta-item">2026</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Intro Section -->
+        <section class="intro">
+            <p>Most survival games throw dumb enemies at you in waves. Survival Arena's enemies coordinate, flank, and learn — making every wave a puzzle to solve.</p>
+        </section>
+
+        <!-- Consumer-Friendly Features -->
+        <section>
+            <h2>What Makes Our Enemies Different</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h4>🎯 Coordinated Attacks</h4>
+                    <p>Enemies communicate and coordinate attacks — flanking, surrounding, and baiting you into traps. No more predictable patterns.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔄 Distinct Archetypes</h4>
+                    <p>Different enemy types have distinct AI behaviors: rushers charge directly, snipers find high ground, tanks absorb damage, and healers support their allies.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🧠 Adaptive Waves</h4>
+                    <p>Waves adapt to your strategy in real-time. Camp in a corner and they'll flush you out. Hug the walls? They'll surround you.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚔️ Boss Learning</h4>
+                    <p>Boss enemies observe your combat patterns—preferred position, weapon choice, movement habits—and exploit weaknesses you didn't know you had.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Systems Overview -->
+        <section>
+            <h2>The AI Systems Behind the Threat</h2>
+            <p>Our enemies aren't scripted. Four core systems work together to create truly intelligent adversaries:</p>
+
+            <div class="feature-card">
+                <h4>🐦 Swarm Intelligence</h4>
+                <p>Boid-like flocking with tactical overlays for coordinated movement. Enemies move like a flock of birds, maintaining formation while responding to tactical goals.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>🌳 Behavior Trees</h4>
+                <p>Each enemy type has a behavior tree defining priorities and decision-making. Behavior trees allow enemies to switch between attacking, retreating, patrolling, and flanking based on dynamic conditions.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>📍 Tactical Coordinator</h4>
+                <p>A central AI system assigns roles (attacker, flanker, distractor) to groups of enemies. This ensures coordinated strategies rather than individual behaviors.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>🎓 Player Adaptation</h4>
+                <p>Tracks player's preferred position, weapon choice, and movement patterns. Over time, enemies learn your habits and adjust their strategies accordingly.</p>
+            </div>
+        </section>
+
+        <!-- Technical Deep Dive -->
+        <section>
+            <h2>Technical Deep Dive</h2>
+
+            <h3>Behavior Trees: Decision Making from the Ground Up</h3>
+            <p>Each enemy archetype uses a behavior tree—a hierarchical decision-making structure that evaluates conditions and selects actions in priority order.</p>
+
+            <div class="tech-spec">
+                <h4>Basic Structure:</h4>
+                <p>Root → Selector [Attack, Retreat, Patrol, Flank] → each with conditions and actions</p>
+            </div>
+
+            <p>Here's a simplified example of a rusher enemy's behavior tree node in pseudocode:</p>
+
+            <pre><code>class BehaviorNode {
+    execute(enemy, context) {
+        if (context.playerDistance < ENGAGE_RANGE) {
+            return this.attack(enemy, context);
+        } else if (context.health < RETREAT_THRESHOLD) {
+            return this.retreat(enemy, context);
+        } else if (context.canFlank) {
+            return this.flank(enemy, context);
+        } else {
+            return this.patrol(enemy, context);
+        }
+    }
+
+    attack(enemy, context) {
+        // Move toward player, dodge obstacles
+        enemy.position += moveToward(context.player, enemy.speed);
+        enemy.fire(context.player);
+        return Status.RUNNING;
+    }
+
+    flank(enemy, context) {
+        // Calculate flank position
+        let flankPos = calculateFlankPosition(
+            context.player,
+            enemy.position,
+            FLANK_DISTANCE
+        );
+        enemy.position += moveToward(flankPos, enemy.speed);
+        return Status.RUNNING;
+    }
+}</code></pre>
+
+            <h3>A* Pathfinding with Tactical Layers</h3>
+            <p>Standard A* pathfinding augmented with <strong>influence maps</strong>: a 2D grid scoring system where each cell is evaluated for tactical advantage.</p>
+
+            <div class="tech-spec">
+                <h4>Grid Scoring:</h4>
+                <p>Each cell accumulates scores from: safety (distance from player's weapon range), ally positions (bonus for proximity), cover positions (bonus for defensive spots).</p>
+            </div>
+
+            <p>Enemies don't just find the shortest path—they find the path that maximizes tactical advantage.</p>
+
+            <h3>Influence Maps: Spatial Strategy</h3>
+            <p>The tactical backbone of our AI. Influence maps are 2D grids where each cell represents tactical value:</p>
+
+            <div class="diagram">
+                <div class="diagram-label">Influence Map Concept</div>
+                <pre>
+Player Position: X (weapon range = 3 cells)
+
+    [  ] [-1] [-2] [-3] [-2] [-1] [  ]
+    [-1] [-2] [-3] [-4] [-3] [-2] [-1]
+    [-2] [-3] [-4] [ X] [-4] [-3] [-2]
+    [-1] [-2] [-3] [-4] [-3] [-2] [-1]
+    [  ] [-1] [-2] [-3] [-2] [-1] [  ]
+
+Legend:
+  X  = Player (danger zone)
+  -N = Danger level (negative = bad, enemy avoids)
+  [  ] = Neutral (safe, but no tactical advantage)
+
+Enemies calculate path to LOWEST value (safest)
+while maintaining line of sight or cover.
+
+Example: Enemy chooses flanking route (value +2)
+over direct approach (value -3) for tactical advantage.
+                </pre>
+            </div>
+
+            <h3>Wave Difficulty Scaling</h3>
+            <p>Difficulty scales exponentially based on wave number and player performance:</p>
+
+            <div class="tech-spec">
+                <h4>Formula:</h4>
+                <p><code>waveStrength = baseStrength × (1 + log(wave) × difficultyMultiplier) + adaptationBonus</code></p>
+            </div>
+
+            <p>Where <code>adaptationBonus</code> increases when the player dominates a wave, ensuring progressive challenge without sudden difficulty spikes.</p>
+
+            <h3>Flocking + Tactical Movement</h3>
+            <p>Enemies use <strong>Reynolds boids</strong> (separation, alignment, cohesion) combined with tactical goals:</p>
+
+            <ul>
+                <li><strong>Separation:</strong> Enemies maintain spacing to avoid collision</li>
+                <li><strong>Alignment:</strong> Move in coordinated directions as a group</li>
+                <li><strong>Cohesion:</strong> Attracted to the center of the swarm</li>
+                <li><strong>Tactical Goals:</strong> Overlay flocking with tactical priorities (attack, flank, distract)</li>
+            </ul>
+
+            <p>This creates realistic group movement that appears intelligent and coordinated, not scripted.</p>
+
+            <div class="callout">
+                <div class="callout-title">Why This Matters</div>
+                <p>Traditional enemy AI uses fixed patterns: patrol → chase → attack. Our system creates emergent behavior. Enemies adapt to player strategy, learn from repeated encounters, and coordinate like real tactical teams. Every wave feels different, challenging, and fair.</p>
+            </div>
+        </section>
+
+        <!-- What's Next -->
+        <section>
+            <h2>What's Next</h2>
+            <p>We're expanding the AI systems to deliver new experiences:</p>
+            <ul>
+                <li><strong>PvP with AI-Assisted Teammates:</strong> Play alongside intelligent AI partners that adapt to your playstyle</li>
+                <li><strong>Procedural Arena Generation:</strong> Randomized arenas that dynamically influence enemy tactics</li>
+                <li><strong>AI-Driven Narrative Events:</strong> Enemy behaviors that tell stories—betrayals, alliances, and emergent drama</li>
+            </ul>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Experience Intelligent Combat</h2>
+            <p>Survival Arena delivers AI enemies that think, adapt, and hunt. Are you ready for a challenge that hunts back?</p>
+            <a href="#" class="cta-button">Back to ExaFabs</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 ExaFabs. Survival Arena: Enemy AI That Hunts Intelligently.</p>
+        <p><a href="#">Home</a> | <a href="#">Blog</a> | <a href="#">Contact</a></p>
+    </footer>
+
+    <script>
+        // Update reading progress bar based on scroll position
+        function updateProgressBar() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            document.getElementById('progressBar').style.width = scrollPercent + '%';
+        }
+
+        window.addEventListener('scroll', updateProgressBar);
+        updateProgressBar(); // Initialize on page load
+    </script>
+</body>
+</html>
