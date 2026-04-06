@@ -1299,6 +1299,384 @@
                 background: rgba(50, 16, 62, 0.95);
             }
         }
+
+        /* ===== SCROLL REVEAL ANIMATIONS ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal[data-reveal="left"] { transform: translateX(-50px); }
+        .reveal[data-reveal="right"] { transform: translateX(50px); }
+        .reveal[data-reveal="scale"] { transform: scale(0.92); }
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        /* ===== LIGHT THEME ===== */
+        [data-theme="light"] {
+            --bg-base: #f5f0fa;
+            --bg-surface: #ffffff;
+            --bg-surface-low: #ece4f4;
+            --bg-surface-high: #f9f5ff;
+            --text-primary: #5a2d82;
+            --text-surface: #1a0a2e;
+            --text-secondary: #6b5a7a;
+            --text-muted: #9a8aab;
+            --outline: #c4b3d4;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-bg-hover: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(90, 45, 130, 0.12);
+            --glass-border-hover: rgba(90, 45, 130, 0.25);
+            --shadow-card: 0 4px 24px rgba(90, 45, 130, 0.08);
+            --shadow-card-hover: 0 24px 48px rgba(90, 45, 130, 0.12);
+        }
+        [data-theme="light"] body {
+            background-color: var(--bg-base);
+        }
+        [data-theme="light"] nav {
+            background: rgba(245, 240, 250, 0.85);
+            border-bottom-color: rgba(90, 45, 130, 0.08);
+        }
+        [data-theme="light"] section.hero {
+            background-color: var(--bg-base);
+        }
+        [data-theme="light"] section.hero::after {
+            background-image:
+                linear-gradient(rgba(90,45,130,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(90,45,130,0.04) 1px, transparent 1px);
+        }
+        [data-theme="light"] .hero-brand {
+            color: #1a0a2e;
+        }
+        [data-theme="light"] .hero-brand .brand-main {
+            background: linear-gradient(90deg, #2a1040 0%, #5a2d82 15%, #2a1040 30%, #7B2FBE 45%, #2a1040 60%, #5a2d82 75%, #2a1040 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+        [data-theme="light"] .hero h1 {
+            color: rgba(26, 10, 46, 0.5);
+        }
+        [data-theme="light"] .product-card,
+        [data-theme="light"] .feature-card,
+        [data-theme="light"] .blog-card {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(90, 45, 130, 0.1);
+        }
+        [data-theme="light"] .product-card:hover,
+        [data-theme="light"] .feature-card:hover,
+        [data-theme="light"] .blog-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(90, 45, 130, 0.2);
+            box-shadow: 0 20px 50px rgba(90, 45, 130, 0.1);
+        }
+        [data-theme="light"] .contact-form {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(90, 45, 130, 0.1);
+        }
+        [data-theme="light"] .form-group input,
+        [data-theme="light"] .form-group textarea {
+            background: rgba(90, 45, 130, 0.04);
+            border-color: rgba(90, 45, 130, 0.12);
+            color: #1a0a2e;
+        }
+        [data-theme="light"] .form-group input:focus,
+        [data-theme="light"] .form-group textarea:focus {
+            background: rgba(90, 45, 130, 0.06);
+            border-color: rgba(155, 48, 255, 0.4);
+        }
+        [data-theme="light"] footer {
+            background: #ece4f4;
+            border-top-color: rgba(90, 45, 130, 0.08);
+        }
+        [data-theme="light"] .nav-links a,
+        [data-theme="light"] .footer-column a,
+        [data-theme="light"] .social-links a {
+            color: var(--text-secondary);
+        }
+        [data-theme="light"] .nav-links a:hover,
+        [data-theme="light"] .footer-column a:hover,
+        [data-theme="light"] .social-links a:hover {
+            color: #7B2FBE;
+        }
+        [data-theme="light"] .stat-pill {
+            background: rgba(255,255,255,0.7);
+            border-color: rgba(90,45,130,0.1);
+        }
+        [data-theme="light"] .tab-btn {
+            color: var(--text-secondary);
+            border-color: rgba(90,45,130,0.12);
+        }
+        [data-theme="light"] .tab-btn:hover {
+            color: var(--text-surface);
+            background: rgba(90,45,130,0.06);
+        }
+        [data-theme="light"] ::selection {
+            background: rgba(155, 48, 255, 0.15);
+            color: #1a0a2e;
+        }
+        [data-theme="light"] .hamburger span {
+            background: #1a0a2e;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-surface);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: background 0.3s, border-color 0.3s, transform 0.3s;
+            flex-shrink: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            transform: rotate(30deg);
+        }
+
+        /* ===== AI CHATBOX ===== */
+        .chat-fab {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9998;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(155, 48, 255, 0.35);
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
+            font-size: 1.5rem;
+        }
+        .chat-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(155, 48, 255, 0.5);
+        }
+        .chat-fab.hidden { display: none; }
+        .chat-fab .chat-fab-icon { transition: transform 0.3s; }
+
+        .chat-panel {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            width: min(420px, calc(100vw - 2rem));
+            height: min(600px, calc(100vh - 6rem));
+            border-radius: 1.25rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-surface);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), 0 0 80px rgba(155, 48, 255, 0.08);
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s;
+        }
+        .chat-panel.open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        [data-theme="light"] .chat-panel {
+            background: #ffffff;
+            box-shadow: 0 24px 64px rgba(90, 45, 130, 0.15);
+        }
+
+        .chat-panel-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(36, 3, 49, 0.6);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        [data-theme="light"] .chat-panel-header {
+            background: rgba(236, 228, 244, 0.8);
+        }
+        .chat-panel-avatar {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .chat-panel-info {
+            flex: 1;
+        }
+        .chat-panel-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-surface);
+        }
+        .chat-panel-status {
+            font-size: 0.7rem;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .chat-panel-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            display: inline-block;
+        }
+        .chat-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0.25rem;
+            transition: color 0.2s;
+        }
+        .chat-close:hover { color: var(--text-surface); }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(155,48,255,0.2) transparent;
+        }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(155,48,255,0.2); border-radius: 4px; }
+
+        .chat-msg {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            word-wrap: break-word;
+        }
+        .chat-msg.bot {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-surface);
+            align-self: flex-start;
+            border-bottom-left-radius: 0.3rem;
+        }
+        .chat-msg.user {
+            background: var(--primary-gradient);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.3rem;
+        }
+        .chat-msg.typing {
+            display: flex;
+            gap: 0.3rem;
+            padding: 0.85rem 1.2rem;
+        }
+        .chat-msg.typing span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+        .chat-msg.typing span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-msg.typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        .chat-input-area {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+            background: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .chat-input-area {
+            background: rgba(90,45,130,0.03);
+        }
+        .chat-input {
+            flex: 1;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-surface);
+            border-radius: 0.75rem;
+            padding: 0.65rem 0.9rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.88rem;
+            resize: none;
+            max-height: 100px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .chat-input:focus {
+            border-color: rgba(155, 48, 255, 0.4);
+        }
+        .chat-input::placeholder { color: var(--text-muted); }
+        .chat-send {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1rem;
+        }
+        .chat-send:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(155, 48, 255, 0.3);
+        }
+        .chat-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .chat-panel {
+                bottom: 0;
+                right: 0;
+                width: 100vw;
+                height: calc(100vh - 3rem);
+                border-radius: 1.25rem 1.25rem 0 0;
+            }
+            .theme-toggle { width: 2.25rem; height: 2.25rem; font-size: 1rem; }
+        }
     </style>
 
     <!-- Structured Data -->
@@ -1335,6 +1713,7 @@
             </ul>
         </div>
         <div class="nav-cta">
+            <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle theme">☀️</button>
             <a href="#contact" class="btn-get-started">Get Started</a>
             <button class="hamburger" id="hamburger">
                 <span></span>
@@ -1387,7 +1766,7 @@
     </section>
 
     <section class="products" id="products">
-        <div class="products-header">
+        <div class="products-header reveal">
             <h2>Our Apps</h2>
         </div>
         <div class="products-tabs">
@@ -1512,7 +1891,7 @@
     </section>
 
     <section class="about" id="about">
-        <div class="about-header">
+        <div class="about-header reveal">
             <h2>Built by Engineers, Powered by AI</h2>
             <p>EXAFABS.AI is an AI App Studio dedicated to creating intelligent applications that push the boundaries of what's possible. We combine cutting-edge artificial intelligence with elegant design to deliver experiences that adapt, learn, and evolve.</p>
         </div>
@@ -1536,7 +1915,7 @@
     </section>
 
     <section class="blog" id="blog">
-        <div class="blog-header">
+        <div class="blog-header reveal">
             <h2>Latest Insights</h2>
         </div>
         <div class="blog-grid">
@@ -1588,7 +1967,7 @@
     </section>
 
     <section class="contact" id="contact">
-        <div class="contact-container">
+        <div class="contact-container reveal">
             <div class="contact-header">
                 <h2>Ready to Experience AI?</h2>
             </div>
@@ -1674,6 +2053,28 @@
             </div>
         </div>
     </footer>
+
+    <!-- AI Chat Widget -->
+    <button class="chat-fab" id="chatFab" aria-label="Open AI Chat">
+        <span class="chat-fab-icon">💬</span>
+    </button>
+    <div class="chat-panel" id="chatPanel" role="dialog" aria-label="AI Assistant">
+        <div class="chat-panel-header">
+            <div class="chat-panel-avatar">🤖</div>
+            <div class="chat-panel-info">
+                <div class="chat-panel-name">EXAFABS AI</div>
+                <div class="chat-panel-status">Online</div>
+            </div>
+            <button class="chat-close" id="chatClose" aria-label="Close chat">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg bot">Hey! I'm the EXAFABS AI assistant. Ask me anything about our games, AI technology, or how to get started. 🚀</div>
+        </div>
+        <div class="chat-input-area">
+            <textarea class="chat-input" id="chatInput" placeholder="Ask about our games, tech..." rows="1"></textarea>
+            <button class="chat-send" id="chatSend" aria-label="Send message">↑</button>
+        </div>
+    </div>
 
     <script>
         // ===== REUSABLE PARTICLE CONSTELLATION ENGINE =====
@@ -1890,19 +2291,27 @@
             });
         });
 
-        // ===== INTERSECTION OBSERVER (FADE-IN) =====
-        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-        const observer = new IntersectionObserver((entries) => {
+        // ===== SCROLL REVEAL ANIMATIONS =====
+        const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                    observer.unobserve(entry.target);
+                    const delay = entry.target.dataset.revealDelay || '0s';
+                    entry.target.style.transitionDelay = delay;
+                    entry.target.classList.add('revealed');
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-        document.querySelectorAll('.product-card, .feature-card, .blog-card').forEach(el => {
-            observer.observe(el);
+        // Add reveal + stagger to cards
+        document.querySelectorAll('.product-card, .feature-card, .blog-card').forEach((el, i) => {
+            el.classList.add('reveal');
+            el.dataset.revealDelay = `${(i % 5) * 0.08}s`;
+            revealObserver.observe(el);
+        });
+        // Add reveal to section headers and other elements
+        document.querySelectorAll('.reveal, .products-tabs, .hero-stats').forEach(el => {
+            revealObserver.observe(el);
         });
 
         // ===== DEBOUNCED SCROLL HANDLER =====
@@ -1998,6 +2407,142 @@
                 card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
             });
         }
+        // ===== THEME TOGGLE =====
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            // Check system preference or stored preference
+            let currentTheme = 'dark';
+            try {
+                const stored = window.sessionStorage?.getItem?.('exafabs-theme');
+                if (stored) currentTheme = stored;
+                else if (window.matchMedia('(prefers-color-scheme: light)').matches) currentTheme = 'light';
+            } catch(e) {}
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+                themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+                try { window.sessionStorage?.setItem?.('exafabs-theme', theme); } catch(e) {}
+            }
+            applyTheme(currentTheme);
+
+            themeToggle.addEventListener('click', () => {
+                currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(currentTheme);
+            });
+        }
+
+        // ===== AI CHATBOX =====
+        const chatFab = document.getElementById('chatFab');
+        const chatPanel = document.getElementById('chatPanel');
+        const chatClose = document.getElementById('chatClose');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+
+        if (chatFab && chatPanel) {
+            let chatOpen = false;
+            const chatHistory = [];
+
+            const EXAFABS_CONTEXT = `You are the EXAFABS.AI assistant — a friendly, knowledgeable AI that helps visitors learn about EXAFABS products. Keep responses concise (2-3 sentences max unless asked for detail).
+
+EXAFABS.AI is an AI App Studio building intelligent applications. Products:
+- CrickBot AI: Cricket game with AI that tracks batting patterns using Bayesian prediction
+- GoalBot AI: Football penalty game with TensorFlow.js-powered AI goalkeeper
+- BaseHit AI: Baseball game with AI pitchers that adapt to your swing timing
+- Survival Arena AI: Battle royale with 8 AI personality archetypes (Berserker, Predator, etc.) in a shrinking arena
+- Infinite Voyager AI: Space arcade with procedural generation and an AI Director for dynamic difficulty
+- NetSense AI: Network monitoring + predictive analytics for telecom (in development)
+- CodePilot: AI-powered code review tool (in development)
+
+All games are available on Web (PWA), iOS, and Android. Built by a team of AI and networking engineers. Contact: alpit@exafabs.ai. Website: exafabs.ai`;
+
+            function toggleChat() {
+                chatOpen = !chatOpen;
+                chatPanel.classList.toggle('open', chatOpen);
+                chatFab.classList.toggle('hidden', chatOpen);
+                if (chatOpen) chatInput.focus();
+            }
+
+            chatFab.addEventListener('click', toggleChat);
+            chatClose.addEventListener('click', toggleChat);
+
+            function addMessage(text, role) {
+                const div = document.createElement('div');
+                div.className = `chat-msg ${role}`;
+                div.textContent = text;
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return div;
+            }
+
+            function showTyping() {
+                const div = document.createElement('div');
+                div.className = 'chat-msg bot typing';
+                div.id = 'typingIndicator';
+                div.innerHTML = '<span></span><span></span><span></span>';
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return div;
+            }
+
+            async function sendMessage() {
+                const text = chatInput.value.trim();
+                if (!text) return;
+
+                addMessage(text, 'user');
+                chatInput.value = '';
+                chatInput.style.height = 'auto';
+                chatSend.disabled = true;
+
+                chatHistory.push({ role: 'user', content: text });
+                const typing = showTyping();
+
+                try {
+                    const res = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: chatHistory,
+                            system: EXAFABS_CONTEXT
+                        })
+                    });
+
+                    if (!res.ok) throw new Error('API error');
+                    const data = await res.json();
+                    const reply = data.reply || 'Sorry, I had trouble responding. Please try again.';
+
+                    typing.remove();
+                    addMessage(reply, 'bot');
+                    chatHistory.push({ role: 'assistant', content: reply });
+                } catch (err) {
+                    typing.remove();
+                    addMessage("I'm having trouble connecting right now. You can reach us at alpit@exafabs.ai!", 'bot');
+                }
+                chatSend.disabled = false;
+                chatInput.focus();
+            }
+
+            chatSend.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            chatInput.addEventListener('input', () => {
+                chatInput.style.height = 'auto';
+                chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + 'px';
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && chatOpen) toggleChat();
+            });
+        }
+
         // ===== FORM SUBMISSION WITH FEEDBACK =====
         const contactForm = document.querySelector('.contact-form');
         const formStatus = document.getElementById('formStatus');
