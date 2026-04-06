@@ -472,16 +472,19 @@
         }
 
         .product-card {
-            background: var(--glass-bg);
-            backdrop-filter: var(--blur-glass);
-            -webkit-backdrop-filter: var(--blur-glass);
-            border: 1px solid var(--glass-border);
+            background: rgba(73, 39, 85, 0.25);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-card);
             overflow: hidden;
-            transition: transform 0.4s var(--transition-smooth), border-color 0.3s, box-shadow 0.4s var(--transition-smooth);
             display: flex;
             flex-direction: column;
             position: relative;
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s, border-color 0.3s;
+            will-change: transform;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
 
         .product-card::before {
@@ -489,19 +492,28 @@
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            background: radial-gradient(ellipse at 50% 0%, rgba(155, 48, 255, 0.04) 0%, transparent 70%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 50%, rgba(155, 48, 255, 0.03) 100%);
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+
+        .product-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 30px rgba(155, 48, 255, 0.04);
+            pointer-events: none;
             opacity: 0;
             transition: opacity 0.4s;
-            pointer-events: none;
         }
 
         .product-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--glass-border-hover);
-            box-shadow: var(--shadow-card-hover);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(155, 48, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        .product-card:hover::before {
+        .product-card:hover::after {
             opacity: 1;
         }
 
@@ -639,20 +651,22 @@
         }
 
         .feature-card {
-            background: var(--glass-bg);
-            backdrop-filter: var(--blur-glass);
-            -webkit-backdrop-filter: var(--blur-glass);
-            border: 1px solid var(--glass-border);
+            background: rgba(73, 39, 85, 0.25);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-left: 2px solid var(--primary-solid);
             padding: 2rem 1.75rem;
             border-radius: var(--radius-card);
-            transition: transform 0.4s var(--transition-smooth), border-color 0.3s, box-shadow 0.4s;
+            transition: box-shadow 0.3s, border-color 0.3s;
+            transform-style: preserve-3d;
+            will-change: transform;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
 
         .feature-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--glass-border-hover);
-            box-shadow: var(--shadow-card-hover);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(155, 48, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .feature-icon {
@@ -714,24 +728,26 @@
         }
 
         .blog-card {
-            background: var(--glass-bg);
-            backdrop-filter: var(--blur-glass);
-            -webkit-backdrop-filter: var(--blur-glass);
-            border: 1px solid var(--glass-border);
+            background: rgba(73, 39, 85, 0.25);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-top: 2px solid var(--accent-lime);
             padding: 1.75rem;
             border-radius: var(--radius-card);
-            transition: transform 0.4s var(--transition-smooth), border-color 0.3s, box-shadow 0.4s;
+            transition: box-shadow 0.3s, border-color 0.3s;
             display: flex;
             flex-direction: column;
             text-decoration: none;
             color: inherit;
+            transform-style: preserve-3d;
+            will-change: transform;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
 
         .blog-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--glass-border-hover);
-            box-shadow: var(--shadow-card-hover);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(155, 48, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .blog-label {
@@ -1548,6 +1564,34 @@
 
             btn.addEventListener('mouseenter', () => {
                 btn.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
+            });
+        });
+
+        // ===== 3D GLASS CARD TILT (BEND INWARD ON HOVER) =====
+        const tiltCards = document.querySelectorAll('.product-card, .feature-card, .blog-card');
+        const TILT_MAX = 8;        // max degrees of rotation
+        const PERSPECTIVE = 800;   // px — lower = more dramatic
+
+        tiltCards.forEach(card => {
+            card.style.perspective = `${PERSPECTIVE}px`;
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;   // 0→1
+                const y = (e.clientY - rect.top) / rect.height;   // 0→1
+
+                // rotateY: cursor left = bend right, cursor right = bend left
+                const rotY = (x - 0.5) * -TILT_MAX * 2;
+                // rotateX: cursor top = bend forward, cursor bottom = bend backward
+                const rotX = (y - 0.5) * TILT_MAX * 2;
+
+                card.style.transition = 'transform 0.08s ease-out';
+                card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                card.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
             });
         });
     </script>
