@@ -36,7 +36,7 @@
             --bg-surface-high: #3e1c49;
             --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
             --primary-solid: #9B30FF;
-            --accent-lime: #98f131;
+            --accent-lime: #C94080;
             --accent-purple: #9B30FF;
             --accent-pink: #C94080;
             --accent-orange: #F5943A;
@@ -223,10 +223,10 @@
             padding-bottom: 4rem;
             position: relative;
             overflow: hidden;
-            background-color: #0a0a12;
+            background-color: var(--bg-base);
         }
 
-        /* Geometric tile background - TERAFAB style */
+        /* Geometric tile background with brand colors */
         section.hero::before {
             content: '';
             position: absolute;
@@ -234,9 +234,9 @@
             pointer-events: none;
             z-index: 0;
             background:
-                linear-gradient(135deg, rgba(0,180,180,0.15) 0%, transparent 40%),
-                linear-gradient(315deg, rgba(120,30,180,0.12) 0%, transparent 40%),
-                radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,180,180,0.10) 0%, transparent 70%);
+                linear-gradient(135deg, rgba(155,48,255,0.15) 0%, transparent 40%),
+                linear-gradient(315deg, rgba(201,64,128,0.12) 0%, transparent 40%),
+                radial-gradient(ellipse 60% 50% at 50% 50%, rgba(155,48,255,0.08) 0%, transparent 70%);
         }
 
         /* Geometric grid tiles */
@@ -273,12 +273,14 @@
             color: #ffffff;
             margin-bottom: 0.5rem;
             line-height: 1.1;
-            text-shadow: 0 0 80px rgba(0,180,180,0.3), 0 0 40px rgba(120,30,180,0.15);
+            text-shadow: 0 0 80px rgba(155,48,255,0.4), 0 0 40px rgba(201,64,128,0.2);
         }
 
         .hero-brand .brand-dot {
-            color: var(--accent-lime);
-            text-shadow: 0 0 30px rgba(152,241,49,0.5);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero h1 {
@@ -333,9 +335,9 @@
         }
 
         .btn-primary:hover {
-            background: rgba(0,180,180,0.15);
-            border-color: rgba(0,180,180,0.6);
-            box-shadow: 0 0 30px rgba(0,180,180,0.2);
+            background: rgba(155,48,255,0.15);
+            border-color: rgba(155,48,255,0.6);
+            box-shadow: 0 0 30px rgba(155,48,255,0.2);
         }
 
         .btn-secondary {
@@ -1570,14 +1572,14 @@
                         const absRand = Math.abs(rand);
                         if (absRand > 0.6) {
                             const alpha = 0.03 + absRand * 0.12;
-                            const isTeal = absRand > 0.85;
-                            const isPurple = absRand > 0.75 && absRand <= 0.85;
-                            if (isTeal) {
-                                ctx.fillStyle = `rgba(0, 180, 180, ${alpha * 0.8})`;
-                            } else if (isPurple) {
-                                ctx.fillStyle = `rgba(120, 30, 180, ${alpha * 0.6})`;
+                            const isPurple = absRand > 0.85;
+                            const isPink = absRand > 0.75 && absRand <= 0.85;
+                            if (isPurple) {
+                                ctx.fillStyle = `rgba(155, 48, 255, ${alpha * 0.7})`;
+                            } else if (isPink) {
+                                ctx.fillStyle = `rgba(201, 64, 128, ${alpha * 0.5})`;
                             } else {
-                                ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.15})`;
+                                ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.12})`;
                             }
                             const gap = 2;
                             const size = tileSize - gap * 2;
@@ -1761,7 +1763,7 @@
                     const data = await res.json();
                     if (data.success) {
                         formStatus.textContent = '✓ Message sent successfully!';
-                        formStatus.style.color = 'var(--accent-lime)';
+                        formStatus.style.color = '#64c8ff';
                         formStatus.style.display = 'block';
                         contactForm.reset();
                     } else {
