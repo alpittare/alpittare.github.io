@@ -5,7 +5,7 @@
 **Effective Date:** March 30, 2026
 
 **Developer:** Alpit Tare
-**Contact:** alpittare204@gmail.com
+**Contact:** alpit@exafabs.ai
 
 ---
 
@@ -191,7 +191,7 @@ Upon termination:
 This Agreement is governed by the laws of **California, USA**, without regard to conflicts of law.
 
 ### 11.2 Informal Resolution
-Before pursuing legal action, contact alpittare204@gmail.com with:
+Before pursuing legal action, contact alpit@exafabs.ai with:
 - Detailed description of dispute
 - Dates and times involved
 - Requested resolution
@@ -237,7 +237,7 @@ Review these Terms periodically for updates. Last updated March 30, 2026.
 
 **For questions, disputes, or support:**
 
-Email: alpittare204@gmail.com
+Email: alpit@exafabs.ai
 Response Time: 30 days maximum
 
 **For Apple-Related Issues:**
@@ -258,5 +258,5 @@ By clicking "Accept" upon first launch, or by continuing to use the Games, you a
 **Effective immediately upon acceptance.**
 
 Alpit Tare
-alpittare204@gmail.com
+alpit@exafabs.ai
 March 30, 2026

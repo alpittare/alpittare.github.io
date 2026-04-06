@@ -132,7 +132,7 @@ The GitHub Actions workflow will:
 3. The build should appear under **TestFlight** or **App Store** tab
 4. Fill in:
    - App description, keywords, screenshots
-   - Privacy Policy URL: `https://alpittare.github.io/privacy-policy/`
+   - Privacy Policy URL: `https://exafabs.ai/privacy-policy/`
    - Age Rating: 4+ (no objectionable content)
    - Category: Games → Sports
 5. Submit for Review

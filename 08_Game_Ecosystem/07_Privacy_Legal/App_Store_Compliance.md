@@ -253,7 +253,7 @@
 ### 6.6 Support URL
 - [x] Linked to developer website or support email
 - [x] Must be publicly accessible
-- [x] Example: "https://alpittare204@gmail.com" or support page
+- [x] Example: "https://alpit@exafabs.ai" or support page
 
 ### 6.7 Privacy Policy URL
 - [x] Link provided to full Privacy Policy
@@ -434,7 +434,7 @@
 ## Document Version
 
 **Prepared for:** Cricket AI 2026, Football AI 2026, Baseball AI 2026
-**Developer:** Alpit Tare (alpittare204@gmail.com)
+**Developer:** Alpit Tare (alpit@exafabs.ai)
 **Date:** March 30, 2026
 **Status:** Ready for submission
 

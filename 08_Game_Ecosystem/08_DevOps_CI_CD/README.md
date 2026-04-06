@@ -618,7 +618,7 @@ git cherry-pick [commit]   # Apply specific commit
 ## Support & Contact
 
 For DevOps issues:
-- **Email:** alpittare204@gmail.com
+- **Email:** alpit@exafabs.ai
 - **GitHub:** @alpittare
 
 For specific game deployments:
@@ -637,4 +637,4 @@ For specific game deployments:
 ---
 
 **Last Updated:** March 30, 2026
-**Maintained By:** Alpit Tare (alpittare204@gmail.com)
+**Maintained By:** Alpit Tare (alpit@exafabs.ai)

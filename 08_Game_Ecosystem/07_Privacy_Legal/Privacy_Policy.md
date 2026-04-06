@@ -5,7 +5,7 @@
 **Effective Date:** March 30, 2026
 
 **Developer:** Alpit Tare
-**Contact:** alpittare204@gmail.com
+**Contact:** alpit@exafabs.ai
 
 ---
 
@@ -86,7 +86,7 @@ This Privacy Policy explains how our sports simulation games (Cricket AI 2026, F
 
 ### 4.3 User Deletion Rights (GDPR)
 - Users may request deletion of their anonymous player ID and associated server data
-- Submit deletion requests to alpittare204@gmail.com with player ID
+- Submit deletion requests to alpit@exafabs.ai with player ID
 - Response within 30 days
 - Local device data must be deleted by user (uninstall app)
 
@@ -98,7 +98,7 @@ This Privacy Policy explains how our sports simulation games (Cricket AI 2026, F
 
 - **Age Restriction:** Services are not directed to children under 13
 - **No Collection from Minors:** We do not knowingly collect any data from children under 13
-- **Parental Consent:** If a parent/guardian discovers we have collected data from a child under 13 without consent, contact alpittare204@gmail.com immediately for deletion
+- **Parental Consent:** If a parent/guardian discovers we have collected data from a child under 13 without consent, contact alpit@exafabs.ai immediately for deletion
 - **No Behavioral Tracking:** No targeting, profiling, or behavioral advertising
 - **Minimal Data:** No persistent IDs tied to children; game sessions cannot be individually tracked to identifiable persons
 
@@ -114,7 +114,7 @@ This Privacy Policy explains how our sports simulation games (Cricket AI 2026, F
 - **Right to Object:** Opt-out of analytics or optional services
 
 ### 6.2 How to Exercise Your Rights
-Submit requests to alpittare204@gmail.com with:
+Submit requests to alpit@exafabs.ai with:
 - Player ID
 - Clear description of your request
 - Copy of government ID for verification
@@ -196,7 +196,7 @@ Last Updated: March 30, 2026
 
 **For privacy questions, requests, or complaints:**
 
-Email: alpittare204@gmail.com
+Email: alpit@exafabs.ai
 Response Time: 30 days maximum
 
 **For GDPR-Specific Matters:**

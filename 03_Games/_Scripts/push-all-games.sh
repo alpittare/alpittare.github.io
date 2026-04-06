@@ -16,8 +16,8 @@ echo "  Username: alpittare"
 echo "============================================"
 echo ""
 
-# ── Main repo (alpittare.github.io) ─────────────────────────────────────
-echo "▶ [1/1] Main Repo (alpittare.github.io)"
+# ── Main repo (exafabs.ai) ─────────────────────────────────────
+echo "▶ [1/1] Main Repo (exafabs.ai)"
 cd "$ROOT_DIR"
 rm -f .git/index.lock 2>/dev/null || true
 git add -A
@@ -41,7 +41,7 @@ echo ""
 echo "  Backend:  04_Convex_Backend (gallant-kingfisher-867)"
 echo "  Frontend: 05_Frontend (Next.js dashboard)"
 echo ""
-echo "  Repo: https://github.com/alpittare/alpittare.github.io"
+echo "  Repo: https://github.com/alpittare/exafabs.ai"
 echo "============================================"
 echo ""
 echo "  Don't forget to deploy Convex if schema changed:"
