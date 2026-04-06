@@ -49,7 +49,7 @@
       --border-hover: rgba(124, 58, 237, 0.3);
       --glass: rgba(26, 26, 46, 0.6);
       --glass-border: rgba(148, 163, 184, 0.08);
-      --grad-primary: linear-gradient(135deg, #7C3AED, #06B6D4);
+      --grad-primary: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
       --grad-accent: linear-gradient(135deg, #7C3AED, #EC4899);
       --grad-warm: linear-gradient(135deg, #EC4899, #F59E0B);
       --grad-cool: linear-gradient(135deg, #06B6D4, #84CC16);
@@ -158,12 +158,12 @@
     .btn-primary {
       background: var(--grad-primary);
       color: white;
-      box-shadow: 0 2px 12px rgba(124, 58, 237, 0.3);
+      box-shadow: 0 2px 12px rgba(123, 47, 190, 0.3);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4);
+      box-shadow: 0 8px 32px rgba(123, 47, 190, 0.4);
     }
 
     .btn-outline {
@@ -391,8 +391,8 @@
       height: 280px;
       top: 10%;
       left: 15%;
-      background: radial-gradient(circle at 30% 30%, rgba(124, 58, 237, 0.3), rgba(124, 58, 237, 0.05));
-      border: 1px solid rgba(124, 58, 237, 0.2);
+      background: radial-gradient(circle at 30% 30%, rgba(123, 47, 190, 0.3), rgba(123, 47, 190, 0.05));
+      border: 1px solid rgba(123, 47, 190, 0.2);
     }
 
     .hero-orb-2 {
@@ -400,8 +400,8 @@
       height: 180px;
       top: 5%;
       right: 5%;
-      background: radial-gradient(circle at 30% 30%, rgba(6, 182, 212, 0.25), rgba(6, 182, 212, 0.03));
-      border: 1px solid rgba(6, 182, 212, 0.15);
+      background: radial-gradient(circle at 30% 30%, rgba(201, 64, 128, 0.25), rgba(201, 64, 128, 0.03));
+      border: 1px solid rgba(201, 64, 128, 0.15);
       animation-delay: -2s;
     }
 
@@ -410,8 +410,8 @@
       height: 120px;
       bottom: 15%;
       left: 25%;
-      background: radial-gradient(circle at 30% 30%, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.03));
-      border: 1px solid rgba(236, 72, 153, 0.12);
+      background: radial-gradient(circle at 30% 30%, rgba(245, 148, 58, 0.22), rgba(245, 148, 58, 0.03));
+      border: 1px solid rgba(245, 148, 58, 0.14);
       animation-delay: -4s;
     }
 
@@ -420,14 +420,14 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 100px;
-      height: 100px;
-      background: var(--grad-primary);
-      border-radius: 24px;
+      width: 110px;
+      height: 110px;
+      background: linear-gradient(135deg, #7B2FBE, #3B82F6);
+      border-radius: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 60px rgba(124, 58, 237, 0.3), 0 0 120px rgba(124, 58, 237, 0.1);
+      box-shadow: 0 0 60px rgba(123, 47, 190, 0.35), 0 0 120px rgba(123, 47, 190, 0.12);
     }
 
     .hero-orb-center svg {
@@ -447,13 +447,13 @@
       align-items: center;
       gap: 8px;
       padding: 8px 16px;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid var(--border-hover);
+      background: rgba(123, 47, 190, 0.12);
+      border: 1px solid rgba(123, 47, 190, 0.3);
       border-radius: 20px;
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 24px;
-      color: var(--cyan-light);
+      color: #C084FC;
     }
 
     .hero h1 {
@@ -501,7 +501,7 @@
     .stat-value {
       font-size: 24px;
       font-weight: 800;
-      background: var(--grad-primary);
+      background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -559,15 +559,15 @@
       transform: translateX(-50%);
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.06), transparent);
+      background: radial-gradient(circle, rgba(123, 47, 190, 0.05), transparent);
       pointer-events: none;
       z-index: 0;
     }
 
     .section-divider {
-      width: 80px;
+      width: 60px;
       height: 3px;
-      background: var(--grad-primary);
+      background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
       margin: 0 auto 16px;
       border-radius: 2px;
     }
@@ -582,12 +582,12 @@
     .section-label {
       display: inline-block;
       padding: 6px 14px;
-      background: rgba(84, 211, 233, 0.1);
-      border: 1px solid rgba(84, 211, 233, 0.3);
+      background: rgba(123, 47, 190, 0.1);
+      border: 1px solid rgba(123, 47, 190, 0.3);
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
-      color: var(--cyan-light);
+      color: #C084FC;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 16px;
@@ -636,7 +636,7 @@
     }
 
     .category-tab.active {
-      background: var(--grad-primary);
+      background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
       color: white;
       border-color: transparent;
     }
@@ -752,8 +752,8 @@
     .game-cta {
       width: 100%;
       padding: 10px 16px;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.3);
+      background: rgba(123, 47, 190, 0.1);
+      border: 1px solid rgba(123, 47, 190, 0.25);
       border-radius: 8px;
       color: var(--text-primary);
       font-size: 13px;
@@ -767,8 +767,8 @@
     }
 
     .game-cta:hover {
-      background: rgba(124, 58, 237, 0.2);
-      border-color: var(--primary);
+      background: rgba(123, 47, 190, 0.2);
+      border-color: #7B2FBE;
     }
 
     .app-logo {
@@ -1107,14 +1107,14 @@
     .blog-category {
       display: inline-block;
       padding: 4px 10px;
-      background: rgba(124, 58, 237, 0.15);
-      border: 1px solid rgba(124, 58, 237, 0.3);
+      background: rgba(123, 47, 190, 0.15);
+      border: 1px solid rgba(123, 47, 190, 0.3);
       border-radius: 12px;
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.4px;
-      color: var(--cyan-light);
+      color: #C084FC;
       margin-bottom: 12px;
       width: fit-content;
     }
@@ -1276,7 +1276,7 @@
           <div class="hero-orb hero-orb-2"></div>
           <div class="hero-orb hero-orb-3"></div>
           <div class="hero-orb-center">
-            <img src="logo-icon.png" alt="" width="60" height="60" style="object-fit:contain;">
+            <img src="logo-icon.png" alt="" width="70" height="70" style="object-fit:contain;">
           </div>
         </div>
       </div>
