@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>How CrickBot Uses AI to Master Cricket | ExaFabs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,11 +13,15 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0A0A1A;
-            color: #F8FAFC;
+            font-family: 'Manrope', sans-serif;
+            background: #240331;
+            color: #fad7ff;
             line-height: 1.6;
             scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         /* Reading Progress Bar */
@@ -26,7 +30,7 @@
             top: 0;
             left: 0;
             height: 3px;
-            background: linear-gradient(90deg, #7C3AED, #06B6D4);
+            background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
             width: 0%;
             z-index: 1000;
         }
@@ -37,9 +41,9 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 40px;
-            background: rgba(10, 10, 26, 0.8);
+            background: rgba(36, 3, 49, 0.8);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -48,14 +52,14 @@
         .logo {
             font-weight: 700;
             font-size: 20px;
-            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .nav-link {
-            color: #94A3B8;
+            color: #8a7a94;
             text-decoration: none;
             font-size: 14px;
             display: flex;
@@ -65,7 +69,7 @@
         }
 
         .nav-link:hover {
-            color: #06B6D4;
+            color: #C94080;
         }
 
         /* Hero Section */
@@ -73,8 +77,10 @@
             position: relative;
             padding: 80px 40px;
             text-align: center;
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.1));
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            background: linear-gradient(135deg, rgba(123, 47, 190, 0.15), rgba(201, 64, 128, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        
+            overflow: hidden;
         }
 
         .hero-overlay {
@@ -83,15 +89,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.15), transparent);
+            background: radial-gradient(circle at top right, rgba(155, 48, 255, 0.2), transparent);
             pointer-events: none;
         }
 
         .hero-content {
             position: relative;
-            z-index: 2;
+            z-index: 1;
             max-width: 900px;
             margin: 0 auto;
+        
+            z-index: 2;
         }
 
         .hero h1 {
@@ -99,7 +107,7 @@
             font-weight: 700;
             margin-bottom: 24px;
             line-height: 1.2;
-            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            background: linear-gradient(135deg, #ffffff, #e0c3ff, #C94080);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -109,7 +117,7 @@
             display: flex;
             justify-content: center;
             gap: 24px;
-            color: #94A3B8;
+            color: #8a7a94;
             font-size: 14px;
             margin-top: 24px;
         }
@@ -121,12 +129,12 @@
         }
 
         .category-badge {
-            background: rgba(124, 58, 237, 0.2);
-            color: #A78BFA;
+            background: rgba(155, 48, 255, 0.2);
+            color: #dcb8ff;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 13px;
-            border: 1px solid rgba(124, 58, 237, 0.3);
+            border: 1px solid rgba(155, 48, 255, 0.3);
         }
 
         /* Article Container */
@@ -134,6 +142,8 @@
             max-width: 720px;
             margin: 0 auto;
             padding: 60px 40px;
+            position: relative;
+            z-index: 1;
         }
 
         article {
@@ -145,8 +155,8 @@
             font-weight: 700;
             margin-top: 48px;
             margin-bottom: 24px;
-            color: #F8FAFC;
-            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            color: #fad7ff;
+            background: linear-gradient(135deg, #C94080, #F5943A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -157,12 +167,12 @@
             font-weight: 600;
             margin-top: 36px;
             margin-bottom: 16px;
-            color: #E2E8F0;
+            color: #dcb8ff;
         }
 
         article p {
             font-size: 18px;
-            color: #F8FAFC;
+            color: #fad7ff;
             margin-bottom: 20px;
             text-align: justify;
         }
@@ -170,7 +180,7 @@
         article ul, article ol {
             margin: 24px 0 24px 24px;
             font-size: 18px;
-            color: #F8FAFC;
+            color: #fad7ff;
         }
 
         article li {
@@ -179,14 +189,14 @@
         }
 
         article strong {
-            color: #F8FAFC;
+            color: #fad7ff;
             font-weight: 600;
         }
 
         /* Code Block */
         .code-block {
-            background: #1A1A2E;
-            border: 1px solid rgba(6, 182, 212, 0.2);
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             padding: 24px;
             margin: 24px 0;
@@ -194,7 +204,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
             line-height: 1.6;
-            color: #A78BFA;
+            color: #dcb8ff;
         }
 
         .code-block code {
@@ -204,7 +214,7 @@
 
         .code-label {
             font-size: 12px;
-            color: #64748B;
+            color: #8a7a94;
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -212,8 +222,8 @@
 
         /* Feature List */
         .feature-list {
-            background: rgba(124, 58, 237, 0.05);
-            border-left: 4px solid #7C3AED;
+            background: rgba(155, 48, 255, 0.08);
+            border-left: 4px solid #9B30FF;
             padding: 24px;
             border-radius: 8px;
             margin: 24px 0;
@@ -224,13 +234,13 @@
         }
 
         .feature-list strong {
-            color: #06B6D4;
+            color: #C94080;
         }
 
         /* Highlight Box */
         .highlight-box {
-            background: rgba(6, 182, 212, 0.05);
-            border: 1px solid rgba(6, 182, 212, 0.2);
+            background: rgba(201, 64, 128, 0.08);
+            border: 1px solid rgba(201, 64, 128, 0.15);
             padding: 24px;
             border-radius: 8px;
             margin: 24px 0;
@@ -242,8 +252,8 @@
 
         /* CTA Section */
         .cta-section {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.1));
-            border: 1px solid rgba(148, 163, 184, 0.1);
+            background: linear-gradient(135deg, rgba(155, 48, 255, 0.1), rgba(201, 64, 128, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 48px 40px;
             border-radius: 12px;
             text-align: center;
@@ -258,10 +268,10 @@
         .cta-link {
             display: inline-block;
             padding: 12px 32px;
-            background: linear-gradient(135deg, #7C3AED, #06B6D4);
-            color: #F8FAFC;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            color: #fad7ff;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 9999px;
             font-weight: 600;
             transition: all 0.3s ease;
             border: none;
@@ -271,29 +281,37 @@
 
         .cta-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 12px 24px rgba(155, 48, 255, 0.3);
         }
 
         /* Footer */
         footer {
-            background: rgba(10, 10, 26, 0.8);
+            background: rgba(50, 16, 62, 0.95);
             backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
             padding: 40px;
             text-align: center;
-            color: #64748B;
+            color: #8a7a94;
             font-size: 14px;
+            position: relative;
+            z-index: 1;
+        
+            overflow: hidden;
         }
 
         .footer-content {
             max-width: 720px;
             margin: 0 auto;
+        
+            z-index: 2;
+        
+            position: relative;
         }
 
         .footer-logo {
             font-weight: 700;
             font-size: 18px;
-            background: linear-gradient(135deg, #7C3AED, #06B6D4);
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -305,14 +323,14 @@
         }
 
         .footer-link {
-            color: #64748B;
+            color: #8a7a94;
             text-decoration: none;
             margin: 0 12px;
             transition: color 0.3s ease;
         }
 
         .footer-link:hover {
-            color: #06B6D4;
+            color: #C94080;
         }
 
         /* Responsive */
@@ -370,7 +388,7 @@
 
     <!-- Navbar -->
     <nav>
-        <div class="logo">EXAFABS</div>
+        <div class="logo">EXAFABS.AI</div>
         <a href="../index.html" class="nav-link">← Back to Home</a>
     </nav>
 
@@ -670,7 +688,7 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <div class="footer-logo">EXAFABS</div>
+            <div class="footer-logo">EXAFABS.AI</div>
             <div class="footer-links">
                 <a href="../index.html" class="footer-link">Home</a>
                 <a href="../index.html#blog" class="footer-link">Blog</a>
@@ -691,5 +709,159 @@
             progressBar.style.width = scrolled + '%';
         });
     </script>
+
+    <script>
+(function(){
+    const sections = document.querySelectorAll('.hero, .article-container, footer');
+    const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+    sections.forEach((section, idx) => {
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+        section.style.position = section.style.position || 'relative';
+        section.style.overflow = 'hidden';
+        section.insertBefore(canvas, section.firstChild);
+        const ctx = canvas.getContext('2d');
+        const density = idx === 0 ? 18000 : 35000;
+        const maxP = idx === 0 ? 60 : 30;
+        let particles = [], frame = 0, animId = null, visible = false;
+        function seed(){
+            particles = [];
+            const w = canvas.width, h = canvas.height;
+            const count = Math.min(Math.floor((w*h)/density), maxP);
+            for(let i=0;i<count;i++) particles.push({
+                x:Math.random()*w, y:Math.random()*h,
+                vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25,
+                r:0.8+Math.random()*1.5, c:colors[Math.floor(Math.random()*colors.length)],
+                a:0.15+Math.random()*0.3, pp:Math.random()*Math.PI*2, ps:0.006+Math.random()*0.01
+            });
+        }
+        function draw(){
+            if(!visible){animId=null;return;}
+            const w=canvas.width,h=canvas.height;
+            ctx.clearRect(0,0,w,h); frame++;
+            for(const p of particles){
+                p.x+=p.vx;p.y+=p.vy;p.vx*=0.999;p.vy*=0.999;
+                if(p.x<-5)p.x=w+5;if(p.x>w+5)p.x=-5;
+                if(p.y<-5)p.y=h+5;if(p.y>h+5)p.y=-5;
+            }
+            for(let i=0;i<particles.length;i++){
+                for(let j=i+1;j<particles.length;j++){
+                    const a=particles[i],b=particles[j];
+                    const d=Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+                    if(d<120){
+                        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+                        ctx.strokeStyle=`rgba(${(a.c[0]+b.c[0])>>1},${(a.c[1]+b.c[1])>>1},${(a.c[2]+b.c[2])>>1},${(1-d/120)*0.08})`;
+                        ctx.lineWidth=0.5;ctx.stroke();
+                    }
+                }
+            }
+            for(const p of particles){
+                const pulse=0.7+Math.sin(frame*p.ps+p.pp)*0.3;
+                const[r,g,b]=p.c;
+                const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3*pulse);
+                gr.addColorStop(0,`rgba(${r},${g},${b},${p.a*pulse*0.3})`);
+                gr.addColorStop(1,`rgba(${r},${g},${b},0)`);
+                ctx.beginPath();ctx.arc(p.x,p.y,p.r*3*pulse,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+                ctx.beginPath();ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);
+                ctx.fillStyle=`rgba(${r},${g},${b},${p.a*pulse})`;ctx.fill();
+            }
+            animId=requestAnimationFrame(draw);
+        }
+        new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(visible&&!animId)draw();},{threshold:0.02}).observe(section);
+        function resize(){canvas.width=section.offsetWidth;canvas.height=section.offsetHeight;seed();}
+        resize();window.addEventListener('resize',resize);
+    });
+})();
+</script>
+    // Particle constellation for blog pages
+    (function initParticles() {
+        function init(section, opts) {
+            if (!section) return;
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+            section.style.position = section.style.position || 'relative';
+            section.insertBefore(canvas, section.firstChild);
+            const ctx = canvas.getContext('2d');
+            const density = opts.density || 20000;
+            const maxCount = opts.maxCount || 60;
+            const connDist = opts.connectionDist || 130;
+            const alphaRange = opts.alphaRange || [0.2, 0.4];
+            const speed = opts.speed || 0.3;
+            const lineOpacity = opts.lineOpacity || 0.1;
+            const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+            let particles = [];
+            function createParticles() {
+                particles = [];
+                const w = canvas.width, h = canvas.height;
+                const count = Math.min(Math.floor((w * h) / density), maxCount);
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * w, y: Math.random() * h,
+                        vx: (Math.random() - 0.5) * speed, vy: (Math.random() - 0.5) * speed,
+                        radius: 0.8 + Math.random() * 1.8,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        alpha: alphaRange[0] + Math.random() * (alphaRange[1] - alphaRange[0]),
+                        pulsePhase: Math.random() * Math.PI * 2,
+                        pulseSpeed: 0.006 + Math.random() * 0.012
+                    });
+                }
+            }
+            let animId = null, isVisible = false, frame = 0;
+            function animate() {
+                if (!isVisible) { animId = null; return; }
+                const w = canvas.width, h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                frame++;
+                for (const p of particles) {
+                    p.x += p.vx; p.y += p.vy;
+                    p.vx *= 0.998; p.vy *= 0.998;
+                    if (p.x < -10) p.x = w + 10;
+                    if (p.x > w + 10) p.x = -10;
+                    if (p.y < -10) p.y = h + 10;
+                    if (p.y > h + 10) p.y = -10;
+                }
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const a = particles[i], b = particles[j];
+                        const dx = a.x - b.x, dy = a.y - b.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < connDist) {
+                            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+                            ctx.strokeStyle = `rgba(${(a.color[0]+b.color[0])>>1},${(a.color[1]+b.color[1])>>1},${(a.color[2]+b.color[2])>>1},${(1-dist/connDist)*lineOpacity})`;
+                            ctx.lineWidth = 0.5; ctx.stroke();
+                        }
+                    }
+                }
+                for (const p of particles) {
+                    const pulse = 0.7 + Math.sin(frame * p.pulseSpeed + p.pulsePhase) * 0.3;
+                    const [r, g, b] = p.color;
+                    const gr = p.radius * 3 * pulse;
+                    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
+                    grad.addColorStop(0, `rgba(${r},${g},${b},${p.alpha * pulse * 0.35})`);
+                    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+                    ctx.beginPath(); ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
+                    ctx.fillStyle = grad; ctx.fill();
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * pulse, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha * pulse})`; ctx.fill();
+                }
+                animId = requestAnimationFrame(animate);
+            }
+            const visObs = new IntersectionObserver((entries) => {
+                isVisible = entries[0].isIntersecting;
+                if (isVisible && !animId) animate();
+            }, { threshold: 0.02 });
+            visObs.observe(section);
+            function resize() {
+                canvas.width = section.offsetWidth;
+                canvas.height = section.offsetHeight;
+                createParticles();
+            }
+            resize();
+            window.addEventListener('resize', resize);
+        }
+        init(document.querySelector('.hero'), { density: 15000, maxCount: 80, connectionDist: 140, alphaRange: [0.2, 0.45], speed: 0.35, lineOpacity: 0.12 });
+        init(document.querySelector('footer'), { density: 40000, maxCount: 30, connectionDist: 100, alphaRange: [0.08, 0.2], speed: 0.15, lineOpacity: 0.05 });
+    })();
+
 </body>
 </html>

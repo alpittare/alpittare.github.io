@@ -13,12 +13,16 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0A0A1A 0%, #1A1A2E 100%);
-            color: #F8FAFC;
+            font-family: 'Manrope';
+            background: linear-gradient(135deg, #240331 0%, #32103e 100%);
+            color: #fad7ff;
             line-height: 1.8;
             font-size: 18px;
             min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .progress-bar {
@@ -26,7 +30,7 @@
             top: 0;
             left: 0;
             height: 4px;
-            background: linear-gradient(90deg, #7C3AED, #06B6D4, #84CC16, #EC4899, #F59E0B);
+            background: linear-gradient(90deg, #9B30FF, #C94080, #84CC16, #C94080, #F59E0B);
             width: 0%;
             z-index: 1000;
             transition: width 0.2s ease;
@@ -36,6 +40,9 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 60px 24px;
+        
+            position: relative;
+            z-index: 1;
         }
 
         header {
@@ -50,7 +57,7 @@
             gap: 16px;
             margin-bottom: 20px;
             font-size: 14px;
-            color: #94A3B8;
+            color: #8a7a94;
             flex-wrap: wrap;
         }
 
@@ -63,7 +70,7 @@
         .dot {
             width: 4px;
             height: 4px;
-            background: #06B6D4;
+            background: #C94080;
             border-radius: 50%;
         }
 
@@ -71,7 +78,7 @@
             font-size: 48px;
             line-height: 1.2;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, #7C3AED, #06B6D4, #84CC16);
+            background: linear-gradient(135deg, #9B30FF, #C94080, #84CC16);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -81,14 +88,14 @@
 
         .subtitle {
             font-size: 20px;
-            color: #94A3B8;
+            color: #8a7a94;
             margin-bottom: 40px;
         }
 
         .divider {
             width: 60px;
             height: 3px;
-            background: linear-gradient(90deg, #06B6D4, transparent);
+            background: linear-gradient(90deg, #C94080, transparent);
             margin: 40px auto;
         }
 
@@ -100,8 +107,8 @@
         h2 {
             font-size: 32px;
             margin-bottom: 24px;
-            color: #F8FAFC;
-            border-left: 4px solid #06B6D4;
+            color: #fad7ff;
+            border-left: 4px solid #C94080;
             padding-left: 16px;
             font-weight: 600;
         }
@@ -116,13 +123,13 @@
 
         p {
             margin-bottom: 20px;
-            color: #E2E8F0;
+            color: #dcb8ff;
             line-height: 1.8;
         }
 
         ul, ol {
             margin: 24px 0 24px 32px;
-            color: #E2E8F0;
+            color: #dcb8ff;
         }
 
         li {
@@ -131,19 +138,19 @@
         }
 
         strong {
-            color: #06B6D4;
+            color: #C94080;
             font-weight: 600;
         }
 
         em {
-            color: #EC4899;
+            color: #C94080;
             font-style: italic;
         }
 
         code {
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            color: #06B6D4;
+            background: rgba(201, 64, 128, 0.1);
+            border: 1px solid rgba(201, 64, 128, 0.3);
+            color: #C94080;
             padding: 2px 6px;
             border-radius: 4px;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
@@ -151,8 +158,8 @@
         }
 
         pre {
-            background: linear-gradient(135deg, #1A1A2E, #16213E);
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            background: linear-gradient(135deg, #32103e, #16213E);
+            border: 1px solid rgba(201, 64, 128, 0.3);
             border-radius: 8px;
             padding: 20px;
             overflow-x: auto;
@@ -164,17 +171,17 @@
             background: none;
             border: none;
             padding: 0;
-            color: #84CC16;
+            color: #dcb8ff;
             font-size: 15px;
         }
 
         .highlight-cyan {
-            color: #06B6D4;
+            color: #C94080;
             font-weight: 600;
         }
 
         .highlight-lime {
-            color: #84CC16;
+            color: #dcb8ff;
             font-weight: 600;
         }
 
@@ -185,15 +192,15 @@
         }
 
         .feature-item {
-            background: rgba(6, 182, 212, 0.05);
-            border-left: 3px solid #06B6D4;
+            background: rgba(201, 64, 128, 0.08);
+            border-left: 3px solid #C94080;
             padding: 18px;
             border-radius: 6px;
             transition: all 0.3s ease;
         }
 
         .feature-item:hover {
-            background: rgba(6, 182, 212, 0.1);
+            background: rgba(201, 64, 128, 0.1);
             transform: translateX(8px);
         }
 
@@ -211,12 +218,12 @@
 
         .diagram-box {
             background: rgba(132, 204, 22, 0.08);
-            border: 1px solid rgba(132, 204, 22, 0.3);
+            border: 1px solid rgba(155, 48, 255, 0.3);
             border-radius: 8px;
             padding: 24px;
             margin: 24px 0;
             font-family: 'JetBrains Mono', monospace;
-            color: #84CC16;
+            color: #dcb8ff;
             line-height: 1.6;
             overflow-x: auto;
             white-space: pre;
@@ -231,13 +238,13 @@
 
         .ai-system {
             background: rgba(236, 72, 153, 0.05);
-            border-left: 3px solid #EC4899;
+            border-left: 3px solid #C94080;
             padding: 20px;
             border-radius: 6px;
         }
 
         .ai-system h4 {
-            color: #EC4899;
+            color: #C94080;
             font-size: 18px;
             margin-bottom: 12px;
             font-weight: 600;
@@ -250,8 +257,8 @@
         }
 
         .tech-deep {
-            background: rgba(124, 58, 237, 0.05);
-            border-left: 3px solid #7C3AED;
+            background: rgba(155, 48, 255, 0.08);
+            border-left: 3px solid #9B30FF;
             padding: 24px;
             border-radius: 6px;
             margin: 24px 0;
@@ -266,7 +273,7 @@
         }
 
         .tech-item h4 {
-            color: #7C3AED;
+            color: #9B30FF;
             font-size: 18px;
             margin-bottom: 12px;
             font-weight: 600;
@@ -279,21 +286,21 @@
         }
 
         .formula {
-            background: rgba(6, 182, 212, 0.08);
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            background: rgba(201, 64, 128, 0.08);
+            border: 1px solid rgba(201, 64, 128, 0.3);
             padding: 16px;
             border-radius: 6px;
             margin: 12px 0;
             font-family: 'JetBrains Mono', monospace;
-            color: #06B6D4;
+            color: #C94080;
             font-size: 15px;
             text-align: center;
             line-height: 1.6;
         }
 
         .cta-section {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(6, 182, 212, 0.15));
-            border: 1px solid rgba(6, 182, 212, 0.4);
+            background: linear-gradient(135deg, rgba(155, 48, 255, 0.15), rgba(201, 64, 128, 0.15));
+            border: 1px solid rgba(201, 64, 128, 0.4);
             padding: 40px;
             border-radius: 8px;
             text-align: center;
@@ -303,8 +310,8 @@
         .cta-button {
             display: inline-block;
             padding: 14px 32px;
-            background: linear-gradient(135deg, #06B6D4, #7C3AED);
-            color: #F8FAFC;
+            background: linear-gradient(135deg, #C94080, #9B30FF);
+            color: #fad7ff;
             text-decoration: none;
             border-radius: 6px;
             font-weight: 600;
@@ -317,7 +324,7 @@
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 12px 24px rgba(201, 64, 128, 0.3);
         }
 
         .cta-button:active {
@@ -327,10 +334,15 @@
         footer {
             text-align: center;
             padding: 40px 0;
-            color: #64748B;
-            border-top: 1px solid rgba(6, 182, 212, 0.2);
+            color: #8a7a94;
+            border-top: 1px solid rgba(201, 64, 128, 0.2);
             margin-top: 60px;
             font-size: 14px;
+        
+            position: relative;
+            z-index: 1;
+        
+            overflow: hidden;
         }
 
         @keyframes fadeIn {
@@ -347,7 +359,10 @@
         @media (max-width: 768px) {
             .container {
                 padding: 40px 16px;
-            }
+            
+            position: relative;
+            z-index: 1;
+        }
 
             h1 {
                 font-size: 36px;
@@ -395,9 +410,13 @@
 
             .container {
                 padding: 24px 12px;
-            }
+            
+            position: relative;
+            z-index: 1;
+        }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="progress-bar" id="progressBar"></div>
@@ -615,14 +634,14 @@ baseSpawnInterval = 6.0 / diffMultiplier / directorMultiplier
         </div>
 
         <footer>
-            <div style="font-weight: 700; font-size: 18px; background: linear-gradient(135deg, #7C3AED, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px;">EXAFABS</div>
+            <div style="font-weight: 700; font-size: 18px; background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px;">EXAFABS.AI</div>
             <div style="margin-bottom: 16px;">
-                <a href="../index.html" style="color: #06B6D4; text-decoration: none; margin: 0 12px; transition: color 0.3s ease;">Home</a>
-                <a href="../index.html#blog" style="color: #06B6D4; text-decoration: none; margin: 0 12px; transition: color 0.3s ease;">Blog</a>
-                <a href="mailto:alpit@exafabs.ai" style="color: #06B6D4; text-decoration: none; margin: 0 12px; transition: color 0.3s ease;">Contact</a>
+                <a href="../index.html" style="color: #C94080; text-decoration: none; margin: 0 12px; transition: color 0.3s ease;">Home</a>
+                <a href="../index.html#blog" style="color: #C94080; text-decoration: none; margin: 0 12px; transition: color 0.3s ease;">Blog</a>
+                <a href="mailto:alpit@exafabs.ai" style="color: #C94080; text-decoration: none; margin: 0 12px; transition: color 0.3s ease;">Contact</a>
             </div>
-            <p style="color: #64748B; font-size: 14px;">&copy; 2026 ExaFabs. All rights reserved.</p>
-            <p style="color: #64748B; font-size: 14px;">alpit@exafabs.ai</p>
+            <p style="color: #8a7a94; font-size: 14px;">&copy; 2026 ExaFabs. All rights reserved.</p>
+            <p style="color: #8a7a94; font-size: 14px;">alpit@exafabs.ai</p>
         </footer>
     </div>
 
@@ -634,5 +653,160 @@ baseSpawnInterval = 6.0 / diffMultiplier / directorMultiplier
             document.getElementById('progressBar').style.width = scrolled + '%';
         });
     </script>
+
+    <script>
+(function(){
+    const sections = document.querySelectorAll('.hero, .article-container, footer, .container');
+    const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+    sections.forEach((section, idx) => {
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+        section.style.position = section.style.position || 'relative';
+        section.style.overflow = 'hidden';
+        section.insertBefore(canvas, section.firstChild);
+        const ctx = canvas.getContext('2d');
+        const density = idx === 0 ? 18000 : 35000;
+        const maxP = idx === 0 ? 60 : 30;
+        let particles = [], frame = 0, animId = null, visible = false;
+        function seed(){
+            particles = [];
+            const w = canvas.width, h = canvas.height;
+            const count = Math.min(Math.floor((w*h)/density), maxP);
+            for(let i=0;i<count;i++) particles.push({
+                x:Math.random()*w, y:Math.random()*h,
+                vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25,
+                r:0.8+Math.random()*1.5, c:colors[Math.floor(Math.random()*colors.length)],
+                a:0.15+Math.random()*0.3, pp:Math.random()*Math.PI*2, ps:0.006+Math.random()*0.01
+            });
+        }
+        function draw(){
+            if(!visible){animId=null;return;}
+            const w=canvas.width,h=canvas.height;
+            ctx.clearRect(0,0,w,h); frame++;
+            for(const p of particles){
+                p.x+=p.vx;p.y+=p.vy;p.vx*=0.999;p.vy*=0.999;
+                if(p.x<-5)p.x=w+5;if(p.x>w+5)p.x=-5;
+                if(p.y<-5)p.y=h+5;if(p.y>h+5)p.y=-5;
+            }
+            for(let i=0;i<particles.length;i++){
+                for(let j=i+1;j<particles.length;j++){
+                    const a=particles[i],b=particles[j];
+                    const d=Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+                    if(d<120){
+                        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+                        ctx.strokeStyle=`rgba(${(a.c[0]+b.c[0])>>1},${(a.c[1]+b.c[1])>>1},${(a.c[2]+b.c[2])>>1},${(1-d/120)*0.08})`;
+                        ctx.lineWidth=0.5;ctx.stroke();
+                    }
+                }
+            }
+            for(const p of particles){
+                const pulse=0.7+Math.sin(frame*p.ps+p.pp)*0.3;
+                const[r,g,b]=p.c;
+                const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3*pulse);
+                gr.addColorStop(0,`rgba(${r},${g},${b},${p.a*pulse*0.3})`);
+                gr.addColorStop(1,`rgba(${r},${g},${b},0)`);
+                ctx.beginPath();ctx.arc(p.x,p.y,p.r*3*pulse,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+                ctx.beginPath();ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);
+                ctx.fillStyle=`rgba(${r},${g},${b},${p.a*pulse})`;ctx.fill();
+            }
+            animId=requestAnimationFrame(draw);
+        }
+        new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(visible&&!animId)draw();},{threshold:0.02}).observe(section);
+        function resize(){canvas.width=section.offsetWidth;canvas.height=section.offsetHeight;seed();}
+        resize();window.addEventListener('resize',resize);
+    });
+})();
+</script>
+
+    // Particle constellation for blog pages
+    (function initParticles() {
+        function init(section, opts) {
+            if (!section) return;
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+            section.style.position = section.style.position || 'relative';
+            section.insertBefore(canvas, section.firstChild);
+            const ctx = canvas.getContext('2d');
+            const density = opts.density || 20000;
+            const maxCount = opts.maxCount || 60;
+            const connDist = opts.connectionDist || 130;
+            const alphaRange = opts.alphaRange || [0.2, 0.4];
+            const speed = opts.speed || 0.3;
+            const lineOpacity = opts.lineOpacity || 0.1;
+            const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+            let particles = [];
+            function createParticles() {
+                particles = [];
+                const w = canvas.width, h = canvas.height;
+                const count = Math.min(Math.floor((w * h) / density), maxCount);
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * w, y: Math.random() * h,
+                        vx: (Math.random() - 0.5) * speed, vy: (Math.random() - 0.5) * speed,
+                        radius: 0.8 + Math.random() * 1.8,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        alpha: alphaRange[0] + Math.random() * (alphaRange[1] - alphaRange[0]),
+                        pulsePhase: Math.random() * Math.PI * 2,
+                        pulseSpeed: 0.006 + Math.random() * 0.012
+                    });
+                }
+            }
+            let animId = null, isVisible = false, frame = 0;
+            function animate() {
+                if (!isVisible) { animId = null; return; }
+                const w = canvas.width, h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                frame++;
+                for (const p of particles) {
+                    p.x += p.vx; p.y += p.vy;
+                    p.vx *= 0.998; p.vy *= 0.998;
+                    if (p.x < -10) p.x = w + 10;
+                    if (p.x > w + 10) p.x = -10;
+                    if (p.y < -10) p.y = h + 10;
+                    if (p.y > h + 10) p.y = -10;
+                }
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const a = particles[i], b = particles[j];
+                        const dx = a.x - b.x, dy = a.y - b.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < connDist) {
+                            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+                            ctx.strokeStyle = `rgba(${(a.color[0]+b.color[0])>>1},${(a.color[1]+b.color[1])>>1},${(a.color[2]+b.color[2])>>1},${(1-dist/connDist)*lineOpacity})`;
+                            ctx.lineWidth = 0.5; ctx.stroke();
+                        }
+                    }
+                }
+                for (const p of particles) {
+                    const pulse = 0.7 + Math.sin(frame * p.pulseSpeed + p.pulsePhase) * 0.3;
+                    const [r, g, b] = p.color;
+                    const gr = p.radius * 3 * pulse;
+                    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
+                    grad.addColorStop(0, `rgba(${r},${g},${b},${p.alpha * pulse * 0.35})`);
+                    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+                    ctx.beginPath(); ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
+                    ctx.fillStyle = grad; ctx.fill();
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * pulse, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha * pulse})`; ctx.fill();
+                }
+                animId = requestAnimationFrame(animate);
+            }
+            const visObs = new IntersectionObserver((entries) => {
+                isVisible = entries[0].isIntersecting;
+                if (isVisible && !animId) animate();
+            }, { threshold: 0.02 });
+            visObs.observe(section);
+            function resize() {
+                canvas.width = section.offsetWidth;
+                canvas.height = section.offsetHeight;
+                createParticles();
+            }
+            resize();
+            window.addEventListener('resize', resize);
+        }
+        init(document.querySelector('.hero'), { density: 15000, maxCount: 80, connectionDist: 140, alphaRange: [0.2, 0.45], speed: 0.35, lineOpacity: 0.12 });
+        init(document.querySelector('footer'), { density: 40000, maxCount: 30, connectionDist: 100, alphaRange: [0.08, 0.2], speed: 0.15, lineOpacity: 0.05 });
+    })();
+
 </body>
 </html>
