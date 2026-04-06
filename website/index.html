@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="EXAFABS — AI-powered gaming studio. Experience intelligent gaming crafted with cutting-edge artificial intelligence. Five unique games, each powered by adaptive AI.">
+  <meta name="description" content="EXAFABS — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
   <meta name="theme-color" content="#7C3AED">
 
   <!-- Open Graph / Social Meta Tags -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://exafabs.ai/">
-  <meta property="og:title" content="EXAFABS — Next-Gen Games Powered by AI">
-  <meta property="og:description" content="Experience intelligent gaming crafted with cutting-edge artificial intelligence. Five unique games, each powered by adaptive AI that learns and evolves.">
+  <meta property="og:title" content="EXAFABS — Next-Gen Apps Powered by AI">
+  <meta property="og:description" content="EXAFABS — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
   <meta property="og:site_name" content="EXAFABS">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="EXAFABS — Next-Gen Games Powered by AI">
-  <meta name="twitter:description" content="AI-powered gaming studio with 5 intelligent games coming to iOS.">
+  <meta name="twitter:title" content="EXAFABS — Next-Gen Apps Powered by AI">
+  <meta name="twitter:description" content="EXAFABS — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%2306B6D4;stop-opacity:1' /></linearGradient></defs><rect width='40' height='40' rx='8' fill='url(%23g)'/><path d='M 12 12 L 28 12 L 20 20 L 28 28 L 12 28 Z' fill='white' opacity='0.9'/></svg>">
@@ -24,7 +24,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <title>EXAFABS — Next-Gen Games Powered by AI</title>
+  <title>EXAFABS — Next-Gen Apps Powered by AI</title>
 
   <style>
     /* ===== ROOT / CSS VARIABLES ===== */
@@ -200,31 +200,6 @@
       font-size: 13px;
     }
 
-    /* ===== BADGES & PILLS ===== */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 6px 16px;
-      border-radius: 30px;
-      font-size: 13px;
-      font-weight: 500;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.2);
-      color: var(--primary-light);
-    }
-
-    .badge-pill {
-      padding: 5px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.15);
-    }
-
     /* ===== NAVBAR ===== */
     .navbar {
       position: fixed;
@@ -232,51 +207,46 @@
       left: 0;
       right: 0;
       z-index: 1000;
-      padding: 16px 0;
-      background: rgba(10, 10, 26, 0.85);
-      backdrop-filter: blur(20px);
+      background: rgba(10, 10, 26, 0.7);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--glass-border);
-      transition: all 0.3s ease;
+      transition: background 0.3s ease;
     }
 
     .navbar.scrolled {
       background: rgba(10, 10, 26, 0.95);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .navbar .container {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 32px;
+      height: 72px;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 10px;
-      text-decoration: none;
-      flex-shrink: 0;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .logo:hover {
+      opacity: 0.8;
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 32px;
+      height: 32px;
       flex-shrink: 0;
-    }
-
-    .logo-icon svg {
-      width: 100%;
-      height: 100%;
     }
 
     .logo-text {
       font-size: 18px;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       background: var(--grad-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -285,9 +255,8 @@
 
     .nav-links {
       display: flex;
-      align-items: center;
-      gap: 32px;
       list-style: none;
+      gap: 32px;
     }
 
     .nav-links a {
@@ -303,17 +272,17 @@
 
     .nav-buttons {
       display: flex;
-      align-items: center;
       gap: 12px;
+      align-items: center;
     }
 
     .hamburger {
       display: none;
       flex-direction: column;
-      gap: 4px;
-      cursor: pointer;
+      gap: 5px;
       background: none;
       border: none;
+      cursor: pointer;
       padding: 8px;
     }
 
@@ -321,40 +290,30 @@
       width: 24px;
       height: 2px;
       background: var(--text-primary);
-      border-radius: 1px;
       transition: all 0.3s;
     }
 
     @media (max-width: 768px) {
-      .navbar .container {
-        gap: 16px;
-      }
-
       .nav-links {
         display: none;
       }
 
       .nav-links.active {
-        display: flex;
         position: absolute;
-        top: 100%;
+        top: 72px;
         left: 0;
         right: 0;
         flex-direction: column;
-        background: rgba(10, 10, 26, 0.95);
-        border-bottom: 1px solid var(--glass-border);
-        padding: 24px;
-        gap: 16px;
-        z-index: 999;
+        gap: 0;
+        padding: 20px;
+        background: var(--bg-deep);
+        border-bottom: 1px solid var(--border);
+        display: flex;
       }
 
-      .nav-buttons {
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .nav-buttons .btn {
-        width: 100%;
+      .nav-links.active a {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
       }
 
       .hamburger {
@@ -364,8 +323,8 @@
 
     /* ===== HERO SECTION ===== */
     .hero {
-      padding: 140px 0 80px;
-      text-align: center;
+      padding: 120px 0 80px;
+      margin-top: 72px;
       position: relative;
       overflow: hidden;
     }
@@ -373,26 +332,13 @@
     .hero::before {
       content: '';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: -50%;
+      right: -10%;
       width: 800px;
       height: 800px;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent);
       pointer-events: none;
-      animation: floatBg 6s ease-in-out infinite;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      top: 20%;
-      right: -200px;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
-      pointer-events: none;
-      animation: floatBg 8s ease-in-out infinite;
+      z-index: 0;
     }
 
     .hero-content {
@@ -405,23 +351,20 @@
       align-items: center;
       gap: 8px;
       padding: 8px 16px;
-      border-radius: 30px;
       background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.2);
+      border: 1px solid var(--border-hover);
+      border-radius: 20px;
       font-size: 13px;
-      font-weight: 500;
-      color: var(--primary-light);
+      font-weight: 600;
       margin-bottom: 24px;
-      animation: fadeInDown 0.6s ease-out;
+      color: var(--cyan-light);
     }
 
     .hero h1 {
       font-size: 56px;
-      font-weight: 900;
-      line-height: 1.15;
-      margin-bottom: 20px;
-      letter-spacing: -1.5px;
-      animation: fadeInUp 0.6s ease-out 0.1s backwards;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      max-width: 600px;
     }
 
     .hero h1 .gradient {
@@ -431,50 +374,37 @@
       background-clip: text;
     }
 
-    .hero p {
+    .hero-subtitle {
       font-size: 18px;
       color: var(--text-secondary);
-      max-width: 620px;
-      margin: 0 auto 48px;
-      animation: fadeInUp 0.6s ease-out 0.2s backwards;
+      max-width: 600px;
+      margin-bottom: 32px;
+      line-height: 1.7;
     }
 
     .hero-buttons {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 80px;
+      gap: 12px;
       flex-wrap: wrap;
-      animation: fadeInUp 0.6s ease-out 0.3s backwards;
-    }
-
-    .hero-buttons .btn {
-      min-width: 180px;
+      margin-bottom: 48px;
     }
 
     .hero-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 24px;
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 32px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      animation: fadeInUp 0.6s ease-out 0.4s backwards;
+      max-width: 600px;
     }
 
     .stat-item {
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .stat-value {
       font-size: 24px;
       font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 4px;
       background: var(--grad-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -484,437 +414,407 @@
     .stat-label {
       font-size: 12px;
       color: var(--text-muted);
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      font-weight: 500;
     }
 
     @media (max-width: 768px) {
       .hero {
-        padding: 120px 0 60px;
+        padding: 80px 0 60px;
       }
 
       .hero h1 {
-        font-size: 40px;
+        font-size: 42px;
       }
 
-      .hero p {
+      .hero-subtitle {
         font-size: 16px;
       }
 
       .hero-buttons {
-        gap: 12px;
-      }
-
-      .hero-buttons .btn {
-        min-width: auto;
-        width: 100%;
+        flex-direction: column;
       }
 
       .hero-stats {
         grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        padding: 24px;
       }
     }
 
-    /* ===== SECTION HEADERS ===== */
+    /* ===== SECTION STYLES ===== */
     .section {
       padding: 80px 0;
       position: relative;
+      overflow: hidden;
+    }
+
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .section-header {
       text-align: center;
-      margin-bottom: 64px;
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 1;
     }
 
     .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 14px;
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(84, 211, 233, 0.1);
+      border: 1px solid rgba(84, 211, 233, 0.3);
       border-radius: 20px;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.15);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--primary-light);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cyan-light);
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       margin-bottom: 16px;
-      animation: fadeIn 0.6s ease-out;
     }
 
     .section-title {
-      font-size: 44px;
-      font-weight: 900;
-      letter-spacing: -1px;
       margin-bottom: 16px;
-      animation: fadeIn 0.6s ease-out 0.1s backwards;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .section-desc {
-      font-size: 16px;
-      color: var(--text-secondary);
-      max-width: 560px;
+      max-width: 500px;
       margin: 0 auto;
-      animation: fadeIn 0.6s ease-out 0.2s backwards;
+      font-size: 16px;
     }
 
-    @media (max-width: 768px) {
-      .section {
-        padding: 60px 0;
-      }
-
-      .section-header {
-        margin-bottom: 48px;
-      }
-
-      .section-title {
-        font-size: 32px;
-      }
-
-      .section-desc {
-        font-size: 15px;
-      }
+    /* ===== PRODUCTS / GAMES SECTION ===== */
+    .category-tabs {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
     }
 
-    /* ===== GAMES SECTION ===== */
+    .category-tab {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .category-tab:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .category-tab.active {
+      background: var(--grad-primary);
+      color: white;
+      border-color: transparent;
+    }
+
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 28px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      position: relative;
+      z-index: 1;
     }
 
     .game-card {
       position: relative;
+      border-radius: var(--radius);
       background: var(--glass);
       border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
       overflow: hidden;
       transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.6s ease-out;
+      backdrop-filter: blur(10px);
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .game-card.hidden {
+      display: none;
     }
 
     .game-card:hover {
+      border-color: var(--border-hover);
       transform: translateY(-8px);
-      border-color: rgba(124, 58, 237, 0.3);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
 
     .game-accent {
-      height: 4px;
-      background: var(--grad-primary);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
     }
 
-    .game-card[data-game="goalbot"] .game-accent {
+    .game-card[data-accent="purple"] .game-accent {
+      background: var(--primary);
+    }
+
+    .game-card[data-accent="lime"] .game-accent {
       background: var(--lime);
     }
 
-    .game-card[data-game="basehit"] .game-accent {
+    .game-card[data-accent="pink"] .game-accent {
       background: var(--pink);
     }
 
-    .game-card[data-game="survival"] .game-accent {
-      background: linear-gradient(90deg, var(--pink), var(--orange));
-    }
-
-    .game-card[data-game="voyager"] .game-accent {
+    .game-card[data-accent="cyan"] .game-accent {
       background: var(--cyan);
     }
 
+    .game-card[data-accent="orange"] .game-accent {
+      background: var(--orange);
+    }
+
     .game-card-body {
-      padding: 32px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      flex: 1;
-    }
-
-    .game-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      background: var(--grad-primary);
-      flex-shrink: 0;
-    }
-
-    .game-card[data-game="goalbot"] .game-icon {
-      background: linear-gradient(135deg, #84CC16, #A3E635);
-    }
-
-    .game-card[data-game="basehit"] .game-icon {
-      background: linear-gradient(135deg, #EC4899, #F472B6);
-    }
-
-    .game-card[data-game="survival"] .game-icon {
-      background: linear-gradient(135deg, #F59E0B, #FBBF24);
-    }
-
-    .game-card[data-game="voyager"] .game-icon {
-      background: linear-gradient(135deg, #06B6D4, #22D3EE);
+      padding: 24px;
     }
 
     .game-header {
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
       gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .game-icon {
+      font-size: 32px;
+      line-height: 1;
     }
 
     .game-info h3 {
-      font-size: 20px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       color: var(--text-primary);
     }
 
     .game-genre {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: rgba(124, 58, 237, 0.12);
-      color: var(--primary-light);
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .game-desc {
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-secondary);
       line-height: 1.6;
-      flex: 1;
+      margin-bottom: 16px;
     }
 
     .game-cta {
+      width: 100%;
+      padding: 10px 16px;
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 10px 16px;
-      border-radius: var(--radius-xs);
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-secondary);
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
     }
 
     .game-cta:hover {
-      background: rgba(0, 0, 0, 0.5);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: var(--text-primary);
+      background: rgba(124, 58, 237, 0.2);
+      border-color: var(--primary);
     }
 
     .app-logo {
-      width: 14px;
-      height: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      width: 16px;
+      height: 16px;
+      color: white;
     }
 
-    @media (max-width: 768px) {
-      .games-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      .game-card-body {
-        padding: 24px 20px;
-        gap: 16px;
-      }
-
-      .game-icon {
-        width: 56px;
-        height: 56px;
-        font-size: 28px;
-      }
+    .coming-soon-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #EC4899, #F59E0B);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 20px;
+      margin-bottom: 12px;
     }
 
     /* ===== ABOUT SECTION ===== */
+    .about {
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.05) 0%, transparent 100%);
+    }
+
     .about-content {
-      max-width: 720px;
-      margin: 0 auto 64px;
+      max-width: 700px;
+      margin: 0 auto 60px;
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
     .about-content h2 {
-      font-size: 44px;
-      margin-bottom: 28px;
-      line-height: 1.3;
+      margin-bottom: 24px;
     }
 
     .about-content p {
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1.8;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 24px;
+      position: relative;
+      z-index: 1;
     }
 
     .feature-card {
+      padding: 32px 24px;
+      border-radius: var(--radius);
       background: var(--glass);
       border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 32px;
       text-align: center;
       transition: all 0.3s ease;
-      animation: fadeIn 0.6s ease-out;
+      backdrop-filter: blur(10px);
     }
 
     .feature-card:hover {
       border-color: var(--border-hover);
-      box-shadow: var(--glow-primary);
+      transform: translateY(-4px);
     }
 
     .feature-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
+      font-size: 40px;
+      margin-bottom: 16px;
     }
 
     .feature-card h3 {
-      font-size: 20px;
       margin-bottom: 12px;
-      color: var(--text-primary);
     }
 
     .feature-card p {
       font-size: 14px;
-      color: var(--text-secondary);
       line-height: 1.6;
     }
 
-    @media (max-width: 768px) {
-      .about-content h2 {
-        font-size: 32px;
-      }
-
-      .about-content p {
-        font-size: 16px;
-      }
-
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     /* ===== CONTACT SECTION ===== */
-    .contact-content {
-      max-width: 640px;
-      margin: 0 auto;
+    .contact {
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
-    .contact-content h2 {
-      font-size: 44px;
-      margin-bottom: 20px;
-      line-height: 1.3;
+    .contact h2 {
+      margin-bottom: 16px;
     }
 
-    .contact-content p {
+    .contact-subtitle {
       font-size: 18px;
       color: var(--text-secondary);
-      margin-bottom: 40px;
-      line-height: 1.8;
+      margin-bottom: 32px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .contact-actions {
+    .contact-form {
+      max-width: 500px;
+      margin: 0 auto;
       display: flex;
-      align-items: center;
-      justify-content: center;
       gap: 12px;
-      flex-wrap: wrap;
     }
 
-    .contact-email {
-      padding: 16px 28px;
+    .contact-form input {
+      flex: 1;
+      padding: 12px 16px;
       background: var(--glass);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-sm);
-      color: var(--primary-light);
-      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
       font-size: 14px;
-      font-weight: 500;
       transition: all 0.3s;
-      cursor: pointer;
     }
 
-    .contact-email:hover {
-      background: rgba(124, 58, 237, 0.1);
+    .contact-form input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .contact-form input:focus {
+      outline: none;
       border-color: var(--primary);
+      background: rgba(26, 26, 46, 0.8);
+    }
+
+    .contact-form button {
+      padding: 12px 32px;
     }
 
     @media (max-width: 768px) {
-      .contact-content h2 {
-        font-size: 32px;
-      }
-
-      .contact-content p {
-        font-size: 16px;
-      }
-
-      .contact-actions {
+      .contact-form {
         flex-direction: column;
-        width: 100%;
-      }
-
-      .contact-email {
-        width: 100%;
       }
     }
 
     /* ===== FOOTER ===== */
     footer {
-      border-top: 1px solid var(--glass-border);
-      padding: 64px 0 40px;
+      border-top: 1px solid var(--border);
+      padding: 60px 0 24px;
       background: rgba(10, 10, 26, 0.5);
+      position: relative;
+      z-index: 1;
     }
 
     .footer-content {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 48px;
-      margin-bottom: 48px;
+      gap: 40px;
+      margin-bottom: 40px;
     }
 
     .footer-section h4 {
       font-size: 14px;
       font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      color: var(--text-primary);
     }
 
     .footer-section ul {
       list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 12px;
     }
 
     .footer-section a {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-secondary);
       transition: color 0.2s;
     }
@@ -923,45 +823,14 @@
       color: var(--text-primary);
     }
 
-    .social-links {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .social-icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-sm);
-      background: rgba(124, 58, 237, 0.1);
-      color: var(--text-secondary);
-      transition: all 0.2s;
-    }
-
-    .social-icon:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    .social-icon svg {
-      width: 18px;
-      height: 18px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-    }
-
     .footer-bottom {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding-top: 32px;
-      border-top: 1px solid var(--glass-border);
+      align-items: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 24px;
     }
 
     .footer-copyright {
@@ -969,46 +838,31 @@
       color: var(--text-muted);
     }
 
-    .footer-email {
-      font-size: 13px;
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer-socials a {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.3s;
       color: var(--text-secondary);
-      font-family: 'JetBrains Mono', monospace;
     }
 
-    .footer-email a {
-      color: var(--primary-light);
-    }
-
-    .footer-email a:hover {
+    .footer-socials a:hover {
+      background: rgba(124, 58, 237, 0.2);
+      border-color: var(--primary);
       color: var(--primary);
     }
 
-    @media (max-width: 768px) {
-      footer {
-        padding: 48px 0 32px;
-      }
-
-      .footer-content {
-        grid-template-columns: 1fr;
-        gap: 32px;
-      }
-
-      .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
-
     /* ===== ANIMATIONS ===== */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -1020,92 +874,71 @@
       }
     }
 
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes floatBg {
-      0%, 100% {
-        transform: translate(-50%, -50%);
-      }
-      50% {
-        transform: translate(-50%, -55%);
-      }
-    }
-
-    @keyframes glowPulse {
-      0%, 100% {
-        box-shadow: 0 0 40px rgba(124, 58, 237, 0.15);
-      }
-      50% {
-        box-shadow: 0 0 60px rgba(124, 58, 237, 0.25);
-      }
-    }
-
-    /* Scroll-triggered animations */
     .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      animation: fadeInUp 0.6s ease-out forwards;
     }
 
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .game-card.fade-in:nth-child(2) {
+      animation-delay: 0.1s;
     }
 
-    /* ===== ACCESSIBILITY ===== */
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
+    .game-card.fade-in:nth-child(3) {
+      animation-delay: 0.2s;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .game-card.fade-in:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+
+    .game-card.fade-in:nth-child(5) {
+      animation-delay: 0.4s;
+    }
+
+    .game-card.fade-in:nth-child(6) {
+      animation-delay: 0.5s;
+    }
+
+    .game-card.fade-in:nth-child(7) {
+      animation-delay: 0.6s;
+    }
+
+    .game-card.fade-in:nth-child(8) {
+      animation-delay: 0.7s;
+    }
+
+    .game-card.fade-in:nth-child(9) {
+      animation-delay: 0.8s;
+    }
+
+    .fade-in-visible {
+      animation: fadeInUp 0.6s ease-out forwards !important;
     }
   </style>
 </head>
 <body>
-
-  <!-- ===== NAVBAR ===== -->
+  <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
     <div class="container">
       <a href="#" class="logo">
         <div class="logo-icon">
-          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
                 <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
               </linearGradient>
             </defs>
-            <rect x="8" y="8" width="24" height="24" rx="4" fill="url(#logo-grad)" opacity="0.9"/>
-            <path d="M 14 14 L 26 14 L 20 20 L 26 26 L 14 26 Z" fill="white" opacity="0.95"/>
+            <rect width="40" height="40" rx="8" fill="url(#logo-grad)" />
+            <path d="M 12 12 L 28 12 L 20 20 L 28 28 L 12 28 Z" fill="white" opacity="0.9" />
           </svg>
         </div>
         <span class="logo-text">EXAFABS</span>
       </a>
 
       <ul class="nav-links" id="navLinks">
-        <li><a href="#games">Games</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#products">Games</a></li>
+        <li><a href="#products">AI Tools</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -1122,29 +955,24 @@
     </div>
   </nav>
 
-  <!-- ===== HERO SECTION ===== -->
+  <!-- HERO SECTION -->
   <section class="hero">
     <div class="container">
       <div class="hero-content">
         <div class="hero-label">
-          <span>🎮</span>
-          <span>AI-Powered Gaming Studio</span>
+          🚀
+          <span>AI App Studio</span>
         </div>
-
-        <h1>
-          Next-Gen Games<br>
-          <span class="gradient">Powered by AI</span>
-        </h1>
-
-        <p>Experience intelligent gaming crafted with cutting-edge artificial intelligence. Five unique games, each powered by adaptive AI that learns and evolves.</p>
+        <h1>Next-Gen Apps<br /><span class="gradient">Powered by AI</span></h1>
+        <p class="hero-subtitle">Building intelligent applications that learn, adapt, and evolve. From AI-powered games to smart tools and utilities — crafted with cutting-edge artificial intelligence.</p>
 
         <div class="hero-buttons">
-          <a href="#games" class="btn btn-primary btn-lg">Explore Games ↓</a>
+          <a href="#products" class="btn btn-primary btn-lg">Explore Apps ↓</a>
           <a href="#" class="btn btn-outline btn-lg">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"></path>
-              <polyline points="23 3 13 13"></polyline>
-              <line x1="13" y1="3" x2="23" y2="3"></line>
+            <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+              <polyline points="23 13 23 23 13 23"></polyline>
+              <path d="M23 20L13 10"></path>
             </svg>
             App Store
           </a>
@@ -1152,15 +980,15 @@
 
         <div class="hero-stats">
           <div class="stat-item">
-            <div class="stat-value">5</div>
-            <div class="stat-label">Games</div>
+            <div class="stat-value">5+</div>
+            <div class="stat-label">Apps</div>
           </div>
           <div class="stat-item">
             <div class="stat-value">AI</div>
             <div class="stat-label">Powered</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">iOS</div>
+            <div class="stat-value">Multi</div>
             <div class="stat-label">Platform</div>
           </div>
           <div class="stat-item">
@@ -1172,18 +1000,27 @@
     </div>
   </section>
 
-  <!-- ===== GAMES SECTION ===== -->
-  <section class="section" id="games">
+  <!-- PRODUCTS SECTION -->
+  <section class="section" id="products">
     <div class="container">
       <div class="section-header">
-        <div class="section-label">OUR GAMES</div>
-        <h2 class="section-title">Crafted with Intelligence</h2>
-        <p class="section-desc">Each game features adaptive AI that learns from your play style, creating unique experiences that evolve with you.</p>
+        <div class="section-label">OUR PRODUCTS</div>
+        <h2 class="section-title">Built with Intelligence</h2>
+        <p class="section-desc">Explore our growing ecosystem of AI-powered applications</p>
       </div>
 
+      <!-- Category Filter Tabs -->
+      <div class="category-tabs">
+        <button class="category-tab active" data-filter="all">All</button>
+        <button class="category-tab" data-filter="games">Games</button>
+        <button class="category-tab" data-filter="ai-tools">AI Tools</button>
+        <button class="category-tab" data-filter="utilities">Utilities</button>
+      </div>
+
+      <!-- Products Grid -->
       <div class="games-grid">
-        <!-- CRICKET BOT -->
-        <div class="game-card fade-in" data-game="cricket">
+        <!-- GAMES -->
+        <div class="game-card fade-in" data-category="games" data-accent="purple">
           <div class="game-accent"></div>
           <div class="game-card-body">
             <div class="game-header">
@@ -1196,15 +1033,16 @@
             <p class="game-desc">Master the art of cricket with intelligent AI opponents that adapt to your play style.</p>
             <button class="game-cta">
               <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"></path>
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
               </svg>
-              Coming Soon on the App Store
+              Coming Soon on App Store
             </button>
           </div>
         </div>
 
-        <!-- GOAL BOT -->
-        <div class="game-card fade-in" data-game="goalbot">
+        <div class="game-card fade-in" data-category="games" data-accent="lime">
           <div class="game-accent"></div>
           <div class="game-card-body">
             <div class="game-header">
@@ -1217,15 +1055,16 @@
             <p class="game-desc">Score spectacular goals against AI goalkeepers that learn your shooting patterns.</p>
             <button class="game-cta">
               <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"></path>
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
               </svg>
-              Coming Soon on the App Store
+              Coming Soon on App Store
             </button>
           </div>
         </div>
 
-        <!-- BASE HIT -->
-        <div class="game-card fade-in" data-game="basehit">
+        <div class="game-card fade-in" data-category="games" data-accent="pink">
           <div class="game-accent"></div>
           <div class="game-card-body">
             <div class="game-header">
@@ -1238,15 +1077,16 @@
             <p class="game-desc">Step up to the plate with AI pitchers and fielders that challenge your every move.</p>
             <button class="game-cta">
               <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"></path>
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
               </svg>
-              Coming Soon on the App Store
+              Coming Soon on App Store
             </button>
           </div>
         </div>
 
-        <!-- SURVIVAL ARENA -->
-        <div class="game-card fade-in" data-game="survival">
+        <div class="game-card fade-in" data-category="games" data-accent="orange">
           <div class="game-accent"></div>
           <div class="game-card-body">
             <div class="game-header">
@@ -1259,15 +1099,16 @@
             <p class="game-desc">Battle through endless waves of intelligent enemies in a fight for survival.</p>
             <button class="game-cta">
               <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"></path>
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
               </svg>
-              Coming Soon on the App Store
+              Coming Soon on App Store
             </button>
           </div>
         </div>
 
-        <!-- INFINITE VOYAGER -->
-        <div class="game-card fade-in" data-game="voyager">
+        <div class="game-card fade-in" data-category="games" data-accent="cyan">
           <div class="game-accent"></div>
           <div class="game-card-body">
             <div class="game-header">
@@ -1280,9 +1121,105 @@
             <p class="game-desc">Explore procedurally generated galaxies with AI-driven encounters and discoveries.</p>
             <button class="game-cta">
               <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"></path>
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
               </svg>
-              Coming Soon on the App Store
+              Coming Soon on App Store
+            </button>
+          </div>
+        </div>
+
+        <!-- AI TOOLS -->
+        <div class="game-card fade-in" data-category="ai-tools" data-accent="cyan">
+          <div class="game-accent"></div>
+          <div class="game-card-body">
+            <div class="coming-soon-badge">In Development</div>
+            <div class="game-header">
+              <div class="game-icon">📡</div>
+              <div class="game-info">
+                <h3>NetSense AI</h3>
+                <span class="game-genre">AIOps / Analytics</span>
+              </div>
+            </div>
+            <p class="game-desc">AI-powered network monitoring and predictive analytics for telecom infrastructure.</p>
+            <button class="game-cta">
+              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
+              </svg>
+              Coming Soon
+            </button>
+          </div>
+        </div>
+
+        <div class="game-card fade-in" data-category="ai-tools" data-accent="purple">
+          <div class="game-accent"></div>
+          <div class="game-card-body">
+            <div class="coming-soon-badge">In Development</div>
+            <div class="game-header">
+              <div class="game-icon">💻</div>
+              <div class="game-info">
+                <h3>CodePilot</h3>
+                <span class="game-genre">Developer Tools</span>
+              </div>
+            </div>
+            <p class="game-desc">Intelligent code review and optimization powered by machine learning.</p>
+            <button class="game-cta">
+              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
+              </svg>
+              Coming Soon
+            </button>
+          </div>
+        </div>
+
+        <!-- UTILITIES -->
+        <div class="game-card fade-in" data-category="utilities" data-accent="lime">
+          <div class="game-accent"></div>
+          <div class="game-card-body">
+            <div class="coming-soon-badge">In Development</div>
+            <div class="game-header">
+              <div class="game-icon">🔄</div>
+              <div class="game-info">
+                <h3>QuickConvert</h3>
+                <span class="game-genre">Productivity</span>
+              </div>
+            </div>
+            <p class="game-desc">AI-enhanced file conversion with intelligent format detection and optimization.</p>
+            <button class="game-cta">
+              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
+              </svg>
+              Coming Soon
+            </button>
+          </div>
+        </div>
+
+        <div class="game-card fade-in" data-category="utilities" data-accent="pink">
+          <div class="game-accent"></div>
+          <div class="game-card-body">
+            <div class="coming-soon-badge">In Development</div>
+            <div class="game-header">
+              <div class="game-icon">🔒</div>
+              <div class="game-info">
+                <h3>VaultSync</h3>
+                <span class="game-genre">Security / Storage</span>
+              </div>
+            </div>
+            <p class="game-desc">Encrypted cloud backup with AI-powered deduplication and smart scheduling.</p>
+            <button class="game-cta">
+              <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>
+                <polyline points="23 13 23 23 13 23"></polyline>
+                <path d="M23 20L13 10"></path>
+              </svg>
+              Coming Soon
             </button>
           </div>
         </div>
@@ -1290,80 +1227,79 @@
     </div>
   </section>
 
-  <!-- ===== ABOUT SECTION ===== -->
-  <section class="section" id="about">
+  <!-- ABOUT SECTION -->
+  <section class="section about" id="about">
     <div class="container">
-      <div class="about-content fade-in">
-        <h2>Built by Engineers,<br>Powered by AI</h2>
-        <p>ExaFabs is an indie AI gaming studio pushing the boundaries of intelligent gameplay. Every game features adaptive AI that learns from player behavior, creating unique experiences that evolve with you.</p>
+      <div class="about-content">
+        <h2>Built by Engineers,<br />Powered by AI</h2>
+        <p>ExaFabs is an AI app studio pushing the boundaries of intelligent software. Every product features adaptive AI that learns from user behavior, creating unique experiences that evolve with you. From mobile games to enterprise tools, we're building the future of intelligent applications.</p>
       </div>
 
       <div class="features-grid">
-        <div class="feature-card fade-in">
+        <div class="feature-card">
           <div class="feature-icon">🧠</div>
           <h3>Adaptive AI</h3>
-          <p>AI that learns and adapts to your play style, becoming a more challenging and personalized opponent over time.</p>
+          <p>Every app features AI that learns and adapts to user behavior, creating personalized experiences.</p>
         </div>
 
-        <div class="feature-card fade-in">
+        <div class="feature-card">
           <div class="feature-icon">📱</div>
-          <h3>Cross-Platform</h3>
-          <p>Built for iOS with future expansion to Android, web, and console platforms coming soon.</p>
+          <h3>Multi-Platform</h3>
+          <p>Built for iOS today, expanding to Android, Web, and Enterprise platforms.</p>
         </div>
 
-        <div class="feature-card fade-in">
-          <div class="feature-icon">❤️</div>
-          <h3>Indie Studio</h3>
-          <p>Crafted with passion by engineering-minded developers dedicated to pushing creative boundaries.</p>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Engineering First</h3>
+          <p>Crafted with production-grade architecture, scalability, and reliability at the core.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== CONTACT SECTION ===== -->
+  <!-- CONTACT SECTION -->
   <section class="section" id="contact">
     <div class="container">
-      <div class="contact-content fade-in">
-        <h2>Ready to Play?</h2>
-        <p>Join the waitlist and be the first to know when our games launch on the App Store.</p>
-        <div class="contact-actions">
-          <a href="mailto:alpit@exafabs.ai" class="contact-email">alpit@exafabs.ai</a>
-          <a href="#" class="btn btn-primary">Sign Up for Updates</a>
-        </div>
+      <div class="contact">
+        <h2>Ready to Experience AI?</h2>
+        <p class="contact-subtitle">Join the waitlist and be the first to know when our apps launch.</p>
+
+        <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+          <input type="email" name="email" placeholder="Enter your email" required aria-label="Email address" />
+          <button type="submit" class="btn btn-primary">Notify Me</button>
+        </form>
       </div>
     </div>
   </section>
 
-  <!-- ===== FOOTER ===== -->
+  <!-- FOOTER -->
   <footer>
     <div class="container">
       <div class="footer-content">
         <div class="footer-section">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
-            <div class="logo-icon" style="width: 32px; height: 32px;">
-              <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="footer-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
-                  </linearGradient>
-                </defs>
-                <rect x="8" y="8" width="24" height="24" rx="4" fill="url(#footer-logo-grad)" opacity="0.9"/>
-                <path d="M 14 14 L 26 14 L 20 20 L 26 26 L 14 26 Z" fill="white" opacity="0.95"/>
-              </svg>
-            </div>
-            <span style="font-weight: 700; font-size: 16px; background: linear-gradient(135deg, #7C3AED, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">EXAFABS</span>
-          </div>
+          <h4>Games</h4>
+          <ul>
+            <li><a href="#">CrickBot</a></li>
+            <li><a href="#">GoalBot</a></li>
+            <li><a href="#">BaseHit</a></li>
+            <li><a href="#">Survival Arena</a></li>
+            <li><a href="#">Infinite Voyager</a></li>
+          </ul>
         </div>
 
         <div class="footer-section">
-          <h4>Games</h4>
+          <h4>AI Tools</h4>
           <ul>
-            <li><a href="#games">CrickBot</a></li>
-            <li><a href="#games">GoalBot</a></li>
-            <li><a href="#games">BaseHit</a></li>
-            <li><a href="#games">Survival Arena</a></li>
-            <li><a href="#games">Infinite Voyager</a></li>
+            <li><a href="#">NetSense AI</a></li>
+            <li><a href="#">CodePilot</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Utilities</h4>
+          <ul>
+            <li><a href="#">QuickConvert</a></li>
+            <li><a href="#">VaultSync</a></li>
           </ul>
         </div>
 
@@ -1372,43 +1308,24 @@
           <ul>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Press</a></li>
+            <li><a href="mailto:alpit@exafabs.ai">Email: alpit@exafabs.ai</a></li>
           </ul>
-        </div>
-
-        <div class="footer-section">
-          <h4>Connect</h4>
-          <div class="social-links">
-            <a href="https://twitter.com" class="social-icon" aria-label="Twitter">
-              <svg viewBox="0 0 24 24">
-                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7"></path>
-              </svg>
-            </a>
-            <a href="https://github.com" class="social-icon" aria-label="GitHub">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.868-.013-1.703-2.782.603-3.369-1.343-3.369-1.343-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.544 2.914 1.186.092-.923.35-1.544.636-1.9-2.22-.252-4.555-1.112-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.447-1.27.098-2.647 0 0 .84-.269 2.75 1.024A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.293 2.747-1.024 2.747-1.024.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.137 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path>
-              </svg>
-            </a>
-            <a href="https://linkedin.com" class="social-icon" aria-label="LinkedIn">
-              <svg viewBox="0 0 24 24">
-                <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
-                <circle cx="4" cy="4" r="2"></circle>
-              </svg>
-            </a>
-          </div>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <p class="footer-copyright">© 2026 ExaFabs. All rights reserved.</p>
-        <p class="footer-email"><a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a></p>
+        <p class="footer-copyright">&copy; 2026 EXAFABS. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="#" aria-label="GitHub">gh</a>
+        </div>
       </div>
     </div>
   </footer>
 
   <script>
-    // ===== NAVBAR SCROLL EFFECT =====
+    // ===== NAVBAR SCROLL & MOBILE MENU =====
     const navbar = document.getElementById('navbar');
     const navLinks = document.getElementById('navLinks');
     const hamburger = document.getElementById('hamburger');
@@ -1421,67 +1338,65 @@
       }
     });
 
-    // ===== MOBILE MENU TOGGLE =====
     hamburger.addEventListener('click', () => {
       navLinks.classList.toggle('active');
     });
 
-    // Close menu when a link is clicked
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-      });
+    navLinks.addEventListener('click', () => {
+      navLinks.classList.remove('active');
     });
 
-    // ===== INTERSECTION OBSERVER FOR SCROLL ANIMATIONS =====
+    // ===== FADE IN ON SCROLL =====
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -100px 0px'
     };
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+          entry.target.classList.add('fade-in-visible');
           observer.unobserve(entry.target);
         }
       });
     }, observerOptions);
 
-    // Observe all fade-in elements
-    document.querySelectorAll('.fade-in').forEach(el => {
+    document.querySelectorAll('.fade-in, .feature-card').forEach((el) => {
       observer.observe(el);
     });
 
-    // ===== SMOOTH SCROLL ANCHOR LINKS =====
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href !== '#' && document.querySelector(href)) {
-          e.preventDefault();
-          document.querySelector(href).scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
+    // ===== CATEGORY FILTER =====
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    const gameCards = document.querySelectorAll('.game-card');
 
-    // ===== PERFORMANCE: LAZY LOAD IMAGES (if added in future) =====
-    if ('IntersectionObserver' in window) {
-      const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const img = entry.target;
-            img.src = img.dataset.src;
-            img.classList.remove('lazy');
-            observer.unobserve(img);
+    categoryTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        // Update active tab
+        categoryTabs.forEach((t) => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const filterValue = tab.getAttribute('data-filter');
+
+        // Filter cards
+        gameCards.forEach((card) => {
+          const cardCategory = card.getAttribute('data-category');
+
+          if (filterValue === 'all' || cardCategory === filterValue) {
+            card.classList.remove('hidden');
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, 10);
+          } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+              card.classList.add('hidden');
+            }, 300);
           }
         });
       });
-
-      document.querySelectorAll('img.lazy').forEach(img => imageObserver.observe(img));
-    }
+    });
   </script>
 </body>
 </html>
