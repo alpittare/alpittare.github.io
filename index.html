@@ -1845,6 +1845,7 @@
             top: 0; left: 10%; right: 10%;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(100,200,255,0.12), transparent);
+            pointer-events: none;
         }
         .chat-input {
             flex: 1;
@@ -1975,7 +1976,7 @@
             <div class="hero-buttons">
                 <a href="#products" class="btn-primary">Explore Apps ↓</a>
                 <a href="#products" class="btn-secondary">App Store</a>
-                <button class="find-game-btn" id="findGameBtn">🎮 Find Your Game</button>
+                <button class="find-game-btn" id="findGameBtn">🚀 Find Your App</button>
             </div>
             <div class="hero-stats">
                 <div class="stat-pill" data-stat-type="count" data-target="5" data-suffix="+" data-start="0">
@@ -2353,25 +2354,25 @@
         <div class="quiz-modal" id="quizModal">
             <button class="quiz-close" id="quizClose">✕</button>
             <div class="quiz-question" id="quizQ1" style="display:block">
-                <h3>🎮 What's your play style?</h3>
-                <button class="quiz-opt" data-q="1" data-v="action">⚡ Fast-paced action</button>
-                <button class="quiz-opt" data-q="1" data-v="strategy">🧠 Strategic thinking</button>
-                <button class="quiz-opt" data-q="1" data-v="chill">🌊 Relaxed exploration</button>
+                <h3>🚀 What are you looking for?</h3>
+                <button class="quiz-opt" data-q="1" data-v="gaming">🎮 Gaming & Entertainment</button>
+                <button class="quiz-opt" data-q="1" data-v="devtools">💻 Developer & AI Tools</button>
+                <button class="quiz-opt" data-q="1" data-v="productivity">🔧 Productivity & Utilities</button>
             </div>
             <div class="quiz-question" id="quizQ2" style="display:none">
-                <h3>🎯 Favorite genre?</h3>
-                <button class="quiz-opt" data-q="2" data-v="sports">🏟️ Sports</button>
-                <button class="quiz-opt" data-q="2" data-v="adventure">🚀 Adventure / Sci-Fi</button>
-                <button class="quiz-opt" data-q="2" data-v="survival">🔥 Survival / Arena</button>
+                <h3>🎯 What matters most to you?</h3>
+                <button class="quiz-opt" data-q="2" data-v="action">⚡ Speed & Action</button>
+                <button class="quiz-opt" data-q="2" data-v="intelligence">🧠 AI Intelligence</button>
+                <button class="quiz-opt" data-q="2" data-v="reliability">🔒 Security & Reliability</button>
             </div>
             <div class="quiz-question" id="quizQ3" style="display:none">
-                <h3>⏱️ How long do you play?</h3>
-                <button class="quiz-opt" data-q="3" data-v="quick">⚡ Quick sessions (< 5 min)</button>
-                <button class="quiz-opt" data-q="3" data-v="medium">🎯 Medium (5-15 min)</button>
-                <button class="quiz-opt" data-q="3" data-v="long">🏆 Long deep sessions</button>
+                <h3>⏱️ How do you prefer to work?</h3>
+                <button class="quiz-opt" data-q="3" data-v="quick">⚡ Quick sessions</button>
+                <button class="quiz-opt" data-q="3" data-v="medium">🎯 Focused workflows</button>
+                <button class="quiz-opt" data-q="3" data-v="deep">🏆 Deep & extended use</button>
             </div>
             <div class="quiz-result" id="quizResult" style="display:none">
-                <h3 id="quizResultTitle">🎯 Your Perfect Game</h3>
+                <h3 id="quizResultTitle">🎯 Your Perfect App</h3>
                 <p id="quizResultDesc"></p>
                 <button class="quiz-opt quiz-retake" id="quizRetake">🔄 Retake Quiz</button>
             </div>
@@ -2971,12 +2972,16 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
             const retakeBtn = document.getElementById('quizRetake');
             if (!overlay || !openBtn) return;
             const answers = {};
-            const games = [
-                { name: 'CrickBot AI', desc: 'AI-powered cricket with adaptive difficulty — fast swipes, real physics.', tags: { action: 2, sports: 3, quick: 2, medium: 1 } },
-                { name: 'GoalBot AI', desc: 'Football penalty shootouts with an AI goalkeeper that learns your patterns.', tags: { action: 2, sports: 3, quick: 3, strategy: 1 } },
-                { name: 'BaseHit AI', desc: 'Baseball batting with predictive AI pitching — time your swings perfectly.', tags: { action: 2, sports: 2, quick: 2, medium: 2 } },
-                { name: 'Survival Arena', desc: 'Wave-based survival combat with AI enemies that adapt to your tactics.', tags: { action: 3, survival: 3, medium: 2, long: 2, strategy: 1 } },
-                { name: 'Infinite Voyager', desc: 'Endless space exploration with procedural worlds and AI encounters.', tags: { chill: 3, adventure: 3, long: 3, strategy: 2 } }
+            const apps = [
+                { name: 'CrickBot AI', desc: 'AI-powered cricket game with adaptive bowling, real physics, and progressive difficulty.', tags: { gaming: 3, action: 3, quick: 2, medium: 1 } },
+                { name: 'GoalBot AI', desc: 'Football penalty shootouts with an AI goalkeeper that learns your patterns.', tags: { gaming: 3, action: 3, quick: 3 } },
+                { name: 'BaseHit AI', desc: 'Baseball batting with predictive AI pitching — time your swings perfectly.', tags: { gaming: 3, action: 2, quick: 2, medium: 2 } },
+                { name: 'Survival Arena', desc: 'Wave-based survival combat where AI enemies adapt to your playstyle.', tags: { gaming: 3, action: 3, medium: 2, deep: 2, intelligence: 1 } },
+                { name: 'Infinite Voyager', desc: 'Endless space exploration with procedural worlds and AI encounters.', tags: { gaming: 3, intelligence: 2, deep: 3 } },
+                { name: 'NetSense AI', desc: 'AI-powered network monitoring and predictive analytics for telecom infrastructure.', tags: { devtools: 3, intelligence: 3, deep: 3, reliability: 2 } },
+                { name: 'CodePilot', desc: 'Intelligent code review and optimization powered by machine learning.', tags: { devtools: 3, intelligence: 3, medium: 2, deep: 2 } },
+                { name: 'QuickConvert', desc: 'AI-enhanced file conversion with intelligent format detection and optimization.', tags: { productivity: 3, quick: 3, reliability: 1 } },
+                { name: 'VaultSync', desc: 'Encrypted cloud backup with AI-powered deduplication and smart scheduling.', tags: { productivity: 3, reliability: 3, deep: 2, intelligence: 1 } }
             ];
             function showQ(n) {
                 for (let i = 1; i <= 3; i++) {
@@ -2986,7 +2991,7 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
                 document.getElementById('quizResult').style.display = 'none';
             }
             function calcResult() {
-                let scores = games.map(g => ({ ...g, score: 0 }));
+                let scores = apps.map(g => ({ ...g, score: 0 }));
                 Object.values(answers).forEach(val => {
                     scores.forEach(g => { if (g.tags[val]) g.score += g.tags[val]; });
                 });
