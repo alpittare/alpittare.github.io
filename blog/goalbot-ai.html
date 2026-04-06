@@ -281,6 +281,66 @@
             color: #dcb8ff;
         }
 
+        /* CTA Section */
+        .cta-section {
+            max-width: 720px;
+            margin: 4rem auto 2rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: rgba(100, 200, 255, 0.03);
+            border: 1px solid rgba(100, 200, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .cta-section h3 {
+            color: #64c8ff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .cta-section p {
+            color: #b8a4c8;
+            margin-bottom: 1.5rem;
+        }
+
+        /* CTA and GitHub Links */
+        .cta-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            color: #fad7ff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(155, 48, 255, 0.3);
+        }
+
+        .github-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .github-link:hover {
+            background: rgba(100, 200, 255, 0.08);
+            border-color: rgba(100, 200, 255, 0.6);
+        }
+
         /* Footer */
         footer {
             background: linear-gradient(135deg, rgba(36, 3, 49, 0.9) 0%, rgba(26, 26, 46, 0.9) 100%);
@@ -584,6 +644,14 @@ STEP 7: Confidence-Driven Behavior (fast vs. conservative)
                 <strong>The Real Takeaway:</strong> GoalBot's AI isn't trying to fool you into thinking it's smarter than it is. On Legend, it genuinely learns your patterns. On Easy, it's honest randomness with fairness built in. That's the design.
             </div>
         </article>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h3>Experience GoalBot's Intelligent Goalkeeper</h3>
+            <p>Face an AI opponent that adapts to your playing style across multiple difficulty levels, from simple heuristics to advanced neural networks.</p>
+            <a href="../index.html" class="cta-button">Back to ExaFabs</a>
+            <a href="https://github.com/alpittare/alpittare.github.io/tree/main/03_Games/GoalBot_AI" target="_blank" rel="noopener noreferrer" class="github-link">View Source on GitHub →</a>
+        </div>
     </div>
 
     <!-- Footer -->
