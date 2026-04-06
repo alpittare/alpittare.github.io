@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Privacy Policy for EXAFABS.AI apps and games — CrickBot AI, GoalBot AI, BaseHit AI, Survival Arena AI, and Infinite Voyager AI.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exafabs.ai/privacy-policy/">
+    <meta property="og:title" content="Privacy Policy — EXAFABS.AI">
+    <meta property="og:description" content="Privacy Policy for EXAFABS.AI apps and games.">
+    <meta property="og:site_name" content="EXAFABS.AI">
+    <meta name="theme-color" content="#240331">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://exafabs.ai/privacy-policy/">
+    <link rel="icon" type="image/png" href="../logo-icon.png">
+    <title>Privacy Policy — EXAFABS.AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #240331;
+            --bg-surface: #32103e;
+            --bg-surface-high: #3e1c49;
+            --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            --primary-solid: #9B30FF;
+            --accent-pink: #C94080;
+            --accent-orange: #F5943A;
+            --text-primary: #dcb8ff;
+            --text-surface: #fad7ff;
+            --text-secondary: #cfc2d8;
+            --text-muted: #8a7a94;
+            --glass-bg: rgba(73, 39, 85, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-card: 1.25rem;
+            --blur-glass: blur(24px);
+            --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-surface);
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: rgba(155, 48, 255, 0.3);
+            color: #fff;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-logo img {
+            width: 2rem;
+            height: 2rem;
+            filter: drop-shadow(0 0 8px rgba(155, 48, 255, 0.4));
+        }
+
+        .nav-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-back:hover { color: var(--accent-pink); }
+
+        /* HERO */
+        .hero {
+            padding: 10rem 2.5rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(123,47,190,0.2) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 20%, rgba(201,64,128,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* CONTENT */
+        .content {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 6rem;
+        }
+
+        .policy-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: var(--blur-glass);
+            -webkit-backdrop-filter: var(--blur-glass);
+        }
+
+        .policy-card h2 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .policy-card h2 .icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .policy-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .policy-card p,
+        .policy-card li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .policy-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0;
+        }
+
+        .policy-card li {
+            padding: 0.3rem 0 0.3rem 1.4rem;
+            position: relative;
+        }
+
+        .policy-card li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+        }
+
+        .policy-card a {
+            color: var(--accent-pink);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .policy-card a:hover {
+            color: var(--accent-orange);
+        }
+
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .app-tag {
+            background: var(--bg-surface-high);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+        }
+
+        .effective-date {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-logo .dot {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-pink);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--accent-orange);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hero { padding: 8rem 1.5rem 3rem; }
+            .content { padding: 1.5rem 1.5rem 4rem; }
+            .policy-card { padding: 1.5rem; }
+            .app-list { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* PARTICLES */
+        .particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero > *:not(canvas):not(.hero::before) {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1, .hero p {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Privacy Policy",
+        "description": "Privacy Policy for EXAFABS.AI apps and games",
+        "url": "https://exafabs.ai/privacy-policy/",
+        "publisher": {
+            "@type": "Organization",
+            "name": "EXAFABS.AI",
+            "url": "https://exafabs.ai"
+        }
+    }
+    </script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="https://exafabs.ai" class="nav-logo">
+            <img src="../logo-icon.png" alt="EXAFABS.AI" width="32" height="32">
+            EXAFABS.AI
+        </a>
+        <a href="https://exafabs.ai" class="nav-back">&larr; Back to Home</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <canvas class="particle-canvas" id="heroParticles"></canvas>
+        <h1><span class="gradient-text">Privacy Policy</span></h1>
+        <p>How EXAFABS.AI collects, uses, and protects your information across our apps and games.</p>
+    </section>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- COVERED APPS -->
+        <div class="policy-card">
+            <h2><span class="icon">📱</span> Covered Applications</h2>
+            <p>This Privacy Policy applies to all applications developed and published by EXAFABS.AI, including:</p>
+            <div class="app-list">
+                <div class="app-tag">CrickBot AI</div>
+                <div class="app-tag">GoalBot AI</div>
+                <div class="app-tag">BaseHit AI</div>
+                <div class="app-tag">Survival Arena AI</div>
+                <div class="app-tag">Infinite Voyager AI</div>
+            </div>
+            <p>This policy also covers the EXAFABS.AI website at <a href="https://exafabs.ai">exafabs.ai</a> and any future applications we publish.</p>
+        </div>
+
+        <!-- DATA COLLECTION -->
+        <div class="policy-card">
+            <h2><span class="icon">🔍</span> Information We Collect</h2>
+
+            <h3>Information You Provide</h3>
+            <ul>
+                <li>Contact information (name, email) when you reach out via our contact form or support email</li>
+                <li>Feedback, bug reports, or feature requests you submit</li>
+            </ul>
+
+            <h3>Automatically Collected Information</h3>
+            <ul>
+                <li>Device information (device model, operating system version, screen resolution)</li>
+                <li>App usage data (session duration, features used, in-game progress)</li>
+                <li>Crash logs and performance diagnostics to improve app stability</li>
+                <li>General location data (country/region level only, not precise GPS)</li>
+            </ul>
+
+            <h3>Information We Do NOT Collect</h3>
+            <ul>
+                <li>We do not collect precise GPS location data</li>
+                <li>We do not access your contacts, photos, camera, or microphone</li>
+                <li>We do not collect financial or payment card information directly — all purchases are handled securely by Apple App Store or Google Play</li>
+                <li>We do not collect data from children under 13 (see Children's Privacy section below)</li>
+            </ul>
+        </div>
+
+        <!-- HOW WE USE DATA -->
+        <div class="policy-card">
+            <h2><span class="icon">⚙️</span> How We Use Your Information</h2>
+            <ul>
+                <li>To provide, maintain, and improve our apps and games</li>
+                <li>To fix bugs, crashes, and performance issues</li>
+                <li>To understand how players interact with our games and improve the experience</li>
+                <li>To respond to your support requests and feedback</li>
+                <li>To send important updates about our apps (only if you opt in)</li>
+                <li>To comply with legal obligations</li>
+            </ul>
+        </div>
+
+        <!-- THIRD PARTY SERVICES -->
+        <div class="policy-card">
+            <h2><span class="icon">🔗</span> Third-Party Services</h2>
+            <p>Our apps may use the following third-party services, each with their own privacy policies:</p>
+            <ul>
+                <li><strong>Apple App Store / Google Play</strong> — for app distribution and in-app purchases</li>
+                <li><strong>Apple GameKit / Game Center</strong> — for leaderboards and achievements</li>
+                <li><strong>Analytics services</strong> — for anonymous usage statistics and crash reporting</li>
+                <li><strong>Ad networks</strong> — some free versions may display ads; ad partners may collect device identifiers for ad personalization (you can opt out via your device settings)</li>
+            </ul>
+            <p>We do not sell your personal data to any third party.</p>
+        </div>
+
+        <!-- DATA STORAGE & SECURITY -->
+        <div class="policy-card">
+            <h2><span class="icon">🛡️</span> Data Storage &amp; Security</h2>
+            <ul>
+                <li>Game progress and settings are stored locally on your device</li>
+                <li>Any data transmitted to our servers uses industry-standard encryption (TLS/SSL)</li>
+                <li>We retain collected data only as long as necessary to fulfill the purposes described in this policy</li>
+                <li>We implement reasonable technical and organizational safeguards to protect your information</li>
+            </ul>
+            <p>While no method of electronic transmission or storage is 100% secure, we take commercially reasonable steps to protect your personal information.</p>
+        </div>
+
+        <!-- CHILDREN'S PRIVACY -->
+        <div class="policy-card">
+            <h2><span class="icon">👶</span> Children's Privacy</h2>
+            <p>Our apps are not directed at children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a> and we will promptly delete that information.</p>
+            <p>We comply with the Children's Online Privacy Protection Act (COPPA) and similar international regulations.</p>
+        </div>
+
+        <!-- YOUR RIGHTS -->
+        <div class="policy-card">
+            <h2><span class="icon">✅</span> Your Rights</h2>
+            <p>Depending on your jurisdiction, you may have the right to:</p>
+            <ul>
+                <li>Access the personal data we hold about you</li>
+                <li>Request correction or deletion of your personal data</li>
+                <li>Object to or restrict our processing of your data</li>
+                <li>Request a portable copy of your data</li>
+                <li>Withdraw consent at any time (where processing is based on consent)</li>
+                <li>Opt out of personalized advertising via your device settings</li>
+            </ul>
+            <p>To exercise any of these rights, contact us at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
+        </div>
+
+        <!-- IN-APP PURCHASES -->
+        <div class="policy-card">
+            <h2><span class="icon">💳</span> In-App Purchases</h2>
+            <p>Some of our games offer optional in-app purchases (coins, power-ups, cosmetic items). All transactions are processed entirely through Apple App Store or Google Play. EXAFABS.AI does not collect, store, or have access to your payment information, credit card numbers, or billing details.</p>
+        </div>
+
+        <!-- CHANGES TO POLICY -->
+        <div class="policy-card">
+            <h2><span class="icon">📝</span> Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. When we make significant changes, we will update the "Effective Date" at the bottom of this page and, where appropriate, notify you through our apps or website. Your continued use of our apps after changes are posted constitutes acceptance of the updated policy.</p>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="policy-card">
+            <h2><span class="icon">📧</span> Contact Us</h2>
+            <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a></li>
+                <li><strong>Website:</strong> <a href="https://exafabs.ai">exafabs.ai</a></li>
+                <li><strong>Developer:</strong> Alpit Tare, EXAFABS.AI</li>
+            </ul>
+        </div>
+
+        <p class="effective-date">Effective Date: April 6, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo">EXAFABS<span class="dot">.</span>AI</div>
+        <p>&copy; 2026 EXAFABS.AI — All rights reserved. &nbsp;|&nbsp; <a href="https://exafabs.ai">Home</a></p>
+    </footer>
+
+    <!-- PARTICLE CONSTELLATION -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('heroParticles');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: -999, y: -999 };
+        let animId;
+
+        function resize() {
+            const section = canvas.parentElement;
+            canvas.width = section.offsetWidth;
+            canvas.height = section.offsetHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            const area = canvas.width * canvas.height;
+            const count = Math.min(Math.floor(area / 18000), 80);
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 1.8 + 0.6,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(201, 64, 128, ${p.alpha})`;
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const q = particles[j];
+                    const dx = p.x - q.x;
+                    const dy = p.y - q.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.strokeStyle = `rgba(155, 48, 255, ${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+
+                const mdx = p.x - mouse.x;
+                const mdy = p.y - mouse.y;
+                const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+                if (mDist < 150) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.strokeStyle = `rgba(245, 148, 58, ${0.3 * (1 - mDist / 150)})`;
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+            animId = requestAnimationFrame(draw);
+        }
+
+        const hero = canvas.parentElement;
+        hero.addEventListener('mousemove', (e) => {
+            const rect = hero.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+        hero.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) { if (!animId) draw(); }
+                else { cancelAnimationFrame(animId); animId = null; }
+            });
+        }, { threshold: 0.1 });
+        observer.observe(hero);
+
+        window.addEventListener('resize', () => { resize(); createParticles(); });
+        resize();
+        createParticles();
+        draw();
+    })();
+    </script>
+
+</body>
+</html>
