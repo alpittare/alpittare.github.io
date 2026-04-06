@@ -12,9 +12,13 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="EXAFABS.AI — Next-Gen Apps Powered by AI">
     <meta name="twitter:description" content="EXAFABS.AI — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
+    <meta name="theme-color" content="#240331">
+    <link rel="canonical" href="https://exafabs.ai/">
     <link rel="icon" type="image/png" href="logo-icon.png">
     <title>EXAFABS.AI — Next-Gen Apps Powered by AI</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
@@ -201,7 +205,6 @@
             transition: all 0.3s;
         }
 
-        /* HERO — Nebula Sky */
         section.hero {
             margin-top: 0;
             padding-top: 8rem;
@@ -214,9 +217,26 @@
             padding-bottom: 4rem;
             position: relative;
             overflow: hidden;
-            background:
-                /* star sparkles */
-                radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.7), transparent),
+            background-color: #240331;
+            background-image:
+                radial-gradient(ellipse 40% 30% at 0% 0%, rgba(0,210,200,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 35% 25% at 100% 0%, rgba(0,200,190,0.15) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 35% at 30% 25%, rgba(220,50,120,0.14) 0%, transparent 70%),
+                radial-gradient(ellipse 45% 30% at 70% 20%, rgba(200,60,140,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 80% 20% at 50% 40%, rgba(245,148,58,0.10) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 25% at 60% 35%, rgba(255,120,80,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 50% at 50% 50%, rgba(120,30,180,0.15) 0%, transparent 70%),
+                linear-gradient(180deg, #1a0525 0%, #240331 30%, #240331 100%);
+        }
+
+        section.hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                radial-gradient(1.2px 1.2px at 10% 15%, rgba(255,255,255,0.7), transparent),
                 radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,0.5), transparent),
                 radial-gradient(1.5px 1.5px at 40% 22%, rgba(255,255,255,0.8), transparent),
                 radial-gradient(1px 1px at 55% 5%, rgba(255,255,255,0.4), transparent),
@@ -231,36 +251,9 @@
                 radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.5), transparent),
                 radial-gradient(1px 1px at 45% 55%, rgba(255,255,255,0.3), transparent),
                 radial-gradient(1.5px 1.5px at 22% 48%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1px 1px at 92% 40%, rgba(255,255,255,0.4), transparent),
-                /* teal/cyan glow — top corners */
-                radial-gradient(ellipse 40% 30% at 0% 0%, rgba(0, 210, 200, 0.18) 0%, transparent 70%),
-                radial-gradient(ellipse 35% 25% at 100% 0%, rgba(0, 200, 190, 0.15) 0%, transparent 70%),
-                /* pink/magenta nebula clouds — upper mid */
-                radial-gradient(ellipse 50% 35% at 30% 25%, rgba(220, 50, 120, 0.14) 0%, transparent 70%),
-                radial-gradient(ellipse 45% 30% at 70% 20%, rgba(200, 60, 140, 0.12) 0%, transparent 70%),
-                /* orange/warm horizon glow — center band */
-                radial-gradient(ellipse 80% 20% at 50% 40%, rgba(245, 148, 58, 0.1) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 25% at 60% 35%, rgba(255, 120, 80, 0.08) 0%, transparent 60%),
-                /* deep purple core */
-                radial-gradient(ellipse 70% 50% at 50% 50%, rgba(120, 30, 180, 0.15) 0%, transparent 70%),
-                /* base */
-                linear-gradient(180deg, #1a0525 0%, #240331 30%, #240331 100%);
+                radial-gradient(1px 1px at 92% 40%, rgba(255,255,255,0.4), transparent);
         }
 
-        /* Nebula cloud overlay for extra depth */
-        section.hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 100% 40% at 50% 35%, rgba(180, 50, 120, 0.06) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 30% at 20% 15%, rgba(0, 180, 180, 0.05) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 25% at 80% 30%, rgba(245, 148, 58, 0.04) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Horizon glow line */
         section.hero::after {
             content: '';
             position: absolute;
@@ -268,7 +261,7 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(0, 200, 190, 0.08), rgba(220, 50, 120, 0.1), rgba(245, 148, 58, 0.08), rgba(155, 48, 255, 0.06), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0,200,190,0.08), rgba(220,50,120,0.1), rgba(245,148,58,0.08), rgba(155,48,255,0.06), transparent);
             filter: blur(8px);
             pointer-events: none;
             z-index: 0;
@@ -525,7 +518,6 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
-            will-change: transform;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
 
@@ -699,7 +691,6 @@
             border-radius: var(--radius-card);
             transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
             transform-style: preserve-3d;
-            will-change: transform;
             overflow: visible;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
@@ -782,7 +773,6 @@
             text-decoration: none;
             color: inherit;
             transform-style: preserve-3d;
-            will-change: transform;
             overflow: visible;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
@@ -945,7 +935,6 @@
             transition: box-shadow 0.3s;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            will-change: transform;
         }
 
         .btn-submit:hover {
@@ -1171,6 +1160,28 @@
         .hero-stats {
             animation: fadeInUp 0.6s var(--transition-smooth) 0.65s forwards;
             opacity: 0;
+        }
+
+        /* Reduced motion accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .fade-in, .hero-label, .hero h1, .hero-subtitle, .hero-buttons, .hero-stats {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+
+        /* backdrop-filter fallback */
+        @supports not (backdrop-filter: blur(1px)) {
+            nav { background: rgba(36, 3, 49, 0.97); }
+            .product-card, .feature-card, .blog-card, .contact-form {
+                background: rgba(50, 16, 62, 0.95);
+            }
         }
     </style>
 </head>
@@ -1437,7 +1448,8 @@
                 <h2>Ready to Experience AI?</h2>
             </div>
             <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
-                <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY">
+                <!-- NOTE: Replace empty access_key with your Web3Forms API key from https://web3forms.com -->
+                <input type="hidden" name="access_key" value="">
                 <input type="hidden" name="subject" value="New Inquiry from EXAFABS.AI">
                 <input type="hidden" name="from_name" value="EXAFABS.AI">
 
@@ -1513,19 +1525,32 @@
     </footer>
 
     <script>
+        // ===== NULL-SAFE SELECTORS =====
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
+        const navbar = document.querySelector('nav');
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
+        // ===== HAMBURGER MENU =====
+        if (hamburger && navLinks) {
+            hamburger.setAttribute('aria-expanded', 'false');
+            hamburger.setAttribute('aria-controls', 'navLinks');
+            hamburger.setAttribute('aria-label', 'Toggle navigation menu');
 
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
+            hamburger.addEventListener('click', () => {
+                const isOpen = navLinks.classList.toggle('active');
+                hamburger.setAttribute('aria-expanded', isOpen);
             });
-        });
 
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        // ===== CATEGORY FILTER =====
         const tabButtons = document.querySelectorAll('.tab-btn');
         const productCards = document.querySelectorAll('.product-card');
 
@@ -1535,20 +1560,17 @@
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 productCards.forEach(card => {
-                    if (filter === 'all') {
-                        card.style.display = 'block';
+                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = 'flex';
                     } else {
-                        card.style.display = card.getAttribute('data-category') === filter ? 'block' : 'none';
+                        card.style.display = 'none';
                     }
                 });
             });
         });
 
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
+        // ===== INTERSECTION OBSERVER (FADE-IN) =====
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1562,101 +1584,99 @@
             observer.observe(el);
         });
 
-        const navbar = document.querySelector('nav');
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            if (currentScroll > 60) {
-                navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.95)';
-                navbar.style.padding = '0.75rem 2.5rem';
-                navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.06)';
-            } else {
-                navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.8)';
-                navbar.style.padding = '1rem 2.5rem';
-                navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.05)';
-            }
-        });
+        // ===== DEBOUNCED SCROLL HANDLER =====
+        let scrollTicking = false;
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                if (!scrollTicking) {
+                    requestAnimationFrame(() => {
+                        const y = window.pageYOffset;
+                        if (y > 60) {
+                            navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.95)';
+                            navbar.style.padding = '0.75rem 2.5rem';
+                            navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.06)';
+                        } else {
+                            navbar.style.backgroundColor = 'rgba(36, 3, 49, 0.8)';
+                            navbar.style.padding = '1rem 2.5rem';
+                            navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.05)';
+                        }
+                        scrollTicking = false;
+                    });
+                    scrollTicking = true;
+                }
+            }, { passive: true });
+        }
 
+        // ===== SMOOTH SCROLL FOR ANCHORS =====
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
+                const target = document.querySelector(href);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
             });
         });
 
-        // ===== MAGNETIC GLASS BUTTON MOTION =====
-        const magneticBtns = document.querySelectorAll('.btn-primary, .btn-secondary, .btn-get-started, .btn-submit');
-
-        magneticBtns.forEach(btn => {
-            btn.addEventListener('mousemove', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                const moveX = x * 0.3;
-                const moveY = y * 0.4;
-                btn.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.04)`;
+        // ===== RAF-THROTTLED MAGNETIC BUTTON MOTION =====
+        if (!isTouchDevice) {
+            const magneticBtns = document.querySelectorAll('.btn-primary, .btn-secondary, .btn-get-started, .btn-submit');
+            magneticBtns.forEach(btn => {
+                let btnRaf = null;
+                btn.addEventListener('mousemove', (e) => {
+                    if (btnRaf) return;
+                    btnRaf = requestAnimationFrame(() => {
+                        const rect = btn.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        btn.style.transform = `translate(${x * 0.3}px, ${y * 0.4}px) scale(1.04)`;
+                        btnRaf = null;
+                    });
+                });
+                btn.addEventListener('mouseleave', () => {
+                    if (btnRaf) { cancelAnimationFrame(btnRaf); btnRaf = null; }
+                    btn.style.transform = 'translate(0, 0) scale(1)';
+                    btn.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s';
+                });
+                btn.addEventListener('mouseenter', () => {
+                    btn.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
+                });
             });
+        }
 
-            btn.addEventListener('mouseleave', () => {
-                btn.style.transform = 'translate(0, 0) scale(1)';
-                btn.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s';
+        // ===== RAF-THROTTLED 3D CARD TILT =====
+        if (!isTouchDevice) {
+            const tiltCards = document.querySelectorAll('.product-card, .feature-card, .blog-card');
+            tiltCards.forEach(card => {
+                let cardRaf = null;
+                const shine = document.createElement('div');
+                shine.style.cssText = 'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:10;opacity:0;transition:opacity 0.3s;';
+                card.appendChild(shine);
+
+                card.addEventListener('mouseenter', () => { shine.style.opacity = '1'; });
+                card.addEventListener('mousemove', (e) => {
+                    if (cardRaf) return;
+                    cardRaf = requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / rect.width;
+                        const y = (e.clientY - rect.top) / rect.height;
+                        card.style.transform = `rotateX(${(y - 0.5) * 20}deg) rotateY(${(x - 0.5) * -20}deg) scale3d(1.03, 1.03, 1.03)`;
+                        shine.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.12), transparent 50%)`;
+                        cardRaf = null;
+                    });
+                });
+                card.addEventListener('mouseleave', () => {
+                    if (cardRaf) { cancelAnimationFrame(cardRaf); cardRaf = null; }
+                    card.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s, border-color 0.3s';
+                    shine.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
+                    }, 500);
+                });
+                card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
             });
-
-            btn.addEventListener('mouseenter', () => {
-                btn.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
-            });
-        });
-
-        // ===== 3D GLASS CARD TILT (BEND INWARD ON HOVER) =====
-        const tiltCards = document.querySelectorAll('.product-card, .feature-card, .blog-card');
-
-        tiltCards.forEach(card => {
-            // Create a shine overlay for light reflection effect
-            const shine = document.createElement('div');
-            shine.style.cssText = `
-                position: absolute; inset: 0; border-radius: inherit;
-                pointer-events: none; z-index: 10; opacity: 0;
-                transition: opacity 0.3s;
-                background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%);
-            `;
-            card.style.position = 'relative';
-            card.appendChild(shine);
-
-            card.addEventListener('mouseenter', () => {
-                shine.style.opacity = '1';
-            });
-
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width;   // 0→1
-                const y = (e.clientY - rect.top) / rect.height;   // 0→1
-
-                // Tilt: cursor at edges = max bend inward
-                const rotY = (x - 0.5) * -20;   // ±10deg
-                const rotX = (y - 0.5) * 20;    // ±10deg
-
-                card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.03, 1.03, 1.03)`;
-
-                // Move shine to follow cursor
-                shine.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.12), transparent 50%)`;
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s, border-color 0.3s';
-                shine.style.opacity = '0';
-
-                // Reset fast transition after snap-back
-                setTimeout(() => {
-                    card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
-                }, 500);
-            });
-
-            // Start with fast tracking transition
-            card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s, border-color 0.3s';
-        });
+        }
     </script>
 </body>
 </html>
