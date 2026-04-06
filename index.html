@@ -19,7 +19,7 @@
   <meta name="twitter:description" content="EXAFABS — AI App Studio building intelligent applications. Games, AI Tools, and Utilities powered by cutting-edge artificial intelligence.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><defs><linearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%237C3AED' stop-opacity='0.9'/><stop offset='100%25' stop-color='%2306B6D4' stop-opacity='0.85'/></linearGradient><linearGradient id='b' x1='100%25' y1='0%25' x2='0%25' y2='100%25'><stop offset='0%25' stop-color='%23F59E0B' stop-opacity='0.85'/><stop offset='100%25' stop-color='%23EC4899' stop-opacity='0.6'/></linearGradient></defs><path d='M24 8C16 14 10 22 12 32C14 36 18 38 24 36C20 28 20 18 24 8Z' fill='url(%23a)'/><path d='M24 8C32 14 38 22 36 32C34 36 30 38 24 36C28 28 28 18 24 8Z' fill='url(%23b)'/></svg>">
+  <link rel="icon" type="image/png" href="logo-icon.png">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -237,16 +237,17 @@
     }
 
     .logo-icon {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       flex-shrink: 0;
+      object-fit: contain;
     }
 
     .logo-text {
       font-size: 18px;
       font-weight: 800;
-      letter-spacing: 0.5px;
-      background: var(--grad-primary);
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #7B2FBE, #C94080, #E8664D, #F5943A);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -1200,28 +1201,7 @@
   <nav class="navbar" id="navbar">
     <div class="container">
       <a href="#top" class="logo" aria-label="EXAFABS Home">
-        <div class="logo-icon">
-          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="leaf1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:0.9"/>
-                <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.85"/>
-              </linearGradient>
-              <linearGradient id="leaf2" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.8"/>
-                <stop offset="100%" style="stop-color:#22D3EE;stop-opacity:0.7"/>
-              </linearGradient>
-              <linearGradient id="leaf3" x1="100%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.85"/>
-                <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0.6"/>
-              </linearGradient>
-            </defs>
-            <path d="M24 8 C16 14, 10 22, 12 32 C14 36, 18 38, 24 36 C20 28, 20 18, 24 8Z" fill="url(#leaf1)"/>
-            <path d="M24 6 C24 6, 20 16, 22 28 C23 33, 24 36, 26 38 C28 33, 29 28, 28 22 C27 14, 24 6, 24 6Z" fill="url(#leaf2)" opacity="0.8"/>
-            <path d="M24 8 C32 14, 38 22, 36 32 C34 36, 30 38, 24 36 C28 28, 28 18, 24 8Z" fill="url(#leaf3)"/>
-            <ellipse cx="24" cy="24" rx="3" ry="8" fill="white" opacity="0.15" transform="rotate(-5 24 24)"/>
-          </svg>
-        </div>
+        <img src="logo-icon.png" alt="EXAFABS" class="logo-icon" width="36" height="36">
         <span class="logo-text">EXAFABS</span>
       </a>
 
@@ -1296,10 +1276,7 @@
           <div class="hero-orb hero-orb-2"></div>
           <div class="hero-orb hero-orb-3"></div>
           <div class="hero-orb-center">
-            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M24 10C17 15 12 22 14 30C15 34 19 36 24 34C21 27 21 19 24 10Z" fill="white" opacity="0.85"/>
-              <path d="M24 10C31 15 36 22 34 30C33 34 29 36 24 34C27 27 27 19 24 10Z" fill="white" opacity="0.5"/>
-            </svg>
+            <img src="logo-icon.png" alt="" width="60" height="60" style="object-fit:contain;">
           </div>
         </div>
       </div>
