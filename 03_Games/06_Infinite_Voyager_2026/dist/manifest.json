@@ -1,6 +1,6 @@
 {
-  "name": "Infinite Voyager",
-  "short_name": "InfVoyager",
+  "name": "Infinite Voyager - Space AI",
+  "short_name": "Infinite Voyager",
   "description": "Solar Sail Space Exploration Game",
   "start_url": "/index.html",
   "display": "fullscreen",

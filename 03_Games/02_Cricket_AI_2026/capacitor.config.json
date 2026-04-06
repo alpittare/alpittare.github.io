@@ -1,6 +1,6 @@
 {
   "appId": "com.cricketprobotai.app",
-  "appName": "Cricket Pro Bot AI",
+  "appName": "CrickBot",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "ios": {

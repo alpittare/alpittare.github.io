@@ -1,12 +1,12 @@
 {
-  "name": "survival-arena-io",
+  "name": "survival-arena",
   "version": "1.0.0",
   "description": "Survival Arena IO - AI-Powered Multiplayer Survival Game",
   "main": "index.html",
   "scripts": {
     "serve": "npx http-server . -p 8080 -o",
     "build:standalone": "echo 'Standalone build is pre-built in dist/'",
-    "cap:init": "npx cap init SurvivalArenaIO com.survivalarenaio.app --web-dir dist",
+    "cap:init": "npx cap init \"Survival Arena\" com.survivalarenaio.app --web-dir dist",
     "cap:add:ios": "npx cap add ios",
     "cap:add:android": "npx cap add android",
     "cap:sync": "npx cap sync",

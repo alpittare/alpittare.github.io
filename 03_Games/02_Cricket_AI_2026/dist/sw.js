@@ -1,5 +1,5 @@
 // Cricket Pro Bot AI Service Worker — enables offline play
-const CACHE_NAME = 'cricket-pro-bot-ai-v1';
+const CACHE_NAME = 'crickbot-v1';
 const ASSETS = [
   '/',
   '/index.html',

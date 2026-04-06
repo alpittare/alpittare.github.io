@@ -1,6 +1,6 @@
 {
-  "name": "Survival Arena IO — Last One Standing",
-  "short_name": "Survival Arena IO",
+  "name": "Survival Arena - IO Battle AI",
+  "short_name": "Survival Arena",
   "description": "AI-powered multiplayer survival game. Drag to move, auto-attack enemies, collect power-ups, survive the shrinking arena. Can you be the last one standing?",
   "start_url": "./index.html",
   "display": "standalone",

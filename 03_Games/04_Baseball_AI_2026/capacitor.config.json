@@ -1,6 +1,6 @@
 {
   "appId": "com.baseballprobotai.app",
-  "appName": "Baseball Pro Bot AI",
+  "appName": "BaseHit",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "ios": {

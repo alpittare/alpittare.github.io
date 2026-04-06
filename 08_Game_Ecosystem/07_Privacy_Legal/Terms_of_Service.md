@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Cricket AI 2026 | Football AI 2026 | Baseball AI 2026**
+**CrickBot AI | GoalBot AI | BaseHit AI**
 
 **Effective Date:** March 30, 2026
 
@@ -14,7 +14,7 @@
 By downloading, installing, and using our sports simulation games (collectively, "the Games"), you agree to be bound by these Terms of Service ("Agreement"). If you do not agree to these terms, do not use the Games.
 
 **These Terms apply to:**
-- All versions of Cricket AI 2026, Football AI 2026, and Baseball AI 2026
+- All versions of CrickBot AI, GoalBot AI, and BaseHit AI
 - All platforms (iOS, web)
 - All features, updates, and future versions
 
@@ -99,7 +99,7 @@ We grant you a limited, non-exclusive, non-transferable, revocable license to:
 
 ### 6.1 Our IP
 - **Games & Assets:** All game code, graphics, audio, animations are owned by Alpit Tare
-- **Trademarks:** "Cricket AI 2026," "Football AI 2026," "Baseball AI 2026," logos are protected
+- **Trademarks:** "CrickBot AI," "GoalBot AI," "BaseHit AI," logos are protected
 - **Restrictions:** You may not use our trademarks or assets without written permission
 
 ### 6.2 Your Content

@@ -1,5 +1,5 @@
 /* Baseball Pro Bot AI — Service Worker for offline play */
-const CACHE = 'baseball-pro-bot-ai-v1';
+const CACHE = 'basehit-v1';
 const ASSETS = [
   './',
   './index.html',

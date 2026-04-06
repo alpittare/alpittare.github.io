@@ -1,12 +1,12 @@
 {
-  "name": "baseball-pro-bot-ai",
+  "name": "basehit",
   "version": "1.0.0",
-  "description": "Baseball Pro Bot AI - AI-Powered Home Run Challenge",
+  "description": "BaseHit - Baseball AI Game",
   "main": "index.html",
   "scripts": {
     "serve": "npx http-server . -p 8080 -o",
     "build:standalone": "echo 'Standalone build is pre-built in dist/'",
-    "cap:init": "npx cap init BaseballProBotAI com.baseballprobotai.app --web-dir dist",
+    "cap:init": "npx cap init BaseHit com.baseballprobotai.app --web-dir dist",
     "cap:add:ios": "npx cap add ios",
     "cap:add:android": "npx cap add android",
     "cap:sync": "npx cap sync",

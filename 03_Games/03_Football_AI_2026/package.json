@@ -1,11 +1,11 @@
 {
-  "name": "football-pro-bot-ai",
+  "name": "goalbot",
   "version": "1.0.0",
-  "description": "Football Pro Bot AI: AI Football Challenge - A production-grade penalty shootout game with TensorFlow.js powered goalkeeper AI",
+  "description": "GoalBot - Football AI Game",
   "main": "dist/index.html",
   "scripts": {
     "start": "npx serve dist",
-    "cap:init": "npx cap init 'Football Pro Bot AI' com.footballprobotai.app --web-dir dist",
+    "cap:init": "npx cap init 'GoalBot - Football AI Game' com.footballprobotai.app --web-dir dist",
     "cap:add:ios": "npx cap add ios",
     "cap:add:android": "npx cap add android",
     "cap:sync": "npx cap sync",

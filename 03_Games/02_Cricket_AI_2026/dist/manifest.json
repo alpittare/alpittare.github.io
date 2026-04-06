@@ -1,6 +1,6 @@
 {
-  "name": "Cricket Pro Bot AI - Cricket Game",
-  "short_name": "Cricket Pro Bot AI",
+  "name": "CrickBot - Cricket AI Game",
+  "short_name": "CrickBot",
   "description": "Swipe-based cricket game with power shots, achievements, and career progression",
   "start_url": "/index.html",
   "display": "standalone",

@@ -1,6 +1,6 @@
 {
-    "name": "Football Pro Bot AI: AI Football Challenge",
-    "short_name": "Football Pro Bot AI",
+    "name": "GoalBot - Football AI Game",
+    "short_name": "GoalBot",
     "description": "Beat the AI goalkeeper in this neural network-powered penalty kick game",
     "start_url": "/index.html",
     "display": "standalone",

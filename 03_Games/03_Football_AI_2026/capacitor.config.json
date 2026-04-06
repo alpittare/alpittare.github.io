@@ -1,6 +1,6 @@
 {
   "appId": "com.footballprobotai.app",
-  "appName": "Football Pro Bot AI",
+  "appName": "GoalBot",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "plugins": {

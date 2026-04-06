@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Infinite Voyager",
-    "slug": "infinite-voyager-2026",
+    "name": "Infinite Voyager - Space AI",
+    "slug": "infinite-voyager",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

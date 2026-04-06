@@ -1,6 +1,6 @@
 {
   "appId": "com.survivalarenaio.app",
-  "appName": "Survival Arena IO",
+  "appName": "Survival Arena",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "ios": {

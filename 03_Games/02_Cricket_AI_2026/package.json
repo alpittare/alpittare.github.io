@@ -1,12 +1,12 @@
 {
-  "name": "cricket-pro-bot-ai",
+  "name": "crickbot",
   "version": "1.0.0",
-  "description": "Cricket Pro Bot AI - 2D Mobile Cricket Batting Game",
+  "description": "CrickBot - Cricket AI Game",
   "main": "index.html",
   "scripts": {
     "serve": "npx http-server . -p 8080 -o",
     "build:standalone": "echo 'Standalone build is pre-built in dist/'",
-    "cap:init": "npx cap init 'Cricket Pro Bot AI' com.cricketprobotai.app --web-dir dist",
+    "cap:init": "npx cap init 'CrickBot' com.cricketprobotai.app --web-dir dist",
     "cap:add:ios": "npx cap add ios",
     "cap:add:android": "npx cap add android",
     "cap:sync": "npx cap sync",

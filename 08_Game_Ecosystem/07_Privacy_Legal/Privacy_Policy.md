@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Cricket AI 2026 | Football AI 2026 | Baseball AI 2026**
+**CrickBot AI | GoalBot AI | BaseHit AI**
 
 **Effective Date:** March 30, 2026
 
@@ -11,7 +11,7 @@
 
 ## 1. Overview
 
-This Privacy Policy explains how our sports simulation games (Cricket AI 2026, Football AI 2026, and Baseball AI 2026) collect, use, and protect your data. We are committed to protecting your privacy and maintaining transparency about our data practices.
+This Privacy Policy explains how our sports simulation games (CrickBot AI, GoalBot AI, and BaseHit AI) collect, use, and protect your data. We are committed to protecting your privacy and maintaining transparency about our data practices.
 
 **Key Principle:** We collect minimal data necessary to deliver gameplay and leaderboard features. We do not collect personally identifiable information (PII).
 

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Baseball AI 2026",
-    "slug": "baseball-ai-2026",
+    "name": "BaseHit - Baseball AI Game",
+    "slug": "basehit-baseball-ai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

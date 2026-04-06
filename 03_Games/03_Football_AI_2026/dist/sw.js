@@ -1,5 +1,5 @@
 // Football Pro Bot AI Service Worker — enables offline play
-const CACHE_NAME = 'football-pro-bot-ai-v1';
+const CACHE_NAME = 'goalbot-v1';
 const ASSETS = [
   '/',
   '/index.html',

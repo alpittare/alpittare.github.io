@@ -4,7 +4,7 @@ import ConvexClientProvider from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Game Dashboard — Cricket AI 2026 · Football AI 2026 · Baseball AI 2026",
+  title: "Game Dashboard — CrickBot AI · GoalBot AI · BaseHit AI",
   description:
     "Player stats, leaderboards, and achievements powered by Convex",
 };
