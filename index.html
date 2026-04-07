@@ -2161,6 +2161,169 @@
                 border-radius: 1.25rem 1.25rem 0 0;
             }
         }
+
+        /* ── EXA Floating AI Guide ── */
+        .exa-guide-orb {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 9990;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .exa-guide-orb.hidden { opacity: 0; pointer-events: none; transform: translateY(20px); }
+        .exa-guide-orb.minimized .exa-orb-core { width: 52px; height: 52px; }
+        .exa-guide-orb.minimized .exa-orb-rings { width: 52px; height: 52px; }
+        .exa-guide-orb.minimized .exa-orb-label { display: none; }
+
+        .exa-orb-core {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #64c8ff 0%, #7B2FBE 50%, #240331 100%);
+            box-shadow: 0 0 30px rgba(100, 200, 255, 0.35), 0 0 60px rgba(123, 47, 190, 0.2), inset 0 0 20px rgba(100, 200, 255, 0.15);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            transition: all 0.4s ease;
+            animation: exa-float 3s ease-in-out infinite;
+        }
+        .exa-orb-core::after {
+            content: '';
+            position: absolute; inset: -4px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(100, 200, 255, 0.25);
+            animation: exa-pulse-ring 2s ease-in-out infinite;
+        }
+        .exa-orb-core:hover {
+            box-shadow: 0 0 40px rgba(100, 200, 255, 0.5), 0 0 80px rgba(123, 47, 190, 0.3), inset 0 0 25px rgba(100, 200, 255, 0.2);
+            transform: scale(1.08);
+        }
+        .exa-orb-icon {
+            font-size: 1.5rem;
+            color: #fff;
+            filter: drop-shadow(0 0 6px rgba(100, 200, 255, 0.6));
+            z-index: 1;
+        }
+        .exa-orb-rings {
+            position: absolute; top: 50%; left: 50%;
+            width: 64px; height: 64px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .exa-orb-rings svg { width: 100%; height: 100%; }
+        .exa-ring-outer { fill: none; stroke: rgba(100, 200, 255, 0.15); stroke-width: 1; animation: exa-spin 8s linear infinite; transform-origin: center; }
+        .exa-ring-inner { fill: none; stroke: rgba(123, 47, 190, 0.2); stroke-width: 1; animation: exa-spin 6s linear infinite reverse; transform-origin: center; }
+
+        .exa-orb-label {
+            position: absolute; left: 72px; top: 50%; transform: translateY(-50%);
+            background: rgba(36, 3, 49, 0.92);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 200, 255, 0.15);
+            border-radius: 12px;
+            padding: 0.5rem 0.85rem;
+            white-space: nowrap;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .exa-guide-orb:hover .exa-orb-label { opacity: 1; }
+
+        /* Bubble */
+        .exa-bubble {
+            position: fixed;
+            bottom: 7rem;
+            left: 2rem;
+            z-index: 9991;
+            max-width: 320px;
+            background: rgba(36, 3, 49, 0.95);
+            backdrop-filter: blur(28px);
+            border: 1px solid rgba(100, 200, 255, 0.18);
+            border-radius: 16px 16px 16px 4px;
+            padding: 1.1rem 1.25rem;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(100, 200, 255, 0.08);
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .exa-bubble.hidden { opacity: 0; pointer-events: none; transform: translateY(10px) scale(0.95); }
+
+        .exa-bubble-close {
+            position: absolute; top: 0.5rem; right: 0.65rem;
+            background: none; border: none; color: rgba(255,255,255,0.4);
+            cursor: pointer; font-size: 1rem; line-height: 1; padding: 2px;
+            transition: color 0.2s;
+        }
+        .exa-bubble-close:hover { color: #64c8ff; }
+
+        .exa-bubble-text {
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.88);
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+        .exa-bubble-text .exa-typed-cursor {
+            display: inline-block; width: 2px; height: 1em;
+            background: #64c8ff; margin-left: 2px;
+            animation: exa-blink 0.8s step-end infinite;
+            vertical-align: text-bottom;
+        }
+
+        .exa-chips {
+            display: flex; flex-wrap: wrap; gap: 0.4rem;
+        }
+        .exa-chip {
+            background: rgba(100, 200, 255, 0.08);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 20px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.78rem;
+            color: #64c8ff;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .exa-chip:hover {
+            background: rgba(100, 200, 255, 0.15);
+            border-color: rgba(100, 200, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Scroll indicator dot on orb */
+        .exa-scroll-dot {
+            position: absolute; top: -2px; right: -2px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #F5943A;
+            box-shadow: 0 0 8px rgba(245, 148, 58, 0.6);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .exa-guide-orb.has-tip .exa-scroll-dot { opacity: 1; }
+
+        @keyframes exa-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes exa-pulse-ring {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.15); }
+        }
+        @keyframes exa-spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes exa-blink {
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .exa-guide-orb { bottom: 1.25rem; left: 1.25rem; }
+            .exa-orb-core { width: 48px; height: 48px; }
+            .exa-orb-rings { width: 48px; height: 48px; }
+            .exa-orb-icon { font-size: 1.2rem; }
+            .exa-bubble { bottom: 5.5rem; left: 1.25rem; max-width: 280px; }
+            .exa-orb-label { display: none; }
+        }
     </style>
 
     <!-- Structured Data -->
@@ -2581,6 +2744,26 @@
             </div>
         </div>
     </footer>
+
+    <!-- EXA Floating AI Guide -->
+    <div class="exa-guide-orb hidden" id="exaGuideOrb" role="complementary" aria-label="EXA AI Guide">
+        <div class="exa-orb-core" id="exaOrbCore">
+            <span class="exa-orb-icon">◈</span>
+            <div class="exa-scroll-dot"></div>
+        </div>
+        <div class="exa-orb-rings">
+            <svg viewBox="0 0 64 64">
+                <circle class="exa-ring-outer" cx="32" cy="32" r="30"/>
+                <circle class="exa-ring-inner" cx="32" cy="32" r="26"/>
+            </svg>
+        </div>
+        <div class="exa-orb-label" id="exaOrbLabel">EXA — Your AI Guide</div>
+    </div>
+    <div class="exa-bubble hidden" id="exaBubble">
+        <button class="exa-bubble-close" id="exaBubbleClose" aria-label="Close guide">✕</button>
+        <div class="exa-bubble-text" id="exaBubbleText"></div>
+        <div class="exa-chips" id="exaChips"></div>
+    </div>
 
     <!-- AI Chat Widget -->
     <button class="chat-fab" id="chatFab" aria-label="Open AI Chat">
@@ -3414,6 +3597,213 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
                 recognition.onerror = () => { listening = false; micBtn.classList.remove('listening'); };
                 recognition.start();
             });
+        })();
+
+        // ===== EXA FLOATING AI GUIDE =====
+        (function() {
+            const orb = document.getElementById('exaGuideOrb');
+            const bubble = document.getElementById('exaBubble');
+            const bubbleText = document.getElementById('exaBubbleText');
+            const bubbleChips = document.getElementById('exaChips');
+            const bubbleClose = document.getElementById('exaBubbleClose');
+            if (!orb || !bubble) return;
+
+            const DISMISSED_KEY = 'exa_guide_dismissed';
+            const VISITED_KEY = 'exa_visits';
+
+            // Track visits
+            let visits = parseInt(localStorage.getItem(VISITED_KEY) || '0') + 1;
+            localStorage.setItem(VISITED_KEY, visits);
+
+            // If user dismissed permanently, don't show
+            if (localStorage.getItem(DISMISSED_KEY) === 'true') return;
+
+            // Section tips shown on scroll
+            const sectionTips = [
+                { id: 'featured', tip: 'This is our flagship — an AI space exploration game that adapts to your every move.' },
+                { id: 'products', tip: 'Browse all 9 products — games, AI tools, and utilities. Tap any card for details.' },
+                { id: 'ai-powers', tip: 'The AI engine behind everything we build — adaptive, predictive, real-time.' },
+                { id: 'blog', tip: 'Deep dives into the tech behind each product. Worth a read.' },
+                { id: 'contact', tip: 'Want early access or updates? Drop your email here.' }
+            ];
+
+            let currentTipIdx = -1;
+            let bubbleTimeout = null;
+            let typingInterval = null;
+            let introComplete = false;
+            let isBubbleOpen = false;
+
+            // Typed text effect
+            function typeText(text, el, callback) {
+                el.innerHTML = '';
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'exa-typed-cursor';
+                el.appendChild(cursor);
+                clearInterval(typingInterval);
+                typingInterval = setInterval(() => {
+                    if (i < text.length) {
+                        el.insertBefore(document.createTextNode(text[i]), cursor);
+                        i++;
+                    } else {
+                        clearInterval(typingInterval);
+                        setTimeout(() => { cursor.remove(); if (callback) callback(); }, 400);
+                    }
+                }, 25);
+            }
+
+            function showBubble(text, chips) {
+                clearTimeout(bubbleTimeout);
+                isBubbleOpen = true;
+                bubble.classList.remove('hidden');
+                typeText(text, bubbleText, () => {
+                    if (chips && chips.length) {
+                        bubbleChips.innerHTML = '';
+                        chips.forEach(c => {
+                            const btn = document.createElement('button');
+                            btn.className = 'exa-chip';
+                            btn.textContent = c.label;
+                            btn.addEventListener('click', () => {
+                                closeBubble();
+                                if (c.action) c.action();
+                            });
+                            bubbleChips.appendChild(btn);
+                        });
+                    } else {
+                        bubbleChips.innerHTML = '';
+                    }
+                });
+                // Auto-hide after 12 seconds
+                bubbleTimeout = setTimeout(() => { closeBubble(); }, 12000);
+            }
+
+            function closeBubble() {
+                clearInterval(typingInterval);
+                clearTimeout(bubbleTimeout);
+                bubble.classList.add('hidden');
+                isBubbleOpen = false;
+                orb.classList.remove('has-tip');
+            }
+
+            function scrollTo(id) {
+                const el = document.getElementById(id);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Intro sequence
+            function runIntro() {
+                const hour = new Date().getHours();
+                let greeting;
+                if (hour >= 5 && hour < 12) greeting = 'Good morning';
+                else if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
+                else if (hour >= 17 && hour < 21) greeting = 'Good evening';
+                else greeting = 'Hello';
+
+                let introText, introChips;
+                if (visits <= 1) {
+                    introText = `${greeting} — I'm EXA, your guide to EXAFABS. Let me show you what we're building.`;
+                    introChips = [
+                        { label: '🚀 See Flagship', action: () => scrollTo('featured') },
+                        { label: '🎮 Browse Products', action: () => scrollTo('products') },
+                        { label: '🤖 AI Tech', action: () => scrollTo('ai-powers') },
+                        { label: '💬 Try the Chat', action: () => document.getElementById('chatFab')?.click() }
+                    ];
+                } else if (visits === 2) {
+                    introText = `${greeting} — welcome back. We've been evolving. Take a look around.`;
+                    introChips = [
+                        { label: '🚀 Flagship', action: () => scrollTo('featured') },
+                        { label: '📖 Read Blog', action: () => scrollTo('blog') },
+                        { label: '💬 Chat with AI', action: () => document.getElementById('chatFab')?.click() }
+                    ];
+                } else {
+                    introText = `${greeting} — good to see you again. Anything I can help with?`;
+                    introChips = [
+                        { label: '🎮 Products', action: () => scrollTo('products') },
+                        { label: '📖 Blog', action: () => scrollTo('blog') },
+                        { label: '💬 Chat', action: () => document.getElementById('chatFab')?.click() }
+                    ];
+                }
+
+                setTimeout(() => {
+                    showBubble(introText, introChips);
+                    introComplete = true;
+                }, 800);
+            }
+
+            // Scroll-aware tips
+            let tipShown = {};
+            function checkScrollTips() {
+                if (!introComplete || isBubbleOpen) return;
+                const viewMid = window.innerHeight / 2;
+                for (let i = 0; i < sectionTips.length; i++) {
+                    const sec = document.getElementById(sectionTips[i].id);
+                    if (!sec || tipShown[sectionTips[i].id]) continue;
+                    const rect = sec.getBoundingClientRect();
+                    if (rect.top < viewMid && rect.bottom > viewMid) {
+                        if (currentTipIdx !== i) {
+                            currentTipIdx = i;
+                            orb.classList.add('has-tip');
+                            // Don't auto-open — just show the orange dot. User clicks orb to see tip.
+                        }
+                        return;
+                    }
+                }
+                orb.classList.remove('has-tip');
+            }
+
+            // Orb click — show current section tip or nav menu
+            orb.addEventListener('click', () => {
+                if (isBubbleOpen) {
+                    closeBubble();
+                    return;
+                }
+                if (currentTipIdx >= 0 && !tipShown[sectionTips[currentTipIdx].id]) {
+                    tipShown[sectionTips[currentTipIdx].id] = true;
+                    showBubble(sectionTips[currentTipIdx].tip, null);
+                    orb.classList.remove('has-tip');
+                } else {
+                    showBubble('Where would you like to go?', [
+                        { label: '🚀 Flagship', action: () => scrollTo('featured') },
+                        { label: '🎮 Products', action: () => scrollTo('products') },
+                        { label: '🤖 AI Tech', action: () => scrollTo('ai-powers') },
+                        { label: '📖 Blog', action: () => scrollTo('blog') },
+                        { label: '📬 Contact', action: () => scrollTo('contact') },
+                        { label: '💬 Chat', action: () => document.getElementById('chatFab')?.click() }
+                    ]);
+                }
+            });
+
+            bubbleClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeBubble();
+            });
+
+            // Long-press orb to permanently dismiss
+            let pressTimer;
+            orb.addEventListener('mousedown', () => {
+                pressTimer = setTimeout(() => {
+                    localStorage.setItem(DISMISSED_KEY, 'true');
+                    closeBubble();
+                    orb.classList.add('hidden');
+                }, 1500);
+            });
+            orb.addEventListener('mouseup', () => clearTimeout(pressTimer));
+            orb.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+
+            // Throttled scroll listener
+            let scrollTick = false;
+            window.addEventListener('scroll', () => {
+                if (!scrollTick) {
+                    scrollTick = true;
+                    requestAnimationFrame(() => { checkScrollTips(); scrollTick = false; });
+                }
+            });
+
+            // Launch — fade in after page loads
+            setTimeout(() => {
+                orb.classList.remove('hidden');
+                runIntro();
+            }, 1500);
         })();
     </script>
 </body>
