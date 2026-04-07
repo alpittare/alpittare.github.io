@@ -1741,23 +1741,6 @@
         .cmd-hint-bar { padding: 0.5rem 1rem; border-top: 1px solid rgba(100,200,255,0.06); font-size: 0.6rem; color: rgba(100,200,255,0.3); text-align: center; letter-spacing: 0.1em; text-transform: uppercase; }
 
         /* ===== VOICE MIC BUTTON ===== */
-        .chat-microphone {
-            background: transparent;
-            border: 1.5px solid rgba(100,200,255,0.3);
-            color: #64c8ff;
-            width: 2.25rem; height: 2.25rem;
-            border-radius: 0.45rem;
-            cursor: pointer; font-size: 0.9rem;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; transition: all 0.25s;
-        }
-        .chat-microphone:hover { background: rgba(100,200,255,0.08); border-color: rgba(100,200,255,0.6); box-shadow: 0 0 12px rgba(100,200,255,0.15); }
-        .chat-microphone.listening { animation: micPulse 1s infinite; border-color: #ff0055; color: #ff0055; }
-        @keyframes micPulse {
-            0%, 100% { box-shadow: 0 0 16px rgba(255,0,85,0.5); }
-            50% { box-shadow: 0 0 24px rgba(100,200,255,0.4); }
-        }
-        .chat-microphone:disabled { opacity: 0.3; cursor: not-allowed; }
 
         @media (max-width: 768px) {
             .greeting-banner { font-size: 0.95rem; }
@@ -2821,7 +2804,6 @@
         </div>
         <div class="chat-input-area">
             <textarea class="chat-input" id="chatInput" placeholder="Transmit your query..." rows="1"></textarea>
-            <button class="chat-microphone" id="chatMicrophone" aria-label="Voice input">🎤</button>
             <button class="chat-send" id="chatSend" aria-label="Send message">⟩</button>
         </div>
     </div>
@@ -3569,35 +3551,6 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
             });
         })();
 
-        // ===== FEATURE 6: VOICE INPUT =====
-        (function() {
-            const micBtn = document.getElementById('chatMicrophone');
-            const chatInput = document.getElementById('chatInput');
-            if (!micBtn || !chatInput) return;
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) { micBtn.style.display = 'none'; return; }
-            let recognition = null;
-            let listening = false;
-            micBtn.addEventListener('click', () => {
-                if (listening) {
-                    recognition.stop();
-                    return;
-                }
-                recognition = new SpeechRecognition();
-                recognition.lang = 'en-US';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
-                recognition.onstart = () => { listening = true; micBtn.classList.add('listening'); };
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    chatInput.value += (chatInput.value ? ' ' : '') + transcript;
-                    chatInput.dispatchEvent(new Event('input'));
-                };
-                recognition.onend = () => { listening = false; micBtn.classList.remove('listening'); };
-                recognition.onerror = () => { listening = false; micBtn.classList.remove('listening'); };
-                recognition.start();
-            });
-        })();
 
         // ===== EXA FLOATING AI GUIDE =====
         (function() {
