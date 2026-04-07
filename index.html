@@ -2938,7 +2938,7 @@
     </div>
 
     <script>
-        // ===== REUSABLE PARTICLE CONSTELLATION ENGINE =====
+        // ===== REUSABLE PARTICLE CONSTELLATION ENGINE v2 — 4K DEPTH =====
         function initParticles(section, opts) {
             if (!section) return;
             const canvas = document.createElement('canvas');
@@ -2950,29 +2950,68 @@
             const density = opts.density || 15000;
             const maxCount = opts.maxCount || 100;
             const connDist = opts.connectionDist || 140;
-            const alphaRange = opts.alphaRange || [0.25, 0.5];
             const speed = opts.speed || 0.35;
             const lineOpacity = opts.lineOpacity || 0.12;
             const colors = opts.colors || [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+            // Depth layers: far (tiny dim), mid (normal), near (bright large)
+            const depthLayers = opts.depthLayers || [
+                { weight: 0.5, radiusRange: [0.3, 0.8], alphaRange: [0.15, 0.3], speedMul: 0.4, glowMul: 1.5 },
+                { weight: 0.35, radiusRange: [0.9, 1.8], alphaRange: [0.35, 0.6], speedMul: 0.7, glowMul: 2.5 },
+                { weight: 0.15, radiusRange: [1.8, 3.0], alphaRange: [0.5, 0.85], speedMul: 1.0, glowMul: 4 }
+            ];
+            // Static background stars (tiny non-moving dots for density)
+            const staticDensity = opts.staticDensity || 3000;
+            const staticMax = opts.staticMax || 300;
 
             let particles = [];
+            let staticStars = [];
             let mouse = { x: -1000, y: -1000 };
+
+            function pickLayer() {
+                const r = Math.random();
+                let cumulative = 0;
+                for (const l of depthLayers) {
+                    cumulative += l.weight;
+                    if (r <= cumulative) return l;
+                }
+                return depthLayers[0];
+            }
 
             function createParticles() {
                 particles = [];
+                staticStars = [];
                 const w = canvas.width, h = canvas.height;
+
+                // Static background stars — tiny, fixed, lots of them
+                const sCount = Math.min(Math.floor((w * h) / staticDensity), staticMax);
+                for (let i = 0; i < sCount; i++) {
+                    staticStars.push({
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        radius: 0.2 + Math.random() * 0.5,
+                        alpha: 0.08 + Math.random() * 0.2,
+                        twinklePhase: Math.random() * Math.PI * 2,
+                        twinkleSpeed: 0.002 + Math.random() * 0.006,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+
+                // Moving constellation particles with depth
                 const count = Math.min(Math.floor((w * h) / density), maxCount);
                 for (let i = 0; i < count; i++) {
+                    const layer = pickLayer();
                     particles.push({
                         x: Math.random() * w,
                         y: Math.random() * h,
-                        vx: (Math.random() - 0.5) * speed,
-                        vy: (Math.random() - 0.5) * speed,
-                        radius: 0.8 + Math.random() * 1.8,
+                        vx: (Math.random() - 0.5) * speed * layer.speedMul,
+                        vy: (Math.random() - 0.5) * speed * layer.speedMul,
+                        radius: layer.radiusRange[0] + Math.random() * (layer.radiusRange[1] - layer.radiusRange[0]),
                         color: colors[Math.floor(Math.random() * colors.length)],
-                        alpha: alphaRange[0] + Math.random() * (alphaRange[1] - alphaRange[0]),
+                        alpha: layer.alphaRange[0] + Math.random() * (layer.alphaRange[1] - layer.alphaRange[0]),
                         pulsePhase: Math.random() * Math.PI * 2,
-                        pulseSpeed: 0.006 + Math.random() * 0.012
+                        pulseSpeed: 0.004 + Math.random() * 0.014,
+                        glowMul: layer.glowMul,
+                        depth: layer.speedMul
                     });
                 }
             }
@@ -2994,65 +3033,90 @@
                 ctx.clearRect(0, 0, w, h);
                 frame++;
 
+                // Static background stars with subtle twinkle
+                for (const s of staticStars) {
+                    const twinkle = 0.5 + Math.sin(frame * s.twinkleSpeed + s.twinklePhase) * 0.5;
+                    const [r, g, b] = s.color;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r},${g},${b},${s.alpha * twinkle})`;
+                    ctx.fill();
+                }
+
+                // Update moving particles
                 for (const p of particles) {
                     p.x += p.vx;
                     p.y += p.vy;
                     const dx = p.x - mouse.x, dy = p.y - mouse.y;
                     const md = Math.sqrt(dx * dx + dy * dy);
-                    if (md < 100 && md > 0) {
-                        p.vx += (dx / md) * ((100 - md) / 100) * 0.06;
-                        p.vy += (dy / md) * ((100 - md) / 100) * 0.06;
+                    if (md < 120 && md > 0) {
+                        const force = ((120 - md) / 120) * 0.05 * p.depth;
+                        p.vx += (dx / md) * force;
+                        p.vy += (dy / md) * force;
                     }
-                    p.vx *= 0.998; p.vy *= 0.998;
+                    p.vx *= 0.997; p.vy *= 0.997;
                     if (p.x < -10) p.x = w + 10;
                     if (p.x > w + 10) p.x = -10;
                     if (p.y < -10) p.y = h + 10;
                     if (p.y > h + 10) p.y = -10;
                 }
 
-                // Connections
+                // Constellation connections — only between mid/near particles
                 for (let i = 0; i < particles.length; i++) {
+                    if (particles[i].depth < 0.5) continue;
                     for (let j = i + 1; j < particles.length; j++) {
+                        if (particles[j].depth < 0.5) continue;
                         const a = particles[i], b = particles[j];
                         const dx = a.x - b.x, dy = a.y - b.y;
                         const dist = Math.sqrt(dx * dx + dy * dy);
                         if (dist < connDist) {
-                            const op = (1 - dist / connDist) * lineOpacity;
+                            const op = (1 - dist / connDist) * lineOpacity * Math.min(a.depth, b.depth);
                             ctx.beginPath();
                             ctx.moveTo(a.x, a.y);
                             ctx.lineTo(b.x, b.y);
                             ctx.strokeStyle = `rgba(${(a.color[0]+b.color[0])>>1},${(a.color[1]+b.color[1])>>1},${(a.color[2]+b.color[2])>>1},${op})`;
-                            ctx.lineWidth = 0.5;
+                            ctx.lineWidth = 0.4 + a.depth * 0.3;
                             ctx.stroke();
                         }
                     }
                 }
 
-                // Particles with glow
+                // Draw particles with depth-aware glow
                 for (const p of particles) {
-                    const pulse = 0.7 + Math.sin(frame * p.pulseSpeed + p.pulsePhase) * 0.3;
+                    const pulse = 0.6 + Math.sin(frame * p.pulseSpeed + p.pulsePhase) * 0.4;
                     const [r, g, b] = p.color;
-                    const gr = p.radius * 3 * pulse;
+                    // Glow halo
+                    const gr = p.radius * p.glowMul * pulse;
                     const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
-                    grad.addColorStop(0, `rgba(${r},${g},${b},${p.alpha * pulse * 0.35})`);
+                    grad.addColorStop(0, `rgba(${r},${g},${b},${p.alpha * pulse * 0.3})`);
+                    grad.addColorStop(0.4, `rgba(${r},${g},${b},${p.alpha * pulse * 0.08})`);
                     grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
                     ctx.fillStyle = grad;
                     ctx.fill();
+                    // Core dot
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.radius * pulse, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha * pulse})`;
                     ctx.fill();
+                    // Bright center for near particles
+                    if (p.depth >= 1.0 && p.radius > 2) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius * 0.3 * pulse, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(255,255,255,${p.alpha * pulse * 0.5})`;
+                        ctx.fill();
+                    }
                 }
 
-                // Mouse glow
+                // Mouse glow — larger, more visible
                 if (mouse.x > 0 && mouse.y > 0) {
-                    const mg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 80);
-                    mg.addColorStop(0, 'rgba(155,48,255,0.05)');
+                    const mg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
+                    mg.addColorStop(0, 'rgba(100,200,255,0.06)');
+                    mg.addColorStop(0.5, 'rgba(155,48,255,0.03)');
                     mg.addColorStop(1, 'rgba(155,48,255,0)');
                     ctx.beginPath();
-                    ctx.arc(mouse.x, mouse.y, 80, 0, Math.PI * 2);
+                    ctx.arc(mouse.x, mouse.y, 120, 0, Math.PI * 2);
                     ctx.fillStyle = mg;
                     ctx.fill();
                 }
@@ -3076,36 +3140,52 @@
         }
 
         // ===== APPLY PARTICLES TO ALL SECTIONS =====
-        // Hero — densest, most vibrant
+        // Hero — 4K dense, vivid, 3 depth layers
         initParticles(document.querySelector('section.hero'), {
-            density: 12000, maxCount: 120, connectionDist: 150,
-            alphaRange: [0.3, 0.55], speed: 0.4, lineOpacity: 0.15
+            density: 8000, maxCount: 180, connectionDist: 160,
+            speed: 0.35, lineOpacity: 0.18,
+            staticDensity: 2000, staticMax: 400,
+            depthLayers: [
+                { weight: 0.5, radiusRange: [0.3, 0.7], alphaRange: [0.2, 0.35], speedMul: 0.3, glowMul: 1.5 },
+                { weight: 0.35, radiusRange: [0.8, 1.8], alphaRange: [0.4, 0.65], speedMul: 0.7, glowMul: 3 },
+                { weight: 0.15, radiusRange: [2.0, 3.2], alphaRange: [0.55, 0.9], speedMul: 1.0, glowMul: 5 }
+            ]
         });
-        // Products — medium density
+        // Products — rich depth
         initParticles(document.querySelector('section.products'), {
-            density: 25000, maxCount: 60, connectionDist: 130,
-            alphaRange: [0.15, 0.35], speed: 0.25, lineOpacity: 0.08
+            density: 15000, maxCount: 100, connectionDist: 140,
+            speed: 0.25, lineOpacity: 0.12,
+            staticDensity: 3000, staticMax: 250,
+            depthLayers: [
+                { weight: 0.55, radiusRange: [0.2, 0.6], alphaRange: [0.12, 0.28], speedMul: 0.35, glowMul: 1.5 },
+                { weight: 0.35, radiusRange: [0.7, 1.5], alphaRange: [0.3, 0.5], speedMul: 0.65, glowMul: 2.5 },
+                { weight: 0.1, radiusRange: [1.6, 2.5], alphaRange: [0.45, 0.7], speedMul: 1.0, glowMul: 3.5 }
+            ]
         });
-        // About — subtle
-        initParticles(document.querySelector('section.about'), {
-            density: 30000, maxCount: 45, connectionDist: 120,
-            alphaRange: [0.12, 0.3], speed: 0.2, lineOpacity: 0.07
+        // AI Powers
+        initParticles(document.querySelector('.ai-powers'), {
+            density: 20000, maxCount: 70, connectionDist: 130,
+            speed: 0.22, lineOpacity: 0.1,
+            staticDensity: 3500, staticMax: 200
         });
-        // Blog — medium-light
+        // Blog
         initParticles(document.querySelector('section.blog'), {
-            density: 28000, maxCount: 50, connectionDist: 125,
-            alphaRange: [0.15, 0.3], speed: 0.22, lineOpacity: 0.08
+            density: 20000, maxCount: 65, connectionDist: 130,
+            speed: 0.22, lineOpacity: 0.1,
+            staticDensity: 3500, staticMax: 200
         });
-        // Contact — warm, subtle
+        // Contact — warm tones
         initParticles(document.querySelector('section.contact'), {
-            density: 30000, maxCount: 40, connectionDist: 110,
-            alphaRange: [0.1, 0.25], speed: 0.18, lineOpacity: 0.06,
-            colors: [[201,64,128],[245,148,58],[155,48,255]]
+            density: 22000, maxCount: 55, connectionDist: 120,
+            speed: 0.2, lineOpacity: 0.08,
+            staticDensity: 4000, staticMax: 180,
+            colors: [[201,64,128],[245,148,58],[155,48,255],[100,200,255]]
         });
-        // Footer — very subtle
+        // Footer — subtle but present
         initParticles(document.querySelector('footer'), {
-            density: 40000, maxCount: 30, connectionDist: 100,
-            alphaRange: [0.08, 0.2], speed: 0.15, lineOpacity: 0.05
+            density: 30000, maxCount: 40, connectionDist: 110,
+            speed: 0.15, lineOpacity: 0.06,
+            staticDensity: 5000, staticMax: 120
         });
 
         // ===== NULL-SAFE SELECTORS =====
