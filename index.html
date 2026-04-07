@@ -3432,8 +3432,17 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
                         })
                     });
 
-                    if (!res.ok) throw new Error('API error');
                     const data = await res.json();
+
+                    if (res.status === 429) {
+                        typing.remove();
+                        addMessage(data.error || "You've reached the chat limit. Please try again later!", 'bot');
+                        chatHistory.pop(); // remove the user message that was rate limited
+                        chatSend.disabled = false;
+                        return;
+                    }
+
+                    if (!res.ok) throw new Error('API error');
                     const reply = data.reply || 'Sorry, I had trouble responding. Please try again.';
 
                     typing.remove();
