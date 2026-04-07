@@ -2713,24 +2713,29 @@
             <div class="contact-header">
                 <h2>Ready to Experience AI?</h2>
             </div>
-            <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+            <form class="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
                 <input type="hidden" name="access_key" value="1f3468fc-ab40-4549-b282-4ac0bf46ad88">
                 <input type="hidden" name="subject" value="New Inquiry from EXAFABS.AI">
                 <input type="hidden" name="from_name" value="EXAFABS.AI">
+                <!-- Honeypot field for bot detection (hidden, should remain empty) -->
+                <input type="text" id="honeypot" name="honeypot" style="display:none;position:absolute;left:-9999px;" tabindex="-1" autocomplete="off">
 
                 <div class="form-group">
                     <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" placeholder="John Doe" required autocomplete="name">
+                    <input type="text" id="name" name="name" placeholder="John Doe" required autocomplete="name" maxlength="100">
+                    <span class="form-error" style="display:none;color:#ff6b7a;font-size:0.85rem;margin-top:0.3rem;"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" maxlength="254">
+                    <span class="form-error" style="display:none;color:#ff6b7a;font-size:0.85rem;margin-top:0.3rem;"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="message">Message</label>
-                    <textarea id="message" name="message" placeholder="Tell us what you're interested in..." required></textarea>
+                    <textarea id="message" name="message" placeholder="Tell us what you're interested in..." required maxlength="1000"></textarea>
+                    <span class="form-error" style="display:none;color:#ff6b7a;font-size:0.85rem;margin-top:0.3rem;"></span>
                 </div>
 
                 <button type="submit" class="btn-submit">Notify Me</button>
@@ -3480,13 +3485,154 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
         const contactForm = document.querySelector('.contact-form');
         const formStatus = document.getElementById('formStatus');
         if (contactForm && formStatus) {
+            // Form validation configuration
+            const FORM_LIMITS = {
+                name: { maxLength: 100, minLength: 2 },
+                email: { maxLength: 254, minLength: 5 },
+                message: { maxLength: 1000, minLength: 5 }
+            };
+            const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const FORM_SUBMIT_LIMIT = 3; // Max 3 submissions per minute
+            let formSubmitTimestamps = [];
+
+            // Helper: Validate email format
+            function isValidEmail(email) {
+                return EMAIL_REGEX.test(email.trim());
+            }
+
+            // Helper: Check rate limit on form submission
+            function isFormRateLimited() {
+                const now = Date.now();
+                const oneMinuteAgo = now - 60000;
+                // Remove timestamps older than 1 minute
+                formSubmitTimestamps = formSubmitTimestamps.filter(ts => ts > oneMinuteAgo);
+                if (formSubmitTimestamps.length >= FORM_SUBMIT_LIMIT) {
+                    return true;
+                }
+                return false;
+            }
+
+            // Helper: Display validation error for a field
+            function showFieldError(fieldId, message) {
+                const field = document.getElementById(fieldId);
+                const errorSpan = field.parentElement.querySelector('.form-error');
+                if (errorSpan) {
+                    errorSpan.textContent = message;
+                    errorSpan.style.display = 'block';
+                }
+                field.style.borderColor = '#ff6b7a';
+                return false;
+            }
+
+            // Helper: Clear field error
+            function clearFieldError(fieldId) {
+                const field = document.getElementById(fieldId);
+                const errorSpan = field.parentElement.querySelector('.form-error');
+                if (errorSpan) {
+                    errorSpan.style.display = 'none';
+                }
+                field.style.borderColor = '';
+            }
+
+            // Validate all form fields
+            function validateForm() {
+                let isValid = true;
+
+                // Validate honeypot (should be empty)
+                const honeypot = document.getElementById('honeypot');
+                if (honeypot && honeypot.value.trim() !== '') {
+                    console.warn('Honeypot field filled - bot detected');
+                    isValid = false;
+                }
+
+                // Validate name
+                const name = document.getElementById('name');
+                const nameValue = name.value.trim();
+                if (nameValue.length < FORM_LIMITS.name.minLength) {
+                    showFieldError('name', 'Name must be at least 2 characters');
+                    isValid = false;
+                } else if (nameValue.length > FORM_LIMITS.name.maxLength) {
+                    showFieldError('name', 'Name must be 100 characters or less');
+                    isValid = false;
+                } else {
+                    clearFieldError('name');
+                }
+
+                // Validate email
+                const email = document.getElementById('email');
+                const emailValue = email.value.trim();
+                if (emailValue.length < FORM_LIMITS.email.minLength) {
+                    showFieldError('email', 'Email is required');
+                    isValid = false;
+                } else if (emailValue.length > FORM_LIMITS.email.maxLength) {
+                    showFieldError('email', 'Email must be 254 characters or less');
+                    isValid = false;
+                } else if (!isValidEmail(emailValue)) {
+                    showFieldError('email', 'Please enter a valid email address');
+                    isValid = false;
+                } else {
+                    clearFieldError('email');
+                }
+
+                // Validate message
+                const message = document.getElementById('message');
+                const messageValue = message.value.trim();
+                if (messageValue.length < FORM_LIMITS.message.minLength) {
+                    showFieldError('message', 'Message must be at least 5 characters');
+                    isValid = false;
+                } else if (messageValue.length > FORM_LIMITS.message.maxLength) {
+                    showFieldError('message', 'Message must be 1000 characters or less');
+                    isValid = false;
+                } else {
+                    clearFieldError('message');
+                }
+
+                return isValid;
+            }
+
+            // Real-time validation on blur
+            document.getElementById('name').addEventListener('blur', () => {
+                const nameValue = document.getElementById('name').value.trim();
+                if (nameValue.length > 0) validateForm();
+            });
+            document.getElementById('email').addEventListener('blur', () => {
+                const emailValue = document.getElementById('email').value.trim();
+                if (emailValue.length > 0) validateForm();
+            });
+            document.getElementById('message').addEventListener('blur', () => {
+                const messageValue = document.getElementById('message').value.trim();
+                if (messageValue.length > 0) validateForm();
+            });
+
+            // Form submission handler
             contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                formStatus.style.display = 'none';
+
+                // Client-side validation
+                if (!validateForm()) {
+                    formStatus.textContent = 'Please fix the errors above before submitting.';
+                    formStatus.style.color = 'var(--accent-pink)';
+                    formStatus.style.display = 'block';
+                    return;
+                }
+
+                // Check rate limit
+                if (isFormRateLimited()) {
+                    formStatus.textContent = 'Too many submissions. Please wait a minute before trying again.';
+                    formStatus.style.color = 'var(--accent-pink)';
+                    formStatus.style.display = 'block';
+                    return;
+                }
+
+                // Record submission timestamp
+                formSubmitTimestamps.push(Date.now());
+
                 const submitBtn = contactForm.querySelector('.btn-submit');
                 const originalText = submitBtn.textContent;
                 submitBtn.textContent = 'Sending...';
                 submitBtn.disabled = true;
-                formStatus.style.display = 'none';
+
                 try {
                     const res = await fetch('https://api.web3forms.com/submit', {
                         method: 'POST',
@@ -3498,6 +3644,7 @@ All games are available on Web (PWA), iOS, and Android. Built by a team of AI an
                         formStatus.style.color = '#64c8ff';
                         formStatus.style.display = 'block';
                         contactForm.reset();
+                        formSubmitTimestamps = []; // Reset rate limit on success
                     } else {
                         throw new Error(data.message || 'Submission failed');
                     }

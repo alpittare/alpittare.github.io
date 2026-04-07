@@ -1,6 +1,12 @@
 // Vercel Serverless Function — proxies chat to Anthropic Claude API
 // Requires ANTHROPIC_API_KEY environment variable set in Vercel dashboard
 
+// ── Hardcoded system prompt (cannot be overridden by client) ──
+const SYSTEM_PROMPT = 'You are EXA, a helpful AI assistant for EXAFABS.AI website visitors. Keep responses concise and friendly. You help with questions about EXAFABS products, AI games, and technology.';
+
+// ── CORS whitelist ──
+const CORS_WHITELIST = ['https://exafabs.ai', 'https://www.exafabs.ai'];
+
 // ── In-memory rate limiter (resets per cold start, ~5-15 min on Vercel) ──
 // For production, use Vercel KV or Upstash Redis for persistent limits.
 const rateLimitMap = new Map(); // IP → { count, resetAt }
@@ -14,6 +20,17 @@ function getRealIP(req) {
         || req.headers['x-real-ip']
         || req.socket?.remoteAddress
         || 'unknown';
+}
+
+function sanitizeInput(str) {
+    if (typeof str !== 'string') return '';
+    // Strip dangerous HTML patterns and event handlers
+    return str
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<img\b[^<]*>/gi, '')
+        .replace(/<iframe\b[^<]*>/gi, '')
+        .replace(/on(error|click|load|mouseover|focus|blur)\s*=/gi, '')
+        .replace(/<[^>]*>/g, '');
 }
 
 function checkRateLimit(ip) {
@@ -45,6 +62,10 @@ function checkRateLimit(ip) {
     return { limited: false };
 }
 
+function isOriginAllowed(origin) {
+    return origin && CORS_WHITELIST.includes(origin);
+}
+
 // Clean up stale entries every 5 minutes to prevent memory leak
 setInterval(() => {
     const now = Date.now();
@@ -57,15 +78,20 @@ setInterval(() => {
 }, 300000);
 
 export default async function handler(req, res) {
-    // CORS + method check
+    // ── CORS handling with origin whitelist validation ──
+    const origin = req.headers.origin;
+    if (isOriginAllowed(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+
     if (req.method === 'OPTIONS') {
-        res.setHeader('Access-Control-Allow-Origin', 'https://exafabs.ai');
         res.setHeader('Access-Control-Allow-Methods', 'POST');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
         return res.status(200).end();
     }
 
     if (req.method !== 'POST') {
+        res.setHeader('Access-Control-Allow-Origin', origin && isOriginAllowed(origin) ? origin : '');
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
@@ -82,24 +108,27 @@ export default async function handler(req, res) {
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-        return res.status(500).json({ error: 'API key not configured' });
+        return res.status(500).json({ error: 'Service temporarily unavailable' });
     }
 
     try {
-        const { messages, system } = req.body;
+        const { messages } = req.body;
 
         if (!messages || !Array.isArray(messages) || messages.length === 0) {
             return res.status(400).json({ error: 'Messages required' });
         }
 
-        // Validate message content — block excessively long inputs
+        // Validate and sanitize message content — block excessively long inputs
         const lastMsg = messages[messages.length - 1];
         if (lastMsg && lastMsg.content && lastMsg.content.length > 500) {
             return res.status(400).json({ error: 'Message too long. Please keep it under 500 characters.' });
         }
 
-        // Trim conversation history to last 6 messages to control token usage
-        const trimmedMessages = messages.slice(-6);
+        // Sanitize all message content to prevent XSS
+        const trimmedMessages = messages.slice(-6).map(msg => ({
+            ...msg,
+            content: sanitizeInput(msg.content)
+        }));
 
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
@@ -111,14 +140,14 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: 'claude-haiku-4-5-20251001',
                 max_tokens: 200,
-                system: system || 'You are EXA, a helpful AI assistant for EXAFABS.AI website visitors. Keep responses concise and friendly. You help with questions about EXAFABS products, AI games, and technology.',
+                system: SYSTEM_PROMPT,
                 messages: trimmedMessages
             })
         });
 
         if (!response.ok) {
-            const errData = await response.text();
-            console.error('Anthropic API error:', response.status, errData);
+            // Don't log raw error data; just log generic message
+            console.error('Anthropic API request failed with status:', response.status);
             return res.status(502).json({ error: 'AI service unavailable' });
         }
 
@@ -131,9 +160,15 @@ export default async function handler(req, res) {
         res.setHeader('X-RateLimit-Remaining', Math.max(0, RATE_LIMIT_MAX - (minuteEntry?.count || 0)));
         res.setHeader('X-RateLimit-Daily-Remaining', Math.max(0, DAILY_LIMIT_MAX - (dailyEntry?.count || 0)));
 
+        // Ensure CORS header is set on successful response
+        if (isOriginAllowed(origin)) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+
         return res.status(200).json({ reply });
     } catch (err) {
-        console.error('Chat API error:', err);
+        // Don't leak error details; log generic message only
+        console.error('Chat API error occurred');
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
