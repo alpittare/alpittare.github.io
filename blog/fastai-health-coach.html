@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting | ExaFabs</title>
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://exafabs.ai/blog/fastai-health-coach.html">
+    <meta property="og:image" content="https://exafabs.ai/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://exafabs.ai/og-image.png">
+    <link rel="canonical" href="https://exafabs.ai/blog/fastai-health-coach.html">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #240331;
+            color: #fad7ff;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img, svg {
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        canvas {
+            image-rendering: crisp-edges;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: #8a7a94;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #C94080;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(123, 47, 190, 0.15), rgba(201, 64, 128, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(155, 48, 255, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #e0c3ff, #C94080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: #8a7a94;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-badge {
+            background: rgba(155, 48, 255, 0.2);
+            color: #dcb8ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(155, 48, 255, 0.3);
+        }
+
+        /* Article Container */
+        .article-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #fad7ff;
+            background: linear-gradient(135deg, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        article h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            color: #dcb8ff;
+        }
+
+        article p {
+            font-size: 18px;
+            color: #fad7ff;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        article ul, article ol {
+            margin: 24px 0 24px 24px;
+            font-size: 18px;
+            color: #fad7ff;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        article strong {
+            color: #fad7ff;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #dcb8ff;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #8a7a94;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: rgba(155, 48, 255, 0.08);
+            border-left: 4px solid #9B30FF;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 16px;
+        }
+
+        .feature-list strong {
+            color: #C94080;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(201, 64, 128, 0.08);
+            border: 1px solid rgba(201, 64, 128, 0.15);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(155, 48, 255, 0.1), rgba(201, 64, 128, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 48px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 24px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            color: #fad7ff;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(155, 48, 255, 0.3);
+        }
+
+        /* GitHub Link */
+        .github-link {
+            display: inline-block;
+            margin-left: 12px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .github-link:hover {
+            background: rgba(100, 200, 255, 0.08);
+            border-color: rgba(100, 200, 255, 0.6);
+        }
+
+        /* Related Posts Section */
+        .related-posts {
+            background: rgba(155, 48, 255, 0.05);
+            border: 1px solid rgba(155, 48, 255, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .related-posts h3 {
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .related-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-post-card {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #fad7ff;
+            transition: all 0.3s ease;
+        }
+
+        .related-post-card:hover {
+            border-color: rgba(201, 64, 128, 0.4);
+            background: rgba(201, 64, 128, 0.1);
+        }
+
+        .related-post-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #dcb8ff;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(50, 16, 62, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px;
+            text-align: center;
+            color: #8a7a94;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+
+            z-index: 2;
+
+            position: relative;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: #8a7a94;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #C94080;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 50px 24px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .meta-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .article-container {
+                padding: 40px 24px;
+            }
+
+            article h2 {
+                font-size: 26px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            article p, article ul, article ol {
+                font-size: 16px;
+            }
+
+            .code-block {
+                padding: 16px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+                margin: 40px 0;
+            }
+
+            .related-posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EXAFABS.AI</div>
+        <a href="../index.html" class="nav-link">← Back to Home</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting</h1>
+            <div class="meta-info">
+                <div class="meta-badge">
+                    <span>📖 10 min read</span>
+                </div>
+                <div class="meta-badge">
+                    <span class="category-badge">AI / Health</span>
+                </div>
+                <div class="meta-badge">
+                    <span>2026</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article -->
+    <div class="article-container">
+        <article>
+            <!-- Introduction -->
+            <h2>Introduction</h2>
+            <p>FastAI Health Coach is EXAFABS' first health and wellness app—an AI-powered intermittent fasting companion built with React Native (Expo SDK 54) and Claude AI. Rather than a generic timer app, FastAI combines metabolic zone tracking, personalized AI coaching, meal photo analysis, and machine learning weight predictions to deliver a truly intelligent fasting experience.</p>
+            <p>This blog explores the architecture behind FastAI, how Claude AI powers personalized coaching conversations, and how machine learning enables users to visualize and predict their weight loss journey.</p>
+
+            <!-- The Problem: Why Intermittent Fasting is Hard to Sustain -->
+            <h2>The Problem: Why Intermittent Fasting is Hard to Sustain</h2>
+            <p>Intermittent fasting is scientifically proven to be effective for weight loss and metabolic health. But for most people, it's difficult to maintain. Here's why:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Generic Timers Aren't Enough:</strong> Standard fasting apps simply count down hours. They offer no guidance on when to eat, what to eat, or how your body is responding.</li>
+                    <li><strong>No Personalized Coaching:</strong> Every person's body, lifestyle, and goals are different. A one-size-fits-all fasting schedule leads to burnout and failure.</li>
+                    <li><strong>Tedious Manual Tracking:</strong> Logging meals by searching food databases is friction-heavy and reduces adherence.</li>
+                    <li><strong>No Progress Visibility:</strong> Users weigh themselves and hope for the best, with no data-driven understanding of their trajectory or what to adjust.</li>
+                    <li><strong>Missing Context:</strong> Apps don't connect the dots: your current metabolic state, your recent meals, your stress, your sleep—all factors that affect fasting success.</li>
+                </ul>
+            </div>
+
+            <!-- Our AI-First Solution -->
+            <h2>Our AI-First Solution: Every Feature Powered by AI</h2>
+            <p>FastAI flips the script by building every core feature around AI. Instead of a timer with bolted-on features, we designed the app's architecture so that Claude AI, machine learning, and computer vision are the foundation, not afterthoughts.</p>
+
+            <h3>Smart Fasting Timer with Metabolic Zone Tracking</h3>
+            <p>The timer displays your current metabolic state across four phases. As you fast, your body transitions through distinct metabolic zones, each with unique physiological effects:</p>
+            <ul>
+                <li><strong>Fed State (0–2 hours):</strong> Your body is processing the meal you just ate. Insulin is elevated, digestion is active.</li>
+                <li><strong>Fat Burning (2–8 hours):</strong> Glycogen reserves are depleting. Your body begins mobilizing fat for energy.</li>
+                <li><strong>Ketosis (8–16 hours):</strong> Your liver produces ketones from fat, and they become your brain's primary fuel source. This is the metabolic "sweet spot" for many fasters.</li>
+                <li><strong>Autophagy (16+ hours):</strong> Cellular renewal accelerates. Your body begins clearing damaged cells and regenerating cellular components.</li>
+            </ul>
+            <p>FastAI displays which zone you're currently in with real-time visual feedback, helping you understand the science of your fast and stay motivated to reach deeper phases.</p>
+
+            <h3>AI Coach: Claude-Powered Personalized Conversations</h3>
+            <p>The core differentiator is the AI Coach—a conversational assistant powered by Claude API from Anthropic. Unlike a chatbot that regurgitates generic tips, Claude receives your full fasting context and provides truly personalized advice.</p>
+
+            <div class="highlight-box">
+                <p>When you talk to FastAI's Coach, Claude has access to: your complete fasting history, your weight trend over time, all logged meals and their macronutrients, your current metabolic zone, your stated goals (e.g., "lose 10 pounds in 8 weeks"), and any health conditions you've shared. This context transforms the conversation from generic ("drink more water") to genuinely personalized ("you've been breaking your fast with high-carb foods on Tuesdays; try having protein and fat first to stabilize blood sugar and reduce afternoon cravings").</p>
+            </div>
+
+            <p>The Claude integration uses Convex serverless backend for reliable API calls. Conversations are streamed in real-time, and the app gracefully degrades if the network is slow or offline (falling back to cached suggestions or a simpler Q&A mode).</p>
+
+            <h3>Meal Photo Analysis: AI Computer Vision</h3>
+            <p>Manually logging meals kills motivation. FastAI solves this with AI-powered meal photo analysis: snap a picture of your food, and the app automatically identifies the dish, estimates portion size, and calculates calories, macronutrients, and micronutrients.</p>
+            <p>This feature is built on Claude's vision capabilities, combined with a lightweight food database for standardized portion estimates. Users can refine the AI's guess (e.g., "that's actually a 6-inch sub, not 8-inch"), and the corrected data feeds into both their meal log and the AI Coach's next conversation.</p>
+
+            <h3>ML Weight Predictions: Forecast Your Progress</h3>
+            <p>One of FastAI's most powerful features is the weight prediction graph. We trained a lightweight machine learning model on your personal data (fasting duration, meal timing, calories, exercise) to forecast your weight trajectory over the next 4–12 weeks.</p>
+
+            <div class="code-block">
+                <div class="code-label">Prediction Model Architecture (Pseudocode)</div>
+                <code>class WeightPredictionModel:
+    def __init__(self):
+        # Lightweight linear regression + seasonal decomposition
+        self.historical_weights = []  # daily weigh-ins
+        self.fasting_hours = []       # daily fasting duration
+        self.calories_burned = []     # daily exercise/TDEE data
+        self.calories_logged = []     # daily meal intake
+
+    def train(self):
+        """Fit model to user's personal data (30+ data points)"""
+        X = [fasting_hrs, cal_burned, cal_logged, day_of_week]
+        y = historical_weights
+        # Use ridge regression to avoid overfitting on small datasets
+        self.model.fit(X, y)
+
+    def predict(self, future_days=28):
+        """Generate 4-week weight forecast"""
+        predictions = []
+        for day in range(future_days):
+            # Project forward: fasting hours, typical calorie burn, logged meals
+            X_future = self._project_features(day)
+            weight = self.model.predict(X_future)
+            predictions.append(weight)
+        return predictions
+</code>
+            </div>
+
+            <p>The model is trained on 30+ data points from the user's own history, not population-wide averages. This makes predictions remarkably accurate and personally motivating: users see "at your current pace, you'll hit your goal by March 15th" with a confidence interval. If the user isn't on track, they can ask Claude, "Why am I not losing weight as fast as I expected?" and Claude can analyze their recent meals, fasting windows, and exercise to identify friction points.</p>
+
+            <h3>Adaptive Fasting Schedules</h3>
+            <p>FastAI doesn't force a rigid 16:8 schedule on everyone. The app uses machine learning to suggest personalized fasting windows based on your patterns. If you consistently break your fast at 2 PM and eat until 8 PM, the app recommends a 2 PM – 8 PM eating window and 8 PM – 2 PM fasting window (16:8), rather than fighting against your natural rhythm.</p>
+
+            <!-- Tech Stack -->
+            <h2>Tech Stack: Building a Production AI Health App</h2>
+
+            <h3>Mobile Architecture</h3>
+            <ul>
+                <li><strong>React Native + Expo SDK 54:</strong> Cross-platform iOS/Android development with hot reload and over-the-air updates. Expo Router handles navigation and deep linking.</li>
+                <li><strong>Claude API via Convex Serverless:</strong> All AI requests go through Convex backend functions, adding a security layer (API keys never exposed on the client) and enabling caching + rate limiting.</li>
+                <li><strong>Convex Database:</strong> Real-time syncing of user fasting logs, weight history, meal logs, and AI conversation history. Automatic conflict resolution and offline support through Convex's reactive framework.</li>
+                <li><strong>Clerk for Auth:</strong> Google and Apple SSO for frictionless onboarding. No passwords to manage.</li>
+                <li><strong>RevenueCat for Payments:</strong> Hard paywall (free tier has limited Coach interactions; Premium unlocks unlimited). 3-day free trial to hook users before charging.</li>
+            </ul>
+
+            <h3>Web Presence</h3>
+            <ul>
+                <li><strong>Next.js 15 Landing Page:</strong> Server-side rendering for SEO. Hosted at <code>fastai.exafabs.ai</code> with App Store and Google Play download buttons.</li>
+                <li><strong>Dynamic Web Analytics:</strong> Track install volume, trial-to-paid conversion, and user cohort lifetime value using Segment and Mixpanel.</li>
+            </ul>
+
+            <!-- How the AI Coach Works -->
+            <h2>How the AI Coach Works: From Context to Insight</h2>
+            <p>The AI Coach is the secret sauce. Here's the exact flow:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Data Aggregation (On-Device):</strong> When you open the Coach tab, the app assembles your context: last 30 days of fasting logs (with duration and metabolic zones reached), weight history with trend line, meal logs with macronutrients, and your stated goals.</li>
+                    <li><strong>Context Compression:</strong> This data is summarized into a structured prompt (not raw JSON dumps—we use natural language summaries to save tokens and improve Claude's reasoning). Example: "User has been fasting 16:8 for 3 weeks, average weight loss of 1.5 lbs/week. Recent meals show high carb intake on weekends. Goal: lose 15 lbs in 12 weeks."</li>
+                    <li><strong>Claude API Call (via Convex):</strong> The Convex function sends the compressed context + user message to Claude's API. Claude responds with personalized advice, grounded in the user's actual data.</li>
+                    <li><strong>Streaming & Caching:</strong> Response is streamed to the client for instant feedback. Convex caches similar queries (e.g., "why is my weight plateauing?") for 24 hours to reduce API costs.</li>
+                    <li><strong>Conversation History:</strong> All chat turns are stored in Convex so users can revisit past advice, and Claude has full context in multi-turn conversations.</li>
+                </ul>
+            </div>
+
+            <p>The result: users feel like they have a personal nutrition coach who understands their history, constraints, and psychology—because they do.</p>
+
+            <!-- What's Next -->
+            <h2>What's Next: The Fasting Platform Roadmap</h2>
+            <p>FastAI's MVP is live, but the platform has enormous headroom for innovation:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Wearable Integration:</strong> Connect to Apple Watch, Oura Ring, and Fitbit to track heart rate variability, sleep quality, and activity during fasting windows. Claude uses this data to refine recommendations (e.g., "Your HRV spiked when you did a long fast + hard workout. Let's adjust.").</li>
+                    <li><strong>Community Challenges:</strong> Leaderboards, group fasting challenges, and peer support. Claude can coach users through a 30-day challenge and celebrate milestones.</li>
+                    <li><strong>Family Plans:</strong> Share recipes, fasting schedules, and results with family members. Discounted tier for households.</li>
+                    <li><strong>Advanced Body Composition Tracking:</strong> Integrate DEXA, bioelectrical impedance, or 3D body scanning APIs to track fat loss vs. muscle retention—more nuanced than weight alone.</li>
+                    <li><strong>Meal Plan Generation:</strong> Claude generates weekly meal plans optimized for your fasting window, macronutrient goals, and food preferences. Integration with grocery delivery APIs (Instacart, Amazon Fresh) for one-click ordering.</li>
+                </ul>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <h3>Ready to Transform Your Fasting Journey?</h3>
+                <p>FastAI Health Coach brings AI-powered fasting coaching, meal tracking, and weight predictions to your pocket. Start your 3-day free trial today.</p>
+                <a href="https://fastai.exafabs.ai/get-app" class="cta-link">Download FastAI Now</a>
+            </div>
+
+            <!-- Related Posts -->
+            <div class="related-posts">
+                <h3>Explore More EXAFABS Projects</h3>
+                <div class="related-posts-grid">
+                    <a href="crickbot-ai.html" class="related-post-card">
+                        <h4>CrickBot: AI Cricket</h4>
+                        <p>Intelligent cricket game with adaptive AI opponents.</p>
+                    </a>
+                    <a href="goalbot-ai.html" class="related-post-card">
+                        <h4>GoalBot: Goal Tracking</h4>
+                        <p>AI-powered personal goal achievement platform.</p>
+                    </a>
+                    <a href="basehit-ai.html" class="related-post-card">
+                        <h4>BaseHit: Baseball AI</h4>
+                        <p>Advanced baseball analytics and prediction engine.</p>
+                    </a>
+                    <a href="survival-arena-ai.html" class="related-post-card">
+                        <h4>Survival Arena: Game AI</h4>
+                        <p>Multiplayer survival game with intelligent NPCs.</p>
+                    </a>
+                    <a href="infinite-voyager-ai.html" class="related-post-card">
+                        <h4>Infinite Voyager: Space Sim</h4>
+                        <p>Space exploration game with procedural universe generation.</p>
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">EXAFABS.AI</div>
+            <div class="footer-links">
+                <a href="../index.html" class="footer-link">Home</a>
+                <a href="../index.html#blog" class="footer-link">Blog</a>
+                <a href="mailto:alpit@exafabs.ai" class="footer-link">Contact</a>
+            </div>
+            <p>&copy; 2026 ExaFabs. All rights reserved.</p>
+            <p><a href="mailto:alpit@exafabs.ai" class="footer-link">alpit@exafabs.ai</a></p>
+        </div>
+    </footer>
+
+    <!-- Reading Progress Bar Script -->
+    <script>
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+    </script>
+
+    <script>
+(function(){
+    const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+    const depthConfigs = [
+        { sel: '.hero', density: 10000, maxP: 140, connDist: 150, speed: 0.32, lineOp: 0.16, sDensity: 2200, sMax: 350,
+          layers: [{w:.5,rr:[.3,.7],ar:[.18,.33],sm:.3,gm:1.5},{w:.35,rr:[.8,1.8],ar:[.38,.6],sm:.7,gm:3},{w:.15,rr:[2,3],ar:[.5,.85],sm:1,gm:5}] },
+        { sel: '.article-container', density: 18000, maxP: 80, connDist: 130, speed: 0.2, lineOp: 0.1, sDensity: 3500, sMax: 220,
+          layers: [{w:.55,rr:[.2,.6],ar:[.1,.25],sm:.35,gm:1.5},{w:.35,rr:[.7,1.4],ar:[.28,.48],sm:.65,gm:2.5},{w:.1,rr:[1.5,2.4],ar:[.4,.65],sm:1,gm:3.5}] },
+        { sel: 'footer', density: 30000, maxP: 40, connDist: 110, speed: 0.15, lineOp: 0.06, sDensity: 5000, sMax: 120,
+          layers: [{w:.6,rr:[.2,.5],ar:[.08,.2],sm:.3,gm:1.5},{w:.3,rr:[.6,1.2],ar:[.2,.35],sm:.6,gm:2},{w:.1,rr:[1.3,2],ar:[.3,.5],sm:1,gm:3}] }
+    ];
+    function pickLayer(layers){const r=Math.random();let c=0;for(const l of layers){c+=l.w;if(r<=c)return l;}return layers[0];}
+    depthConfigs.forEach(cfg => {
+        const section = document.querySelector(cfg.sel);
+        if (!section) return;
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+        section.style.position=section.style.position||'relative';
+        section.style.overflow='hidden';
+        section.insertBefore(canvas,section.firstChild);
+        const ctx=canvas.getContext('2d');
+        const dpr=Math.min(window.devicePixelRatio||1,3);
+        let particles=[],statics=[],frame=0,animId=null,visible=false;
+        let mouse={x:-1e3,y:-1e3};
+        if(!('ontouchstart' in window)){
+            section.addEventListener('mousemove',e=>{const r=section.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+            section.addEventListener('mouseleave',()=>{mouse.x=-1e3;mouse.y=-1e3;});
+        }
+        function seed(){
+            particles=[];statics=[];
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            const sC=Math.min(Math.floor((w*h)/cfg.sDensity),cfg.sMax);
+            for(let i=0;i<sC;i++) statics.push({x:Math.random()*w,y:Math.random()*h,r:.2+Math.random()*.5,a:.08+Math.random()*.2,tp:Math.random()*Math.PI*2,ts:.002+Math.random()*.006,c:colors[Math.floor(Math.random()*colors.length)]});
+            const count=Math.min(Math.floor((w*h)/cfg.density),cfg.maxP);
+            for(let i=0;i<count;i++){
+                const L=pickLayer(cfg.layers);
+                particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*cfg.speed*L.sm,vy:(Math.random()-.5)*cfg.speed*L.sm,r:L.rr[0]+Math.random()*(L.rr[1]-L.rr[0]),c:colors[Math.floor(Math.random()*colors.length)],a:L.ar[0]+Math.random()*(L.ar[1]-L.ar[0]),pp:Math.random()*Math.PI*2,ps:.004+Math.random()*.014,gm:L.gm,d:L.sm});
+            }
+        }
+        function draw(){
+            if(!visible){animId=null;return;}
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            ctx.clearRect(0,0,w,h);frame++;
+            for(const s of statics){const t=.5+Math.sin(frame*s.ts+s.tp)*.5;const[r,g,b]=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${s.a*t})`;ctx.fill();}
+            for(const p of particles){p.x+=p.vx;p.y+=p.vy;const dx=p.x-mouse.x,dy=p.y-mouse.y,md=Math.sqrt(dx*dx+dy*dy);if(md<120&&md>0){const f=((120-md)/120)*.05*p.d;p.vx+=(dx/md)*f;p.vy+=(dy/md)*f;}p.vx*=.997;p.vy*=.997;if(p.x<-10)p.x=w+10;if(p.x>w+10)p.x=-10;if(p.y<-10)p.y=h+10;if(p.y>h+10)p.y=-10;}
+            for(let i=0;i<particles.length;i++){if(particles[i].d<.5)continue;for(let j=i+1;j<particles.length;j++){if(particles[j].d<.5)continue;const a=particles[i],b=particles[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<cfg.connDist){const op=(1-dist/cfg.connDist)*cfg.lineOp*Math.min(a.d,b.d);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${(a.c[0]+b.c[0])>>1},${(a.c[1]+b.c[1])>>1},${(a.c[2]+b.c[2])>>1},${op})`;ctx.lineWidth=.4+a.d*.3;ctx.stroke();}}}
+            for(const p of particles){const pulse=.6+Math.sin(frame*p.ps+p.pp)*.4;const[r,g,b]=p.c;const gr=p.r*p.gm*pulse;const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,gr);grd.addColorStop(0,`rgba(${r},${g},${b},${p.a*pulse*.3})`);grd.addColorStop(.4,`rgba(${r},${g},${b},${p.a*pulse*.08})`);grd.addColorStop(1,`rgba(${r},${g},${b},0)`);ctx.beginPath();ctx.arc(p.x,p.y,gr,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${p.a*pulse})`;ctx.fill();if(p.d>=1&&p.r>2){ctx.beginPath();ctx.arc(p.x,p.y,p.r*.3*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.a*pulse*.5})`;ctx.fill();}}
+            if(mouse.x>0&&mouse.y>0){const mg=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,120);mg.addColorStop(0,'rgba(100,200,255,0.06)');mg.addColorStop(.5,'rgba(155,48,255,0.03)');mg.addColorStop(1,'rgba(155,48,255,0)');ctx.beginPath();ctx.arc(mouse.x,mouse.y,120,0,Math.PI*2);ctx.fillStyle=mg;ctx.fill();}
+            animId=requestAnimationFrame(draw);
+        }
+        new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(visible&&!animId)draw();},{threshold:.02}).observe(section);
+        function resize(){const w=section.offsetWidth,h=section.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);seed();}
+        resize();window.addEventListener('resize',resize);
+    });
+})();
+</script>
+</body>
+</html>
