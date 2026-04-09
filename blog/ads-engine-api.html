@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads Engine API: 15 AI-Powered Endpoints for Campaign Automation | ExaFabs</title>
+    <meta name="description" content="Production-grade REST API with 15 AI-powered endpoints for complete ad campaign automation. Powered by Claude AI and deployed on Railway.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://exafabs.ai/blog/ads-engine-api.html">
+    <meta property="og:image" content="https://exafabs.ai/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://exafabs.ai/og-image.png">
+    <link rel="canonical" href="https://exafabs.ai/blog/ads-engine-api.html">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #240331;
+            color: #fad7ff;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img, svg {
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        canvas {
+            image-rendering: crisp-edges;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: #8a7a94;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #C94080;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(123, 47, 190, 0.15), rgba(201, 64, 128, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(155, 48, 255, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #e0c3ff, #C94080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: #8a7a94;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-badge {
+            background: rgba(155, 48, 255, 0.2);
+            color: #dcb8ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(155, 48, 255, 0.3);
+        }
+
+        /* Article Container */
+        .article-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #fad7ff;
+            background: linear-gradient(135deg, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        article h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            color: #dcb8ff;
+        }
+
+        article p {
+            font-size: 18px;
+            color: #fad7ff;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        article ul, article ol {
+            margin: 24px 0 24px 24px;
+            font-size: 18px;
+            color: #fad7ff;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        article strong {
+            color: #fad7ff;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #dcb8ff;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #8a7a94;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: rgba(155, 48, 255, 0.08);
+            border-left: 4px solid #9B30FF;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 16px;
+        }
+
+        .feature-list strong {
+            color: #C94080;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(201, 64, 128, 0.08);
+            border: 1px solid rgba(201, 64, 128, 0.15);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(155, 48, 255, 0.1), rgba(201, 64, 128, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 48px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 24px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            color: #fad7ff;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(155, 48, 255, 0.3);
+        }
+
+        /* GitHub Link */
+        .github-link {
+            display: inline-block;
+            margin-left: 12px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .github-link:hover {
+            background: rgba(100, 200, 255, 0.08);
+            border-color: rgba(100, 200, 255, 0.6);
+        }
+
+        /* Related Posts Section */
+        .related-posts {
+            background: rgba(155, 48, 255, 0.05);
+            border: 1px solid rgba(155, 48, 255, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .related-posts h3 {
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .related-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-post-card {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #fad7ff;
+            transition: all 0.3s ease;
+        }
+
+        .related-post-card:hover {
+            border-color: rgba(201, 64, 128, 0.4);
+            background: rgba(201, 64, 128, 0.1);
+        }
+
+        .related-post-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #dcb8ff;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(50, 16, 62, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px;
+            text-align: center;
+            color: #8a7a94;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+
+            z-index: 2;
+
+            position: relative;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: #8a7a94;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #C94080;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 50px 24px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .meta-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .article-container {
+                padding: 40px 24px;
+            }
+
+            article h2 {
+                font-size: 26px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            article p, article ul, article ol {
+                font-size: 16px;
+            }
+
+            .code-block {
+                padding: 16px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+                margin: 40px 0;
+            }
+
+            .related-posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Ads Engine API: 15 AI-Powered Endpoints for Campaign Automation",
+      "description": "Production-grade REST API with 15 AI-powered endpoints for complete ad campaign automation powered by Claude AI.",
+      "image": "https://exafabs.ai/og-image.png",
+      "author": {
+        "@type": "Organization",
+        "name": "EXAFABS",
+        "url": "https://exafabs.ai"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "EXAFABS",
+        "url": "https://exafabs.ai",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://exafabs.ai/logo-icon.png"
+        }
+      },
+      "datePublished": "2026-04-10",
+      "dateModified": "2026-04-10",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://exafabs.ai/blog/ads-engine-api.html"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EXAFABS.AI</div>
+        <a href="../index.html" class="nav-link">← Back to Home</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Ads Engine API: 15 AI-Powered Endpoints for Campaign Automation</h1>
+            <div class="meta-info">
+                <div class="meta-badge">
+                    <span>📖 8 min read</span>
+                </div>
+                <div class="meta-badge">
+                    <span class="category-badge">AI / Developer API</span>
+                </div>
+                <div class="meta-badge">
+                    <span>April 10, 2026</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article -->
+    <div class="article-container">
+        <article>
+            <!-- Introduction -->
+            <h2>The Problem: Manual Ad Strategy is Broken</h2>
+            <p>Creating a high-performing ad campaign from scratch is a labyrinth of manual work. Marketers spend endless hours researching target audiences, writing ad copy variants, creating design briefs, planning video scripts, allocating budgets across platforms, A/B testing frameworks, and analyzing competitor positioning. For most startups and small businesses, the cost of hiring a full-service advertising agency (often $3,000–$10,000+ per month) is prohibitive. Instead, founders end up doing it themselves—or worse, doing it poorly with gut-feel decisions that waste ad spend.</p>
+
+            <p>The result: longer campaign launch times, inconsistent creative quality, budget misallocation, and missed optimization opportunities. What should take days stretches into weeks.</p>
+
+            <!-- The Solution -->
+            <h2>The Solution: AI-First Ad Strategy API</h2>
+            <p>We built the Ads Engine API to eliminate the manual grind. It's a production-grade REST API at <code>api.exafabs.ai</code> with 15 specialized endpoints that automate the entire ad campaign lifecycle—from audience research to creative generation to budget optimization to weekly performance reports. Each endpoint is powered by Claude AI from Anthropic, delivering human-quality strategy in seconds.</p>
+
+            <p>The API is designed for developers, marketing agencies, SaaS platforms, and indie hackers who need to automate ad campaign creation at scale. Whether you're building a campaign tool, integrating AI-powered ads into your platform, or powering your own marketing ops, the Ads Engine API is your foundation.</p>
+
+            <!-- The 15 Endpoints -->
+            <h2>The 15 Endpoints: Automating Every Stage of Campaign Strategy</h2>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>/api/v1/ads-audience</strong> — Generate hyper-targeted audience segments across Meta (Facebook/Instagram), Google Ads, TikTok, and Apple Search Ads. Receives your product description, ICP, and budget. Returns lookalike segments, exclusion audiences, and platform-specific demographic breakdowns.</li>
+                    <li><strong>/api/v1/ads-keywords</strong> — Build a keyword strategy with intent classification (awareness, consideration, conversion). Identifies high-intent keywords, low-competition long-tail opportunities, and negative keywords to exclude. Outputs keyword clusters by funnel stage.</li>
+                    <li><strong>/api/v1/ads-copy</strong> — Generate platform-optimized ad copy for each channel. Takes your value proposition and audience. Returns multiple copy variants for each platform (Google Ads has character limits, Instagram captions are longer, TikTok is conversational). Includes psychological triggers: urgency, social proof, scarcity.</li>
+                    <li><strong>/api/v1/ads-hooks</strong> — Create scroll-stopping hooks for social and static ads. Designed for TikTok, Instagram Reels, YouTube Shorts, and carousel ads. Returns 5–10 hook variations that lead with curiosity, contrast, or conflict—the elements that stop scrolls.</li>
+                    <li><strong>/api/v1/ads-creative</strong> — Specify visual creative requirements. Takes your brand guidelines, color palette, and campaign focus. Returns detailed asset specs: image dimensions, text overlay placement, color usage, typography, animation suggestions. Ready to hand to designers.</li>
+                    <li><strong>/api/v1/ads-video</strong> — Generate video ad scripts with scene-by-scene breakdowns. Receives your product and key message. Returns script, timing, camera directions, music cues, and on-screen text. Saves video production teams hours of back-and-forth.</li>
+                    <li><strong>/api/v1/ads-funnel</strong> — Map the customer journey across funnel stages (awareness → consideration → conversion → retention). Receives product category and target customer. Returns stage-specific messaging, KPIs to track at each stage, and handoff points between channels.</li>
+                    <li><strong>/api/v1/ads-landing</strong> — Optimize landing page strategy for ad traffic. Takes your current landing page URL or describes the offer. Returns recommendations for headline, CTA placement, form fields to reduce friction, social proof placement, and mobile optimization tips.</li>
+                    <li><strong>/api/v1/ads-budget</strong> — Intelligently allocate budget across platforms, campaigns, and funnel stages. Receives total budget and platform-specific conversion rates. Returns daily spend allocation, platform mix, and expected ROAS by channel. Adjusts for platform seasonality and cost trends.</li>
+                    <li><strong>/api/v1/ads-competitors</strong> — Analyze competitor ad strategies and positioning gaps. Takes competitor URLs or company names. Returns their messaging pillars, audience targeting, estimated spend (if available), creative themes, and whitespace opportunities for you to own.</li>
+                    <li><strong>/api/v1/ads-testing</strong> — Build a systematic A/B testing framework. Receives your campaign hypotheses. Returns detailed test plan: which variables to test (creative, copy, audience, landing page), sample size calculations, statistical significance threshold, and how long to run each test.</li>
+                    <li><strong>/api/v1/ads-audit</strong> — Generate campaign audit checklists for pre-launch, weekly review, and monthly retrospectives. Pre-launch checks creative, copy, tracking pixels, audience size, CPC benchmarks. Weekly audits flag underperforming creatives. Monthly audits aggregate learnings and recommend optimization pivots.</li>
+                    <li><strong>/api/v1/ads-strategy</strong> — The master endpoint. Generates a comprehensive 90-day ad strategy from scratch. Takes a single input (product description and goal). Returns a full playbook: audience personas, channel mix, creative roadmap, budget allocation, testing plan, and weekly milestones. Integrates outputs from all other endpoints.</li>
+                    <li><strong>/api/v1/ads-report</strong> — Generate AI-powered performance reports from raw campaign data. Receives metrics (impressions, clicks, conversions, spend by platform). Returns narrative analysis, KPI trends, anomaly detection, and actionable recommendations (e.g., "Your CTR dropped 15% on Day 5—this typically signals creative fatigue; we recommend rotating creative on Day 6").</li>
+                    <li><strong>/api/v1/ads-quick</strong> — One-hour campaign quick launch. Takes minimal input (product name, target audience in 1 sentence, budget). Returns a complete, deployment-ready campaign: audience, copy, landing page template, budget allocation, and tracking setup. Designed for founders who need to ship an ads campaign fast.</li>
+                </ul>
+            </div>
+
+            <!-- Tech Stack -->
+            <h2>Tech Stack: Production-Grade AI Automation</h2>
+
+            <p>The Ads Engine API is built on a scalable, production-ready foundation:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>FastAPI + Pydantic v2:</strong> Lightweight, async Python framework. Pydantic validates all request/response schemas with type hints and JSON Schema generation (great for client SDK auto-generation).</li>
+                    <li><strong>AsyncAnthropic Client:</strong> Async Python client for Claude API. All AI generations are streamed for real-time feedback. Timeout handling for long-running prompts.</li>
+                    <li><strong>Railway Deployment:</strong> Auto-deploys from GitHub on every push. Environment variables for API keys and configuration. Auto-scaling based on request volume.</li>
+                    <li><strong>API Key Authentication:</strong> X-API-Key header for client authentication. Key rotation and rate limiting built-in.</li>
+                    <li><strong>CORS Support:</strong> Front-end developers can call the API directly from browsers (with appropriate CORS headers). Also supports server-side integration via Node.js, Python, or Go SDKs.</li>
+                    <li><strong>Request/Response Logging:</strong> All requests are logged (with PII scrubbing) for debugging and analytics. Response times and error rates tracked in observability stack.</li>
+                </ul>
+            </div>
+
+            <!-- How It Works -->
+            <h2>How It Works: From Request to AI-Generated Strategy</h2>
+
+            <p>Every request follows the same architectural pattern:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>1. Client Request:</strong> A POST request arrives at an endpoint (e.g., /api/v1/ads-copy) with structured JSON body containing campaign context (product description, target audience, platform, etc.).</li>
+                    <li><strong>2. Pydantic Validation:</strong> FastAPI validates the request against the endpoint's schema. Invalid requests are rejected with clear error messages (e.g., "budget must be >= $100").</li>
+                    <li><strong>3. Prompt Construction:</strong> The API builds a specialized system prompt tailored to the endpoint. For example, the /ads-copy endpoint constructs a prompt that says: "You are an expert copywriter for [platform] ads targeting [audience]. Generate 5 ad copy variants that highlight [value prop]..." This prompt is system-wide context; the user's input becomes the user message.</li>
+                    <li><strong>4. Claude API Call:</strong> The FastAPI function calls Claude via the AsyncAnthropic client with the system prompt and user message. Response is streamed.</li>
+                    <li><strong>5. Response Parsing:</strong> The API receives Claude's response (often in structured JSON format, enforced by the prompt). The response is parsed, validated, and returned as JSON to the client.</li>
+                    <li><strong>6. Streaming (Optional):</strong> For long-running endpoints (like /ads-strategy), the response is streamed in real-time using Server-Sent Events (SSE), so clients see results as they're generated rather than waiting for the full response.</li>
+                </ul>
+            </div>
+
+            <p>Here's a concrete example: a curl request to generate audience segments.</p>
+
+            <div class="code-block">
+                <div class="code-label">Example: Generate Target Audiences</div>
+                <code>curl -X POST https://api.exafabs.ai/v1/ads-audience \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "product_description": "Mobile app for intermittent fasting with AI coaching",
+    "target_icp": "Health-conscious millennials, 25-40, interested in fitness and wellness",
+    "budget_usd": 5000,
+    "platforms": ["meta", "google", "tiktok"]
+  }'
+
+# Response (JSON):
+{
+  "audiences": [
+    {
+      "platform": "meta",
+      "audience_name": "Health-Conscious Wellness Seekers",
+      "targeting_criteria": {
+        "interests": ["fitness", "nutrition", "wellness"],
+        "age_range": "25-40",
+        "countries": ["US", "Canada", "UK"],
+        "custom_audience": "lookalike to health app users"
+      },
+      "estimated_reach": 2400000,
+      "estimated_cpc": 0.85
+    },
+    ...
+  ],
+  "exclusion_audiences": [
+    "People who recently purchased competing apps",
+    "Low engagement users"
+  ]
+}</code>
+            </div>
+
+            <!-- Use Cases -->
+            <h2>Real-World Use Cases</h2>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Mobile App Acquisition:</strong> Like FastAI Health Coach, you need to launch a paid user acquisition campaign quickly. The Ads Engine API generates your audience, copy, landing page strategy, and budget allocation in minutes. You can launch by EOD.</li>
+                    <li><strong>SaaS Marketing at Scale:</strong> If you're a marketing platform or agency managing dozens of SaaS campaigns, you can use the Ads Engine API as a white-label service. Each client gets a 90-day strategy, weekly audits, and monthly reports—all automated.</li>
+                    <li><strong>E-commerce Campaign Launches:</strong> New product launch? The API generates audience research, product positioning, creative briefs, and budget strategy specific to e-commerce (with ROAS targets).</li>
+                    <li><strong>Indie Game Launches:</strong> Like Infinite Voyager or Survival Arena, launching an indie game requires precision targeting. The API creates gamer-specific audiences, hook-first creative briefs, and performance KPIs.</li>
+                    <li><strong>Embedded AI Ads Tool:</strong> If you're building a marketing tool for non-technical users, embed the Ads Engine API as a "Generate Campaign" feature. Your users get human-quality campaigns without needing marketing expertise.</li>
+                </ul>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <h3>Ready to Automate Your Ad Campaigns?</h3>
+                <p>The Ads Engine API is production-ready and documented. Explore the interactive API docs and start integrating today.</p>
+                <a href="https://api.exafabs.ai/docs" class="cta-link">Explore the API Docs</a>
+                <a href="mailto:alpit@exafabs.ai" class="cta-link">Request Enterprise Access</a>
+            </div>
+
+            <!-- Related Posts -->
+            <div class="related-posts">
+                <h3>Explore More EXAFABS Projects</h3>
+                <div class="related-posts-grid">
+                    <a href="fastai-health-coach.html" class="related-post-card">
+                        <h4>FastAI Health Coach</h4>
+                        <p>AI-powered intermittent fasting companion with personalized coaching.</p>
+                    </a>
+                    <a href="crickbot-ai.html" class="related-post-card">
+                        <h4>CrickBot: AI Cricket</h4>
+                        <p>Intelligent cricket game with adaptive AI opponents.</p>
+                    </a>
+                    <a href="goalbot-ai.html" class="related-post-card">
+                        <h4>GoalBot: Goal Tracking</h4>
+                        <p>AI-powered personal goal achievement platform.</p>
+                    </a>
+                    <a href="basehit-ai.html" class="related-post-card">
+                        <h4>BaseHit: Baseball AI</h4>
+                        <p>Advanced baseball analytics and prediction engine.</p>
+                    </a>
+                    <a href="survival-arena-ai.html" class="related-post-card">
+                        <h4>Survival Arena: Game AI</h4>
+                        <p>Multiplayer survival game with intelligent NPCs.</p>
+                    </a>
+                    <a href="infinite-voyager-ai.html" class="related-post-card">
+                        <h4>Infinite Voyager: Space Sim</h4>
+                        <p>Space exploration game with procedural universe generation.</p>
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">EXAFABS.AI</div>
+            <div class="footer-links">
+                <a href="../index.html" class="footer-link">Home</a>
+                <a href="../index.html#blog" class="footer-link">Blog</a>
+                <a href="mailto:alpit@exafabs.ai" class="footer-link">Contact</a>
+            </div>
+            <p>&copy; 2026 ExaFabs. All rights reserved.</p>
+            <p><a href="mailto:alpit@exafabs.ai" class="footer-link">alpit@exafabs.ai</a></p>
+        </div>
+    </footer>
+
+    <!-- Reading Progress Bar Script -->
+    <script>
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+    </script>
+
+    <script>
+(function(){
+    const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+    const depthConfigs = [
+        { sel: '.hero', density: 10000, maxP: 140, connDist: 150, speed: 0.32, lineOp: 0.16, sDensity: 2200, sMax: 350,
+          layers: [{w:.5,rr:[.3,.7],ar:[.18,.33],sm:.3,gm:1.5},{w:.35,rr:[.8,1.8],ar:[.38,.6],sm:.7,gm:3},{w:.15,rr:[2,3],ar:[.5,.85],sm:1,gm:5}] },
+        { sel: '.article-container', density: 18000, maxP: 80, connDist: 130, speed: 0.2, lineOp: 0.1, sDensity: 3500, sMax: 220,
+          layers: [{w:.55,rr:[.2,.6],ar:[.1,.25],sm:.35,gm:1.5},{w:.35,rr:[.7,1.4],ar:[.28,.48],sm:.65,gm:2.5},{w:.1,rr:[1.5,2.4],ar:[.4,.65],sm:1,gm:3.5}] },
+        { sel: 'footer', density: 30000, maxP: 40, connDist: 110, speed: 0.15, lineOp: 0.06, sDensity: 5000, sMax: 120,
+          layers: [{w:.6,rr:[.2,.5],ar:[.08,.2],sm:.3,gm:1.5},{w:.3,rr:[.6,1.2],ar:[.2,.35],sm:.6,gm:2},{w:.1,rr:[1.3,2],ar:[.3,.5],sm:1,gm:3}] }
+    ];
+    function pickLayer(layers){const r=Math.random();let c=0;for(const l of layers){c+=l.w;if(r<=c)return l;}return layers[0];}
+    depthConfigs.forEach(cfg => {
+        const section = document.querySelector(cfg.sel);
+        if (!section) return;
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+        section.style.position=section.style.position||'relative';
+        section.style.overflow='hidden';
+        section.insertBefore(canvas,section.firstChild);
+        const ctx=canvas.getContext('2d');
+        const dpr=Math.min(window.devicePixelRatio||1,3);
+        let particles=[],statics=[],frame=0,animId=null,visible=false;
+        let mouse={x:-1e3,y:-1e3};
+        if(!('ontouchstart' in window)){
+            section.addEventListener('mousemove',e=>{const r=section.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+            section.addEventListener('mouseleave',()=>{mouse.x=-1e3;mouse.y=-1e3;});
+        }
+        function seed(){
+            particles=[];statics=[];
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            const sC=Math.min(Math.floor((w*h)/cfg.sDensity),cfg.sMax);
+            for(let i=0;i<sC;i++) statics.push({x:Math.random()*w,y:Math.random()*h,r:.2+Math.random()*.5,a:.08+Math.random()*.2,tp:Math.random()*Math.PI*2,ts:.002+Math.random()*.006,c:colors[Math.floor(Math.random()*colors.length)]});
+            const count=Math.min(Math.floor((w*h)/cfg.density),cfg.maxP);
+            for(let i=0;i<count;i++){
+                const L=pickLayer(cfg.layers);
+                particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*cfg.speed*L.sm,vy:(Math.random()-.5)*cfg.speed*L.sm,r:L.rr[0]+Math.random()*(L.rr[1]-L.rr[0]),c:colors[Math.floor(Math.random()*colors.length)],a:L.ar[0]+Math.random()*(L.ar[1]-L.ar[0]),pp:Math.random()*Math.PI*2,ps:.004+Math.random()*.014,gm:L.gm,d:L.sm});
+            }
+        }
+        function draw(){
+            if(!visible){animId=null;return;}
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            ctx.clearRect(0,0,w,h);frame++;
+            for(const s of statics){const t=.5+Math.sin(frame*s.ts+s.tp)*.5;const[r,g,b]=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${s.a*t})`;ctx.fill();}
+            for(const p of particles){p.x+=p.vx;p.y+=p.vy;const dx=p.x-mouse.x,dy=p.y-mouse.y,md=Math.sqrt(dx*dx+dy*dy);if(md<120&&md>0){const f=((120-md)/120)*.05*p.d;p.vx+=(dx/md)*f;p.vy+=(dy/md)*f;}p.vx*=.997;p.vy*=.997;if(p.x<-10)p.x=w+10;if(p.x>w+10)p.x=-10;if(p.y<-10)p.y=h+10;if(p.y>h+10)p.y=-10;}
+            for(let i=0;i<particles.length;i++){if(particles[i].d<.5)continue;for(let j=i+1;j<particles.length;j++){if(particles[j].d<.5)continue;const a=particles[i],b=particles[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<cfg.connDist){const op=(1-dist/cfg.connDist)*cfg.lineOp*Math.min(a.d,b.d);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${(a.c[0]+b.c[0])>>1},${(a.c[1]+b.c[1])>>1},${(a.c[2]+b.c[2])>>1},${op})`;ctx.lineWidth=.4+a.d*.3;ctx.stroke();}}}
+            for(const p of particles){const pulse=.6+Math.sin(frame*p.ps+p.pp)*.4;const[r,g,b]=p.c;const gr=p.r*p.gm*pulse;const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,gr);grd.addColorStop(0,`rgba(${r},${g},${b},${p.a*pulse*.3})`);grd.addColorStop(.4,`rgba(${r},${g},${b},${p.a*pulse*.08})`);grd.addColorStop(1,`rgba(${r},${g},${b},0)`);ctx.beginPath();ctx.arc(p.x,p.y,gr,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${p.a*pulse})`;ctx.fill();if(p.d>=1&&p.r>2){ctx.beginPath();ctx.arc(p.x,p.y,p.r*.3*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.a*pulse*.5})`;ctx.fill();}}
+            if(mouse.x>0&&mouse.y>0){const mg=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,120);mg.addColorStop(0,'rgba(100,200,255,0.06)');mg.addColorStop(.5,'rgba(155,48,255,0.03)');mg.addColorStop(1,'rgba(155,48,255,0)');ctx.beginPath();ctx.arc(mouse.x,mouse.y,120,0,Math.PI*2);ctx.fillStyle=mg;ctx.fill();}
+            animId=requestAnimationFrame(draw);
+        }
+        new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(visible&&!animId)draw();},{threshold:.02}).observe(section);
+        function resize(){const w=section.offsetWidth,h=section.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);seed();}
+        resize();window.addEventListener('resize',resize);
+    });
+})();
+</script>
+</body>
+</html>
