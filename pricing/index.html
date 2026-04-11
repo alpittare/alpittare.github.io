@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pricing for EXAFABS.AI SaaS products — FABS & CHIP Tracker for semiconductor intelligence, FastAI Health Coach, and Ads Engine API. Free tier available, Pro tiers from US$12/month.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exafabs.ai/pricing/">
+    <meta property="og:title" content="Pricing — EXAFABS.AI">
+    <meta property="og:description" content="Pricing for EXAFABS.AI SaaS products.">
+    <meta property="og:site_name" content="EXAFABS.AI">
+    <meta name="theme-color" content="#240331">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://exafabs.ai/pricing/">
+    <link rel="icon" type="image/png" href="../logo-icon.png">
+    <title>Pricing — EXAFABS.AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #240331;
+            --bg-surface: #32103e;
+            --bg-surface-high: #3e1c49;
+            --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            --primary-solid: #9B30FF;
+            --accent-pink: #C94080;
+            --accent-orange: #F5943A;
+            --text-primary: #dcb8ff;
+            --text-surface: #fad7ff;
+            --text-secondary: #cfc2d8;
+            --text-muted: #8a7a94;
+            --glass-bg: rgba(73, 39, 85, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-card: 1.25rem;
+            --blur-glass: blur(24px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; text-rendering: optimizeLegibility; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-surface);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: rgba(155, 48, 255, 0.3); color: #fff; }
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .nav-logo img {
+            width: 2rem;
+            height: 2rem;
+            filter: drop-shadow(0 0 8px rgba(155, 48, 255, 0.4));
+        }
+        .nav-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-back:hover { color: var(--accent-pink); }
+
+        /* HERO */
+        .hero {
+            padding: 9rem 2.5rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(123,47,190,0.2) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 20%, rgba(201,64,128,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        .hero h1 .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 640px;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+        .mor-badge {
+            display: inline-block;
+            background: rgba(155, 48, 255, 0.15);
+            border: 1px solid rgba(155, 48, 255, 0.3);
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            font-weight: 500;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            position: relative;
+        }
+
+        /* PRODUCT SECTION */
+        .product-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2.5rem;
+        }
+        .product-section:not(:last-of-type) {
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 4rem;
+        }
+        .product-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .product-header h2 {
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .product-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+        .status-pill {
+            display: inline-block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            margin-left: 0.6rem;
+            vertical-align: middle;
+        }
+        .status-available {
+            background: rgba(100, 220, 140, 0.15);
+            border: 1px solid rgba(100, 220, 140, 0.4);
+            color: #9cf0b4;
+        }
+        .status-soon {
+            background: rgba(245, 148, 58, 0.15);
+            border: 1px solid rgba(245, 148, 58, 0.4);
+            color: #ffd09a;
+        }
+
+        /* PLAN GRID */
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .plan {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 2rem 1.75rem;
+            backdrop-filter: var(--blur-glass);
+            -webkit-backdrop-filter: var(--blur-glass);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .plan:hover {
+            transform: translateY(-4px);
+            border-color: rgba(155, 48, 255, 0.35);
+        }
+        .plan.featured {
+            background: linear-gradient(180deg, rgba(123, 47, 190, 0.25) 0%, rgba(73, 39, 85, 0.35) 100%);
+            border-color: rgba(201, 64, 128, 0.5);
+            position: relative;
+        }
+        .plan.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -0.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-gradient);
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+        }
+        .plan h3 {
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        .plan .tagline {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            min-height: 2.5rem;
+        }
+        .plan .price {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        .plan .price .currency {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            vertical-align: super;
+            margin-right: 0.15rem;
+        }
+        .plan .period {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        .plan .alt-price {
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            margin-bottom: 1.5rem;
+        }
+        .plan ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.75rem;
+            flex-grow: 1;
+        }
+        .plan li {
+            padding: 0.45rem 0 0.45rem 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+        .plan li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0.45rem;
+            width: 1rem;
+            height: 1rem;
+            color: var(--accent-pink);
+            font-weight: 700;
+        }
+        .plan .cta {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .plan .cta.primary {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+        }
+        .plan .cta.primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .plan .cta.secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+        }
+        .plan .cta.secondary:hover {
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+        }
+        .plan .cta.disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--glass-border);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* FAQ */
+        .faq-section {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 4rem 2.5rem 6rem;
+        }
+        .faq-section h2 {
+            text-align: center;
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            color: #fff;
+            margin-bottom: 2rem;
+        }
+        .faq-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 1.75rem 2rem;
+            margin-bottom: 1rem;
+            backdrop-filter: var(--blur-glass);
+        }
+        .faq-card h3 {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .faq-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+        .faq-card a {
+            color: var(--accent-pink);
+            text-decoration: none;
+        }
+        .faq-card a:hover { color: var(--accent-orange); }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .footer-logo .dot {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        footer p { color: var(--text-muted); font-size: 0.85rem; }
+        footer a { color: var(--accent-pink); text-decoration: none; }
+        footer a:hover { color: var(--accent-orange); }
+
+        .effective-date {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hero { padding: 7rem 1.5rem 2rem; }
+            .product-section { padding: 2.5rem 1.5rem; }
+            .plans { grid-template-columns: 1fr; }
+            .faq-section { padding: 3rem 1.5rem 4rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Pricing",
+        "description": "Pricing for EXAFABS.AI SaaS products including FABS & CHIP Tracker, FastAI Health Coach, and Ads Engine API",
+        "url": "https://exafabs.ai/pricing/",
+        "publisher": {
+            "@type": "Organization",
+            "name": "EXAFABS.AI",
+            "url": "https://exafabs.ai"
+        }
+    }
+    </script>
+</head>
+<body>
+
+    <nav>
+        <a href="https://exafabs.ai" class="nav-logo">
+            <img src="../logo-icon.png" alt="EXAFABS.AI" width="32" height="32">
+            EXAFABS.AI
+        </a>
+        <a href="https://exafabs.ai" class="nav-back">&larr; Back to Home</a>
+    </nav>
+
+    <section class="hero">
+        <h1><span class="gradient-text">Simple, Honest Pricing</span></h1>
+        <p>Start free on every EXAFABS.AI product. Upgrade only when you need more. All prices shown in US dollars; local tax (VAT / GST) is calculated at checkout.</p>
+        <span class="mor-badge">Billed securely via Paddle — our Merchant of Record</span>
+    </section>
+
+    <!-- FABS & CHIP TRACKER -->
+    <section class="product-section">
+        <div class="product-header">
+            <h2>FABS &amp; CHIP Tracker<span class="status-pill status-soon">Pro launching Q2 2026</span></h2>
+            <p>AI-powered intelligence on every semiconductor fab on earth — capacity, technology nodes, announcements, and supply-chain risk. Built for analysts, procurement teams, and investors.</p>
+        </div>
+
+        <div class="plans">
+            <div class="plan">
+                <h3>Free</h3>
+                <p class="tagline">For students, researchers, and anyone exploring the industry</p>
+                <div class="price"><span class="currency">$</span>0</div>
+                <div class="period">forever</div>
+                <div class="alt-price">&nbsp;</div>
+                <ul>
+                    <li>Interactive global fab map</li>
+                    <li>Browse all public fab profiles</li>
+                    <li>10 AI decision queries / day</li>
+                    <li>Basic bookmarks &amp; saved views</li>
+                    <li>Community support</li>
+                </ul>
+                <a href="https://fabs.exafabs.ai" class="cta secondary">Start Free</a>
+            </div>
+
+            <div class="plan featured">
+                <h3>Pro</h3>
+                <p class="tagline">For individual analysts who need daily depth</p>
+                <div class="price"><span class="currency">$</span>12</div>
+                <div class="period">per month, billed monthly</div>
+                <div class="alt-price">or <strong>$99/year</strong> &mdash; save 31%</div>
+                <ul>
+                    <li>Everything in Free</li>
+                    <li>Unlimited AI decision queries</li>
+                    <li>Advanced filters &amp; custom dashboards</li>
+                    <li>Capacity &amp; roadmap projections</li>
+                    <li>CSV / JSON data exports</li>
+                    <li>Priority email support</li>
+                </ul>
+                <a href="#" class="cta disabled">Launching Soon</a>
+            </div>
+
+            <div class="plan">
+                <h3>Team</h3>
+                <p class="tagline">For analyst teams, procurement groups, and investment desks</p>
+                <div class="price"><span class="currency">$</span>49</div>
+                <div class="period">per seat / month, billed annually</div>
+                <div class="alt-price">5+ seats &mdash; custom MSA available</div>
+                <ul>
+                    <li>Everything in Pro</li>
+                    <li>Shared team workspaces</li>
+                    <li>API access (10k calls / month)</li>
+                    <li>SSO (SAML) &amp; audit logs</li>
+                    <li>Dedicated onboarding &amp; training</li>
+                    <li>Priority SLA support</li>
+                </ul>
+                <a href="mailto:alpit@exafabs.ai?subject=FABS%20Team%20plan%20inquiry" class="cta secondary">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FASTAI HEALTH COACH -->
+    <section class="product-section">
+        <div class="product-header">
+            <h2>FastAI Health Coach<span class="status-pill status-soon">Pro launching Q2 2026</span></h2>
+            <p>An AI health coach that actually remembers you. Personalized nutrition, fitness, and habit guidance powered by Claude. Not a replacement for medical advice.</p>
+        </div>
+
+        <div class="plans">
+            <div class="plan">
+                <h3>Free</h3>
+                <p class="tagline">Get started, no credit card</p>
+                <div class="price"><span class="currency">$</span>0</div>
+                <div class="period">forever</div>
+                <div class="alt-price">&nbsp;</div>
+                <ul>
+                    <li>3 AI coaching sessions / day</li>
+                    <li>Basic nutrition &amp; fitness logging</li>
+                    <li>Weekly summary</li>
+                </ul>
+                <a href="https://fastai.exafabs.ai" class="cta secondary">Start Free</a>
+            </div>
+
+            <div class="plan featured">
+                <h3>Pro</h3>
+                <p class="tagline">Unlimited coaching plus long-term memory</p>
+                <div class="price"><span class="currency">$</span>9</div>
+                <div class="period">per month, billed monthly</div>
+                <div class="alt-price">or <strong>$79/year</strong> &mdash; save 27%</div>
+                <ul>
+                    <li>Unlimited AI coaching sessions</li>
+                    <li>Long-term memory &amp; goal tracking</li>
+                    <li>Adaptive meal and workout plans</li>
+                    <li>Wearable integrations (coming)</li>
+                    <li>Priority email support</li>
+                </ul>
+                <a href="#" class="cta disabled">Launching Soon</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADS ENGINE API -->
+    <section class="product-section">
+        <div class="product-header">
+            <h2>Ads Engine API<span class="status-pill status-soon">Early access Q3 2026</span></h2>
+            <p>Programmatic ad creative generation, testing, and optimization via API. For marketing ops teams and agencies.</p>
+        </div>
+
+        <div class="plans">
+            <div class="plan">
+                <h3>Developer</h3>
+                <p class="tagline">Prototyping and evaluation</p>
+                <div class="price"><span class="currency">$</span>0</div>
+                <div class="period">forever</div>
+                <div class="alt-price">500 API calls / month</div>
+                <ul>
+                    <li>Full API access (rate-limited)</li>
+                    <li>Creative generation endpoints</li>
+                    <li>Community support</li>
+                </ul>
+                <a href="mailto:alpit@exafabs.ai?subject=Ads%20Engine%20API%20waitlist" class="cta secondary">Join Waitlist</a>
+            </div>
+
+            <div class="plan featured">
+                <h3>Growth</h3>
+                <p class="tagline">For production workloads</p>
+                <div class="price"><span class="currency">$</span>99</div>
+                <div class="period">per month, billed monthly</div>
+                <div class="alt-price">50k API calls / month included</div>
+                <ul>
+                    <li>Everything in Developer</li>
+                    <li>50k calls/month included</li>
+                    <li>Additional usage at $0.002/call</li>
+                    <li>Analytics dashboard</li>
+                    <li>Priority support</li>
+                </ul>
+                <a href="#" class="cta disabled">Launching Soon</a>
+            </div>
+
+            <div class="plan">
+                <h3>Enterprise</h3>
+                <p class="tagline">Custom volume &amp; SLA</p>
+                <div class="price">Custom</div>
+                <div class="period">&nbsp;</div>
+                <div class="alt-price">Volume pricing available</div>
+                <ul>
+                    <li>Unlimited API calls</li>
+                    <li>99.9% uptime SLA</li>
+                    <li>Dedicated infrastructure</li>
+                    <li>Custom model fine-tuning</li>
+                    <li>24/7 priority support</li>
+                </ul>
+                <a href="mailto:alpit@exafabs.ai?subject=Ads%20Engine%20Enterprise%20inquiry" class="cta secondary">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <h2>Pricing FAQ</h2>
+
+        <div class="faq-card">
+            <h3>Who handles the payment?</h3>
+            <p>All subscription payments are processed by <strong>Paddle.com Market Limited</strong>, acting as our Merchant of Record. Paddle handles card processing, global tax (VAT/GST) calculation and remittance, invoicing, and chargebacks. We never see or store your payment card details. See our <a href="https://exafabs.ai/privacy-policy">Privacy Policy</a> for more on how we protect your data.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Is tax included in the listed price?</h3>
+            <p>Prices are shown in US dollars before tax. Paddle will automatically calculate and add the applicable local VAT, GST, or sales tax at checkout based on your billing country. You'll see the final total before you confirm.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Can I cancel anytime?</h3>
+            <p>Yes. Cancel any time from the Paddle-hosted customer portal (link in your order confirmation email) or by emailing <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>. Cancellation takes effect at the end of your current billing period — you keep access until then, and your account automatically returns to the Free tier.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Do you offer refunds?</h3>
+            <p>Yes — every first-time buyer is covered by our <strong>14-day no-questions-asked refund window</strong>. Full details in our <a href="https://exafabs.ai/refund-policy">Refund Policy</a>.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Can I try the paid tiers before buying?</h3>
+            <p>The Free tier of every product is not a time-limited trial — it's genuinely free forever. Use it for as long as you like, and only upgrade when you need the Pro features. Combined with our 14-day refund window, this effectively gives you a risk-free evaluation of any Pro tier.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Do you offer discounts for students, non-profits, or academic researchers?</h3>
+            <p>Yes. Email <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a> from your institutional email with a short note about how you'll use the product, and we'll arrange a significant discount or free Pro access on a case-by-case basis.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Can I pay annually and save?</h3>
+            <p>Yes. Annual billing saves roughly 25–35% versus monthly on every product that offers a Pro tier. Select the annual option at checkout.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>What payment methods do you accept?</h3>
+            <p>Paddle accepts all major credit and debit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, Google Pay, and SEPA Direct Debit in supported countries. For annual Team/Enterprise plans, wire transfer is available on request.</p>
+        </div>
+
+        <div class="faq-card">
+            <h3>Is FABS &amp; CHIP Tracker Pro really launching Q2 2026?</h3>
+            <p>The Free tier of FABS &amp; CHIP Tracker launches first, with all core features unlocked. Paid Pro tiers go live once our billing integration with Paddle is fully provisioned. In the meantime, every feature currently marked "Pro" is usable on the Free tier — there's nothing stopping you from starting today.</p>
+        </div>
+
+        <p class="effective-date">Pricing shown as of April 11, 2026 &nbsp;|&nbsp; Subject to change with 30 days notice per our <a href="https://exafabs.ai/terms">Terms of Service</a></p>
+    </section>
+
+    <footer>
+        <div class="footer-logo">EXAFABS<span class="dot">.</span>AI</div>
+        <p>&copy; 2026 EXAFABS.AI — All rights reserved. &nbsp;|&nbsp; <a href="https://exafabs.ai">Home</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/terms">Terms</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/privacy-policy">Privacy</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/refund-policy">Refunds</a></p>
+    </footer>
+
+</body>
+</html>

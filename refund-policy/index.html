@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Refund Policy for EXAFABS.AI SaaS subscriptions — 14-day first-time-buyer refund window, processed by Paddle as Merchant of Record.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exafabs.ai/refund-policy/">
+    <meta property="og:title" content="Refund Policy — EXAFABS.AI">
+    <meta property="og:description" content="Refund Policy for EXAFABS.AI subscriptions.">
+    <meta property="og:site_name" content="EXAFABS.AI">
+    <meta name="theme-color" content="#240331">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://exafabs.ai/refund-policy/">
+    <link rel="icon" type="image/png" href="../logo-icon.png">
+    <title>Refund Policy — EXAFABS.AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #240331;
+            --bg-surface: #32103e;
+            --bg-surface-high: #3e1c49;
+            --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            --primary-solid: #9B30FF;
+            --accent-pink: #C94080;
+            --accent-orange: #F5943A;
+            --text-primary: #dcb8ff;
+            --text-surface: #fad7ff;
+            --text-secondary: #cfc2d8;
+            --text-muted: #8a7a94;
+            --glass-bg: rgba(73, 39, 85, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-card: 1.25rem;
+            --blur-glass: blur(24px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; text-rendering: optimizeLegibility; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-surface);
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+        }
+        img, svg { image-rendering: -webkit-optimize-contrast; }
+        ::selection { background: rgba(155, 48, 255, 0.3); color: #fff; }
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .nav-logo img {
+            width: 2rem;
+            height: 2rem;
+            filter: drop-shadow(0 0 8px rgba(155, 48, 255, 0.4));
+        }
+        .nav-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-back:hover { color: var(--accent-pink); }
+
+        .hero {
+            padding: 10rem 2.5rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(123,47,190,0.2) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 20%, rgba(201,64,128,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .hero h1 .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .content {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 6rem;
+        }
+        .policy-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: var(--blur-glass);
+            -webkit-backdrop-filter: var(--blur-glass);
+        }
+        .policy-card h2 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .policy-card h2 .icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .policy-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.5rem;
+        }
+        .policy-card p, .policy-card li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .policy-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0;
+        }
+        .policy-card li {
+            padding: 0.3rem 0 0.3rem 1.4rem;
+            position: relative;
+        }
+        .policy-card li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+        }
+        .policy-card a {
+            color: var(--accent-pink);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .policy-card a:hover { color: var(--accent-orange); }
+
+        .effective-date {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .footer-logo .dot {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        footer p { color: var(--text-muted); font-size: 0.85rem; }
+        footer a { color: var(--accent-pink); text-decoration: none; }
+        footer a:hover { color: var(--accent-orange); }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hero { padding: 8rem 1.5rem 3rem; }
+            .content { padding: 1.5rem 1.5rem 4rem; }
+            .policy-card { padding: 1.5rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Refund Policy",
+        "description": "Refund Policy for EXAFABS.AI SaaS subscriptions",
+        "url": "https://exafabs.ai/refund-policy/",
+        "publisher": {
+            "@type": "Organization",
+            "name": "EXAFABS.AI",
+            "url": "https://exafabs.ai"
+        }
+    }
+    </script>
+</head>
+<body>
+
+    <nav>
+        <a href="https://exafabs.ai" class="nav-logo">
+            <img src="../logo-icon.png" alt="EXAFABS.AI" width="32" height="32">
+            EXAFABS.AI
+        </a>
+        <a href="https://exafabs.ai" class="nav-back">&larr; Back to Home</a>
+    </nav>
+
+    <section class="hero">
+        <h1><span class="gradient-text">Refund Policy</span></h1>
+        <p>Clear, fair refund terms for EXAFABS.AI subscriptions — processed by Paddle as Merchant of Record.</p>
+    </section>
+
+    <div class="content">
+
+        <div class="policy-card">
+            <h2><span class="icon">📋</span> Summary</h2>
+            <ul>
+                <li><strong>14-day refund window</strong> for first-time SaaS subscribers, no questions asked</li>
+                <li>All refunds are processed by <strong>Paddle</strong>, our Merchant of Record</li>
+                <li>Refund requests: email <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a> or use the Paddle customer portal link in your order confirmation</li>
+                <li>Refunds typically arrive in <strong>5–10 business days</strong>, depending on your bank or card issuer</li>
+                <li>Mobile in-app purchases (games) are refunded through Apple App Store or Google Play, not through us</li>
+            </ul>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🧾</span> Scope</h2>
+            <p>This Refund Policy governs refunds for paid subscriptions to EXAFABS.AI SaaS products, including (but not limited to):</p>
+            <ul>
+                <li>FABS &amp; CHIP Tracker Pro (fabs.exafabs.ai)</li>
+                <li>FastAI Health Coach Pro (fastai.exafabs.ai)</li>
+                <li>Ads Engine API paid tiers</li>
+            </ul>
+            <p>It does <strong>not</strong> apply to mobile in-app purchases made inside our games (CrickBot AI, GoalBot AI, BaseHit AI, Survival Arena AI, Infinite Voyager AI). Those transactions are processed by Apple App Store or Google Play, and refund requests must be directed to the respective app store per their own policies.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">💳</span> Merchant of Record</h2>
+            <p>All SaaS subscription payments are collected by <strong>Paddle.com Market Limited</strong> ("Paddle"), acting as the authorized reseller and Merchant of Record for EXAFABS.AI. Refunds are issued by Paddle on our instruction, to the same payment method used at checkout, in the same currency as the original charge. Subscription orchestration is handled by RevenueCat.</p>
+            <p>Because Paddle is the Merchant of Record, your Paddle receipt (not an EXAFABS invoice) is the tax-valid document for your purchase, and Paddle handles all chargebacks, disputes, and tax remittance.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">✅</span> 14-Day First-Time-Buyer Refund</h2>
+            <p>If you are purchasing a paid SaaS subscription from EXAFABS.AI for the <strong>first time</strong>, you are eligible for a full refund within <strong>14 calendar days</strong> of the initial purchase date, no questions asked.</p>
+
+            <h3>How it works</h3>
+            <ul>
+                <li>The 14-day clock starts the moment your first purchase is confirmed (not when you first use the product)</li>
+                <li>The refund covers the full amount you were charged, including any tax (VAT/GST) Paddle collected on our behalf</li>
+                <li>Your access to Pro features will be removed as soon as the refund is processed — you will return to the free tier, which remains available</li>
+                <li>Refunds can take 5–10 business days to appear on your statement, depending on your bank or card issuer</li>
+            </ul>
+
+            <h3>How to request</h3>
+            <p>You have two options:</p>
+            <ul>
+                <li><strong>Self-service:</strong> click the "Manage subscription" link in your Paddle order confirmation email to open the Paddle customer portal, where you can request a refund</li>
+                <li><strong>Email us:</strong> send a message to <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a> from the email address on your account, with the subject line <em>"Refund request"</em> and your Paddle order ID (optional but speeds things up)</li>
+            </ul>
+            <p>We respond to refund requests within one business day and instruct Paddle to process eligible refunds immediately.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🔁</span> Renewals, Upgrades &amp; Downgrades</h2>
+            <h3>Automatic Renewals</h3>
+            <p>Subscription renewals (the charges that happen at the end of each month, quarter, or year) are <strong>not eligible for the 14-day no-questions refund</strong>, because by that point you've already had at least one full billing period to evaluate the product. However, if a renewal was clearly unintended (for example, you cancelled before the renewal date but the charge still went through due to a system error), contact us and we will issue a full refund.</p>
+            <p>To avoid an unwanted renewal, cancel your subscription before the next billing date using the Paddle customer portal. After cancellation you retain access until the end of the current billing period.</p>
+
+            <h3>Upgrades &amp; Downgrades</h3>
+            <p>If you upgrade from a lower tier to a higher tier mid-cycle, Paddle will typically apply a pro-rated credit for the unused portion of the old tier against the new charge. If you downgrade, the change takes effect at the start of the next billing cycle; no partial refund is issued for the remaining days at the higher tier.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🚫</span> Non-Refundable Situations</h2>
+            <p>We will generally decline refund requests in the following situations:</p>
+            <ul>
+                <li>More than 14 days have passed since the initial purchase</li>
+                <li>The request is for a second or later billing cycle on the same subscription (renewals)</li>
+                <li>The account has been terminated by us for violation of our <a href="https://exafabs.ai/terms">Terms of Service</a> (abuse, fraud, reselling, circumvention, etc.)</li>
+                <li>The user shows clear signs of abuse, such as repeated subscribe-refund cycles across multiple accounts</li>
+                <li>Mobile in-app purchases made on the Apple App Store or Google Play (please request refunds directly from the app store)</li>
+            </ul>
+            <p>Even in these cases, if you believe your situation is genuinely exceptional, contact us and we will review it on a case-by-case basis. We aim to be reasonable.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🌍</span> Statutory Consumer Rights</h2>
+            <p>This Refund Policy is offered <strong>in addition to</strong>, not in place of, any mandatory consumer rights granted to you by the laws of your country of residence.</p>
+
+            <h3>European Economic Area &amp; United Kingdom</h3>
+            <p>If you are a consumer based in the EEA or UK, you have a statutory 14-day right of withdrawal from any digital service contract under the Consumer Rights Directive and the UK Consumer Contracts Regulations. Our 14-day first-time-buyer refund window mirrors this right. Note: if you begin using the digital service within the 14-day window and explicitly consent to immediate performance, your statutory right of withdrawal may expire earlier under EU/UK law — but our voluntary 14-day refund window continues to apply.</p>
+
+            <h3>India</h3>
+            <p>If you are a consumer in India, you retain all rights granted to you under the Consumer Protection Act, 2019, including the right to lodge a complaint with the appropriate consumer commission.</p>
+
+            <h3>Other jurisdictions</h3>
+            <p>If local law grants you a longer refund window or stronger refund rights than those described above, your statutory rights prevail.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">⚖️</span> Chargebacks</h2>
+            <p>If you believe a charge is unauthorized or fraudulent, please contact us at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a> <strong>before</strong> filing a chargeback with your bank. In almost every case we can resolve the issue faster with a direct refund through Paddle than a chargeback dispute would take.</p>
+            <p>Filing a chargeback without first contacting us may result in the immediate suspension of your account until the dispute is resolved, per our <a href="https://exafabs.ai/terms">Terms of Service</a>.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">📧</span> Contact</h2>
+            <p>Refund requests and questions about this policy:</p>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a></li>
+                <li><strong>Subject line:</strong> "Refund request" (speeds up our triage)</li>
+                <li><strong>Paddle customer portal:</strong> link included in every order confirmation email</li>
+                <li><strong>Operator:</strong> Alpit Tare, sole proprietor trading as EXAFABS.AI, India</li>
+            </ul>
+            <p>See also our <a href="https://exafabs.ai/terms">Terms of Service</a> and <a href="https://exafabs.ai/privacy-policy">Privacy Policy</a>.</p>
+        </div>
+
+        <p class="effective-date">Effective Date: April 11, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
+
+    </div>
+
+    <footer>
+        <div class="footer-logo">EXAFABS<span class="dot">.</span>AI</div>
+        <p>&copy; 2026 EXAFABS.AI — All rights reserved. &nbsp;|&nbsp; <a href="https://exafabs.ai">Home</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/terms">Terms</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/privacy-policy">Privacy</a></p>
+    </footer>
+
+</body>
+</html>

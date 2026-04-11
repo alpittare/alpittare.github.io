@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Privacy Policy for EXAFABS.AI apps and games — CrickBot AI, GoalBot AI, BaseHit AI, Survival Arena AI, and Infinite Voyager AI.">
+    <meta name="description" content="Privacy Policy for EXAFABS.AI apps, games, and SaaS products — CrickBot AI, GoalBot AI, BaseHit AI, Survival Arena AI, Infinite Voyager AI, FastAI Health Coach, FABS & CHIP Tracker, and Ads Engine API.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://exafabs.ai/privacy-policy/">
     <meta property="og:title" content="Privacy Policy — EXAFABS.AI">
@@ -376,7 +376,7 @@
     <section class="hero">
         <canvas class="particle-canvas" id="heroParticles"></canvas>
         <h1><span class="gradient-text">Privacy Policy</span></h1>
-        <p>How EXAFABS.AI collects, uses, and protects your information across our apps and games.</p>
+        <p>How EXAFABS.AI collects, uses, and protects your information across our apps, games, and SaaS products.</p>
     </section>
 
     <!-- CONTENT -->
@@ -384,8 +384,10 @@
 
         <!-- COVERED APPS -->
         <div class="policy-card">
-            <h2><span class="icon">📱</span> Covered Applications</h2>
-            <p>This Privacy Policy applies to all applications developed and published by EXAFABS.AI, including:</p>
+            <h2><span class="icon">📱</span> Covered Applications &amp; Services</h2>
+            <p>This Privacy Policy applies to all applications, games, and SaaS products developed and published by EXAFABS.AI, including:</p>
+
+            <h3>Mobile Games</h3>
             <div class="app-list">
                 <div class="app-tag">CrickBot AI</div>
                 <div class="app-tag">GoalBot AI</div>
@@ -393,7 +395,15 @@
                 <div class="app-tag">Survival Arena AI</div>
                 <div class="app-tag">Infinite Voyager AI</div>
             </div>
-            <p>This policy also covers the EXAFABS.AI website at <a href="https://exafabs.ai">exafabs.ai</a> and any future applications we publish.</p>
+
+            <h3>SaaS &amp; Web Products</h3>
+            <div class="app-list">
+                <div class="app-tag">FABS &amp; CHIP Tracker</div>
+                <div class="app-tag">FastAI Health Coach</div>
+                <div class="app-tag">Ads Engine API</div>
+            </div>
+
+            <p>This policy also covers the EXAFABS.AI website at <a href="https://exafabs.ai">exafabs.ai</a>, all product sub-domains (including <a href="https://fabs.exafabs.ai">fabs.exafabs.ai</a> and <a href="https://fastai.exafabs.ai">fastai.exafabs.ai</a>), and any future applications we publish.</p>
         </div>
 
         <!-- DATA COLLECTION -->
@@ -403,23 +413,33 @@
             <h3>Information You Provide</h3>
             <ul>
                 <li>Contact information (name, email) when you reach out via our contact form or support email</li>
+                <li>Account credentials and profile data (name, email, optional profile image) when you sign up for a SaaS product such as FABS &amp; CHIP Tracker or FastAI Health Coach — authentication is handled by our identity sub-processor (Clerk)</li>
+                <li>User-generated content such as saved dashboards, bookmarks, notes, queries submitted to our AI Decision Layer, and preferences</li>
                 <li>Feedback, bug reports, or feature requests you submit</li>
             </ul>
 
             <h3>Automatically Collected Information</h3>
             <ul>
-                <li>Device information (device model, operating system version, screen resolution)</li>
-                <li>App usage data (session duration, features used, in-game progress)</li>
+                <li>Device information (device model, operating system version, browser user-agent, screen resolution)</li>
+                <li>App usage data (session duration, features used, in-game progress, pages viewed, API calls made)</li>
                 <li>Crash logs and performance diagnostics to improve app stability</li>
-                <li>General location data (country/region level only, not precise GPS)</li>
+                <li>General location data (country/region level only, not precise GPS) for localization and analytics</li>
+                <li>IP address and request metadata, retained only as long as necessary for security and abuse prevention</li>
             </ul>
+
+            <h3>AI Query Content (SaaS products only)</h3>
+            <p>Our SaaS products include AI-powered features (decision summaries, Q&amp;A, recommendations). When you submit a query to these features, the text of your query and any relevant context data is transmitted to our AI model provider (Anthropic) for processing and returned to you. Anthropic processes queries under their own privacy policy and does not use customer API traffic to train their models. We do not retain your raw query text beyond the response cycle except as needed for abuse prevention, usage metering, and rate limiting.</p>
+
+            <h3>Billing &amp; Payment Data (paid SaaS tiers only)</h3>
+            <p>When you purchase a paid subscription to a SaaS product, all payment processing is handled by our Merchant of Record (Paddle) and our billing orchestrator (RevenueCat). We do not collect, store, or have access to your credit card number, CVV, bank account details, or any other payment instrument data. We receive only the minimum information needed to fulfill your subscription: your customer ID, subscription status, entitlement level, and transaction timestamps.</p>
 
             <h3>Information We Do NOT Collect</h3>
             <ul>
                 <li>We do not collect precise GPS location data</li>
-                <li>We do not access your contacts, photos, camera, or microphone</li>
-                <li>We do not collect financial or payment card information directly — all purchases are handled securely by Apple App Store or Google Play</li>
+                <li>We do not access your contacts, photos, camera, or microphone unless you explicitly grant permission for an in-product feature that requires it</li>
+                <li>We do not collect financial or payment card information directly — mobile purchases are handled by Apple App Store or Google Play; web purchases are handled by Paddle</li>
                 <li>We do not collect data from children under 13 (see Children's Privacy section below)</li>
+                <li>We do not sell, rent, or trade your personal data to any third party</li>
             </ul>
         </div>
 
@@ -436,17 +456,33 @@
             </ul>
         </div>
 
-        <!-- THIRD PARTY SERVICES -->
+        <!-- SUB-PROCESSORS -->
         <div class="policy-card">
-            <h2><span class="icon">🔗</span> Third-Party Services</h2>
-            <p>Our apps may use the following third-party services, each with their own privacy policies:</p>
+            <h2><span class="icon">🔗</span> Sub-Processors &amp; Third-Party Services</h2>
+            <p>We rely on a small number of vetted third-party service providers ("sub-processors") to operate our products. Each sub-processor is contractually bound to protect your data and acts solely on our documented instructions. Each one has its own privacy policy, which governs their independent handling of any data.</p>
+
+            <h3>SaaS &amp; Web Product Sub-Processors</h3>
             <ul>
-                <li><strong>Apple App Store / Google Play</strong> — for app distribution and in-app purchases</li>
-                <li><strong>Apple GameKit / Game Center</strong> — for leaderboards and achievements</li>
-                <li><strong>Analytics services</strong> — for anonymous usage statistics and crash reporting</li>
+                <li><strong>Clerk</strong> (clerk.com) — identity, authentication, session management, user profiles</li>
+                <li><strong>Convex</strong> (convex.dev) — application database, real-time data sync, serverless backend functions</li>
+                <li><strong>Vercel</strong> (vercel.com) — web hosting, edge delivery, build &amp; deployment pipeline</li>
+                <li><strong>Mapbox</strong> (mapbox.com) — map tile rendering and geospatial visualization (FABS &amp; CHIP Tracker only)</li>
+                <li><strong>Anthropic</strong> (anthropic.com) — Claude AI models powering our Decision Layer, AI Q&amp;A, and insight generation</li>
+                <li><strong>Paddle</strong> (paddle.com) — Merchant of Record for web subscriptions; handles payment processing, global tax (VAT/GST) calculation and remittance, invoicing, and chargebacks</li>
+                <li><strong>RevenueCat</strong> (revenuecat.com) — subscription orchestration, entitlement management, cross-platform billing state</li>
+                <li><strong>Sentry</strong> (sentry.io) — error monitoring and performance diagnostics (when enabled)</li>
+                <li><strong>Google Workspace</strong> — transactional email (support, billing receipts, account notifications) and customer support correspondence</li>
+            </ul>
+
+            <h3>Mobile Game Sub-Processors</h3>
+            <ul>
+                <li><strong>Apple App Store / Google Play</strong> — mobile app distribution and in-app purchases</li>
+                <li><strong>Apple GameKit / Game Center</strong> — leaderboards, achievements, and multiplayer matchmaking</li>
+                <li><strong>Analytics services</strong> — anonymous usage statistics and crash reporting</li>
                 <li><strong>Ad networks</strong> — some free versions may display ads; ad partners may collect device identifiers for ad personalization (you can opt out via your device settings)</li>
             </ul>
-            <p>We do not sell your personal data to any third party.</p>
+
+            <p>We do not sell your personal data to any third party. We do not share your data with sub-processors except as strictly necessary to operate the service you requested.</p>
         </div>
 
         <!-- DATA STORAGE & SECURITY -->
@@ -474,19 +510,57 @@
             <p>Depending on your jurisdiction, you may have the right to:</p>
             <ul>
                 <li>Access the personal data we hold about you</li>
-                <li>Request correction or deletion of your personal data</li>
+                <li>Request correction or deletion of your personal data ("right to erasure" / "right to be forgotten")</li>
                 <li>Object to or restrict our processing of your data</li>
-                <li>Request a portable copy of your data</li>
+                <li>Request a portable copy of your data in a machine-readable format</li>
                 <li>Withdraw consent at any time (where processing is based on consent)</li>
                 <li>Opt out of personalized advertising via your device settings</li>
+                <li>Lodge a complaint with your local data protection authority</li>
             </ul>
-            <p>To exercise any of these rights, contact us at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
+
+            <h3>EU / UK (GDPR)</h3>
+            <p>If you are in the European Economic Area, United Kingdom, or Switzerland, you have the rights granted by the EU General Data Protection Regulation (GDPR) and the UK GDPR. Our legal basis for processing is typically (a) performance of a contract, (b) legitimate interest in operating our services, or (c) your consent. You have the right to lodge a complaint with your national supervisory authority.</p>
+
+            <h3>India (DPDP Act)</h3>
+            <p>If you are in India, you have the rights granted by the Digital Personal Data Protection Act, 2023 (DPDP Act), including access, correction, erasure, grievance redressal, and nomination. Our Data Protection Officer / Grievance Officer is Alpit Tare, reachable at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
+
+            <h3>California (CCPA / CPRA)</h3>
+            <p>If you are a California resident, you have the rights granted by the California Consumer Privacy Act, as amended by the California Privacy Rights Act, including the right to know, delete, correct, and opt out of the sale or sharing of personal information. We do not sell or share personal information as those terms are defined in the CCPA.</p>
+
+            <p>To exercise any of these rights, please contact us at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>. We will respond within the timeframes required by applicable law (typically 30 days).</p>
         </div>
 
-        <!-- IN-APP PURCHASES -->
+        <!-- INTERNATIONAL TRANSFERS -->
         <div class="policy-card">
-            <h2><span class="icon">💳</span> In-App Purchases</h2>
-            <p>Some of our games offer optional in-app purchases (coins, power-ups, cosmetic items). All transactions are processed entirely through Apple App Store or Google Play. EXAFABS.AI does not collect, store, or have access to your payment information, credit card numbers, or billing details.</p>
+            <h2><span class="icon">🌍</span> International Data Transfers</h2>
+            <p>EXAFABS.AI is operated from India. Our sub-processors are located in various jurisdictions including the United States, European Union, and India. When your personal data is transferred across borders, we rely on recognized safeguards including the European Commission's Standard Contractual Clauses (SCCs), the UK International Data Transfer Addendum, and equivalent mechanisms for other jurisdictions.</p>
+            <p>By using our services, you acknowledge that your data may be processed in countries other than your own, subject to the safeguards described above.</p>
+        </div>
+
+        <!-- DATA RETENTION -->
+        <div class="policy-card">
+            <h2><span class="icon">⏱️</span> Data Retention</h2>
+            <p>We retain personal data only as long as necessary to fulfill the purposes described in this policy, comply with legal obligations, resolve disputes, and enforce our agreements. Specifically:</p>
+            <ul>
+                <li><strong>Account data</strong> — retained for the lifetime of your account; deleted within 30 days of account closure upon request</li>
+                <li><strong>Billing records</strong> — retained for the period required by applicable tax law (typically 7 years for India)</li>
+                <li><strong>AI query logs</strong> — retained for up to 30 days for abuse prevention and usage metering, then deleted or anonymized</li>
+                <li><strong>Error and crash logs</strong> — retained for up to 90 days, then deleted</li>
+                <li><strong>Support correspondence</strong> — retained for up to 2 years to allow reference to past issues</li>
+            </ul>
+        </div>
+
+        <!-- PURCHASES & BILLING -->
+        <div class="policy-card">
+            <h2><span class="icon">💳</span> Purchases &amp; Billing</h2>
+
+            <h3>Mobile In-App Purchases (Games)</h3>
+            <p>Some of our games offer optional in-app purchases (coins, power-ups, cosmetic items). All mobile transactions are processed entirely through Apple App Store or Google Play. EXAFABS.AI does not collect, store, or have access to your payment information, credit card numbers, or billing details.</p>
+
+            <h3>Web Subscriptions (SaaS Products)</h3>
+            <p>Paid subscriptions to our SaaS products (e.g., FABS &amp; CHIP Tracker Pro, FastAI Health Coach Pro) are processed by <strong>Paddle</strong>, acting as our Merchant of Record, with subscription orchestration handled by <strong>RevenueCat</strong>. Paddle handles all card processing, global tax calculation and remittance (VAT/GST), invoicing, and chargebacks under their own privacy and security policies.</p>
+            <p>We never see or store your full card number, CVV, bank account details, or any payment instrument data. We receive only the minimum data required to provision your subscription: customer ID, entitlement level, subscription status, and transaction timestamps.</p>
+            <p>For billing inquiries, receipts, or to cancel a subscription, please visit the Paddle-hosted customer portal link included in your order confirmation email, or contact <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
         </div>
 
         <!-- CHANGES TO POLICY -->
@@ -500,13 +574,14 @@
             <h2><span class="icon">📧</span> Contact Us</h2>
             <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
             <ul>
-                <li><strong>Email:</strong> <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a></li>
+                <li><strong>Email / Grievance Officer:</strong> <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a></li>
                 <li><strong>Website:</strong> <a href="https://exafabs.ai">exafabs.ai</a></li>
-                <li><strong>Developer:</strong> Alpit Tare, EXAFABS.AI</li>
+                <li><strong>Operator:</strong> Alpit Tare, sole proprietor trading as EXAFABS.AI, India</li>
             </ul>
+            <p>See also our <a href="https://exafabs.ai/terms">Terms of Service</a> and <a href="https://exafabs.ai/refund-policy">Refund Policy</a>.</p>
         </div>
 
-        <p class="effective-date">Effective Date: April 6, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
+        <p class="effective-date">Effective Date: April 11, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
 
     </div>
 

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Terms of Service for EXAFABS.AI — the binding agreement between you and EXAFABS.AI governing use of our apps, games, and SaaS products including FABS & CHIP Tracker, FastAI Health Coach, and Ads Engine API.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exafabs.ai/terms/">
+    <meta property="og:title" content="Terms of Service — EXAFABS.AI">
+    <meta property="og:description" content="Terms of Service for EXAFABS.AI apps, games, and SaaS products.">
+    <meta property="og:site_name" content="EXAFABS.AI">
+    <meta name="theme-color" content="#240331">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://exafabs.ai/terms/">
+    <link rel="icon" type="image/png" href="../logo-icon.png">
+    <title>Terms of Service — EXAFABS.AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #240331;
+            --bg-surface: #32103e;
+            --bg-surface-high: #3e1c49;
+            --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            --primary-solid: #9B30FF;
+            --accent-pink: #C94080;
+            --accent-orange: #F5943A;
+            --text-primary: #dcb8ff;
+            --text-surface: #fad7ff;
+            --text-secondary: #cfc2d8;
+            --text-muted: #8a7a94;
+            --glass-bg: rgba(73, 39, 85, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-card: 1.25rem;
+            --blur-glass: blur(24px);
+            --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            scroll-behavior: smooth;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-surface);
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+        }
+
+        img, svg { image-rendering: -webkit-optimize-contrast; }
+        canvas { image-rendering: crisp-edges; }
+
+        ::selection {
+            background: rgba(155, 48, 255, 0.3);
+            color: #fff;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .nav-logo img {
+            width: 2rem;
+            height: 2rem;
+            filter: drop-shadow(0 0 8px rgba(155, 48, 255, 0.4));
+        }
+        .nav-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .nav-back:hover { color: var(--accent-pink); }
+
+        /* HERO */
+        .hero {
+            padding: 10rem 2.5rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(123,47,190,0.2) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 20%, rgba(201,64,128,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .hero h1 .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* CONTENT */
+        .content {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 6rem;
+        }
+        .policy-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: var(--blur-glass);
+            -webkit-backdrop-filter: var(--blur-glass);
+        }
+        .policy-card h2 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .policy-card h2 .icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .policy-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.5rem;
+        }
+        .policy-card p,
+        .policy-card li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .policy-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0;
+        }
+        .policy-card li {
+            padding: 0.3rem 0 0.3rem 1.4rem;
+            position: relative;
+        }
+        .policy-card li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+        }
+        .policy-card a {
+            color: var(--accent-pink);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .policy-card a:hover { color: var(--accent-orange); }
+
+        .effective-date {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .footer-logo .dot {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        footer a {
+            color: var(--accent-pink);
+            text-decoration: none;
+        }
+        footer a:hover { color: var(--accent-orange); }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hero { padding: 8rem 1.5rem 3rem; }
+            .content { padding: 1.5rem 1.5rem 4rem; }
+            .policy-card { padding: 1.5rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Terms of Service",
+        "description": "Terms of Service for EXAFABS.AI apps, games, and SaaS products",
+        "url": "https://exafabs.ai/terms/",
+        "publisher": {
+            "@type": "Organization",
+            "name": "EXAFABS.AI",
+            "url": "https://exafabs.ai"
+        }
+    }
+    </script>
+</head>
+<body>
+
+    <nav>
+        <a href="https://exafabs.ai" class="nav-logo">
+            <img src="../logo-icon.png" alt="EXAFABS.AI" width="32" height="32">
+            EXAFABS.AI
+        </a>
+        <a href="https://exafabs.ai" class="nav-back">&larr; Back to Home</a>
+    </nav>
+
+    <section class="hero">
+        <h1><span class="gradient-text">Terms of Service</span></h1>
+        <p>The agreement between you and EXAFABS.AI governing use of our apps, games, and SaaS products.</p>
+    </section>
+
+    <div class="content">
+
+        <div class="policy-card">
+            <h2><span class="icon">📄</span> 1. Agreement</h2>
+            <p>These Terms of Service ("Terms") form a binding legal agreement between you ("you," "user") and Alpit Tare, sole proprietor trading as <strong>EXAFABS.AI</strong>, India ("EXAFABS," "we," "us," "our"). They govern your access to and use of all websites, mobile applications, games, APIs, and SaaS products offered by EXAFABS.AI, including but not limited to:</p>
+            <ul>
+                <li>The exafabs.ai website and any sub-domains</li>
+                <li>FABS &amp; CHIP Tracker (fabs.exafabs.ai)</li>
+                <li>FastAI Health Coach (fastai.exafabs.ai)</li>
+                <li>Ads Engine API</li>
+                <li>CrickBot AI, GoalBot AI, BaseHit AI, Survival Arena AI, Infinite Voyager AI</li>
+                <li>Any future apps, games, or services we publish under the EXAFABS brand</li>
+            </ul>
+            <p>By accessing, downloading, installing, registering for, or otherwise using any of our products or services (each, a "Service"), you agree to be bound by these Terms. If you do not agree, do not use the Services.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">👤</span> 2. Eligibility &amp; Accounts</h2>
+            <p>You must be at least 13 years old to use our Services, and at least 18 years old (or the age of majority in your jurisdiction) to enter into a paid subscription. By registering an account you represent and warrant that you meet these requirements.</p>
+            <p>Account registration is handled by our identity sub-processor (Clerk). You are responsible for maintaining the confidentiality of your credentials and for all activity that occurs under your account. Notify us immediately at <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a> if you suspect unauthorized access.</p>
+            <p>You agree to provide accurate and current information and to keep it updated. We reserve the right to suspend or terminate accounts that contain false, misleading, or fraudulent information.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">💳</span> 3. Subscriptions, Billing &amp; Merchant of Record</h2>
+
+            <h3>Paid Tiers</h3>
+            <p>Some of our SaaS Services offer paid subscription tiers ("Paid Tiers," e.g., FABS &amp; CHIP Tracker Pro, FastAI Health Coach Pro). Available plans, features, and pricing are described on the relevant product page and may change from time to time.</p>
+
+            <h3>Merchant of Record</h3>
+            <p><strong>Paddle.com Market Limited</strong> ("Paddle") acts as the authorized reseller and Merchant of Record for all SaaS subscription purchases made through our web products. When you purchase a subscription, your contract for the purchase transaction is with Paddle; Paddle is responsible for card processing, fraud prevention, invoicing, global tax (VAT/GST) calculation and remittance, and chargeback handling. Subscription orchestration is handled by RevenueCat.</p>
+            <p>Your use of the Services remains governed by these Terms between you and EXAFABS.AI. Paddle's own terms and privacy policy apply to the payment transaction itself and can be found at <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener">paddle.com/legal/checkout-buyer-terms</a>.</p>
+
+            <h3>Auto-Renewal</h3>
+            <p>Subscriptions automatically renew at the end of each billing period (monthly, quarterly, or annual, as selected) at the then-current price until cancelled. You authorize Paddle to charge your payment method on each renewal date. You may cancel at any time from the Paddle-hosted customer portal link in your order confirmation email, or by emailing <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>. Cancellation takes effect at the end of the current billing period, and you retain access until that date.</p>
+
+            <h3>Price Changes</h3>
+            <p>We may change subscription prices by giving you at least 30 days' advance notice by email. Price changes take effect on your next renewal. If you do not agree to a price change, you may cancel before the renewal date.</p>
+
+            <h3>Mobile In-App Purchases</h3>
+            <p>Purchases made inside our mobile games are handled entirely by Apple App Store or Google Play and are subject to their respective terms of sale. EXAFABS.AI is not a party to those transactions and cannot process refunds for them directly — refund requests for mobile purchases must be directed to the respective app store.</p>
+
+            <h3>Refunds</h3>
+            <p>Refunds for Paid Tiers are governed by our <a href="https://exafabs.ai/refund-policy">Refund Policy</a>, which is incorporated into these Terms by reference.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🎯</span> 4. Acceptable Use</h2>
+            <p>You agree not to, and not to permit any third party to:</p>
+            <ul>
+                <li>Use the Services for any unlawful, harmful, deceptive, or fraudulent purpose</li>
+                <li>Reverse-engineer, decompile, disassemble, or attempt to extract source code from any Service, except to the extent permitted by applicable law</li>
+                <li>Circumvent, disable, or interfere with security or authentication features</li>
+                <li>Scrape, crawl, harvest, or bulk-download data beyond what is offered via our official APIs or export features</li>
+                <li>Use automated systems (bots, scripts, headless browsers) to generate abusive traffic or exhaust rate limits</li>
+                <li>Interfere with or disrupt the integrity or performance of the Services or the data they contain</li>
+                <li>Resell, sublicense, or redistribute the Services or their output without our prior written consent</li>
+                <li>Use the Services to build a competing product, train a competing AI model, or benchmark against us for publication without prior written consent</li>
+                <li>Upload malicious code, malware, spyware, or any content that infringes the intellectual property or privacy rights of others</li>
+                <li>Impersonate any person or entity, or misrepresent your affiliation with any person or entity</li>
+            </ul>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🤖</span> 5. AI Features &amp; Disclaimers</h2>
+            <p>Several of our Services include AI-powered features (e.g., our Decision Layer, AI Q&amp;A, insight generation, health coaching suggestions). These features rely on large language models provided by third parties including Anthropic (Claude) and may produce outputs that are incomplete, inaccurate, biased, out of date, or misleading ("hallucinations").</p>
+            <p><strong>You are solely responsible for independently verifying any AI-generated output before acting on it.</strong> AI outputs are provided for informational and research purposes only and do not constitute professional financial, investment, medical, legal, or engineering advice. Specifically:</p>
+            <ul>
+                <li>FABS &amp; CHIP Tracker AI insights are not investment advice and should not be the sole basis for any financial, procurement, or engineering decision</li>
+                <li>FastAI Health Coach suggestions are not medical advice; always consult a qualified healthcare professional before making health decisions</li>
+                <li>Game AI opponents are for entertainment only</li>
+            </ul>
+            <p>We make no warranty that any AI output is accurate, complete, fit for any particular purpose, or free of bias.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">📊</span> 6. Data Sources &amp; Third-Party Content</h2>
+            <p>Our Services may display data, maps, images, or content sourced from third parties (including but not limited to Mapbox for geospatial tiles, public filings from semiconductor fabs, and public financial data). This third-party content is provided "as-is" and remains the property of its respective owners. We do not guarantee its accuracy, completeness, or timeliness.</p>
+            <p>Any public data we compile (fab locations, capacity estimates, product roadmaps) is the product of independent research and may contain errors, omissions, or outdated information. Do not rely on it for any purpose where accuracy is critical without independent verification.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">©️</span> 7. Intellectual Property</h2>
+            <p>The Services, including all software, designs, logos, text, graphics, compiled datasets, and original content, are owned by EXAFABS.AI or its licensors and are protected by Indian and international copyright, trademark, and other intellectual property laws.</p>
+            <p>Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to access and use the Services for your personal or internal business use. This license does not include the right to resell, sublicense, or redistribute any part of the Services.</p>
+
+            <h3>Your Content</h3>
+            <p>You retain ownership of any content you upload to or generate within the Services (bookmarks, notes, saved dashboards, queries). By uploading such content, you grant us a worldwide, royalty-free license to host, store, process, and display it solely to provide the Services to you.</p>
+
+            <h3>Feedback</h3>
+            <p>If you send us feedback, ideas, or suggestions, you agree that we may use them without any obligation or compensation to you.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🔒</span> 8. Privacy</h2>
+            <p>Our collection, use, and protection of personal data is described in our <a href="https://exafabs.ai/privacy-policy">Privacy Policy</a>, which is incorporated into these Terms by reference. By using the Services you consent to our processing of personal data in accordance with the Privacy Policy.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">⚠️</span> 9. Disclaimers &amp; Warranty</h2>
+            <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SERVICES ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR THAT THE SERVICES WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE.</p>
+            <p>We do not warrant that the Services will meet your specific requirements or that any defects will be corrected. Your use of the Services is at your sole risk.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">⚖️</span> 10. Limitation of Liability</h2>
+            <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL EXAFABS.AI, ALPIT TARE, OR ANY OF OUR AGENTS, EMPLOYEES, OR LICENSORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING LOST PROFITS, LOST REVENUE, LOST DATA, OR BUSINESS INTERRUPTION, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+            <p>OUR TOTAL CUMULATIVE LIABILITY TO YOU FOR ALL CLAIMS ARISING OUT OF OR RELATING TO THE SERVICES OR THESE TERMS IS LIMITED TO THE GREATER OF (A) THE AMOUNT YOU PAID TO PADDLE FOR THE APPLICABLE SERVICE IN THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO THE CLAIM, OR (B) ONE HUNDRED US DOLLARS (US$100).</p>
+            <p>These limitations apply regardless of the legal theory (contract, tort, negligence, strict liability, or otherwise) and even if a limited remedy is found to have failed its essential purpose. Some jurisdictions do not allow the exclusion of certain warranties or limitation of certain damages — in such jurisdictions our liability is limited to the greatest extent permitted by law.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🛡️</span> 11. Indemnification</h2>
+            <p>You agree to indemnify, defend, and hold harmless EXAFABS.AI, Alpit Tare, and our agents, employees, and licensors from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or in any way connected with (a) your use of or access to the Services, (b) your violation of these Terms, (c) your violation of any third-party right, including any intellectual property, privacy, or proprietary right, or (d) any content you upload or generate through the Services.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">⏸️</span> 12. Suspension &amp; Termination</h2>
+            <p>We may suspend or terminate your access to the Services at any time, with or without notice, if we reasonably believe you have violated these Terms, applicable law, or engaged in abusive or fraudulent behavior. Where reasonably possible, we will give you notice and an opportunity to cure before terminating a paid subscription.</p>
+            <p>You may terminate your account at any time by cancelling your subscription and/or deleting your account through the in-product settings or by emailing <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
+            <p>Upon termination, your right to access and use the Services ceases immediately. Sections that by their nature should survive termination (including ownership provisions, warranty disclaimers, indemnification, and limitations of liability) will survive.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🏛️</span> 13. Governing Law &amp; Dispute Resolution</h2>
+            <p>These Terms and any dispute arising out of or relating to them or the Services are governed by and construed in accordance with the laws of India, without regard to conflict-of-laws principles.</p>
+            <p>The courts of Mumbai, Maharashtra, India shall have exclusive jurisdiction to settle any dispute arising out of or in connection with these Terms, subject to the mandatory consumer protection rights available to you under the laws of your country of residence.</p>
+            <p>If you are a consumer in the European Economic Area or the United Kingdom, you retain the benefit of any mandatory consumer protection rights granted to you by the law of your country of residence.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🔄</span> 14. Changes to These Terms</h2>
+            <p>We may revise these Terms from time to time. When we make material changes, we will update the "Effective Date" below and, for registered users, notify you by email or in-product notice at least 14 days before the changes take effect. Continued use of the Services after the effective date constitutes acceptance of the revised Terms. If you do not agree to the revised Terms, your sole remedy is to stop using the Services and cancel any paid subscription.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">🧩</span> 15. Miscellaneous</h2>
+            <ul>
+                <li><strong>Entire Agreement.</strong> These Terms, together with the Privacy Policy and Refund Policy, constitute the entire agreement between you and EXAFABS.AI regarding the Services.</li>
+                <li><strong>Severability.</strong> If any provision of these Terms is held to be unenforceable, the remaining provisions will remain in full force and effect.</li>
+                <li><strong>No Waiver.</strong> Our failure to enforce any provision of these Terms is not a waiver of that provision.</li>
+                <li><strong>Assignment.</strong> You may not assign or transfer these Terms without our prior written consent. We may assign these Terms without restriction, including in connection with a merger, acquisition, or sale of assets.</li>
+                <li><strong>Force Majeure.</strong> We are not liable for any failure or delay in performance caused by events beyond our reasonable control, including natural disasters, acts of war or terrorism, labor disputes, internet outages, or third-party service failures.</li>
+                <li><strong>Notices.</strong> Notices to us must be sent to <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>. Notices to you may be sent to the email address associated with your account or posted in-product.</li>
+            </ul>
+        </div>
+
+        <div class="policy-card">
+            <h2><span class="icon">📧</span> 16. Contact</h2>
+            <p>If you have any questions about these Terms, please contact us:</p>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a></li>
+                <li><strong>Website:</strong> <a href="https://exafabs.ai">exafabs.ai</a></li>
+                <li><strong>Operator:</strong> Alpit Tare, sole proprietor trading as EXAFABS.AI, India</li>
+            </ul>
+            <p>See also our <a href="https://exafabs.ai/privacy-policy">Privacy Policy</a> and <a href="https://exafabs.ai/refund-policy">Refund Policy</a>.</p>
+        </div>
+
+        <p class="effective-date">Effective Date: April 11, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
+
+    </div>
+
+    <footer>
+        <div class="footer-logo">EXAFABS<span class="dot">.</span>AI</div>
+        <p>&copy; 2026 EXAFABS.AI — All rights reserved. &nbsp;|&nbsp; <a href="https://exafabs.ai">Home</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/privacy-policy">Privacy</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/refund-policy">Refund Policy</a></p>
+    </footer>
+
+</body>
+</html>
