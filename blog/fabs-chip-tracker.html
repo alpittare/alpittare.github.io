@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FABS Chip Tracker: A Claude-Powered Intelligence Layer for the Global Semiconductor Supply Chain | ExaFabs</title>
+    <meta name="description" content="Deep dive into FABS Chip Tracker — how we built a real-time semiconductor intelligence platform with Next.js, Convex, and Claude AI to decode the $600B global fab ecosystem.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://exafabs.ai/blog/fabs-chip-tracker.html">
+    <meta property="og:title" content="FABS Chip Tracker: A Claude-Powered Intelligence Layer for the Global Semiconductor Supply Chain">
+    <meta property="og:description" content="Deep dive into FABS Chip Tracker — how we built a real-time semiconductor intelligence platform with Next.js, Convex, and Claude AI to decode the $600B global fab ecosystem.">
+    <meta property="og:image" content="https://exafabs.ai/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://exafabs.ai/og-image.png">
+    <meta name="twitter:title" content="FABS Chip Tracker: A Claude-Powered Intelligence Layer for the Global Semiconductor Supply Chain">
+    <meta name="twitter:description" content="Deep dive into FABS Chip Tracker — how we built a real-time semiconductor intelligence platform with Next.js, Convex, and Claude AI to decode the $600B global fab ecosystem.">
+    <link rel="canonical" href="https://exafabs.ai/blog/fabs-chip-tracker.html">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #240331;
+            color: #fad7ff;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img, svg {
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        canvas {
+            image-rendering: crisp-edges;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: #8a7a94;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #C94080;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(123, 47, 190, 0.15), rgba(201, 64, 128, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(155, 48, 255, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #e0c3ff, #C94080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: #8a7a94;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-badge {
+            background: rgba(155, 48, 255, 0.2);
+            color: #dcb8ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(155, 48, 255, 0.3);
+        }
+
+        /* Article Container */
+        .article-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #fad7ff;
+            background: linear-gradient(135deg, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        article h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            color: #dcb8ff;
+        }
+
+        article p {
+            font-size: 18px;
+            color: #fad7ff;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        article ul, article ol {
+            margin: 24px 0 24px 24px;
+            font-size: 18px;
+            color: #fad7ff;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        article strong {
+            color: #fad7ff;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #dcb8ff;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #8a7a94;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: rgba(155, 48, 255, 0.08);
+            border-left: 4px solid #9B30FF;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 16px;
+        }
+
+        .feature-list strong {
+            color: #C94080;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(201, 64, 128, 0.08);
+            border: 1px solid rgba(201, 64, 128, 0.15);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(155, 48, 255, 0.1), rgba(201, 64, 128, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 48px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 24px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            color: #fad7ff;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(155, 48, 255, 0.3);
+        }
+
+        /* Related Posts Section */
+        .related-posts {
+            background: rgba(155, 48, 255, 0.05);
+            border: 1px solid rgba(155, 48, 255, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .related-posts h3 {
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .related-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-post-card {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #fad7ff;
+            transition: all 0.3s ease;
+        }
+
+        .related-post-card:hover {
+            border-color: rgba(201, 64, 128, 0.4);
+            background: rgba(201, 64, 128, 0.1);
+        }
+
+        .related-post-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #dcb8ff;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(50, 16, 62, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px;
+            text-align: center;
+            color: #8a7a94;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+            z-index: 2;
+            position: relative;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: #8a7a94;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #C94080;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 50px 24px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .meta-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .article-container {
+                padding: 40px 24px;
+            }
+
+            article h2 {
+                font-size: 26px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            article p, article ul, article ol {
+                font-size: 16px;
+            }
+
+            .code-block {
+                padding: 16px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+                margin: 40px 0;
+            }
+
+            .related-posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "FABS Chip Tracker: A Claude-Powered Intelligence Layer for the Global Semiconductor Supply Chain",
+      "description": "Deep dive into FABS Chip Tracker — how we built a real-time semiconductor intelligence platform with Next.js, Convex, and Claude AI to decode the $600B global fab ecosystem.",
+      "image": "https://exafabs.ai/og-image.png",
+      "author": {
+        "@type": "Organization",
+        "name": "EXAFABS",
+        "url": "https://exafabs.ai"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "EXAFABS",
+        "url": "https://exafabs.ai",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://exafabs.ai/logo-icon.png"
+        }
+      },
+      "datePublished": "2026-04-11",
+      "dateModified": "2026-04-11",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://exafabs.ai/blog/fabs-chip-tracker.html"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EXAFABS.AI</div>
+        <a href="../index.html" class="nav-link">← Back to Home</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>FABS Chip Tracker: A Claude-Powered Intelligence Layer for the Global Semiconductor Supply Chain</h1>
+            <div class="meta-info">
+                <div class="meta-badge">
+                    <span>📖 12 min read</span>
+                </div>
+                <div class="meta-badge">
+                    <span class="category-badge">AI / Intelligence</span>
+                </div>
+                <div class="meta-badge">
+                    <span>2026</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article -->
+    <div class="article-container">
+        <article>
+            <!-- Introduction -->
+            <h2>Introduction</h2>
+            <p>FABS Chip Tracker is our second flagship product at EXAFABS — a real-time intelligence platform for the global semiconductor industry, now live at <a href="https://fabs.exafabs.ai" style="color:#C94080;">fabs.exafabs.ai</a>. Where FastAI Health Coach brought Claude to the most intimate question people ask ("what should I eat?"), FABS Chip Tracker applies the same AI-first philosophy to one of the most consequential questions in modern economics: where are the chips being made, who is building them, and what happens to the global economy if a single fab goes offline?</p>
+            <p>This post walks through the problem space, the architecture, the AI Decision Layer that sits at the core of the product, and the deployment path we took to get from "code on disk" to "live URL behind a real domain, serving real intelligence to real users."</p>
+
+            <!-- The Problem -->
+            <h2>The Problem: Semiconductors Are the Most Critical Supply Chain Nobody Can See</h2>
+            <p>Every modern economy runs on chips. Your phone, your car, your power grid, your fighter jets, your AI data centers — all of them depend on a tiny number of fabrication plants ("fabs") spread across a small number of countries. And yet the data to actually understand this supply chain is fragmented, paywalled, or buried inside investor reports written for a different audience. Here's why that matters:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Dangerous Concentration:</strong> Roughly 62% of the world's leading-edge logic capacity sits in Taiwan, and the overwhelming majority of that is inside a single company (TSMC). A small geological or geopolitical event there would ripple into every industry that uses a chip smaller than 7nm.</li>
+                    <li><strong>Data is Fragmented:</strong> Fab locations, wafer capacity, CAPEX cycles, process nodes, and customer relationships live across press releases, 10-Ks, trade-press reporting, and niche industry databases. There is no single source of truth that a policy analyst or an investor can query.</li>
+                    <li><strong>No Decision Layer:</strong> Even when the raw numbers exist, turning them into a decision ("should my fund rotate out of cloud infra into foundry equipment?") still requires hours of manual synthesis. Dashboards give you <em>data</em>; they don't give you <em>answers</em>.</li>
+                    <li><strong>Fast-Moving Policy Landscape:</strong> The CHIPS Act, India's ISM program, the EU Chips Act, Japan's rebuild strategy — these are all rewriting the map of where chips are made. Static reports go stale the week they're published.</li>
+                    <li><strong>Analysts Don't Have Time:</strong> Equity analysts, policy researchers, and strategic planners are the people who need this intelligence most — and they're also the people with the least time to assemble it from raw sources.</li>
+                </ul>
+            </div>
+
+            <!-- Our AI-First Solution -->
+            <h2>Our AI-First Solution: Live Data, Meet Claude</h2>
+            <p>FABS Chip Tracker flips the dashboard model on its head. Instead of building "charts with a chatbot bolted on," we designed the platform around a Claude-powered AI Decision Layer from the very first commit. The data pipeline exists <em>to feed the AI</em>, not the other way around.</p>
+
+            <h3>Interactive Global Fab Map</h3>
+            <p>The homepage is a Mapbox-powered map of 60+ fabs across 14 countries, covering 21 operator companies and roughly 2.73 million wafers per month of combined capacity. Every fab is clickable — tap TSMC Fab 18 and you see the process node (3nm), the wafer capacity, the CAPEX history, the customers, and the risk signals. The same data is available through canonical company pages (<code>/companies/tsmc</code>, <code>/companies/samsung</code>, etc.) that also serve as SEO landing pages.</p>
+
+            <h3>AI Decision Layer: Claude-Grounded Strategic Q&amp;A</h3>
+            <p>The core differentiator is the Decision Layer. Ask a strategic question — "what happens to automotive supply if a Taiwan earthquake takes TSMC Fab 18 offline for 90 days?" — and Claude answers using the actual fab data as grounding. It's not ChatGPT with a web search; it's a retrieval-augmented reasoning layer that operates on structured, curated, versioned intelligence.</p>
+
+            <div class="highlight-box">
+                <p>When you ask FABS a question, Claude receives a structured context pack: the list of fabs relevant to your question, their nodes and capacities, recent CAPEX moves, known customer relationships, the status of relevant policy programs, and any published risk signals. This transforms the response from a confident-sounding guess into a reasoned answer you can actually take to an investment committee or a policy briefing.</p>
+            </div>
+
+            <p>The Decision Layer is gated behind a short decision-deck cache (five minutes) and an IP-based rate limit so that free-tier users can ask real questions without our API bill exploding — and so that high-frequency users get pushed toward the Pro tier, where the model runs with larger context windows and longer memory.</p>
+
+            <h3>Live Intelligence Stream</h3>
+            <p>The <code>/insights</code> page is a continuously-updated intelligence feed generated by a Convex cron that calls Claude to summarize the week's industry movement, then writes the results into the <code>fabs_insights</code> table. Readers see the feed; our backend sees an auditable chain of AI-generated rows with source citations. If the model hallucinates, we can trace it back to the exact prompt and input set that produced it.</p>
+
+            <h3>Capacity Dashboard</h3>
+            <p>For analysts who want the raw quantitative view, <code>/dashboard</code> is a capacity dashboard that breaks wafer output down by country, operator, and process node. It's the same underlying data the AI Decision Layer uses — we just expose it as charts so that the humans and the model are literally looking at the same numbers.</p>
+
+            <!-- Tech Stack -->
+            <h2>Tech Stack: Building a Production Intelligence Platform</h2>
+
+            <h3>Web Architecture</h3>
+            <ul>
+                <li><strong>Next.js 15 (App Router):</strong> Server components for the SEO landing pages, client components for the interactive map and the Decision Layer. Turbopack in dev, standard Next build in production.</li>
+                <li><strong>Convex Backend:</strong> Real-time reactive database for the fab catalog, insights feed, and usage metrics. Cron functions run the weekly insight generation pipeline and refresh derived capacity rollups. Queries are reactive, so the frontend never has to poll.</li>
+                <li><strong>Claude API via Server Routes:</strong> All Decision Layer and Insights generation calls run server-side through Next.js API routes. API keys never touch the client, and the server layer adds caching, rate limiting, and fallback behavior when the model is rate-limited.</li>
+                <li><strong>Mapbox GL for Geographic Visualization:</strong> The fab map uses Mapbox's vector tiles with a custom dark theme tuned to the EXAFABS palette (<code>#240331</code> base, purple-pink-orange accent gradient).</li>
+                <li><strong>Clerk for Auth:</strong> Google and GitHub SSO, with middleware that selectively gates Pro-tier routes while keeping the map, dashboard, insights, and SEO pages public so that search engines (and curious newcomers) can land on them without bouncing into a login wall.</li>
+                <li><strong>Vercel Edge Runtime:</strong> The app is deployed on Vercel with a custom domain (<code>fabs.exafabs.ai</code>) and a Let's Encrypt certificate. Edge caching handles the high-traffic SEO surfaces, the Node runtime handles the AI routes.</li>
+            </ul>
+
+            <h3>Data Pipeline</h3>
+            <p>The fab catalog starts as a single canonical JSON file (<code>data/seed/fabs.json</code>) that is treated as the source of truth. A Python build script (<code>data/scripts/build_seed.py</code>) expands that file into three derived artifacts: the fabs dataset, a denormalized companies dataset, and a bulk Convex seed module. A Node validator (<code>data/scripts/validate.mjs</code>) enforces schema and sanity checks so that bad data can never reach production. When a new fab is announced, we update the source JSON, rerun the build, and every surface — map, dashboard, company pages, AI Decision Layer context — picks up the change automatically.</p>
+
+            <h3>AI Decision Layer Implementation</h3>
+            <p>Here's the simplified flow for a single Decision Layer call:</p>
+
+            <div class="code-block">
+                <div class="code-label">Decision Layer Flow (Pseudocode)</div>
+                <code>// /api/decisions/route.ts
+export async function POST(req: Request) {
+  const { question, sessionId } = await req.json();
+
+  // 1. Rate limit (IP-based, 3/hr for free tier)
+  const limit = await checkRateLimit(req);
+  if (!limit.ok) return Response.json({ error: 'rate_limited' }, { status: 429 });
+
+  // 2. Build a structured context deck from Convex
+  const deck = await buildDecisionDeck(question); // fabs + capacity + risk signals
+  const cached = await getCachedDeck(deck.hash);
+
+  // 3. Call Claude with grounded context
+  const answer = await claude.messages.create({
+    model: 'claude-opus-4-6',
+    system: DECISION_LAYER_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: renderDeck(deck, question) }],
+  });
+
+  // 4. Persist for audit + analytics
+  await ctx.runMutation(api.decisions.record, {
+    sessionId, question, answerId: answer.id, deckHash: deck.hash,
+  });
+
+  return Response.json({ answer: answer.content });
+}</code>
+            </div>
+
+            <p>The grounded-context pattern is what separates FABS from "a chatbot with a search tool." Every answer is pinned to a deterministic deck hash so we can reproduce the exact inputs that led to a given response. That makes the system auditable, which is non-negotiable for anyone who wants to make real decisions based on what the model says.</p>
+
+            <!-- Release Path -->
+            <h2>From Code to Production: The Release Path</h2>
+            <p>Shipping FABS wasn't just a matter of writing features. We maintained an explicit release-readiness tracker that treated "deployed and reachable behind a real domain, backed by real data" as the only acceptable definition of done. The critical gates:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>R1 — Seed Expansion:</strong> Grow the canonical fab dataset from a handful of test rows to 60+ fabs across 14 countries, validated end-to-end.</li>
+                    <li><strong>R3–R4 — Convex Production Deploy:</strong> Push the backend to the production Convex deployment and seed the fabs table there, not in dev.</li>
+                    <li><strong>R5 — GitHub Push:</strong> All code under version control on <code>alpittare/exafabs-core</code>, with deployment runbooks and environment documentation in the same repo.</li>
+                    <li><strong>R6–R7 — Vercel Deploy + Smoke Test:</strong> Create the Vercel project, wire environment variables, deploy a preview, and smoke-test every surface that matters — map, dashboard, insights, companies, decision layer.</li>
+                    <li><strong>R8–R9 — Custom Domain + SSL:</strong> Point <code>fabs.exafabs.ai</code> at Vercel via a CNAME on GoDaddy, then wait for the Let's Encrypt certificate to issue. The app is now reachable at its canonical URL with a valid cert.</li>
+                    <li><strong>R13–R14 — Performance &amp; Mobile QA:</strong> Lighthouse trace on the deployed URL, with a Performance target of ≥ 85 and a Time-to-Interactive target of under 2 seconds on 4G Fast. Manual mobile smoke test on iPhone Safari and Android Chrome.</li>
+                </ul>
+            </div>
+
+            <p>One of the more useful things that came out of this release path was learning, the hard way, that Next.js middleware running <code>auth.protect()</code> on every API route will silently turn every anonymous <code>POST /api/decisions</code> call into a 307 redirect — which the frontend dutifully parses as HTML and throws "Unexpected token '&lt;'" at the user. The fix was to explicitly add the AI API routes to the public route list in the Clerk middleware, letting server-side rate limiting handle the free tier instead. That bug took almost a full afternoon to find. It is now documented in the deployment runbook so nobody else has to relive it.</p>
+
+            <!-- Pricing -->
+            <h2>Free Tier + Pro Tier: Who Pays for What</h2>
+            <p>FABS launches with every feature unlocked for every user. The map, the dashboard, the insights stream, and the AI Decision Layer are all reachable without a login. That's deliberate: we want analysts, researchers, and curious people to be able to land on the site, ask one question, and immediately understand whether this is useful to them.</p>
+            <p>The Pro tier, when it goes live in Phase 2, unlocks higher Decision Layer rate limits, longer model context windows, downloadable CSV exports, and a company watchlist that syncs via email alerts. Pricing will land in the $9–$19 per month range for a monthly plan, with a discount for annual. For enterprise teams that need bulk API access and custom datasets, we'll open a direct conversation — the plumbing is already in place to support that.</p>
+
+            <!-- What's Next -->
+            <h2>What's Next: The FABS Platform Roadmap</h2>
+            <p>The MVP is live, but FABS is designed to be a platform, not a single-feature product. A few things we're actively working on:</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li><strong>Supply Chain Graph:</strong> Model the full upstream (equipment, wafers, gases, photomasks) and downstream (customers, end markets) edges of each fab, so that the Decision Layer can reason about cascading effects — "if ASML delivers three fewer EUV machines in 2027, which fabs miss their ramp?"</li>
+                    <li><strong>Live News Ingest:</strong> Continuously crawl trade-press and company filings, tag each article against the fabs it affects, and surface signals directly into the <code>/insights</code> feed.</li>
+                    <li><strong>Policy Tracker:</strong> Dedicated pages for the CHIPS Act, India's ISM, the EU Chips Act, Japan's rebuild program, and China's domestic substitution push — with a timeline of disbursements, approvals, and beneficiaries.</li>
+                    <li><strong>Scenario Simulator:</strong> A lightweight "what if" engine on top of the Decision Layer that lets users explicitly simulate a shock (e.g., "TSMC Fab 18 offline for 90 days") and see the propagated effect on capacity by node, country, and customer.</li>
+                    <li><strong>API Access:</strong> Expose the fab catalog and the Decision Layer as a paid API so that institutional users can embed FABS intelligence directly into their own research workflows.</li>
+                </ul>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <h3>Explore the Global Fab Map Now</h3>
+                <p>FABS Chip Tracker is live. Ask the AI Decision Layer a question, explore the map, or drill into any of the 60+ fabs. No login required.</p>
+                <a href="https://fabs.exafabs.ai" class="cta-link">Launch FABS Chip Tracker</a>
+            </div>
+
+            <!-- Related Posts -->
+            <div class="related-posts">
+                <h3>Explore More EXAFABS Projects</h3>
+                <div class="related-posts-grid">
+                    <a href="fastai-health-coach.html" class="related-post-card">
+                        <h4>FastAI Health Coach</h4>
+                        <p>Our first flagship — AI-powered intermittent fasting coach built with Claude.</p>
+                    </a>
+                    <a href="crickbot-ai.html" class="related-post-card">
+                        <h4>CrickBot: AI Cricket</h4>
+                        <p>Intelligent cricket game with adaptive AI opponents.</p>
+                    </a>
+                    <a href="goalbot-ai.html" class="related-post-card">
+                        <h4>GoalBot: Goal Tracking</h4>
+                        <p>AI-powered penalty-kick shootouts with a TensorFlow.js goalkeeper.</p>
+                    </a>
+                    <a href="basehit-ai.html" class="related-post-card">
+                        <h4>BaseHit: Baseball AI</h4>
+                        <p>Advanced baseball analytics and AI pitchers.</p>
+                    </a>
+                    <a href="ads-engine-api.html" class="related-post-card">
+                        <h4>Ads Engine API</h4>
+                        <p>Production AI ad strategy API with 15 endpoints.</p>
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">EXAFABS.AI</div>
+            <div class="footer-links">
+                <a href="../index.html" class="footer-link">Home</a>
+                <a href="../index.html#blog" class="footer-link">Blog</a>
+                <a href="https://fabs.exafabs.ai" class="footer-link">Launch FABS</a>
+                <a href="mailto:alpit@exafabs.ai" class="footer-link">Contact</a>
+            </div>
+            <p>&copy; 2026 ExaFabs. All rights reserved.</p>
+            <p><a href="mailto:alpit@exafabs.ai" class="footer-link">alpit@exafabs.ai</a></p>
+        </div>
+    </footer>
+
+    <!-- Reading Progress Bar Script -->
+    <script>
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>
