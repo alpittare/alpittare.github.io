@@ -7,6 +7,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://exafabs.ai/blog/fabs-chip-tracker.html</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://exafabs.ai/blog/fastai-health-coach.html</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>weekly</changefreq>

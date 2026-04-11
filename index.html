@@ -1316,7 +1316,7 @@
         /* ===== FEATURED PRODUCT SPOTLIGHT ===== */
         .featured {
             padding: 3.5rem 2rem 5rem;
-            max-width: 1100px;
+            max-width: 1280px;
             margin: 0 auto;
         }
         .featured-header {
@@ -1330,19 +1330,29 @@
         .featured-header p {
             color: var(--text-secondary);
             font-size: 1.05rem;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            align-items: stretch;
         }
         .featured-card {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 1.5rem;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-card);
-            padding: 2.5rem;
+            padding: 2.25rem;
             backdrop-filter: var(--blur-glass);
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
+            will-change: transform;
         }
         .featured-card::before {
             content: '';
@@ -1350,6 +1360,22 @@
             top: 0; left: 0; right: 0;
             height: 3px;
             background: var(--primary-gradient);
+            z-index: 1;
+        }
+        .featured-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: 0 0 0 0 rgba(155, 48, 255, 0);
+            transition: box-shadow 0.4s ease, border-color 0.3s ease;
+            pointer-events: none;
+        }
+        .featured-card:hover {
+            border-color: rgba(155, 48, 255, 0.45);
+        }
+        .featured-card:hover::after {
+            box-shadow: 0 25px 50px -12px rgba(155, 48, 255, 0.35), 0 0 0 1px rgba(155, 48, 255, 0.25);
         }
         .featured-info h3 {
             font-size: 1.8rem;
@@ -1408,15 +1434,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 280px;
+            min-height: 180px;
             background: linear-gradient(135deg, rgba(155,48,255,0.08), rgba(100,200,255,0.06));
             border-radius: 1rem;
             border: 1px solid rgba(100,200,255,0.08);
             position: relative;
             overflow: hidden;
+            margin-top: auto;
         }
         .featured-visual-icon {
-            font-size: 6rem;
+            font-size: 5rem;
             filter: drop-shadow(0 0 40px rgba(155,48,255,0.3));
         }
         .featured-visual::after {
@@ -1426,10 +1453,14 @@
             background: radial-gradient(circle at 30% 50%, rgba(155,48,255,0.1) 0%, transparent 60%);
             pointer-events: none;
         }
+        @media (max-width: 960px) {
+            .featured-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+        }
         @media (max-width: 768px) {
-            .featured-card { grid-template-columns: 1fr; gap: 2rem; padding: 1.5rem; }
-            .featured-visual { min-height: 200px; }
+            .featured-card { padding: 1.75rem; gap: 1.25rem; }
+            .featured-visual { min-height: 160px; }
             .featured-info h3 { font-size: 1.4rem; }
+            .featured-visual-icon { font-size: 4rem; }
         }
 
         /* ===== HOW AI POWERS OUR PRODUCTS ===== */
@@ -2475,38 +2506,40 @@
             <h2>Our Flagship Products</h2>
             <p>Two Claude-powered platforms leading our portfolio — one reshaping personal health, the other decoding the global semiconductor supply chain.</p>
         </div>
-        <div class="featured-card reveal">
-            <div class="featured-info">
-                <div class="featured-tagline">★ Featured Product</div>
-                <h3>FABS Chip Tracker</h3>
-                <p>Real-time intelligence platform for the global semiconductor industry. Track 60+ fabs across 14 countries, surface supply-chain risk before it moves markets, and ask a Claude-powered AI Decision Layer strategic questions grounded in live fab data, CAPEX, and wafer capacity.</p>
-                <div class="featured-highlights">
-                    <span>Global Fab Map</span>
-                    <span>AI Decision Layer</span>
-                    <span>Live Intelligence</span>
-                    <span>Claude-Powered Q&amp;A</span>
+        <div class="featured-grid">
+            <div class="featured-card reveal">
+                <div class="featured-info">
+                    <div class="featured-tagline">★ Featured Product</div>
+                    <h3>FABS Chip Tracker</h3>
+                    <p>Real-time intelligence platform for the global semiconductor industry. Track 60+ fabs across 14 countries, surface supply-chain risk before it moves markets, and ask a Claude-powered AI Decision Layer strategic questions grounded in live fab data, CAPEX, and wafer capacity.</p>
+                    <div class="featured-highlights">
+                        <span>Global Fab Map</span>
+                        <span>AI Decision Layer</span>
+                        <span>Live Intelligence</span>
+                        <span>Claude-Powered Q&amp;A</span>
+                    </div>
+                    <a href="https://fabs.exafabs.ai" class="featured-cta">Launch App →</a>
                 </div>
-                <a href="https://fabs.exafabs.ai" class="featured-cta">Launch App →</a>
-            </div>
-            <div class="featured-visual">
-                <div class="featured-visual-icon">💎</div>
-            </div>
-        </div>
-        <div class="featured-card reveal">
-            <div class="featured-info">
-                <div class="featured-tagline">★ Featured Product</div>
-                <h3>FastAI Health Coach</h3>
-                <p>Your personal AI health companion powered by Claude. Smart fasting timer with metabolic zone tracking, meal photo analysis, personalized coaching conversations, and ML-powered weight predictions — all adapting to your unique body and habits in real-time.</p>
-                <div class="featured-highlights">
-                    <span>AI Fasting Coach</span>
-                    <span>Meal Photo Analysis</span>
-                    <span>Weight Predictions</span>
-                    <span>Adaptive Schedules</span>
+                <div class="featured-visual">
+                    <div class="featured-visual-icon">💎</div>
                 </div>
-                <a href="blog/fastai-health-coach.html" class="featured-cta">Learn More →</a>
             </div>
-            <div class="featured-visual">
-                <div class="featured-visual-icon">🧬</div>
+            <div class="featured-card reveal">
+                <div class="featured-info">
+                    <div class="featured-tagline">★ Featured Product</div>
+                    <h3>FastAI Health Coach</h3>
+                    <p>Your personal AI health companion powered by Claude. Smart fasting timer with metabolic zone tracking, meal photo analysis, personalized coaching conversations, and ML-powered weight predictions — all adapting to your unique body and habits in real-time.</p>
+                    <div class="featured-highlights">
+                        <span>AI Fasting Coach</span>
+                        <span>Meal Photo Analysis</span>
+                        <span>Weight Predictions</span>
+                        <span>Adaptive Schedules</span>
+                    </div>
+                    <a href="blog/fastai-health-coach.html" class="featured-cta">Learn More →</a>
+                </div>
+                <div class="featured-visual">
+                    <div class="featured-visual-icon">🧬</div>
+                </div>
             </div>
         </div>
     </section>
@@ -2665,6 +2698,15 @@
             <h2>Latest Insights</h2>
         </div>
         <div class="blog-grid">
+            <a href="blog/fabs-chip-tracker.html" class="blog-card">
+                <div class="blog-label">AI / Intelligence</div>
+                <h3>FABS Chip Tracker: A Claude-Powered Intelligence Layer for the Global Semiconductor Supply Chain</h3>
+                <div class="blog-meta">
+                    <span class="blog-time">12 min read</span>
+                    <span class="blog-link">Read →</span>
+                </div>
+            </a>
+
             <a href="blog/fastai-health-coach.html" class="blog-card">
                 <div class="blog-label">AI / Health</div>
                 <h3>FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting</h3>
@@ -3354,7 +3396,7 @@
 
         // ===== RAF-THROTTLED 3D CARD TILT =====
         if (!isTouchDevice) {
-            const tiltCards = document.querySelectorAll('.product-card, .feature-card, .blog-card');
+            const tiltCards = document.querySelectorAll('.product-card, .feature-card, .blog-card, .featured-card');
             tiltCards.forEach(card => {
                 let cardRaf = null;
                 const shine = document.createElement('div');
@@ -3827,6 +3869,8 @@ All games are available on Web (PWA), iOS, and Android. FastAI Health Coach is a
         // ===== FEATURE 4: BLOG TOOLTIPS =====
         (function() {
             const summaries = {
+                'fabs-chip-tracker': 'Claude-powered intelligence layer that tracks global semiconductor supply chains in real time — from fab capacity to geopolitical risk signals.',
+                'fastai-health-coach': 'AI coach for intermittent fasting with personalized fasting windows, real-time biomarker insights, and adaptive recommendations.',
                 'crickbot-ai': 'AI-powered cricket game with adaptive bowling, real physics, and progressive difficulty.',
                 'goalbot-ai': 'Football penalty shootouts featuring an AI goalkeeper that learns your shooting patterns.',
                 'basehit-ai': 'Baseball batting challenge with predictive AI pitching and real swing mechanics.',
