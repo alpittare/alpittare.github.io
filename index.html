@@ -692,6 +692,42 @@
             white-space: nowrap;
         }
 
+        .product-badge.launching {
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.18), rgba(255, 94, 0, 0.18));
+            border: 1px solid rgba(255, 184, 0, 0.45);
+            color: #ffcf5c;
+            box-shadow: 0 0 12px rgba(255, 184, 0, 0.15);
+            animation: launchPulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes launchPulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(255, 184, 0, 0.15); }
+            50% { box-shadow: 0 0 20px rgba(255, 184, 0, 0.35); }
+        }
+
+        .featured-launch-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.18), rgba(255, 94, 0, 0.18));
+            border: 1px solid rgba(255, 184, 0, 0.5);
+            color: #ffcf5c;
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 1rem;
+            box-shadow: 0 0 16px rgba(255, 184, 0, 0.18);
+            animation: launchPulse 2.8s ease-in-out infinite;
+        }
+
+        .featured-launch-pill::before {
+            content: '🚀';
+            font-size: 0.9rem;
+        }
+
         .product-btn {
             flex-grow: 1;
             background: rgba(155, 48, 255, 0.12);
@@ -2535,6 +2571,7 @@
                         <span>Weight Predictions</span>
                         <span>Adaptive Schedules</span>
                     </div>
+                    <div class="featured-launch-pill">Launching May 1, 2026 — iOS & Android</div>
                     <a href="blog/fastai-health-coach.html" class="featured-cta">Learn More →</a>
                 </div>
                 <div class="featured-visual">
@@ -2576,8 +2613,8 @@
                     <p class="product-desc">AI-powered intermittent fasting coach with smart timer, meal photo analysis, personalized coaching by Claude, and ML weight predictions.</p>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge">Flagship</span>
-                    <a href="#featured" class="product-btn">View Flagship →</a>
+                    <span class="product-badge launching">Launching May 1, 2026</span>
+                    <a href="#featured" class="product-btn">Learn More →</a>
                 </div>
             </div>
 
@@ -2589,8 +2626,8 @@
                     <p class="product-desc">Master cricket with AI opponents that track your batting patterns and adapt their bowling strategy in real-time using Bayesian prediction.</p>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge">Beta Ready</span>
-                    <a href="blog/crickbot-ai.html" class="product-btn">Play Demo →</a>
+                    <span class="product-badge launching">Launching May 1, 2026</span>
+                    <a href="blog/crickbot-ai.html" class="product-btn">Learn More →</a>
                 </div>
             </div>
 
@@ -2602,8 +2639,8 @@
                     <p class="product-desc">Take penalty kicks against an AI goalkeeper powered by TensorFlow.js that studies your shot placement and predicts your next move.</p>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge">Beta Ready</span>
-                    <a href="blog/goalbot-ai.html" class="product-btn">Play Demo →</a>
+                    <span class="product-badge launching">Launching May 1, 2026</span>
+                    <a href="blog/goalbot-ai.html" class="product-btn">Learn More →</a>
                 </div>
             </div>
 
@@ -2615,8 +2652,8 @@
                     <p class="product-desc">Face AI pitchers that analyze your swing timing and adjust pitch selection, speed, and placement to keep you off balance.</p>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge">Beta Ready</span>
-                    <a href="blog/basehit-ai.html" class="product-btn">Play Demo →</a>
+                    <span class="product-badge launching">Launching May 1, 2026</span>
+                    <a href="blog/basehit-ai.html" class="product-btn">Learn More →</a>
                 </div>
             </div>
 
@@ -2628,8 +2665,8 @@
                     <p class="product-desc">Battle AI opponents with 8 unique personality archetypes — from aggressive Berserkers to strategic Predators — in a shrinking arena.</p>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge">Beta Ready</span>
-                    <a href="blog/survival-arena-ai.html" class="product-btn">Preview →</a>
+                    <span class="product-badge launching">Launching May 1, 2026</span>
+                    <a href="blog/survival-arena-ai.html" class="product-btn">Learn More →</a>
                 </div>
             </div>
 
@@ -2641,8 +2678,8 @@
                     <p class="product-desc">Navigate procedurally spawned encounters in deep space with an AI Director that dynamically adjusts difficulty to your skill level.</p>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge">Beta Ready</span>
-                    <a href="blog/infinite-voyager-ai.html" class="product-btn">Preview →</a>
+                    <span class="product-badge launching">Launching May 1, 2026</span>
+                    <a href="blog/infinite-voyager-ai.html" class="product-btn">Learn More →</a>
                 </div>
             </div>
 
