@@ -728,6 +728,66 @@
             font-size: 0.9rem;
         }
 
+        .product-platforms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            padding: 0 1.75rem 1rem;
+            margin-top: -0.25rem;
+        }
+
+        .platform-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            color: rgba(255, 255, 255, 0.78);
+            padding: 0.28rem 0.65rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .platform-chip:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .platform-chip .platform-icon {
+            font-size: 0.8rem;
+            line-height: 1;
+        }
+
+        .platform-chip.ios {
+            background: rgba(0, 191, 255, 0.08);
+            border-color: rgba(0, 191, 255, 0.22);
+            color: #7fd8ff;
+        }
+
+        .platform-chip.android {
+            background: rgba(152, 241, 49, 0.08);
+            border-color: rgba(152, 241, 49, 0.22);
+            color: #c8f582;
+        }
+
+        .platform-chip.web {
+            background: rgba(155, 48, 255, 0.10);
+            border-color: rgba(155, 48, 255, 0.28);
+            color: #d0a8ff;
+        }
+
+        .platform-chip.api {
+            background: rgba(255, 94, 0, 0.10);
+            border-color: rgba(255, 94, 0, 0.28);
+            color: #ffb080;
+        }
+
         .product-btn {
             flex-grow: 1;
             background: rgba(155, 48, 255, 0.12);
@@ -2599,6 +2659,9 @@
                     <h3 class="product-title">FABS Chip Tracker</h3>
                     <p class="product-desc">Real-time intelligence for the global semiconductor industry — 15+ leading companies, their worldwide fab network, supply-chain risk signals, and a Claude-powered AI Decision Layer you can actually ask questions.</p>
                 </div>
+                <div class="product-platforms">
+                    <span class="platform-chip web"><span class="platform-icon">🌐</span>Web SaaS</span>
+                </div>
                 <div class="product-footer">
                     <span class="product-badge">Flagship</span>
                     <a href="https://fabs.exafabs.ai" class="product-btn">Launch App →</a>
@@ -2611,6 +2674,10 @@
                     <div class="product-category">Health / AI</div>
                     <h3 class="product-title">FastAI Health Coach</h3>
                     <p class="product-desc">AI-powered intermittent fasting coach with smart timer, meal photo analysis, personalized coaching by Claude, and ML weight predictions.</p>
+                </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">🍎</span>iOS</span>
+                    <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge launching">Launching May 1, 2026</span>
@@ -2625,6 +2692,10 @@
                     <h3 class="product-title">CrickBot AI</h3>
                     <p class="product-desc">Master cricket with AI opponents that track your batting patterns and adapt their bowling strategy in real-time using Bayesian prediction.</p>
                 </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">🍎</span>iOS</span>
+                    <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
+                </div>
                 <div class="product-footer">
                     <span class="product-badge launching">Launching May 1, 2026</span>
                     <a href="blog/crickbot-ai.html" class="product-btn">Learn More →</a>
@@ -2637,6 +2708,10 @@
                     <div class="product-category">Sports / AI</div>
                     <h3 class="product-title">GoalBot AI</h3>
                     <p class="product-desc">Take penalty kicks against an AI goalkeeper powered by TensorFlow.js that studies your shot placement and predicts your next move.</p>
+                </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">🍎</span>iOS</span>
+                    <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge launching">Launching May 1, 2026</span>
@@ -2651,6 +2726,10 @@
                     <h3 class="product-title">BaseHit AI</h3>
                     <p class="product-desc">Face AI pitchers that analyze your swing timing and adjust pitch selection, speed, and placement to keep you off balance.</p>
                 </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">🍎</span>iOS</span>
+                    <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
+                </div>
                 <div class="product-footer">
                     <span class="product-badge launching">Launching May 1, 2026</span>
                     <a href="blog/basehit-ai.html" class="product-btn">Learn More →</a>
@@ -2663,6 +2742,10 @@
                     <div class="product-category">Action / Survival</div>
                     <h3 class="product-title">Survival Arena AI</h3>
                     <p class="product-desc">Battle AI opponents with 8 unique personality archetypes — from aggressive Berserkers to strategic Predators — in a shrinking arena.</p>
+                </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">🍎</span>iOS</span>
+                    <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge launching">Launching May 1, 2026</span>
@@ -2677,6 +2760,10 @@
                     <h3 class="product-title">Infinite Voyager AI</h3>
                     <p class="product-desc">Navigate procedurally spawned encounters in deep space with an AI Director that dynamically adjusts difficulty to your skill level.</p>
                 </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">🍎</span>iOS</span>
+                    <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
+                </div>
                 <div class="product-footer">
                     <span class="product-badge launching">Launching May 1, 2026</span>
                     <a href="blog/infinite-voyager-ai.html" class="product-btn">Learn More →</a>
@@ -2689,6 +2776,10 @@
                     <div class="product-category">Developer / API</div>
                     <h3 class="product-title">Ads Engine API</h3>
                     <p class="product-desc">Production-grade AI-powered ad strategy API with 15 endpoints — audience targeting, ad copy, creative specs, video scripts, budget allocation, and more.</p>
+                </div>
+                <div class="product-platforms">
+                    <span class="platform-chip api"><span class="platform-icon">⚡</span>REST API</span>
+                    <span class="platform-chip web"><span class="platform-icon">🌐</span>Cloud</span>
                 </div>
                 <div class="product-footer">
                     <span class="product-badge">Live</span>
@@ -3913,7 +4004,8 @@ Platform summary: FABS Chip Tracker and the Ads Engine API are LIVE and accessib
                 'goalbot-ai': 'Football penalty shootouts featuring an AI goalkeeper that learns your shooting patterns.',
                 'basehit-ai': 'Baseball batting challenge with predictive AI pitching and real swing mechanics.',
                 'survival-arena-ai': 'Wave-based survival combat where AI enemies adapt to your playstyle.',
-                'infinite-voyager-ai': 'Procedurally generated space exploration with AI-driven encounters and discoveries.'
+                'infinite-voyager-ai': 'Procedurally generated space exploration with AI-driven encounters and discoveries.',
+                'ads-engine-api': 'Production-grade AI ad strategy API with 15 endpoints covering audience targeting, ad copy, creative specs, video scripts, budget allocation, and campaign audits. Live at api.exafabs.ai/docs.'
             };
             document.querySelectorAll('.blog-card').forEach(card => {
                 const href = card.getAttribute('href') || '';
