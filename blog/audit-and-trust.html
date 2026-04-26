@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting | ExaFabs</title>
-    <meta name="description" content="Deep dive into how FastAI Health Coach uses Claude AI, machine learning, and computer vision to create a truly personalized intermittent fasting experience.">
+    <title>Building Trust at Scale: How We Audit Our Own AI Health App | ExaFabs</title>
+    <meta name="description" content="How FastAI hardened a production AI health app — HaveIBeenPwned password checking, prompt-injection guards across every AI surface, RevenueCat reconciliation crons, per-user rate limits, and account deletion that actually deletes.">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://exafabs.ai/blog/fastai-health-coach.html">
+    <meta property="og:url" content="https://exafabs.ai/blog/audit-and-trust.html">
     <meta property="og:image" content="https://exafabs.ai/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://exafabs.ai/og-image.png">
-    <link rel="canonical" href="https://exafabs.ai/blog/fastai-health-coach.html">
+    <link rel="canonical" href="https://exafabs.ai/blog/audit-and-trust.html">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -473,8 +473,8 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting",
-      "description": "Deep dive into how FastAI Health Coach uses Claude AI, machine learning, and computer vision to create a truly personalized fasting experience.",
+      "headline": "Building Trust at Scale: How We Audit Our Own AI Health App",
+      "description": "How FastAI hardened a production AI health app — HaveIBeenPwned password checking, prompt-injection guards across every AI surface, RevenueCat reconciliation crons, per-user rate limits, and account deletion that actually deletes.",
       "image": "https://exafabs.ai/og-image.png",
       "author": {
         "@type": "Organization",
@@ -490,11 +490,11 @@
           "url": "https://exafabs.ai/logo-icon.png"
         }
       },
-      "datePublished": "2026-04-09",
-      "dateModified": "2026-04-09",
+      "datePublished": "2026-04-26",
+      "dateModified": "2026-04-26",
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://exafabs.ai/blog/fastai-health-coach.html"
+        "@id": "https://exafabs.ai/blog/audit-and-trust.html"
       }
     }
     </script>
@@ -513,16 +513,16 @@
     <section class="hero">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting</h1>
+            <h1>Building Trust at Scale: How We Audit Our Own AI Health App</h1>
             <div class="meta-info">
                 <div class="meta-badge">
-                    <span>📖 10 min read</span>
+                    <span>📖 8 min read</span>
                 </div>
                 <div class="meta-badge">
-                    <span class="category-badge">AI / Health</span>
+                    <span class="category-badge">Trust / Security</span>
                 </div>
                 <div class="meta-badge">
-                    <span>2026</span>
+                    <span>April 2026</span>
                 </div>
             </div>
         </div>
@@ -533,188 +533,87 @@
         <article>
             <!-- Introduction -->
             <h2>Introduction</h2>
-            <p>FastAI Health Coach is EXAFABS' first health and wellness app — an AI-powered intermittent fasting companion built with React Native (Expo) and Claude AI. Rather than a generic timer app, FastAI combines metabolic zone tracking, a coach that genuinely <em>remembers</em> your habits across weeks, multi-angle meal photo analysis, machine learning weight predictions, and a Daily Insight that learns what matters to <em>you</em>.</p>
-            <p>FastAI is currently in <strong>Closed Testing</strong> on Google Play (v2.10.x) with public launch on Android in May 2026 and iOS following. This post explores the architecture, how Claude powers truly personalized coaching, and how the team built — and hardened — a production AI health app over more than a hundred releases.</p>
+            <p>Trust is the only feature in a health app that actually matters. Everything else — fancy AI, beautiful UI, clever onboarding — collapses the moment a user feels their data isn't safe, their money isn't accounted for, or the app's behavior surprises them in a bad way. So when we ran a hard internal audit of FastAI Health Coach this month, we treated every finding as a blocker and shipped fixes for all of them in a week.</p>
+            <p>This post is the close-out report, written in plain language for the people who'll actually use the app. We'll walk through what we audited, what we found, and what we did about it. No marketing, no posturing — just the work.</p>
 
-            <!-- The Problem: Why Intermittent Fasting is Hard to Sustain -->
-            <h2>The Problem: Why Intermittent Fasting is Hard to Sustain</h2>
-            <p>Intermittent fasting is scientifically proven to be effective for weight loss and metabolic health. But for most people, it's difficult to maintain. Here's why:</p>
+            <!-- Audit Lens -->
+            <h2>The Audit Lens</h2>
+            <p>We grouped findings into three severity tiers — Critical (ship now), High (ship this sprint), Medium (ship before public launch). The team committed to closing every Critical and every High before the next release went out. Here's how each one resolved.</p>
 
-            <div class="feature-list">
-                <ul>
-                    <li><strong>Generic Timers Aren't Enough:</strong> Standard fasting apps simply count down hours. They offer no guidance on when to eat, what to eat, or how your body is responding.</li>
-                    <li><strong>No Personalized Coaching:</strong> Every person's body, lifestyle, and goals are different. A one-size-fits-all fasting schedule leads to burnout and failure.</li>
-                    <li><strong>Tedious Manual Tracking:</strong> Logging meals by searching food databases is friction-heavy and reduces adherence.</li>
-                    <li><strong>No Progress Visibility:</strong> Users weigh themselves and hope for the best, with no data-driven understanding of their trajectory or what to adjust.</li>
-                    <li><strong>Missing Context:</strong> Apps don't connect the dots: your current metabolic state, your recent meals, your stress, your sleep—all factors that affect fasting success.</li>
-                </ul>
-            </div>
-
-            <!-- Our AI-First Solution -->
-            <h2>Our AI-First Solution: Every Feature Powered by AI</h2>
-            <p>FastAI flips the script by building every core feature around AI. Instead of a timer with bolted-on features, we designed the app's architecture so that Claude AI, machine learning, and computer vision are the foundation, not afterthoughts.</p>
-
-            <h3>Smart Fasting Timer with Metabolic Zone Tracking</h3>
-            <p>The timer displays your current metabolic state across four phases. As you fast, your body transitions through distinct metabolic zones, each with unique physiological effects:</p>
-            <ul>
-                <li><strong>Fed State (0–2 hours):</strong> Your body is processing the meal you just ate. Insulin is elevated, digestion is active.</li>
-                <li><strong>Fat Burning (2–8 hours):</strong> Glycogen reserves are depleting. Your body begins mobilizing fat for energy.</li>
-                <li><strong>Ketosis (8–16 hours):</strong> Your liver produces ketones from fat, and they become your brain's primary fuel source. This is the metabolic "sweet spot" for many fasters.</li>
-                <li><strong>Autophagy (16+ hours):</strong> Cellular renewal accelerates. Your body begins clearing damaged cells and regenerating cellular components.</li>
-            </ul>
-            <p>FastAI displays which zone you're currently in with real-time visual feedback, helping you understand the science of your fast and stay motivated to reach deeper phases.</p>
-
-            <h3>AI Coach: Claude-Powered Personalized Conversations</h3>
-            <p>The core differentiator is the AI Coach—a conversational assistant powered by Claude API from Anthropic. Unlike a chatbot that regurgitates generic tips, Claude receives your full fasting context and provides truly personalized advice.</p>
+            <h2>1 — Passwords That Are Already Compromised Are Blocked at Sign-Up</h2>
+            <p>One of the most common ways online accounts get hijacked has nothing to do with the app being attacked. It's password reuse: the user's password was leaked in some <em>other</em> service's breach years ago, and attackers run automated credential-stuffing scripts against every new app they can find.</p>
+            <p>The fix is simple in concept: when a user picks a password, check it against the publicly maintained <strong>HaveIBeenPwned</strong> database of known-breached passwords. If it's already on the list, refuse it and ask for a new one. We turned this on at the Clerk auth layer for FastAI. No friction for users with strong unique passwords; a hard wall for users about to make a critical mistake.</p>
 
             <div class="highlight-box">
-                <p>When you talk to FastAI's Coach, Claude has access to: your complete fasting history, your weight trend over time, all logged meals and their macronutrients, your current metabolic zone, your stated goals (e.g., "lose 10 pounds in 8 weeks"), and any health conditions you've shared. This context transforms the conversation from generic ("drink more water") to genuinely personalized ("you've been breaking your fast with high-carb foods on Tuesdays; try having protein and fat first to stabilize blood sugar and reduce afternoon cravings").</p>
+                <p><strong>What testers see:</strong> if a tester tries a password like <code>Password123!</code> or any common breached password, sign-up fails with a clear message: "Password has been found in an online data breach. For account safety, please use a different password." It's mildly annoying for two seconds and protects the account for years.</p>
             </div>
 
-            <p>The Claude integration uses Convex serverless backend for reliable API calls. Conversations are streamed in real-time, and the app gracefully degrades if the network is slow or offline (falling back to cached suggestions or a simpler Q&A mode).</p>
-
-            <h3>Coach that Remembers: Long-Term Memory Across Sessions</h3>
-            <p>Most AI chatbots forget you between sessions. FastAI's Coach doesn't. We built a memory pipeline using <strong>Voyage 3.5-lite</strong> embeddings and Convex's vector search so that what you tell the Coach in week one informs what it says in week six. Tell it once that you train fasted on Tuesdays and avoid dairy, and that context flows into every future conversation — meal suggestions, fasting window advice, milestone celebrations — without you having to repeat yourself.</p>
-            <p>A nightly Convex cron extracts the most useful long-term signals from your conversation and meal history, embeds them, and stores them as searchable memory. When you next open the Coach, the relevant memories are pulled in alongside your live data — the same retrieval-augmented-generation pattern used by enterprise AI, but tuned for personal health instead of corporate documents. Want to read the engineering story? <a href="coach-that-remembers.html" style="color: var(--accent-lime, #a3e635);">We wrote it up here</a>.</p>
-
-            <h3>Daily Insight: A Personalized Score That Knows Your Goal</h3>
-            <p>Every morning, FastAI generates a Daily Insight — a short personalized read on yesterday's fasting, meals, and trajectory. It's not a generic "great job!" — the AI references your specific goal (e.g. "lose 10 lb by July"), your stated constraints (e.g. "no dairy, vegetarian"), and any health conditions you've shared. Hit a 16-hour fast on a high-protein day? It tells you why that particular combination accelerates your timeline. Drift off-plan two days in a row? It flags the pattern before it becomes a habit.</p>
-
-            <h3>Multi-View Meal Photo Analysis: Better Estimates from Two Angles</h3>
-            <p>Manually logging meals kills motivation. FastAI solves this with AI-powered meal photo analysis: snap a picture of your food, and the app automatically identifies the dish, estimates portion size, and calculates calories, macronutrients, and micronutrients. New in v2.9: an optional <strong>second photo from a different angle</strong> dramatically improves portion accuracy. Cross-view reasoning lets Claude triangulate volume better than a single overhead shot — particularly useful for layered dishes (curry over rice, a stuffed sandwich, a topped salad) where one angle hides what's underneath.</p>
-            <p>Built on Claude's vision capabilities and a lightweight food database for standardized portion estimates. Users can always refine the AI's guess, and the corrected data feeds into both their meal log and the Coach's next conversation.</p>
-
-            <h3>ML Weight Predictions: Forecast Your Progress</h3>
-            <p>One of FastAI's most powerful features is the weight prediction graph. We trained a lightweight machine learning model on your personal data (fasting duration, meal timing, calories, exercise) to forecast your weight trajectory over the next 4–12 weeks.</p>
-
-            <div class="code-block">
-                <div class="code-label">Prediction Model Architecture (Pseudocode)</div>
-                <code>class WeightPredictionModel:
-    def __init__(self):
-        # Lightweight linear regression + seasonal decomposition
-        self.historical_weights = []  # daily weigh-ins
-        self.fasting_hours = []       # daily fasting duration
-        self.calories_burned = []     # daily exercise/TDEE data
-        self.calories_logged = []     # daily meal intake
-
-    def train(self):
-        """Fit model to user's personal data (30+ data points)"""
-        X = [fasting_hrs, cal_burned, cal_logged, day_of_week]
-        y = historical_weights
-        # Use ridge regression to avoid overfitting on small datasets
-        self.model.fit(X, y)
-
-    def predict(self, future_days=28):
-        """Generate 4-week weight forecast"""
-        predictions = []
-        for day in range(future_days):
-            # Project forward: fasting hours, typical calorie burn, logged meals
-            X_future = self._project_features(day)
-            weight = self.model.predict(X_future)
-            predictions.append(weight)
-        return predictions
-</code>
-            </div>
-
-            <p>The model is trained on 30+ data points from the user's own history, not population-wide averages. This makes predictions remarkably accurate and personally motivating: users see "at your current pace, you'll hit your goal by March 15th" with a confidence interval. If the user isn't on track, they can ask Claude, "Why am I not losing weight as fast as I expected?" and Claude can analyze their recent meals, fasting windows, and exercise to identify friction points.</p>
-
-            <h3>Adaptive Fasting Schedules</h3>
-            <p>FastAI doesn't force a rigid 16:8 schedule on everyone. The app uses machine learning to suggest personalized fasting windows based on your patterns. If you consistently break your fast at 2 PM and eat until 8 PM, the app recommends a 2 PM – 8 PM eating window and 8 PM – 2 PM fasting window (16:8), rather than fighting against your natural rhythm.</p>
-
-            <!-- Tech Stack -->
-            <h2>Tech Stack: Building a Production AI Health App</h2>
-
-            <h3>Mobile Architecture</h3>
+            <h2>2 — Every AI Surface Is Hardened Against Prompt Injection</h2>
+            <p>Prompt injection is the AI-era equivalent of SQL injection. If your app sends user input directly to a language model as part of its instructions, an attacker can paste text that <em>tells the model to ignore its real instructions</em> and do something else — leak data, generate harmful content, exfiltrate the system prompt, you name it.</p>
+            <p>FastAI has five different AI endpoints that take user content as input — meal descriptions, Coach messages, goal text, free-form journal entries, and onboarding answers. Each one was a potential injection surface. We closed all five with a single shared helper, <code>_prompt_utils.ts</code>, that does three things on every AI call:</p>
             <ul>
-                <li><strong>React Native + Expo:</strong> Cross-platform iOS/Android with over-the-air JS updates. Expo Router handles navigation, deep linking, and the typed route registry powering the v1.9 single-render-path onboarding.</li>
-                <li><strong>Claude (Sonnet + Haiku) via Convex Serverless:</strong> All AI requests go through Convex backend functions — API keys never touch the client, and a tier-router falls back from Sonnet to Haiku for non-critical calls to control cost.</li>
-                <li><strong>Voyage 3.5-lite for Memory Embeddings:</strong> Powers the Coach's long-term memory and retrieval-augmented context. Cheaper and lighter than larger embedding models — perfect for personal-health memory at scale.</li>
-                <li><strong>Convex Database + Crons:</strong> Real-time syncing of fasting logs, weight history, meal logs, and AI conversation history, plus nightly memory extraction and RevenueCat reconciliation crons.</li>
-                <li><strong>Clerk for Auth (with HIBP):</strong> Email/password and Google SSO with HaveIBeenPwned password checking — passwords from known breaches are blocked at sign-up.</li>
-                <li><strong>RevenueCat + Superwall + Play Billing:</strong> Production paywall live on Android via Play Billing, with Superwall A/B variant assignment and RevenueCat as the receipt-validation source of truth. Server-side reconciliation cron keeps Convex entitlements in sync.</li>
-                <li><strong>Firebase Cloud Messaging (FCM):</strong> Push notifications for milestone celebrations, gentle re-engagement, and Daily Insight delivery.</li>
-                <li><strong>Sentry + PostHog (EU):</strong> Errors, releases, and product analytics — privacy-respecting, EU-hosted, with strict noise filtering so user mistakes (wrong password, account-not-found) don't pollute crash dashboards.</li>
+                <li><strong>Wraps user content in unique, unguessable delimiters</strong> generated per-call so the user can't fake them out.</li>
+                <li><strong>Appends an explicit injection guard</strong> to the system prompt instructing the model to ignore any instructions inside the user-content delimiters.</li>
+                <li><strong>Treats user content strictly as data, never as instruction</strong> — even if it perfectly mimics the system prompt format, it lives inside the wrapped block.</li>
             </ul>
+            <p>This isn't a bulletproof guarantee — no defense against a creative attacker is — but it raises the bar from "trivial" to "genuinely hard," and that's the right place to set the bar for a personal-health app at this stage.</p>
 
-            <h3>Trust, Safety & Engineering Discipline</h3>
+            <h2>3 — Money Is Reconciled Nightly, Not Trusted</h2>
+            <p>The tricky thing about subscription apps is that there are <em>three</em> sources of truth about whether a user is a paying customer: the app store (Google Play / Apple), the receipt validator (RevenueCat), and your own database (Convex). All three should agree all the time. In practice, they sometimes drift — a refund happens, a subscription expires, a webhook gets dropped — and a paying user ends up locked out, or a non-paying user ends up with premium access.</p>
+            <p>We had no automated check for this. So we shipped one. A nightly Convex cron now reconciles every active user's entitlement against RevenueCat's source-of-truth using a server-side <code>REVENUECAT_SECRET_API_KEY</code>. Drifts are caught within 24 hours, not 24 days. Users don't have to email support to fix a billing glitch — the system catches it before they notice.</p>
+
+            <h2>4 — Per-User Rate Limits Stop Runaway AI Cost</h2>
+            <p>An AI app's worst-case cost is unbounded unless you put a cap on it. A single user — accidentally or maliciously — could in theory spam the Coach endpoint thousands of times per minute and run up our Anthropic bill into the hundreds of dollars in an hour.</p>
+            <p>The audit found we had no per-user rate limit. We added one — Convex-backed, per user, per minute, with a sane default that no real human user will ever hit and a clear error message for anyone who somehow does. Cost ceilings are now bounded by user count, not by user behavior.</p>
+
+            <h2>5 — Sentry Sees Real Bugs, Not User Mistakes</h2>
+            <p>This one is less about security and more about engineering hygiene — but it absolutely affects trust because it determines how fast we can find and fix actual bugs.</p>
+            <p>Sentry, our error-tracking tool, was being polluted by user mistakes that aren't bugs at all: someone typing the wrong password, someone trying to sign in with an email that doesn't have an account, someone failing the breached-password check. These are <em>expected</em> error paths handled gracefully by the UI. They have no business in a crash dashboard.</p>
+            <p>We added a noise filter at the Sentry SDK layer that drops these specific Clerk-handled user errors before they leave the device. Result: when we open Sentry now, what we see is real bugs — not background noise. We find issues faster, fix them faster, and the app gets better faster.</p>
+
+            <h2>6 — Account Deletion That Actually Deletes</h2>
+            <p>"Delete my account" is the most basic privacy commitment an app can make, and it's the one most apps quietly fail. Often "delete" means "we'll mark you as inactive and keep your data forever, please email us if you want it really gone." We didn't want that. We wanted a tap, a confirm, and a true cascade.</p>
+            <p>The audit forced us to map every table in our Convex schema that referenced a user — there were nine — and ensure the deletion flow cascaded across all of them. We also fixed an ordering race we'd shipped earlier (where signing out happened <em>after</em> the redirect, leading to a UI flash and a TypeError). The fixed flow now signs out first, then deletes, then redirects. We had a tester run the whole flow end-to-end and confirmed: the data is actually gone.</p>
+
+            <h2>What This Doesn't Cover</h2>
+            <p>It's important to be honest about the audit's scope. This pass focused on application-layer trust: auth, AI input, billing reconciliation, error visibility, deletion. It did not cover:</p>
             <ul>
-                <li><strong>Prompt-injection guard on every AI surface:</strong> Five Convex AI endpoints share a single hardening helper that wraps user content in unique delimiters and appends an explicit injection guard. Even if a user pastes adversarial text, it can't override the system prompt. <a href="audit-and-trust.html" style="color: var(--accent-lime, #a3e635);">Read the audit close-out story →</a></li>
-                <li><strong>Rate limiting + reconciliation crons:</strong> Per-user rate limits stop runaway AI cost; nightly RC reconciliation catches any entitlement drift between the store and our DB.</li>
-                <li><strong>Account deletion that actually deletes:</strong> Cascade across nine tables, validated end-to-end by real testers — not a "request" form that takes 30 days.</li>
+                <li><strong>Penetration testing of our cloud infrastructure</strong> — Convex, Clerk, RevenueCat, and our other vendors are independently audited (SOC 2, etc.) but we did not run our own pentest against them.</li>
+                <li><strong>Formal HIPAA compliance.</strong> FastAI is a wellness app, not a covered entity, and we don't store PHI in the regulatory sense. We do, however, hold ourselves to the privacy spirit of those frameworks.</li>
+                <li><strong>Full third-party SDK audit.</strong> We trust the SDKs we depend on (Sentry, PostHog, Anthropic) but haven't independently audited their data flows beyond what their public documentation claims.</li>
             </ul>
+            <p>These are honest gaps. As FastAI grows, the bar will rise.</p>
 
-            <h3>Web Presence</h3>
-            <ul>
-                <li><strong>Marketing site at exafabs.ai:</strong> Static HTML hosted on GitHub Pages. Fast, dependency-free, no JavaScript framework tax.</li>
-                <li><strong>PostHog for product analytics:</strong> Funnel, retention, and feature-flag rollouts — EU region, with PII scrubbed before ingest.</li>
-            </ul>
-
-            <h3>Ads Engine API</h3>
-            <ul>
-                <li><strong>FastAPI + Claude AI:</strong> Production-grade REST API at <a href="https://api.exafabs.ai/docs" target="_blank" style="color: var(--accent-lime, #a3e635);">api.exafabs.ai</a> with 15 AI-powered endpoints for complete ad campaign automation — audience targeting, keyword strategy, ad copy generation, creative specs, video scripts, funnel mapping, landing page optimization, budget allocation, competitor analysis, A/B testing frameworks, campaign audits, and more.</li>
-                <li><strong>Deployed on Railway:</strong> Auto-deploys from GitHub with API key authentication, CORS support, and production-grade error handling.</li>
-            </ul>
-
-            <!-- How the AI Coach Works -->
-            <h2>How the AI Coach Works: From Context to Insight</h2>
-            <p>The AI Coach is the secret sauce. Here's the exact flow:</p>
-
-            <div class="feature-list">
-                <ul>
-                    <li><strong>Data Aggregation (On-Device):</strong> When you open the Coach tab, the app assembles your context: last 30 days of fasting logs (with duration and metabolic zones reached), weight history with trend line, meal logs with macronutrients, and your stated goals.</li>
-                    <li><strong>Context Compression:</strong> This data is summarized into a structured prompt (not raw JSON dumps—we use natural language summaries to save tokens and improve Claude's reasoning). Example: "User has been fasting 16:8 for 3 weeks, average weight loss of 1.5 lbs/week. Recent meals show high carb intake on weekends. Goal: lose 15 lbs in 12 weeks."</li>
-                    <li><strong>Claude API Call (via Convex):</strong> The Convex function sends the compressed context + user message to Claude's API. Claude responds with personalized advice, grounded in the user's actual data.</li>
-                    <li><strong>Streaming & Caching:</strong> Response is streamed to the client for instant feedback. Convex caches similar queries (e.g., "why is my weight plateauing?") for 24 hours to reduce API costs.</li>
-                    <li><strong>Conversation History:</strong> All chat turns are stored in Convex so users can revisit past advice, and Claude has full context in multi-turn conversations.</li>
-                </ul>
-            </div>
-
-            <p>The result: users feel like they have a personal nutrition coach who understands their history, constraints, and psychology—because they do.</p>
-
-            <!-- What's Next -->
-            <h2>What's Next: The Fasting Platform Roadmap</h2>
-            <p>FastAI's MVP is live, but the platform has enormous headroom for innovation:</p>
-
-            <div class="feature-list">
-                <ul>
-                    <li><strong>Wearable Integration:</strong> Connect to Apple Watch, Oura Ring, and Fitbit to track heart rate variability, sleep quality, and activity during fasting windows. Claude uses this data to refine recommendations (e.g., "Your HRV spiked when you did a long fast + hard workout. Let's adjust.").</li>
-                    <li><strong>Community Challenges:</strong> Leaderboards, group fasting challenges, and peer support. Claude can coach users through a 30-day challenge and celebrate milestones.</li>
-                    <li><strong>Family Plans:</strong> Share recipes, fasting schedules, and results with family members. Discounted tier for households.</li>
-                    <li><strong>Advanced Body Composition Tracking:</strong> Integrate DEXA, bioelectrical impedance, or 3D body scanning APIs to track fat loss vs. muscle retention—more nuanced than weight alone.</li>
-                    <li><strong>Meal Plan Generation:</strong> Claude generates weekly meal plans optimized for your fasting window, macronutrient goals, and food preferences. Integration with grocery delivery APIs (Instacart, Amazon Fresh) for one-click ordering.</li>
-                </ul>
-            </div>
+            <h2>Why Publish This?</h2>
+            <p>Most apps don't write up their security work. Either they don't do it (in which case there's nothing to publish), or they do but treat the work as proprietary, or they're worried that publishing the list of fixes is the same as publishing the list of past vulnerabilities.</p>
+            <p>We chose to publish for one simple reason: a health app asks users to trust it with sensitive personal data. The least we can do is show our work. If you're considering FastAI, you deserve to know what we audit, what we found, and how we resolved it. If you're a developer building something similar, take this as a template — every one of these fixes is worth shipping in your app too.</p>
 
             <!-- CTA Section -->
             <div class="cta-section">
-                <h3>Ready to Transform Your Fasting Journey?</h3>
-                <p>FastAI Health Coach is now in <strong>Closed Testing</strong> on Google Play. Public Android launch in May 2026; iOS following. AI-powered fasting coaching, a Coach that remembers your habits, multi-view meal photos, and weight predictions — all in your pocket.</p>
+                <h3>Try a Health App That Takes Trust Seriously</h3>
+                <p>FastAI Health Coach is now in <strong>Closed Testing</strong> on Google Play. Public Android launch in May 2026; iOS following. Built with Coach memory, multi-view meal photos, and the trust hardening described above.</p>
                 <a href="../index.html#contact" class="cta-link">🚀 Launching May 2026 — Get Notified</a>
             </div>
 
             <!-- Related Posts -->
             <div class="related-posts">
-                <h3>Explore More EXAFABS Projects</h3>
+                <h3>More from the FastAI Engineering Stack</h3>
                 <div class="related-posts-grid">
-                    <a href="crickbot-ai.html" class="related-post-card">
-                        <h4>CrickBot: AI Cricket</h4>
-                        <p>Intelligent cricket game with adaptive AI opponents.</p>
+                    <a href="fastai-health-coach.html" class="related-post-card">
+                        <h4>FastAI Health Coach: The Product Tour</h4>
+                        <p>What FastAI does, who it's for, and how all the AI features fit together.</p>
                     </a>
-                    <a href="goalbot-ai.html" class="related-post-card">
-                        <h4>GoalBot: Goal Tracking</h4>
-                        <p>AI-powered personal goal achievement platform.</p>
+                    <a href="coach-that-remembers.html" class="related-post-card">
+                        <h4>Coach that Remembers</h4>
+                        <p>Building long-term AI memory with Voyage 3.5-lite and retrieval-augmented generation.</p>
                     </a>
-                    <a href="basehit-ai.html" class="related-post-card">
-                        <h4>BaseHit: Baseball AI</h4>
-                        <p>Advanced baseball analytics and prediction engine.</p>
+                    <a href="ads-engine-api.html" class="related-post-card">
+                        <h4>Ads Engine API</h4>
+                        <p>15 AI-powered endpoints for full ad campaign automation.</p>
                     </a>
-                    <a href="survival-arena-ai.html" class="related-post-card">
-                        <h4>Survival Arena: Game AI</h4>
-                        <p>Multiplayer survival game with intelligent NPCs.</p>
-                    </a>
-                    <a href="infinite-voyager-ai.html" class="related-post-card">
-                        <h4>Infinite Voyager: Space Sim</h4>
-                        <p>Space exploration game with procedural universe generation.</p>
+                    <a href="fabs-chip-tracker.html" class="related-post-card">
+                        <h4>FABS Chip Tracker</h4>
+                        <p>A Claude-powered intelligence layer for the global semiconductor supply chain.</p>
                     </a>
                 </div>
             </div>
