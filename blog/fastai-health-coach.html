@@ -624,6 +624,13 @@
             <!-- Tech Stack -->
             <h2>Tech Stack: Building a Production AI Health App</h2>
 
+            <p>Before the deep dive, here's the full production architecture in one diagram — every layer from the App Store down to PostHog event ingest. <a href="../assets/fastai-architecture.svg" target="_blank" style="color: var(--accent-lime, #C94080);">Open the SVG in a new tab</a> for full detail.</p>
+
+            <figure style="margin: 24px 0; padding: 20px; background: rgba(36, 3, 49, 0.5); border-radius: 12px; border: 1px solid rgba(123, 47, 190, 0.3);">
+                <img src="../assets/fastai-architecture.svg" alt="FastAI Health Coach production architecture diagram showing five tiers: distribution via App Store and Play Store, React Native Expo mobile app, Clerk authentication, Convex serverless backend with database mutations queries HTTP actions and crons, and external services including Anthropic Claude AI Voyage embeddings RevenueCat payments Sentry PostHog and FCM" loading="lazy" style="width: 100%; height: auto; display: block; border-radius: 8px;"/>
+                <figcaption style="margin-top: 12px; color: #8a7a94; font-size: 14px; text-align: center; font-style: italic;">FastAI Health Coach — production architecture · 5 tiers · 14 Convex tables · built solo over 8 months</figcaption>
+            </figure>
+
             <h3>Mobile Architecture</h3>
             <ul>
                 <li><strong>React Native + Expo:</strong> Cross-platform iOS/Android with over-the-air JS updates. Expo Router handles navigation, deep linking, and the typed route registry powering the v1.9 single-render-path onboarding.</li>
