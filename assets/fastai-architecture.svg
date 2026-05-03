@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" role="img" aria-labelledby="title desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1010" role="img" aria-labelledby="title desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif">
   <title id="title">FastAI Health Coach — Production Architecture</title>
   <desc id="desc">Five-tier architecture: mobile clients distribute via App Store and Play Store, authenticate through Clerk, communicate with a Convex serverless backend that orchestrates Claude AI, payments via RevenueCat, and observability through Sentry and PostHog.</desc>
 
   <!-- Background -->
-  <rect width="1200" height="920" fill="#240331"/>
+  <rect width="1200" height="1010" fill="#240331"/>
 
   <!-- Defs: gradients + arrowhead -->
   <defs>
@@ -120,49 +120,56 @@
   <line x1="600" y1="630" x2="600" y2="700" stroke="#C94080" stroke-width="2" marker-end="url(#arrow)"/>
   <line x1="920" y1="630" x2="980" y2="700" stroke="#C94080" stroke-width="2" marker-end="url(#arrow)"/>
 
-  <!-- ===== TIER 4: EXTERNAL SERVICES ===== -->
-  <text x="60" y="725" fill="#F5943A" font-size="11" font-weight="700" letter-spacing="2">EXTERNAL SERVICES</text>
+  <!-- ===== TIER 4: AI + ML INFERENCE (full-width emphasis) ===== -->
+  <text x="60" y="725" fill="#F5943A" font-size="11" font-weight="700" letter-spacing="2">AI + ML INFERENCE</text>
 
-  <!-- AI Layer -->
   <g>
-    <rect x="60" y="740" width="350" height="135" rx="8" fill="url(#boxGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
-    <text x="235" y="767" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">AI Layer</text>
+    <rect x="60" y="740" width="1080" height="170" rx="10" fill="url(#boxGrad)" stroke="url(#brandGrad)" stroke-width="2.5"/>
+    <text x="600" y="772" fill="#ffffff" font-size="17" font-weight="700" text-anchor="middle">AI + Machine Learning Pipeline</text>
 
-    <text x="80" y="795" fill="#fad7ff" font-size="11" font-weight="600">Anthropic Claude</text>
-    <text x="80" y="813" fill="#8a7a94" font-size="10">→ Sonnet 4 — Coach + Daily Insight</text>
-    <text x="80" y="828" fill="#8a7a94" font-size="10">→ Haiku — meal classification, low-cost tier</text>
-    <text x="80" y="843" fill="#8a7a94" font-size="10">→ Vision — meal photo nutrition (4s)</text>
+    <!-- Two columns of capabilities -->
+    <!-- LEFT column: LLM-based -->
+    <text x="90" y="800" fill="#F5943A" font-size="10" font-weight="700" letter-spacing="1.5">LLM-POWERED (ANTHROPIC CLAUDE)</text>
 
-    <text x="80" y="864" fill="#fad7ff" font-size="11" font-weight="600">Voyage 3.5-lite — embeddings (Coach memory)</text>
+    <text x="90" y="822" fill="#fad7ff" font-size="11" font-weight="600">Sonnet 4 — Coach reasoning</text>
+    <text x="90" y="836" fill="#8a7a94" font-size="10">Daily Insight + cross-session conversations</text>
+
+    <text x="90" y="858" fill="#fad7ff" font-size="11" font-weight="600">Vision — meal photo nutrition</text>
+    <text x="90" y="872" fill="#8a7a94" font-size="10">Calories + macros in 4 seconds</text>
+
+    <text x="90" y="894" fill="#fad7ff" font-size="11" font-weight="600">Haiku — tier-routed classification</text>
+    <text x="90" y="908" fill="#8a7a94" font-size="10">Low-cost lane for low-stakes tasks</text>
+
+    <!-- Vertical divider -->
+    <line x1="600" y1="790" x2="600" y2="900" stroke="#7B2FBE" stroke-width="1" opacity="0.4"/>
+
+    <!-- RIGHT column: ML models + retrieval -->
+    <text x="620" y="800" fill="#F5943A" font-size="10" font-weight="700" letter-spacing="1.5">ML MODELS + RETRIEVAL</text>
+
+    <text x="620" y="822" fill="#fad7ff" font-size="11" font-weight="600">Voyage 3.5-lite — embeddings</text>
+    <text x="620" y="836" fill="#8a7a94" font-size="10">Semantic retrieval over Coach memory</text>
+
+    <text x="620" y="858" fill="#fad7ff" font-size="11" font-weight="600">Weight Prediction Model</text>
+    <text x="620" y="872" fill="#8a7a94" font-size="10">Per-user statistical model · 30+ data points</text>
+
+    <text x="620" y="894" fill="#fad7ff" font-size="11" font-weight="600">Adaptive Schedule Logic</text>
+    <text x="620" y="908" fill="#8a7a94" font-size="10">Pattern recognition · 16:8 / 18:6 / OMAD selection</text>
   </g>
 
-  <!-- Payments -->
+  <!-- ===== TIER 5: PAYMENTS + OBSERVABILITY (compact row) ===== -->
+  <text x="60" y="935" fill="#F5943A" font-size="11" font-weight="700" letter-spacing="2">PAYMENTS · OBSERVABILITY · ENGAGEMENT</text>
+
   <g>
-    <rect x="425" y="740" width="350" height="135" rx="8" fill="url(#boxGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
-    <text x="600" y="767" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">Payments &amp; Entitlements</text>
-
-    <text x="445" y="795" fill="#fad7ff" font-size="11" font-weight="600">RevenueCat</text>
-    <text x="445" y="813" fill="#8a7a94" font-size="10">→ Source of truth for subscriptions</text>
-    <text x="445" y="828" fill="#8a7a94" font-size="10">→ Webhook → Convex entitlement sync</text>
-
-    <text x="445" y="850" fill="#fad7ff" font-size="11" font-weight="600">IAP rails</text>
-    <text x="445" y="864" fill="#8a7a94" font-size="10">→ Apple StoreKit · Google Play Billing · Superwall A/B</text>
+    <rect x="60" y="950" width="525" height="50" rx="8" fill="url(#boxGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
+    <text x="80" y="972" fill="#fad7ff" font-size="11" font-weight="600">RevenueCat</text>
+    <text x="80" y="988" fill="#8a7a94" font-size="10">Subscription source of truth · Apple StoreKit · Play Billing · Superwall A/B · webhook → Convex sync</text>
   </g>
 
-  <!-- Observability + Push -->
   <g>
-    <rect x="790" y="740" width="350" height="135" rx="8" fill="url(#boxGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
-    <text x="965" y="767" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">Observability &amp; Engagement</text>
-
-    <text x="810" y="795" fill="#fad7ff" font-size="11" font-weight="600">Sentry</text>
-    <text x="810" y="813" fill="#8a7a94" font-size="10">→ Errors · releases · crash data (filtered)</text>
-
-    <text x="810" y="833" fill="#fad7ff" font-size="11" font-weight="600">PostHog (EU)</text>
-    <text x="810" y="851" fill="#8a7a94" font-size="10">→ Funnels · retention · feature flags · PII-scrubbed</text>
-
-    <text x="810" y="869" fill="#fad7ff" font-size="11" font-weight="600">FCM — push notifications</text>
+    <rect x="615" y="950" width="525" height="50" rx="8" fill="url(#boxGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
+    <text x="635" y="972" fill="#fad7ff" font-size="11" font-weight="600">Sentry · PostHog (EU) · Firebase Cloud Messaging</text>
+    <text x="635" y="988" fill="#8a7a94" font-size="10">Errors + releases · Funnels + retention + flags (PII-scrubbed) · Push notifications</text>
   </g>
 
-  <!-- Footer -->
-  <text x="600" y="903" fill="#8a7a94" font-size="11" text-anchor="middle">Built solo · 8 months · Claude as pair programmer · exafabs.ai/blog</text>
+  <text x="600" y="1003" fill="#8a7a94" font-size="11" text-anchor="middle">Built solo · 45 days · Claude as pair programmer · exafabs.ai/blog</text>
 </svg>
