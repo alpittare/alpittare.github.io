@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1010" role="img" aria-labelledby="title desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1040" role="img" aria-labelledby="title desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif">
   <title id="title">FastAI Health Coach — Production Architecture</title>
   <desc id="desc">Five-tier architecture: mobile clients distribute via App Store and Play Store, authenticate through Clerk, communicate with a Convex serverless backend that orchestrates Claude AI, payments via RevenueCat, and observability through Sentry and PostHog.</desc>
 
   <!-- Background -->
-  <rect width="1200" height="1010" fill="#240331"/>
+  <rect width="1200" height="1040" fill="#240331"/>
 
   <!-- Defs: gradients + arrowhead -->
   <defs>
@@ -171,5 +171,5 @@
     <text x="635" y="988" fill="#8a7a94" font-size="10">Errors + releases · Funnels + retention + flags (PII-scrubbed) · Push notifications</text>
   </g>
 
-  <text x="600" y="1003" fill="#8a7a94" font-size="11" text-anchor="middle">Built solo · Nights &amp; weekends · Claude as pair programmer · exafabs.ai/blog</text>
+  <text x="600" y="1018" fill="#8a7a94" font-size="11" text-anchor="middle">Built solo · Nights &amp; weekends · Claude as pair programmer · exafabs.ai/blog</text>
 </svg>
