@@ -533,7 +533,7 @@
             <p>FABS Chip Tracker flips the dashboard model on its head. Instead of building "charts with a chatbot bolted on," we designed the platform around a Claude-powered AI Decision Layer from the very first commit. The data pipeline exists <em>to feed the AI</em>, not the other way around.</p>
 
             <h3>Interactive Global Fab Map</h3>
-            <p>The homepage is a Mapbox-powered map of 1,400+ fabs across the world's leading semiconductor companies. Every fab is clickable — tap TSMC Fab 18 and you see the process node (3nm), the wafer capacity, the CAPEX history, the customers, and the risk signals. The same data is available through canonical company pages (<code>/companies/tsmc</code>, <code>/companies/samsung</code>, etc.) that also serve as SEO landing pages.</p>
+            <p>The homepage is a Mapbox-powered map of <strong>1,484 fabs across 386 semiconductor companies in 61 countries</strong>, covering 43.35M WPM of capacity and $5.5T+ in tracked investment. Every fab is clickable — tap TSMC Fab 18 and you see the process node (3nm), the wafer capacity, the CAPEX history, the customers, and the risk signals. The same data is available through canonical company pages (<code>/companies/tsmc</code>, <code>/companies/samsung</code>, etc.) that also serve as SEO landing pages.</p>
 
             <h3>AI Decision Layer: Claude-Grounded Strategic Q&amp;A</h3>
             <p>The core differentiator is the Decision Layer. Ask a strategic question — "what happens to automotive supply if a Taiwan earthquake takes TSMC Fab 18 offline for 90 days?" — and Claude answers using the actual fab data as grounding. It's not ChatGPT with a web search; it's a retrieval-augmented reasoning layer that operates on structured, curated, versioned intelligence.</p>
@@ -607,7 +607,7 @@ export async function POST(req: Request) {
 
             <div class="feature-list">
                 <ul>
-                    <li><strong>R1 — Seed Expansion:</strong> Grow the canonical fab dataset from a handful of test rows to 1,400+ fabs across the world's leading semiconductor companies, validated end-to-end.</li>
+                    <li><strong>R1 — Seed Expansion:</strong> Grow the canonical fab dataset from a handful of test rows to 1,484 fabs across 386 semiconductor companies in 61 countries, validated end-to-end.</li>
                     <li><strong>R3–R4 — Convex Production Deploy:</strong> Push the backend to the production Convex deployment and seed the fabs table there, not in dev.</li>
                     <li><strong>R5 — GitHub Push:</strong> All code under version control on <code>alpittare/exafabs-core</code>, with deployment runbooks and environment documentation in the same repo.</li>
                     <li><strong>R6–R7 — Vercel Deploy + Smoke Test:</strong> Create the Vercel project, wire environment variables, deploy a preview, and smoke-test every surface that matters — map, dashboard, insights, companies, decision layer.</li>
@@ -640,7 +640,7 @@ export async function POST(req: Request) {
             <!-- CTA Section -->
             <div class="cta-section">
                 <h3>Explore the Global Fab Map Now</h3>
-                <p>FABS Chip Tracker is live. Ask the AI Decision Layer a question, explore the map, or drill into any of the 1,400+ fabs we track across the world's leading semiconductor companies. No login required.</p>
+                <p>FABS Chip Tracker is live. Ask the AI Decision Layer a question, explore the map, or drill into any of the 1,484 fabs we track across 386 semiconductor companies in 61 countries. No login required.</p>
                 <a href="https://fabs.exafabs.ai" class="cta-link">Launch FABS Chip Tracker</a>
             </div>
 
