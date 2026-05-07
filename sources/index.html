@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Research bibliography behind FastAI Health Coach — peer-reviewed sources for intermittent fasting, nutrition, and metabolic health claims made in the AI Coach.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exafabs.ai/sources/">
+    <meta property="og:title" content="Research Sources — FastAI Health Coach">
+    <meta property="og:description" content="Peer-reviewed research bibliography behind FastAI's coaching guidance.">
+    <meta property="og:site_name" content="EXAFABS.AI">
+    <meta name="theme-color" content="#240331">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://exafabs.ai/sources/">
+    <link rel="icon" type="image/png" href="../logo-icon.png">
+    <title>Research Sources — FastAI Health Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #240331;
+            --bg-surface: #32103e;
+            --bg-surface-high: #3e1c49;
+            --primary-gradient: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            --accent-pink: #C94080;
+            --accent-orange: #F5943A;
+            --text-primary: #dcb8ff;
+            --text-surface: #fad7ff;
+            --text-secondary: #cfc2d8;
+            --text-muted: #8a7a94;
+            --glass-bg: rgba(73, 39, 85, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-card: 1.25rem;
+            --blur-glass: blur(24px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; text-rendering: optimizeLegibility; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-surface);
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(32px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-surface);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .nav-logo img { width: 2rem; height: 2rem; filter: drop-shadow(0 0 8px rgba(155, 48, 255, 0.4)); }
+        .nav-back { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+        .nav-back:hover { color: var(--accent-pink); }
+
+        .hero {
+            padding: 10rem 2.5rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(123,47,190,0.2) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 20%, rgba(201,64,128,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+        }
+        .hero h1 .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .content {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 6rem;
+        }
+        .policy-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: var(--blur-glass);
+        }
+        .policy-card h2 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .policy-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.5rem;
+        }
+        .policy-card p, .policy-card li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .policy-card ul { list-style: none; padding: 0; margin: 0.5rem 0; }
+        .policy-card li { padding: 0.5rem 0 0.5rem 1.4rem; position: relative; }
+        .policy-card li::before {
+            content: '';
+            position: absolute; left: 0; top: 0.95rem;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+        }
+        .policy-card a { color: var(--accent-pink); text-decoration: none; }
+        .policy-card a:hover { color: var(--accent-orange); text-decoration: underline; }
+
+        .citation {
+            display: block;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .citation:last-child { border-bottom: none; }
+        .citation .authors { color: var(--text-surface); font-weight: 600; }
+        .citation .title { color: var(--text-primary); font-style: italic; }
+        .citation .journal { color: var(--text-secondary); font-size: 0.9rem; }
+        .citation .doi { color: var(--text-muted); font-size: 0.8rem; }
+
+        .effective-date {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            padding-bottom: 2rem;
+        }
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .footer-logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+        footer p { color: var(--text-muted); font-size: 0.85rem; }
+        footer a { color: var(--accent-pink); text-decoration: none; }
+        footer a:hover { color: var(--accent-orange); }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hero { padding: 8rem 1.5rem 3rem; }
+            .content { padding: 1.5rem 1.5rem 4rem; }
+            .policy-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://exafabs.ai" class="nav-logo">
+            <img src="../logo-icon.png" alt="EXAFABS.AI" width="32" height="32">
+            EXAFABS.AI
+        </a>
+        <a href="https://exafabs.ai" class="nav-back">&larr; Back to Home</a>
+    </nav>
+
+    <section class="hero">
+        <h1><span class="gradient-text">Research Sources</span></h1>
+        <p>Peer-reviewed research behind FastAI Health Coach. Every health, nutrition, or physiological claim made by our AI Coach is grounded in the literature below.</p>
+    </section>
+
+    <div class="content">
+
+        <div class="policy-card">
+            <h2>About this bibliography</h2>
+            <p>FastAI Health Coach uses an AI assistant (powered by Anthropic's Claude) to answer fasting and nutrition questions. To ensure those responses are grounded in real research and not invented, we restrict the Coach to citing only the sources below — peer-reviewed publications by recognized researchers in intermittent fasting, metabolic health, and nutrition science.</p>
+            <p>When you ask the Coach a question and it makes a specific claim about autophagy, insulin sensitivity, ketogenesis, or any other physiological topic, you'll see an inline citation in this format: <code>[Source: AuthorLastName Year, Journal]</code>. You can find the full reference here.</p>
+            <p><strong>Important:</strong> FastAI provides general wellness information based on this published research. It is not medical advice. Always consult a qualified healthcare provider before making medical decisions, especially if you have any medical conditions, are pregnant or breastfeeding, or take prescription medications.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2>Intermittent fasting &mdash; foundational reviews</h2>
+
+            <div class="citation">
+                <div class="authors">de Cabo R, Mattson MP.</div>
+                <div class="title">Effects of Intermittent Fasting on Health, Aging, and Disease.</div>
+                <div class="journal">New England Journal of Medicine. 2019;381(26):2541-2551.</div>
+                <div class="doi">DOI: 10.1056/NEJMra1905136 &middot; <a href="https://www.nejm.org/doi/full/10.1056/NEJMra1905136" target="_blank" rel="noopener">View on NEJM</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Mattson MP, Longo VD, Harvie M.</div>
+                <div class="title">Impact of intermittent fasting on health and disease processes.</div>
+                <div class="journal">Ageing Research Reviews. 2017;39:46-58.</div>
+                <div class="doi">DOI: 10.1016/j.arr.2016.10.005 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/27810402/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Patterson RE, Sears DD.</div>
+                <div class="title">Metabolic Effects of Intermittent Fasting.</div>
+                <div class="journal">Annual Review of Nutrition. 2017;37:371-393.</div>
+                <div class="doi">DOI: 10.1146/annurev-nutr-071816-064634 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/28715993/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Longo VD, Mattson MP.</div>
+                <div class="title">Fasting: molecular mechanisms and clinical applications.</div>
+                <div class="journal">Cell Metabolism. 2014;19(2):181-192.</div>
+                <div class="doi">DOI: 10.1016/j.cmet.2013.12.008 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/24440038/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <h2>Time-restricted eating clinical trials</h2>
+
+            <div class="citation">
+                <div class="authors">Sutton EF, Beyl R, Early KS, Cefalu WT, Ravussin E, Peterson CM.</div>
+                <div class="title">Early Time-Restricted Feeding Improves Insulin Sensitivity, Blood Pressure, and Oxidative Stress Even without Weight Loss in Men with Prediabetes.</div>
+                <div class="journal">Cell Metabolism. 2018;27(6):1212-1221.e3.</div>
+                <div class="doi">DOI: 10.1016/j.cmet.2018.04.010 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/29754952/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Wilkinson MJ, Manoogian ENC, Zadourian A, et al.</div>
+                <div class="title">Ten-Hour Time-Restricted Eating Reduces Weight, Blood Pressure, and Atherogenic Lipids in Patients with Metabolic Syndrome.</div>
+                <div class="journal">Cell Metabolism. 2020;31(1):92-104.e5.</div>
+                <div class="doi">DOI: 10.1016/j.cmet.2019.11.004 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/31813824/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Hatori M, Vollmers C, Zarrinpar A, et al.</div>
+                <div class="title">Time-restricted feeding without reducing caloric intake prevents metabolic diseases in mice fed a high-fat diet.</div>
+                <div class="journal">Cell Metabolism. 2012;15(6):848-860.</div>
+                <div class="doi">DOI: 10.1016/j.cmet.2012.04.019 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/22608008/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <h2>Alternate-day &amp; longer fasts</h2>
+
+            <div class="citation">
+                <div class="authors">Anton SD, Moehl K, Donahoo WT, et al.</div>
+                <div class="title">Flipping the Metabolic Switch: Understanding and Applying the Health Benefits of Fasting.</div>
+                <div class="journal">Obesity. 2018;26(2):254-268.</div>
+                <div class="doi">DOI: 10.1002/oby.22065 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/29086496/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Klempel MC, Kroeger CM, Bhutani S, Trepanowski JF, Varady KA.</div>
+                <div class="title">Intermittent fasting combined with calorie restriction is effective for weight loss and cardio-protection in obese women.</div>
+                <div class="journal">Nutrition Journal. 2012;11:98.</div>
+                <div class="doi">DOI: 10.1186/1475-2891-11-98 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/23171320/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Tinsley GM, La Bounty PM.</div>
+                <div class="title">Effects of intermittent fasting on body composition and clinical health markers in humans.</div>
+                <div class="journal">Nutrition Reviews. 2015;73(10):661-674.</div>
+                <div class="doi">DOI: 10.1093/nutrit/nuv041 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/26374764/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <h2>Metabolic switching &amp; ketogenesis</h2>
+
+            <div class="citation">
+                <div class="authors">Cahill GF Jr.</div>
+                <div class="title">Fuel metabolism in starvation.</div>
+                <div class="journal">Annual Review of Nutrition. 2006;26:1-22.</div>
+                <div class="doi">DOI: 10.1146/annurev.nutr.26.061505.111258 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/16848698/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Mattson MP, Moehl K, Ghena N, Schmaedick M, Cheng A.</div>
+                <div class="title">Intermittent metabolic switching, neuroplasticity and brain health.</div>
+                <div class="journal">Nature Reviews Neuroscience. 2018;19(2):63-80.</div>
+                <div class="doi">DOI: 10.1038/nrn.2017.156 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/29321682/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <h2>Hormonal effects of fasting</h2>
+
+            <div class="citation">
+                <div class="authors">Hartman ML, Veldhuis JD, Johnson ML, et al.</div>
+                <div class="title">Augmented growth hormone (GH) secretory burst frequency and amplitude mediate enhanced GH secretion during a two-day fast in normal men.</div>
+                <div class="journal">Journal of Clinical Endocrinology &amp; Metabolism. 1992;74(4):757-765.</div>
+                <div class="doi">DOI: 10.1210/jcem.74.4.1548337 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/1548337/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+
+            <div class="citation">
+                <div class="authors">Ho KY, Veldhuis JD, Johnson ML, et al.</div>
+                <div class="title">Fasting enhances growth hormone secretion and amplifies the complex rhythms of growth hormone secretion in man.</div>
+                <div class="journal">Journal of Clinical Investigation. 1988;81(4):968-975.</div>
+                <div class="doi">DOI: 10.1172/JCI113450 &middot; <a href="https://pubmed.ncbi.nlm.nih.gov/3127426/" target="_blank" rel="noopener">PubMed</a></div>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <h2>How citations work in the FastAI Coach</h2>
+            <p>When you chat with FastAI Coach and ask about a specific physiological mechanism — for example, "What happens during autophagy?" or "Does fasting really improve insulin sensitivity?" — the Coach will respond with a citation in the format <code>[Source: AuthorLastName Year, Journal]</code>.</p>
+            <p>Each cited source appears in the bibliography above with a direct link to PubMed or the publishing journal so you can verify the original research yourself. We update this bibliography quarterly as new peer-reviewed research is published.</p>
+            <p>If the Coach cannot find a credible source for a specific claim, it will give you general guidance without specific numbers or mechanisms — and recommend you consult a qualified healthcare provider for individualized advice.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2>Important medical disclaimer</h2>
+            <p>The information provided by FastAI Coach and the research summarized in this bibliography is for educational and general wellness purposes only. It is not medical advice and is not intended to diagnose, treat, cure, or prevent any disease.</p>
+            <p>You should always consult a qualified healthcare provider before:</p>
+            <ul>
+                <li>Starting any fasting or dietary regimen, especially if you have any medical condition</li>
+                <li>Making changes to medications or supplements</li>
+                <li>Engaging in extended fasts (more than 24 hours)</li>
+                <li>Combining fasting with exercise programs if you have cardiovascular concerns</li>
+            </ul>
+            <p>Fasting may not be appropriate for individuals who are pregnant or breastfeeding, have a history of eating disorders, are underweight, take prescription medications (especially diabetes medications), or have certain medical conditions.</p>
+        </div>
+
+        <div class="policy-card">
+            <h2>Contact</h2>
+            <p>Questions about a specific citation, or want to suggest a research paper to add to our allowlist? Email <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
+            <p>See also our <a href="https://exafabs.ai/terms">Terms of Service</a>, <a href="https://exafabs.ai/privacy-policy">Privacy Policy</a>, and <a href="https://exafabs.ai/refund-policy">Refund Policy</a>.</p>
+        </div>
+
+        <p class="effective-date">Last updated: May 7, 2026 &middot; Bibliography reviewed quarterly &middot; EXAFABS.AI</p>
+
+    </div>
+
+    <footer>
+        <div class="footer-logo">EXAFABS<span style="background:var(--primary-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">.</span>AI</div>
+        <p>&copy; 2026 EXAFABS.AI &mdash; All rights reserved. &nbsp;|&nbsp; <a href="https://exafabs.ai">Home</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/terms">Terms</a> &nbsp;|&nbsp; <a href="https://exafabs.ai/privacy-policy">Privacy</a></p>
+    </footer>
+
+</body>
+</html>
