@@ -431,13 +431,13 @@
             <p>Our SaaS products include AI-powered features (decision summaries, Q&amp;A, recommendations). When you submit a query to these features, the text of your query and any relevant context data is transmitted to our AI model provider (Anthropic) for processing and returned to you. Anthropic processes queries under their own privacy policy and does not use customer API traffic to train their models. We do not retain your raw query text beyond the response cycle except as needed for abuse prevention, usage metering, and rate limiting.</p>
 
             <h3>Billing &amp; Payment Data (paid SaaS tiers only)</h3>
-            <p>When you purchase a paid subscription to a SaaS product, all payment processing is handled by our Merchant of Record (Paddle) and our billing orchestrator (RevenueCat). We do not collect, store, or have access to your credit card number, CVV, bank account details, or any other payment instrument data. We receive only the minimum information needed to fulfill your subscription: your customer ID, subscription status, entitlement level, and transaction timestamps.</p>
+            <p>When you purchase a paid subscription to a web SaaS product (FABS &amp; CHIP Tracker), all payment processing is handled by our Merchant of Record (Dodo Payments). When you purchase a mobile in-app subscription (FastAI Health Coach), processing is handled by Apple App Store or Google Play. We do not collect, store, or have access to your credit card number, CVV, bank account details, or any other payment instrument data. We receive only the minimum information needed to fulfill your subscription: your customer ID, subscription status, entitlement level, and transaction timestamps.</p>
 
             <h3>Information We Do NOT Collect</h3>
             <ul>
                 <li>We do not collect precise GPS location data</li>
                 <li>We do not access your contacts, photos, camera, or microphone unless you explicitly grant permission for an in-product feature that requires it</li>
-                <li>We do not collect financial or payment card information directly — mobile purchases are handled by Apple App Store or Google Play; web purchases are handled by Paddle</li>
+                <li>We do not collect financial or payment card information directly — mobile purchases are handled by Apple App Store or Google Play; web purchases are handled by Dodo Payments (our Merchant of Record)</li>
                 <li>We do not collect data from children under 13 (see Children's Privacy section below)</li>
                 <li>We do not sell, rent, or trade your personal data to any third party</li>
             </ul>
@@ -468,8 +468,8 @@
                 <li><strong>Vercel</strong> (vercel.com) — web hosting, edge delivery, build &amp; deployment pipeline</li>
                 <li><strong>Mapbox</strong> (mapbox.com) — map tile rendering and geospatial visualization (FABS &amp; CHIP Tracker only)</li>
                 <li><strong>Anthropic</strong> (anthropic.com) — Claude AI models powering our Decision Layer, AI Q&amp;A, and insight generation</li>
-                <li><strong>Paddle</strong> (paddle.com) — Merchant of Record for web subscriptions; handles payment processing, global tax (VAT/GST) calculation and remittance, invoicing, and chargebacks</li>
-                <li><strong>RevenueCat</strong> (revenuecat.com) — subscription orchestration, entitlement management, cross-platform billing state</li>
+                <li><strong>Dodo Payments</strong> (dodopayments.com) — Merchant of Record for web subscriptions (FABS &amp; CHIP Tracker); handles card / UPI payment processing, global tax (VAT / GST) calculation and remittance, invoicing, refunds, and chargebacks</li>
+                <li><strong>Apple App Store / Google Play</strong> — Merchant of Record for mobile in-app subscriptions (FastAI Health Coach); handles billing, refunds, and platform-tier compliance</li>
                 <li><strong>Sentry</strong> (sentry.io) — error monitoring and performance diagnostics (when enabled)</li>
                 <li><strong>PostHog</strong> (posthog.com, EU region) — product analytics: anonymous and pseudonymous usage events used to understand feature adoption, debug user-experience issues, and improve our product. Event properties may include your account ID, app version, OS, device type, and feature interactions. We do not send personally identifying content (message text, weight values, meal photos) to PostHog.</li>
                 <li><strong>Google Workspace</strong> — transactional email (support, billing receipts, account notifications) and customer support correspondence</li>
@@ -559,9 +559,9 @@
             <p>Some of our games offer optional in-app purchases (coins, power-ups, cosmetic items). All mobile transactions are processed entirely through Apple App Store or Google Play. EXAFABS.AI does not collect, store, or have access to your payment information, credit card numbers, or billing details.</p>
 
             <h3>Web Subscriptions (SaaS Products)</h3>
-            <p>Paid subscriptions to our SaaS products (e.g., FABS &amp; CHIP Tracker Pro, FastAI Health Coach Pro) are processed by <strong>Paddle</strong>, acting as our Merchant of Record, with subscription orchestration handled by <strong>RevenueCat</strong>. Paddle handles all card processing, global tax calculation and remittance (VAT/GST), invoicing, and chargebacks under their own privacy and security policies.</p>
+            <p>Paid subscriptions to our web SaaS products (FABS &amp; CHIP Tracker — Starter, Pro, Business, Enterprise tiers) are processed by <strong>Dodo Payments</strong> (dodopayments.com), acting as our Merchant of Record. Dodo handles all card and UPI processing, global tax calculation and remittance (VAT / GST), invoicing, refunds, and chargebacks under their own privacy and security policies.</p>
             <p>We never see or store your full card number, CVV, bank account details, or any payment instrument data. We receive only the minimum data required to provision your subscription: customer ID, entitlement level, subscription status, and transaction timestamps.</p>
-            <p>For billing inquiries, receipts, or to cancel a subscription, please visit the Paddle-hosted customer portal link included in your order confirmation email, or contact <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
+            <p>For billing inquiries, receipts, refund requests, or to cancel a subscription, please visit the Dodo-hosted customer portal link included in your order confirmation email, or contact <a href="mailto:alpit@exafabs.ai">alpit@exafabs.ai</a>.</p>
         </div>
 
         <!-- CHANGES TO POLICY -->
