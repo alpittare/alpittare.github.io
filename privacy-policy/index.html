@@ -433,6 +433,17 @@
             <h3>Billing &amp; Payment Data (paid SaaS tiers only)</h3>
             <p>When you purchase a paid subscription to a web SaaS product (FABS &amp; CHIP Tracker), all payment processing is handled by our Merchant of Record (Dodo Payments). When you purchase a mobile in-app subscription (FastAI Health Coach), processing is handled by Apple App Store or Google Play. We do not collect, store, or have access to your credit card number, CVV, bank account details, or any other payment instrument data. We receive only the minimum information needed to fulfill your subscription: your customer ID, subscription status, entitlement level, and transaction timestamps.</p>
 
+            <h3>Apple HealthKit Data (FastAI Health Coach on iOS only)</h3>
+            <p>If you choose to connect Apple Health to FastAI Health Coach, the app reads the following data types from HealthKit, with your explicit per-type permission granted through iOS's native permission sheet:</p>
+            <ul>
+                <li><strong>Sleep Analysis</strong> — sleep session start/end timestamps, used to compute the overlap between your sleep windows and your fasting windows for personalized insights</li>
+                <li><strong>Body Mass (Weight)</strong> — weight measurements, used to populate your weight history and trajectory for fasting progress visualization</li>
+                <li><strong>Step Count</strong> — daily step totals, used as an optional context signal for the AI Coach when generating personalized insights</li>
+            </ul>
+            <p><strong>How HealthKit data is used:</strong> Imported HealthKit samples are stored in your FastAI account on our backend (Convex) and used solely to provide the in-app fasting insights and personalized Coach experience you signed up for. HealthKit data is never used for advertising, never sold or shared with third parties, and never used to train any machine-learning model. Per Apple's HealthKit policies, FastAI does not share HealthKit data with any third-party service except where strictly required to deliver the user-facing feature you requested.</p>
+            <p><strong>Optional and revocable:</strong> Connecting HealthKit is fully optional. FastAI works without it. You can revoke any individual permission at any time via iOS Settings → Privacy &amp; Security → Health → FastAI Health Coach. When you revoke a permission, FastAI immediately stops reading that data type and you can request deletion of any previously-imported samples by emailing alpit@exafabs.ai.</p>
+            <p><strong>FastAI does not write data to HealthKit at this time.</strong> A future update may offer the option to write your weight or meal nutrition back to Apple Health to keep your data consistent across apps; that option will require your separate explicit permission, again granted through iOS's native permission sheet.</p>
+
             <h3>Information We Do NOT Collect</h3>
             <ul>
                 <li>We do not collect precise GPS location data</li>
@@ -582,7 +593,7 @@
             <p>See also our <a href="https://exafabs.ai/terms">Terms of Service</a> and <a href="https://exafabs.ai/refund-policy">Refund Policy</a>.</p>
         </div>
 
-        <p class="effective-date">Effective Date: May 2, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
+        <p class="effective-date">Effective Date: May 11, 2026 &nbsp;|&nbsp; EXAFABS.AI</p>
 
     </div>
 
