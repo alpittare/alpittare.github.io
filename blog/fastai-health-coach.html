@@ -158,6 +158,23 @@
             border: 1px solid rgba(155, 48, 255, 0.3);
         }
 
+        /* Product Hunt Featured Badge */
+        .ph-badge {
+            display: inline-block;
+            margin-bottom: 28px;
+            transition: transform 0.2s ease;
+        }
+
+        .ph-badge:hover {
+            transform: scale(1.04);
+        }
+
+        .ph-badge img {
+            width: 250px;
+            height: 54px;
+            display: block;
+        }
+
         /* Article Container */
         .article-container {
             max-width: 720px;
@@ -513,6 +530,9 @@
     <section class="hero">
         <div class="hero-overlay"></div>
         <div class="hero-content">
+            <a href="https://www.producthunt.com/products/fastai-health-coach?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-fastai-health-coach" target="_blank" rel="noopener" class="ph-badge" aria-label="View FastAI Health Coach on Product Hunt">
+                <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1138026&theme=dark" alt="FastAI Health Coach - The AI fasting coach that actually remembers you. | Product Hunt" width="250" height="54" />
+            </a>
             <h1>FastAI Health Coach: How AI is Revolutionizing Intermittent Fasting</h1>
             <div class="meta-info">
                 <div class="meta-badge">
@@ -534,7 +554,7 @@
             <!-- Introduction -->
             <h2>Introduction</h2>
             <p>FastAI Health Coach is EXAFABS' first health and wellness app — an AI-powered intermittent fasting companion built with React Native (Expo) and Claude AI. Rather than a generic timer app, FastAI combines metabolic zone tracking, a coach that genuinely <em>remembers</em> your habits across weeks, multi-angle meal photo analysis, machine learning weight predictions, and a Daily Insight that learns what matters to <em>you</em>.</p>
-            <p>FastAI is currently in <strong>Closed Testing</strong> on Google Play (v2.10.x) with public launch on Android in May 2026 and iOS following. This post explores the architecture, how Claude powers truly personalized coaching, and how the team built — and hardened — a production AI health app over more than a hundred releases.</p>
+            <p>FastAI Health Coach is <strong>LIVE on the iOS App Store</strong> (v1.0 shipped 2026-05-10; v2.12.2 in review with widgets, 100-year calendar, and Apple Health). Android remains in <strong>Closed Testing</strong> on Google Play with production access applied. Just launched on <a href="https://www.producthunt.com/products/fastai-health-coach" target="_blank" rel="noopener" style="color:#dcb8ff;">Product Hunt</a> on 2026-05-12. This post explores the architecture, how Claude powers truly personalized coaching, and how the team built — and hardened — a production AI health app over more than a hundred releases.</p>
 
             <!-- The Problem: Why Intermittent Fasting is Hard to Sustain -->
             <h2>The Problem: Why Intermittent Fasting is Hard to Sustain</h2>
@@ -695,8 +715,8 @@
             <!-- CTA Section -->
             <div class="cta-section">
                 <h3>Ready to Transform Your Fasting Journey?</h3>
-                <p>FastAI Health Coach is now in <strong>Closed Testing</strong> on Google Play. Public Android launch in Q2 2026; iOS following. AI-powered fasting coaching, a Coach that remembers your habits, multi-view meal photos, and weight predictions — all in your pocket.</p>
-                <a href="../index.html#contact" class="cta-link">🚀 Launching Q2 2026 — Get Notified</a>
+                <p>FastAI Health Coach is <strong>LIVE on the iOS App Store</strong> (v2.12.2 in review). Android in <strong>Closed Testing</strong> on Google Play, production access applied. AI-powered fasting coaching, a Coach that remembers your habits, multi-view meal photos, and weight predictions — all in your pocket.</p>
+                <a href="https://apps.apple.com/app/id6764750248" target="_blank" rel="noopener" class="cta-link">🍎 Download on iOS App Store →</a>
             </div>
 
             <!-- Related Posts -->

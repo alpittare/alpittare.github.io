@@ -1526,6 +1526,39 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(155, 48, 255, 0.3);
         }
+        .featured-cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.6rem;
+            background: transparent;
+            color: #dcb8ff;
+            border: 1px solid rgba(155, 48, 255, 0.45);
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-left: 0.5rem;
+            transition: transform 0.3s var(--transition-smooth), border-color 0.3s, background 0.3s;
+        }
+        .featured-cta-secondary:hover {
+            transform: translateY(-2px);
+            border-color: rgba(155, 48, 255, 0.8);
+            background: rgba(155, 48, 255, 0.08);
+        }
+        .featured-ph-badge {
+            display: inline-block;
+            margin: 0.5rem 0 1rem 0;
+            transition: transform 0.2s ease;
+        }
+        .featured-ph-badge:hover {
+            transform: scale(1.04);
+        }
+        .featured-ph-badge img {
+            width: 250px;
+            height: 54px;
+            display: block;
+        }
         .featured-visual {
             display: flex;
             align-items: center;
@@ -2617,8 +2650,12 @@
                         <span>Voyage Memory</span>
                         <span>Per-user ML Models</span>
                     </div>
-                    <div class="featured-launch-pill">iOS in App Store review · Android Closed Testing live</div>
-                    <a href="blog/fastai-health-coach.html" class="featured-cta">Read the Build Log →</a>
+                    <div class="featured-launch-pill">🚀 Live on iOS App Store · Android Closed Testing · v2.12.2 in review</div>
+                    <a href="https://www.producthunt.com/products/fastai-health-coach?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-fastai-health-coach" target="_blank" rel="noopener" class="featured-ph-badge" aria-label="View FastAI Health Coach on Product Hunt">
+                        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1138026&theme=dark" alt="FastAI Health Coach - The AI fasting coach that actually remembers you. | Product Hunt" width="250" height="54" />
+                    </a>
+                    <a href="https://apps.apple.com/app/id6764750248" target="_blank" rel="noopener" class="featured-cta">Download on iOS →</a>
+                    <a href="blog/fastai-health-coach.html" class="featured-cta-secondary">Read the Build Log →</a>
                 </div>
                 <div class="featured-visual">
                     <div class="featured-visual-icon">🧬</div>
@@ -2700,8 +2737,8 @@
                     <span class="platform-chip android"><span class="platform-icon">🤖</span>Android</span>
                 </div>
                 <div class="product-footer">
-                    <span class="product-badge launching">iOS in review · Android Closed Testing</span>
-                    <a href="#featured" class="product-btn">Learn More →</a>
+                    <span class="product-badge launching">★ LIVE on iOS · Android Closed Testing</span>
+                    <a href="https://apps.apple.com/app/id6764750248" target="_blank" rel="noopener" class="product-btn">Download →</a>
                 </div>
             </div>
 
@@ -3609,14 +3646,14 @@
 EXAFABS.AI is an AI App Studio building intelligent applications. Products:
 - FABS Chip Tracker: Real-time intelligence platform tracking 1,484 fabs across 386 semiconductor companies in 61 countries — 43.35M WPM capacity, $5.5T+ investment coverage, with a Claude-powered AI Decision Layer. LIVE at fabs.exafabs.ai
 - Ads Engine API: Production-grade AI-powered ad strategy generation with 15 endpoints — audience targeting, keyword strategy, ad copy, hooks, creative specs, video scripts, funnel mapping, landing pages, budget allocation, competitor analysis, A/B testing, campaign audits, master strategy, performance reports, and quick launch. LIVE at api.exafabs.ai/docs
-- FastAI Health Coach: AI-powered intermittent fasting app with smart timer, meal photo analysis, Claude AI coaching, and ML weight predictions. Launching Q2 2026 on iOS and Android.
+- FastAI Health Coach: AI-powered intermittent fasting app with smart timer, meal photo analysis, Claude AI coaching, and ML weight predictions. LIVE on the iOS App Store (apps.apple.com/app/id6764750248) and in Closed Testing on Google Play. Launched on Product Hunt on 2026-05-12.
 - CrickBot AI: Cricket game with AI that tracks batting patterns using Bayesian prediction. Launching Q2 2026 on iOS and Android.
 - GoalBot AI: Football penalty game with TensorFlow.js-powered AI goalkeeper. Launching Q2 2026 on iOS and Android.
 - BaseHit AI: Baseball game with AI pitchers that adapt to your swing timing. Launching Q2 2026 on iOS and Android.
 - Survival Arena AI: Battle royale with 8 AI personality archetypes (Berserker, Predator, etc.) in a shrinking arena. Launching Q2 2026 on iOS and Android.
 - Infinite Voyager AI: Space arcade with procedural generation and an AI Director for dynamic difficulty. Launching Q2 2026 on iOS and Android.
 
-Platform summary: FABS Chip Tracker and the Ads Engine API are LIVE and accessible on the web today. FastAI Health Coach and all five AI games are native mobile apps launching together in Q2 2026 via the Apple App Store and Google Play Store — they are NOT available as web or PWA versions. Built by a team of AI and networking engineers. Contact: alpit@exafabs.ai. Website: exafabs.ai`;
+Platform summary: FABS Chip Tracker and the Ads Engine API are LIVE and accessible on the web today. FastAI Health Coach is LIVE on the iOS App Store (since 2026-05-10) and in Closed Testing on Google Play. All five AI games are native mobile apps still launching in Q2 2026 via the Apple App Store and Google Play Store — they are NOT available as web or PWA versions. Built by a team of AI and networking engineers. Contact: alpit@exafabs.ai. Website: exafabs.ai`;
 
             function toggleChat() {
                 chatOpen = !chatOpen;
