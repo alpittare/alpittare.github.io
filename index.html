@@ -1555,17 +1555,60 @@
             background: rgba(155, 48, 255, 0.08);
         }
         .featured-ph-badge {
-            display: inline-block;
-            margin: 0.5rem 0 1rem 0;
-            transition: transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.6rem 1rem 0.6rem 0.6rem;
+            margin: 0.5rem 0 0.5rem 0;
+            background: linear-gradient(135deg, rgba(255, 92, 0, 0.18), rgba(255, 138, 76, 0.08));
+            border: 1px solid rgba(255, 92, 0, 0.42);
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            transition: transform 0.2s ease, border-color 0.3s, box-shadow 0.3s;
+            max-width: max-content;
         }
         .featured-ph-badge:hover {
-            transform: scale(1.04);
+            transform: translateY(-2px);
+            border-color: rgba(255, 92, 0, 0.85);
+            box-shadow: 0 8px 24px rgba(255, 92, 0, 0.25);
         }
-        .featured-ph-badge img {
-            width: 250px;
-            height: 54px;
-            display: block;
+        .ph-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #DA552F;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.05rem;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 6px rgba(218, 85, 47, 0.45);
+            flex-shrink: 0;
+        }
+        .ph-badge-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+        .ph-badge-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.62);
+            font-weight: 600;
+        }
+        .ph-badge-name {
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            color: #fff;
+            font-weight: 700;
+        }
+        .ph-badge-arrow {
+            color: rgba(255, 92, 0, 0.85);
+            font-size: 0.95rem;
+            margin-left: 0.15rem;
+            font-weight: 700;
         }
         .featured-visual {
             display: flex;
@@ -2659,8 +2702,13 @@
                         <span>Per-user ML Models</span>
                     </div>
                     <div class="featured-launch-pill">🚀 Live globally on iOS App Store + Google Play · v2.23 in review</div>
-                    <a href="https://www.producthunt.com/products/fastai-health-coach?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-fastai-health-coach" target="_blank" rel="noopener" class="featured-ph-badge" aria-label="View FastAI Health Coach on Product Hunt">
-                        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1138026&theme=dark" alt="FastAI Health Coach - The AI fasting coach that actually remembers you. | Product Hunt" width="250" height="54" />
+                    <a href="https://www.producthunt.com/products/fastai-health-coach" target="_blank" rel="noopener" class="featured-ph-badge" aria-label="View FastAI Health Coach on Product Hunt">
+                        <span class="ph-badge-icon" aria-hidden="true">P</span>
+                        <span class="ph-badge-text">
+                            <span class="ph-badge-label">LIVE ON</span>
+                            <span class="ph-badge-name">PRODUCT HUNT</span>
+                        </span>
+                        <span class="ph-badge-arrow" aria-hidden="true">↗</span>
                     </a>
                     <div class="featured-cta-row">
                         <a href="https://apps.apple.com/app/id6764750248" target="_blank" rel="noopener" class="featured-cta">Download on iOS →</a>
