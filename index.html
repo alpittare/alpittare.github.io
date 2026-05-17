@@ -1509,17 +1509,25 @@
             color: var(--accent-cyan);
             font-family: 'Space Grotesk', sans-serif;
         }
+        .featured-cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            margin-top: 1.25rem;
+            align-items: center;
+        }
         .featured-cta {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.85rem 2rem;
+            padding: 0.85rem 1.6rem;
             background: var(--primary-gradient);
             color: #fff;
             border-radius: var(--radius-pill);
             text-decoration: none;
             font-weight: 600;
             font-size: 1rem;
+            white-space: nowrap;
             transition: transform 0.3s var(--transition-smooth), box-shadow 0.3s;
         }
         .featured-cta:hover {
@@ -1538,7 +1546,7 @@
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
-            margin-left: 0.5rem;
+            white-space: nowrap;
             transition: transform 0.3s var(--transition-smooth), border-color 0.3s, background 0.3s;
         }
         .featured-cta-secondary:hover {
@@ -2636,7 +2644,7 @@
     <section class="featured" id="featured">
         <div class="featured-header reveal">
             <h2>Our Flagship Products</h2>
-            <p>Three Claude-powered platforms in production — FastAI Health Coach on iOS &amp; Android, FABS Chip Tracker now live with paid plans (3-day free trial, billing via Dodo Payments) decoding the global semiconductor supply chain, and the Ads Engine API live at api.exafabs.ai.</p>
+            <p>Two Claude-powered platforms in production — FastAI Health Coach live globally on iOS &amp; Android (intermittent fasting + AI nutrition), and FABS Chip Tracker live with paid plans (3-day free trial, billing via Dodo Payments) decoding the global semiconductor supply chain.</p>
         </div>
         <div class="featured-grid">
             <div class="featured-card reveal">
@@ -2654,9 +2662,11 @@
                     <a href="https://www.producthunt.com/products/fastai-health-coach?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-fastai-health-coach" target="_blank" rel="noopener" class="featured-ph-badge" aria-label="View FastAI Health Coach on Product Hunt">
                         <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1138026&theme=dark" alt="FastAI Health Coach - The AI fasting coach that actually remembers you. | Product Hunt" width="250" height="54" />
                     </a>
-                    <a href="https://apps.apple.com/app/id6764750248" target="_blank" rel="noopener" class="featured-cta">Download on iOS →</a>
-                    <a href="https://play.google.com/store/apps/details?id=ai.exafabs.fastai.healthcoach" target="_blank" rel="noopener" class="featured-cta">Get on Google Play →</a>
-                    <a href="blog/fastai-health-coach.html" class="featured-cta-secondary">Read the Build Log →</a>
+                    <div class="featured-cta-row">
+                        <a href="https://apps.apple.com/app/id6764750248" target="_blank" rel="noopener" class="featured-cta">Download on iOS →</a>
+                        <a href="https://play.google.com/store/apps/details?id=ai.exafabs.fastai.healthcoach" target="_blank" rel="noopener" class="featured-cta">Get on Google Play →</a>
+                        <a href="blog/fastai-health-coach.html" class="featured-cta-secondary">Read the Build Log →</a>
+                    </div>
                 </div>
                 <div class="featured-visual">
                     <div class="featured-visual-icon">🧬</div>
@@ -2677,23 +2687,6 @@
                 </div>
                 <div class="featured-visual">
                     <div class="featured-visual-icon">💎</div>
-                </div>
-            </div>
-            <div class="featured-card reveal">
-                <div class="featured-info">
-                    <div class="featured-tagline">★ Live API</div>
-                    <h3>Ads Engine API</h3>
-                    <p>Production FastAPI service with Claude-powered endpoints for the full ad campaign lifecycle — audience segmentation, keyword strategy, ad copy generation, scroll-stopping hooks, and creative asset specs. Built for solo founders and small teams shipping marketing without an agency.</p>
-                    <div class="featured-highlights">
-                        <span>Audience &amp; Keywords</span>
-                        <span>Ad Copy &amp; Hooks</span>
-                        <span>Creative Specs</span>
-                        <span>X-API-Key auth</span>
-                    </div>
-                    <a href="https://api.exafabs.ai/docs" target="_blank" rel="noopener" class="featured-cta">Open Swagger Docs →</a>
-                </div>
-                <div class="featured-visual">
-                    <div class="featured-visual-icon">⚡</div>
                 </div>
             </div>
         </div>
