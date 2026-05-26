@@ -1,6 +1,18 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/blog/fastai-health-coach.html",
+      "destination": "/blog/fastai-fasting-weight-loss-pro",
+      "permanent": true
+    },
+    {
+      "source": "/blog/fastai-health-coach",
+      "destination": "/blog/fastai-fasting-weight-loss-pro",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
