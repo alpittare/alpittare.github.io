@@ -202,6 +202,45 @@ section[id], #main { scroll-margin-top: 84px; }
   opacity: 0; pointer-events: none;
 }
 html.webgl-on .hero-canvas { opacity: 1; }
+
+/* ---- Phase 2: the network becomes a fixed field behind the whole page and
+   morphs into each product's glyph on scroll. All scoped to html.morph-on,
+   so with the feature flag off the homepage is byte-for-byte Phase 1. ---- */
+html.morph-on .hero-canvas {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100svh;
+  z-index: 0;
+  transition: opacity 0.6s ease;
+}
+html.morph-on.morph-rest .hero-canvas { opacity: 0; } /* clean dark below the journey */
+html.morph-on .hero { background: var(--ink); }        /* drop hero glow; the field is the visual */
+html.morph-on main > section:not(.hero),
+html.morph-on .marquee,
+html.morph-on .footer { position: relative; z-index: 1; }
+html.morph-on .footer { background: var(--ink); }
+/* translucent panels: readable, but the morphing glyph reads through them.
+   Text gets a soft ink shadow so AA holds wherever a bright line passes behind. */
+html.morph-on .card { background: rgba(9, 11, 17, 0.6); }
+html.morph-on .also-row,
+html.morph-on .power,
+html.morph-on .lrow,
+html.morph-on .built .lede,
+html.morph-on .contact-copy,
+html.morph-on .contact-form { background-color: rgba(8, 10, 16, 0.56); border-radius: 12px; }
+html.morph-on .built .lede,
+html.morph-on .contact-copy { padding: 18px 20px; }
+html.morph-on .lrow { padding-left: 18px; padding-right: 18px; }
+html.morph-on .card .tag,
+html.morph-on .card li,
+html.morph-on .card h3,
+html.morph-on .lrow .desc,
+html.morph-on .lrow h3,
+html.morph-on .power p,
+html.morph-on .built .lede,
+html.morph-on .contact-copy p {
+  text-shadow: 0 1px 10px rgba(6, 7, 10, 0.95), 0 0 2px rgba(6, 7, 10, 0.9);
+}
+
 .hero-fallback {
   position: absolute; inset: 0; width: 100%; height: 100%;
   opacity: 0.5; pointer-events: none;

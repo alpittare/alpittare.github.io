@@ -13,6 +13,10 @@
   var REDUCED = false;
   try { REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
+  // Phase 2 feature flag. Set false to ship the Phase-1 hero-only network with
+  // zero behavioural change (glyphs.js never loads, morph-on never applied).
+  var MORPH = true;
+
   function forceVisible() {
     html.classList.add('js-fail');
     // the canvas may never have been started — let the static SVG show instead
@@ -149,7 +153,9 @@
         var gsapChain = loadScript('/assets/js/vendor/gsap.min.js').then(function (ok) {
           return ok ? loadScript('/assets/js/vendor/ScrollTrigger.min.js') : false;
         });
-        Promise.all([gsapChain, loadScript('/assets/js/vendor/lenis.min.js'), loadScript('/assets/js/network.js')])
+        var batch = [gsapChain, loadScript('/assets/js/vendor/lenis.min.js'), loadScript('/assets/js/network.js')];
+        if (MORPH) batch.push(loadScript('/assets/js/glyphs.js')); // glyph point clouds for scroll-morph
+        Promise.all(batch)
           .then(function () {
             try { enhancedBoot(); } catch (e) { forceVisible(); }
           });
@@ -163,6 +169,12 @@
       }
       if (net) html.classList.add('webgl-on');
 
+      // Phase 2: promote the field to a fixed full-page backdrop that morphs
+      // into product glyphs. Only when WebGL is live and the glyph data loaded.
+      var morphOn = MORPH && net && net.hasGlyphs && net.hasGlyphs();
+      if (morphOn) html.classList.add('morph-on');
+      if (window.__XF_FORCE_GL && net) window.__xfNet = net; // headless-verify hook (test-only)
+
       var gsap = window.gsap;
       var hasGsap = !!(gsap && window.ScrollTrigger);
       if (!hasGsap) {
@@ -175,6 +187,7 @@
       var lenis = null;
       if (window.Lenis) {
         lenis = new window.Lenis({ duration: 1.15, autoRaf: false });
+        if (window.__XF_FORCE_GL) window.__xfLenis = lenis; // headless-verify scroll hook (test-only)
         lenis.on('scroll', function () { window.ScrollTrigger.update(); });
         gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
         gsap.ticker.lagSmoothing(0);
@@ -320,6 +333,7 @@
 
       initCounters(gsap);
       initMarquee(gsap, lenis);
+      if (morphOn) initMorph(gsap, net);
 
       /* ---- Magnetic buttons ---- */
       if (fine) {
@@ -357,6 +371,57 @@
           })(cards[c]);
         }
       }
+    }
+  }
+
+  /* ---- Phase 2 morph track: one scrubbed trigger spanning Products->Games
+     sequences the field through ring -> tortoise -> chip -> gamepad (each
+     forms, holds, dissolves back to free network), then a second trigger
+     pauses + fades the field once you scroll past Games. Layout-independent:
+     both the glyph and its strength are pure functions of scroll progress. ---- */
+  function initMorph(gsap, net) {
+    var ST = window.ScrollTrigger;
+    var products = document.getElementById('products');
+    var games = document.getElementById('games');
+    var built = document.getElementById('built');
+    if (!products || !games) return;
+
+    function bell(lt) {                       // 0 -> 1 (hold) -> 0 within a slot
+      var v = (0.5 - Math.abs(lt - 0.5)) / 0.26;
+      return v < 0 ? 0 : v > 1 ? 1 : v;
+    }
+
+    // Products section sequences the three products' glyphs as it scrolls past.
+    var PG = ['ring', 'tortoise', 'chip'];    // FastAI, Honest Debt, FABS
+    var lastG = -1;
+    ST.create({
+      trigger: products, start: 'top center', end: 'bottom center', scrub: true,
+      onUpdate: function (self) {
+        var t = self.progress;
+        var gi = Math.min(PG.length - 1, Math.floor(t * PG.length));
+        if (gi !== lastG) { net.setGlyph(PG[gi]); lastG = gi; }
+        net.setMorph(bell(t * PG.length - gi));
+      },
+      onLeaveBack: function () { net.setMorph(0); }
+    });
+
+    // Games section: the gamepad forms (peak at section-centred), then dissolves.
+    ST.create({
+      trigger: games, start: 'top center', end: 'bottom center', scrub: true,
+      onEnter: function () { net.setGlyph('gamepad'); lastG = -1; },
+      onEnterBack: function () { net.setGlyph('gamepad'); lastG = -1; },
+      onUpdate: function (self) { net.setMorph(bell(self.progress)); },
+      onLeave: function () { net.setMorph(0); },
+      onLeaveBack: function () { net.setMorph(0); }
+    });
+
+    // Stop rendering + fade the field once we're past the morph journey.
+    if (built) {
+      ST.create({
+        trigger: built, start: 'top center',
+        onEnter: function () { html.classList.add('morph-rest'); net.setMorph(0); net.setActive(false); },
+        onLeaveBack: function () { html.classList.remove('morph-rest'); net.setActive(true); }
+      });
     }
   }
 

@@ -156,6 +156,16 @@
     var edgeCount = 0;
     var linkCnt = new Uint8Array(CAP);
 
+    // ---- Scroll-morph state (Phase 2). Inert unless ExafabsGlyphs is loaded
+    //      AND home.js calls setGlyph/setMorph, so the feature flag fully
+    //      governs it: flag off -> glyphs.js never loads -> morphAmt stays 0. ----
+    var GLYPHS = (window.ExafabsGlyphs && typeof window.ExafabsGlyphs === 'object') ? window.ExafabsGlyphs : null;
+    var morphAmt = 0;        // 0 = free network, 1 = fully-formed glyph
+    var morphCur = null;     // current glyph point cloud (interleaved x,y in [-0.5,0.5])
+    var morphNum = 0;        // point count of the current glyph
+    var MSTAG = 0.5;         // per-particle stagger spread
+    var mstag = new Float32Array(CAP);
+
     if (!buildGL()) return null;
 
     var W = 0, H = 0;
@@ -198,6 +208,7 @@
         var hub = Math.random() < 0.06;
         size[i] = (hub ? 3.1 + Math.random() * 1.2 : 1.4 + Math.random() * 1.1) * DPR;
         baseA[i] = hub ? 0.85 : 0.3 + Math.random() * 0.4;
+        mstag[i] = Math.random(); // staggers when each particle joins the glyph
       }
     }
 
@@ -312,12 +323,32 @@
         if (rp.age > rp.life) ripples.splice(i, 1);
       }
 
+      var morphing = morphAmt > 0.001 && morphCur && morphNum > 0;
+      var gside = Math.min(W, H) * 0.62;
+      var gcy = H * 0.44; // bias the glyph above centre, into the negative space
+
       for (i = 0; i < n; i++) {
         ix = i * 2; iy = ix + 1;
         var hx = cx + (home[ix] - cx) * breath + Math.sin(t * 0.5 + phase[i] * 3.1) * 9 * DPR;
         var hy = cy + (home[iy] - cy) * breath + Math.cos(t * 0.62 + phase[i] * 2.3) * 9 * DPR;
-        vel[ix] += (hx - pos[ix]) * 0.013;
-        vel[iy] += (hy - pos[iy]) * 0.013;
+
+        var a = 0, pull = 0.013;
+        if (morphing) {
+          // staggered, eased join: particles latch to the glyph at slightly
+          // different scroll points so the shape assembles, never snaps.
+          a = morphAmt * (1 + MSTAG) - mstag[i] * MSTAG;
+          a = a < 0 ? 0 : a > 1 ? 1 : a;
+          a = a * a * (3 - 2 * a); // smoothstep
+          if (a > 0) {
+            var gi = (i % morphNum) * 2;
+            hx += (cx + morphCur[gi] * gside - hx) * a;
+            hy += (gcy + morphCur[gi + 1] * gside - hy) * a;
+            pull = 0.013 + a * 0.05; // stiffer as the glyph crisps up
+          }
+        }
+
+        vel[ix] += (hx - pos[ix]) * pull;
+        vel[iy] += (hy - pos[iy]) * pull;
 
         if (pActive) {
           var dx = px - pos[ix], dy = py - pos[iy];
@@ -325,7 +356,7 @@
           if (d2 < R2 && d2 > 1) {
             var d = Math.sqrt(d2);
             var f = (1 - d / R);
-            f = f * f * 0.95;
+            f = f * f * 0.95 * (1 - 0.7 * a); // glyph resists the cursor
             vel[ix] += (dx / d) * f;
             vel[iy] += (dy / d) * f;
           }
@@ -337,7 +368,7 @@
           var rd = Math.sqrt(rdx * rdx + rdy * rdy) || 1;
           var band = Math.abs(rd - rr.r);
           if (band < 52 * DPR) {
-            var rf = (1 - band / (52 * DPR)) * (1 - rr.age / rr.life) * 2.3;
+            var rf = (1 - band / (52 * DPR)) * (1 - rr.age / rr.life) * 2.3 * (1 - 0.6 * a);
             vel[ix] += (rdx / rd) * rf;
             vel[iy] += (rdy / rd) * rf;
           }
@@ -387,7 +418,7 @@
                 if (d2 < ld2 && edgeCount < maxEdges) {
                   var d = Math.sqrt(d2);
                   var flick = staticMode ? 0.6 : 0.55 + 0.45 * Math.sin(t * 1.6 + (i * 0.37 + j * 0.61));
-                  var a = (1 - d / linkDist) * 0.26 * flick;
+                  var a = (1 - d / linkDist) * 0.26 * flick * (1 + morphAmt * 1.3); // glyph lights up
                   lnData[lv++] = pos[i * 2]; lnData[lv++] = pos[i * 2 + 1]; lnData[lv++] = a;
                   lnData[lv++] = pos[j * 2]; lnData[lv++] = pos[j * 2 + 1]; lnData[lv++] = a;
                   edges[edgeCount * 2] = i; edges[edgeCount * 2 + 1] = j;
@@ -428,7 +459,7 @@
         ptData[pv++] = pos[i * 2];
         ptData[pv++] = pos[i * 2 + 1];
         ptData[pv++] = size[i];
-        ptData[pv++] = staticMode ? baseA[i] * 0.95 : baseA[i] * (0.72 + 0.28 * Math.sin(t * 1.3 + phase[i] * 7));
+        ptData[pv++] = (staticMode ? baseA[i] * 0.95 : baseA[i] * (0.72 + 0.28 * Math.sin(t * 1.3 + phase[i] * 7))) * (1 + morphAmt * 0.9);
       }
       gl.useProgram(pointProg);
       gl.uniform2f(pLoc.uRes, W, H);
@@ -474,11 +505,12 @@
     // Main loop with visibility gating
     var running = false, rafId = 0, lastT = 0;
     var inView = true, docVisible = !document.hidden;
+    var scrolledActive = true; // home.js pauses us below the morph region
 
     function frame(now) {
       rafId = 0;
       if (!running) return;
-      if (!inView || !docVisible) { lastT = 0; return; } // resumes via observers
+      if (!inView || !docVisible || !scrolledActive) { lastT = 0; return; } // resumes via observers/setActive
       var dt = lastT ? (now - lastT) / 1000 : 1 / 60;
       lastT = now;
       if (dt > 0.1) dt = 0.1;
@@ -492,7 +524,7 @@
     }
 
     function kick() {
-      if (running && !rafId && inView && docVisible) {
+      if (running && !rafId && inView && docVisible && scrolledActive) {
         lastT = 0;
         rafId = requestAnimationFrame(frame);
       }
@@ -573,6 +605,28 @@
         for (var s = 0; s < 140; s++) { step(1 / 60); }
         render();
         running = false;
+      },
+      /* ---- Phase 2 scroll-morph API (no-ops if glyphs.js never loaded) ---- */
+      hasGlyphs: function () { return !!GLYPHS; },
+      setGlyph: function (name) {
+        if (!GLYPHS) return;
+        var g = GLYPHS[name];
+        if (g && g.length) { morphCur = g; morphNum = (g.length / 2) | 0; }
+      },
+      setMorph: function (amt) {
+        if (!GLYPHS) return;
+        amt = amt < 0 ? 0 : amt > 1 ? 1 : amt;
+        morphAmt = amt;
+        if (amt > 0) kick(); // make sure we're animating while a glyph is up
+      },
+      /* Render gate: home.js switches us off once scrolled well past the
+         morph region so the bottom of the page costs nothing. */
+      setActive: function (on) {
+        on = !!on;
+        if (on === scrolledActive) return;
+        scrolledActive = on;
+        if (on) kick();
+        else if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
       },
       isMobile: mobile
     };
