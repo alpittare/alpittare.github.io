@@ -1,78 +1,707 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Honest Debt: AI Payoff Manager — Your Debt-Free Date, Honestly | ExaFabs</title>
-<meta name="description" content="Honest Debt builds your debt payoff plan in minutes — no bank logins, no money movement. Avalanche, snowball & lower-bills strategies with AI explanations. By ExaFabs.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://exafabs.ai/blog/honest-debt.html">
-<meta property="og:image" content="https://exafabs.ai/og-image.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://exafabs.ai/blog/honest-debt.html">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Manrope:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Manrope',sans-serif;background:#240331;color:#fad7ff;line-height:1.7;-webkit-font-smoothing:antialiased}
-.wrap{max-width:820px;margin:0 auto;padding:48px 20px 80px}
-a{color:#c084fc}
-h1{font-family:'Space Grotesk',sans-serif;font-size:2.3rem;line-height:1.2;margin:12px 0;color:#fff}
-h2{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;margin:40px 0 14px;color:#fff}
-.kicker{color:#c084fc;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem}
-.lead{font-size:1.1rem;color:#e9d5ff;margin:18px 0 26px}
-.pill{display:inline-block;background:rgba(192,132,252,.12);border:1px solid rgba(192,132,252,.4);border-radius:999px;padding:6px 14px;font-size:.82rem;margin:0 8px 8px 0;color:#e9d5ff}
-ul{margin:12px 0 12px 22px}
-li{margin-bottom:10px;color:#e9d5ff}
-.cta{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.35);border-radius:14px;padding:24px;margin:36px 0}
-.btn{display:inline-block;margin:10px 12px 0 0;background:#c084fc;color:#240331;font-weight:700;padding:11px 24px;border-radius:10px;text-decoration:none}
-.btn.ghost{background:transparent;color:#c084fc;border:1px solid #c084fc}
-.home{font-size:.85rem;display:inline-block;margin-bottom:24px}
-.foot{margin-top:48px;font-size:.8rem;color:#a78bca}
-blockquote{border-left:3px solid #c084fc;padding-left:16px;margin:20px 0;color:#fff;font-style:italic}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honest Debt: A Calm, AI-Powered Debt Payoff Planner — No Account Numbers, Ever | ExaFabs</title>
+    <meta name="description" content="Honest Debt is EXAFABS\' debt payoff planner for iOS: avalanche/snowball plans, scenario simulation, a Debt Stress Index, and Claude-powered plain-English explanations — with no bank logins and no money movement.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://exafabs.ai/blog/honest-debt.html">
+    <meta property="og:image" content="https://exafabs.ai/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://exafabs.ai/og-image.png">
+    <link rel="canonical" href="https://exafabs.ai/blog/honest-debt.html">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #240331;
+            color: #fad7ff;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img, svg {
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        canvas {
+            image-rendering: crisp-edges;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(36, 3, 49, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: #8a7a94;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #C94080;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(123, 47, 190, 0.15), rgba(201, 64, 128, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(155, 48, 255, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #e0c3ff, #C94080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: #8a7a94;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-badge {
+            background: rgba(155, 48, 255, 0.2);
+            color: #dcb8ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(155, 48, 255, 0.3);
+        }
+
+        /* Product Hunt Featured Badge */
+        .ph-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.6rem 1rem 0.6rem 0.6rem;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, rgba(255, 92, 0, 0.18), rgba(255, 138, 76, 0.08));
+            border: 1px solid rgba(255, 92, 0, 0.42);
+            border-radius: 999px;
+            text-decoration: none;
+            transition: transform 0.2s ease, border-color 0.3s, box-shadow 0.3s;
+            max-width: max-content;
+        }
+
+        .ph-badge:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 92, 0, 0.85);
+            box-shadow: 0 8px 24px rgba(255, 92, 0, 0.25);
+        }
+
+        .ph-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #DA552F;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.05rem;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 6px rgba(218, 85, 47, 0.45);
+            flex-shrink: 0;
+        }
+
+        .ph-badge-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .ph-badge-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.62);
+            font-weight: 600;
+        }
+
+        .ph-badge-name {
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .ph-badge-arrow {
+            color: rgba(255, 92, 0, 0.85);
+            font-size: 0.95rem;
+            margin-left: 0.15rem;
+            font-weight: 700;
+        }
+
+        /* Article Container */
+        .article-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #fad7ff;
+            background: linear-gradient(135deg, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        article h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            color: #dcb8ff;
+        }
+
+        article p {
+            font-size: 18px;
+            color: #fad7ff;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        article ul, article ol {
+            margin: 24px 0 24px 24px;
+            font-size: 18px;
+            color: #fad7ff;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        article strong {
+            color: #fad7ff;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #dcb8ff;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #8a7a94;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: rgba(155, 48, 255, 0.08);
+            border-left: 4px solid #9B30FF;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 16px;
+        }
+
+        .feature-list strong {
+            color: #C94080;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(201, 64, 128, 0.08);
+            border: 1px solid rgba(201, 64, 128, 0.15);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(155, 48, 255, 0.1), rgba(201, 64, 128, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 48px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 24px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            color: #fad7ff;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(155, 48, 255, 0.3);
+        }
+
+        /* GitHub Link */
+        .github-link {
+            display: inline-block;
+            margin-left: 12px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .github-link:hover {
+            background: rgba(100, 200, 255, 0.08);
+            border-color: rgba(100, 200, 255, 0.6);
+        }
+
+        /* Related Posts Section */
+        .related-posts {
+            background: rgba(155, 48, 255, 0.05);
+            border: 1px solid rgba(155, 48, 255, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .related-posts h3 {
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .related-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-post-card {
+            background: rgba(73, 39, 85, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #fad7ff;
+            transition: all 0.3s ease;
+        }
+
+        .related-post-card:hover {
+            border-color: rgba(201, 64, 128, 0.4);
+            background: rgba(201, 64, 128, 0.1);
+        }
+
+        .related-post-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #dcb8ff;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(50, 16, 62, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px;
+            text-align: center;
+            color: #8a7a94;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+
+            z-index: 2;
+
+            position: relative;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: #8a7a94;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #C94080;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 50px 24px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .meta-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .article-container {
+                padding: 40px 24px;
+            }
+
+            article h2 {
+                font-size: 26px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            article p, article ul, article ol {
+                font-size: 16px;
+            }
+
+            .code-block {
+                padding: 16px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+                margin: 40px 0;
+            }
+
+            .related-posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Honest Debt: A Calm, AI-Powered Debt Payoff Planner — No Account Numbers, Ever",
+      "datePublished": "2026-06-06",
+      "author": { "@type": "Organization", "name": "EXAFABS" },
+      "publisher": { "@type": "Organization", "name": "EXAFABS", "url": "https://exafabs.ai" },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://exafabs.ai/blog/honest-debt.html" }
+    }
+    </script>
 </head>
 <body>
-<div class="wrap">
-<a class="home" href="https://exafabs.ai">← exafabs.ai</a>
-<div class="kicker">ExaFabs Product · Finance</div>
-<h1>Honest Debt: AI Payoff Manager</h1>
-<p class="lead">Your debt-free date, in minutes — with no bank logins, no money movement, and no hype. Just your real numbers, computed honestly.</p>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
 
-<div>
-<span class="pill">iOS — in App Review</span>
-<span class="pill">No bank logins</span>
-<span class="pill">30+ currencies</span>
-<span class="pill">AI explains, math decides</span>
-</div>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EXAFABS.AI</div>
+        <a href="../index.html" class="nav-link">← Back to Home</a>
+    </nav>
 
-<h2>What it does</h2>
-<p>You type in your debts — balance, interest rate, minimum payment. Honest Debt's payoff engine instantly computes your <strong>debt-free date</strong>, total interest, interest saved, and a month-by-month journey to zero. Rough numbers are fine. Bank connections don't exist in this app, by design.</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Honest Debt: A Calm, AI-Powered Debt Payoff Planner — No Account Numbers, Ever</h1>
+            <div class="meta-info">
+                <div class="meta-badge">
+                    <span>&#128214; 7 min read</span>
+                </div>
+                <div class="meta-badge">
+                    <span class="category-badge">AI / Personal Finance</span>
+                </div>
+                <div class="meta-badge">
+                    <span>2026</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<h2>Three honest strategies</h2>
-<ul>
-<li><strong>Avalanche</strong> — highest interest first. Saves the most money over time.</li>
-<li><strong>Snowball</strong> — smallest balance first. Quick wins build momentum.</li>
-<li><strong>Lower Bills</strong> — largest monthly payment first. Frees up your budget fastest.</li>
-</ul>
+    <!-- Article -->
+    <div class="article-container">
+        <article>
+            <h2>Introduction</h2>
+            <p>Honest Debt is EXAFABS' personal-finance app — a calm, AI-assisted debt payoff planner built with React Native (Expo), Convex, and Claude. It computes avalanche and snowball payoff plans, simulates "what if I paid a little more" scenarios in real time, tracks a Debt Stress Index alongside the numbers, and explains every recommendation in plain English.</p>
+            <p>Its defining design decision is in the name: <strong>honesty about what a debt app should and shouldn't do</strong>. Honest Debt never asks for account numbers, never connects to a bank, and never moves money. Everything it knows, you typed in yourself.</p>
 
-<h2>Radically honest by design</h2>
-<blockquote>We show you every path — including the ones we make no money on.</blockquote>
-<p>The Explore tab compares self-payoff against balance transfers, consolidation loans, debt management plans, settlement, and bankruptcy — with calm risk badges and honest costs for each. Got a loan offer? The Offer Checker tells you plainly whether it beats your current plan, or doesn't.</p>
+            <h2>The Problem: Debt Tools That Demand Too Much</h2>
+            <p>Most debt apps open with a bank-login screen. That's a real barrier for the people who need help most: handing over credentials while already anxious about money feels wrong — and it is unnecessary for planning. The math of getting out of debt needs five numbers per debt, not read access to your transaction history.</p>
+            <p>The second problem is opacity. Payoff calculators output a date and a dollar figure with no explanation. If you don't understand <em>why</em> the avalanche method saves you interest, you won't trust it enough to stick with it for three years.</p>
 
-<h2>What the AI does (and doesn't do)</h2>
-<p>Every figure in Honest Debt is computed by a deterministic engine. The AI's only job is to explain your plan in plain English — it never invents numbers, never makes promises, and the app never gives financial advice. Estimates only; for debt counselling we point you to licensed nonprofit counselors.</p>
+            <h2>Honest by Design</h2>
+            <ul>
+                <li><strong>No account numbers, ever.</strong> You enter a nickname, balance, APR, and minimum payment per debt. That's all the app wants.</li>
+                <li><strong>No money movement.</strong> Honest Debt is guidance, not a payment rail. Every payment stays between you and your creditor.</li>
+                <li><strong>Guidance, not advice.</strong> The app is explicit that it provides educational estimates, not licensed financial advice — and repeats that disclaimer where it matters.</li>
+                <li><strong>Feelings are data too.</strong> A Debt Stress Index tracks how you're doing emotionally, because debt payoff is a years-long behavior problem, not a spreadsheet problem.</li>
+            </ul>
 
-<h2>Scenario Simulator</h2>
-<p>Test a change instantly: "What if I add £500 a month?" See your new debt-free date, interest saved, and a projected-balance graph — total or loan by loan — before you commit a single pound, dollar, or rupee.</p>
+            <h2>What the App Does</h2>
+            <ul>
+                <li><strong>Guided onboarding</strong> — a conversational intake that builds your debt picture in about two minutes, localized currency included.</li>
+                <li><strong>Payoff plan</strong> — avalanche (highest APR first) or snowball (smallest balance first), with month-by-month timeline, interest saved, and debt-free date.</li>
+                <li><strong>Scenario simulator</strong> — drag a slider to see what an extra payment per week or month does to your debt-free date, instantly recomputed server-side.</li>
+                <li><strong>Financial health score</strong> — a single calm number summarizing utilization, momentum, and progress.</li>
+                <li><strong>Plain-English explanations</strong> — Claude turns the engine's output into short, honest explanations of what your plan does and why.</li>
+                <li><strong>Reminders</strong> — optional payment-day notifications that never put balances on your lock screen.</li>
+            </ul>
 
-<div class="cta">
-<strong>Get Honest Debt</strong>
-<p>Launching on the App Store — currently in App Review.</p>
-<a class="btn ghost" href="https://exafabs.ai/support/honest-debt.html">Support & FAQ</a>
-<a class="btn ghost" href="mailto:alpit@exafabs.ai?subject=Honest%20Debt">Contact us</a>
-</div>
+            <h2>Tech Stack</h2>
+            <ul>
+                <li><strong>Mobile:</strong> React Native + Expo (iOS first), expo-router, a custom "Light Bookish" design system</li>
+                <li><strong>Backend:</strong> Convex — real-time database, serverless functions, and a deterministic payoff engine</li>
+                <li><strong>Auth:</strong> Clerk — email/password, Google, and Apple sign-in</li>
+                <li><strong>AI:</strong> Claude (Anthropic) for plan explanations, with pseudonymized context only</li>
+                <li><strong>Billing:</strong> RevenueCat + App Store subscriptions (Pro: monthly or yearly)</li>
+                <li><strong>Observability:</strong> Sentry for errors, PostHog (EU) for anonymous product analytics</li>
+            </ul>
 
-<p class="foot">© 2026 EXAFABS · <a href="https://exafabs.ai/privacy-policy">Privacy</a> · <a href="https://exafabs.ai/terms">Terms</a> · <a href="https://exafabs.ai/refund-policy">Refunds</a></p>
-</div>
+            <h2>Privacy & Trust</h2>
+            <p>Because the app holds self-reported financial data, its privacy posture is deliberately conservative: no bank credentials exist anywhere in the system, AI calls carry pseudonymized context only, notification content never includes balances, and account deletion is self-serve. Read the full <a href="/honestdebt/privacy-policy" style="color:#dcb8ff;">Privacy Policy</a>, <a href="/honestdebt/terms" style="color:#dcb8ff;">Terms of Use</a>, and <a href="/honestdebt/refund-policy" style="color:#dcb8ff;">Refund Policy</a>.</p>
+
+            <h2>What's Next</h2>
+            <p>On the roadmap: richer progress recaps, smarter check-ins that adapt to your stress trend, exportable payoff plans, and Android. Honest Debt ships first on iOS via the App Store.</p>
+            <p><em>Honest Debt · guidance, not advice · no money movement</em></p>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">EXAFABS.AI</div>
+            <div class="footer-links">
+                <a href="../index.html" class="footer-link">Home</a>
+                <a href="../index.html#blog" class="footer-link">Blog</a>
+                <a href="mailto:alpit@exafabs.ai" class="footer-link">Contact</a>
+            </div>
+            <p>&copy; 2026 ExaFabs&trade;. All rights reserved. EXAFABS&trade; is a trademark of Alpit Tare, India trademark application filed 2026-04-26 (Class 9 + Class 42).</p>
+            <p><a href="mailto:alpit@exafabs.ai" class="footer-link">alpit@exafabs.ai</a></p>
+        </div>
+    </footer>
+
+    <!-- Reading Progress Bar Script -->
+    <script>
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+    </script>
+
+    <script>
+(function(){
+    const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+    const depthConfigs = [
+        { sel: '.hero', density: 10000, maxP: 140, connDist: 150, speed: 0.32, lineOp: 0.16, sDensity: 2200, sMax: 350,
+          layers: [{w:.5,rr:[.3,.7],ar:[.18,.33],sm:.3,gm:1.5},{w:.35,rr:[.8,1.8],ar:[.38,.6],sm:.7,gm:3},{w:.15,rr:[2,3],ar:[.5,.85],sm:1,gm:5}] },
+        { sel: '.article-container', density: 18000, maxP: 80, connDist: 130, speed: 0.2, lineOp: 0.1, sDensity: 3500, sMax: 220,
+          layers: [{w:.55,rr:[.2,.6],ar:[.1,.25],sm:.35,gm:1.5},{w:.35,rr:[.7,1.4],ar:[.28,.48],sm:.65,gm:2.5},{w:.1,rr:[1.5,2.4],ar:[.4,.65],sm:1,gm:3.5}] },
+        { sel: 'footer', density: 30000, maxP: 40, connDist: 110, speed: 0.15, lineOp: 0.06, sDensity: 5000, sMax: 120,
+          layers: [{w:.6,rr:[.2,.5],ar:[.08,.2],sm:.3,gm:1.5},{w:.3,rr:[.6,1.2],ar:[.2,.35],sm:.6,gm:2},{w:.1,rr:[1.3,2],ar:[.3,.5],sm:1,gm:3}] }
+    ];
+    function pickLayer(layers){const r=Math.random();let c=0;for(const l of layers){c+=l.w;if(r<=c)return l;}return layers[0];}
+    depthConfigs.forEach(cfg => {
+        const section = document.querySelector(cfg.sel);
+        if (!section) return;
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+        section.style.position=section.style.position||'relative';
+        section.style.overflow='hidden';
+        section.insertBefore(canvas,section.firstChild);
+        const ctx=canvas.getContext('2d');
+        const dpr=Math.min(window.devicePixelRatio||1,3);
+        let particles=[],statics=[],frame=0,animId=null,visible=false;
+        let mouse={x:-1e3,y:-1e3};
+        if(!('ontouchstart' in window)){
+            section.addEventListener('mousemove',e=>{const r=section.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+            section.addEventListener('mouseleave',()=>{mouse.x=-1e3;mouse.y=-1e3;});
+        }
+        function seed(){
+            particles=[];statics=[];
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            const sC=Math.min(Math.floor((w*h)/cfg.sDensity),cfg.sMax);
+            for(let i=0;i<sC;i++) statics.push({x:Math.random()*w,y:Math.random()*h,r:.2+Math.random()*.5,a:.08+Math.random()*.2,tp:Math.random()*Math.PI*2,ts:.002+Math.random()*.006,c:colors[Math.floor(Math.random()*colors.length)]});
+            const count=Math.min(Math.floor((w*h)/cfg.density),cfg.maxP);
+            for(let i=0;i<count;i++){
+                const L=pickLayer(cfg.layers);
+                particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*cfg.speed*L.sm,vy:(Math.random()-.5)*cfg.speed*L.sm,r:L.rr[0]+Math.random()*(L.rr[1]-L.rr[0]),c:colors[Math.floor(Math.random()*colors.length)],a:L.ar[0]+Math.random()*(L.ar[1]-L.ar[0]),pp:Math.random()*Math.PI*2,ps:.004+Math.random()*.014,gm:L.gm,d:L.sm});
+            }
+        }
+        function draw(){
+            if(!visible){animId=null;return;}
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            ctx.clearRect(0,0,w,h);frame++;
+            for(const s of statics){const t=.5+Math.sin(frame*s.ts+s.tp)*.5;const[r,g,b]=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${s.a*t})`;ctx.fill();}
+            for(const p of particles){p.x+=p.vx;p.y+=p.vy;const dx=p.x-mouse.x,dy=p.y-mouse.y,md=Math.sqrt(dx*dx+dy*dy);if(md<120&&md>0){const f=((120-md)/120)*.05*p.d;p.vx+=(dx/md)*f;p.vy+=(dy/md)*f;}p.vx*=.997;p.vy*=.997;if(p.x<-10)p.x=w+10;if(p.x>w+10)p.x=-10;if(p.y<-10)p.y=h+10;if(p.y>h+10)p.y=-10;}
+            for(let i=0;i<particles.length;i++){if(particles[i].d<.5)continue;for(let j=i+1;j<particles.length;j++){if(particles[j].d<.5)continue;const a=particles[i],b=particles[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<cfg.connDist){const op=(1-dist/cfg.connDist)*cfg.lineOp*Math.min(a.d,b.d);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${(a.c[0]+b.c[0])>>1},${(a.c[1]+b.c[1])>>1},${(a.c[2]+b.c[2])>>1},${op})`;ctx.lineWidth=.4+a.d*.3;ctx.stroke();}}}
+            for(const p of particles){const pulse=.6+Math.sin(frame*p.ps+p.pp)*.4;const[r,g,b]=p.c;const gr=p.r*p.gm*pulse;const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,gr);grd.addColorStop(0,`rgba(${r},${g},${b},${p.a*pulse*.3})`);grd.addColorStop(.4,`rgba(${r},${g},${b},${p.a*pulse*.08})`);grd.addColorStop(1,`rgba(${r},${g},${b},0)`);ctx.beginPath();ctx.arc(p.x,p.y,gr,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${p.a*pulse})`;ctx.fill();if(p.d>=1&&p.r>2){ctx.beginPath();ctx.arc(p.x,p.y,p.r*.3*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.a*pulse*.5})`;ctx.fill();}}
+            if(mouse.x>0&&mouse.y>0){const mg=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,120);mg.addColorStop(0,'rgba(100,200,255,0.06)');mg.addColorStop(.5,'rgba(155,48,255,0.03)');mg.addColorStop(1,'rgba(155,48,255,0)');ctx.beginPath();ctx.arc(mouse.x,mouse.y,120,0,Math.PI*2);ctx.fillStyle=mg;ctx.fill();}
+            animId=requestAnimationFrame(draw);
+        }
+        new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(visible&&!animId)draw();},{threshold:.02}).observe(section);
+        function resize(){const w=section.offsetWidth,h=section.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);seed();}
+        resize();window.addEventListener('resize',resize);
+    });
+})();
+</script>
 </body>
 </html>
