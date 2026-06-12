@@ -2687,7 +2687,7 @@
     <section class="featured" id="featured">
         <div class="featured-header reveal">
             <h2>Our Flagship Products</h2>
-            <p>Two Claude-powered platforms in production — FastAI - Fasting Weight Loss Pro live globally on iOS &amp; Android (intermittent fasting + AI nutrition), and FABS Chip Tracker live with paid plans (3-day free trial, billing via Dodo Payments) decoding the global semiconductor supply chain.</p>
+            <p>Three Claude-powered products in production — FastAI - Fasting Weight Loss Pro live globally on iOS &amp; Android (intermittent fasting + AI nutrition), and FABS Chip Tracker live with paid plans (3-day free trial, billing via Dodo Payments) decoding the global semiconductor supply chain — plus Honest Debt, our radically honest AI debt-payoff manager now in App Review for iOS.</p>
         </div>
         <div class="featured-grid">
             <div class="featured-card reveal">
@@ -2735,6 +2735,27 @@
                 </div>
                 <div class="featured-visual">
                     <div class="featured-visual-icon">💎</div>
+                </div>
+            </div>
+            <div class="featured-card reveal" data-product="honestdebt">
+                <div class="featured-info">
+                    <div class="featured-tagline">★ New · In App Review</div>
+                    <h3>Honest Debt: AI Payoff Manager</h3>
+                    <p>Calm, radically honest debt payoff for iOS. Enter your debts manually — <strong>no bank logins, no money movement</strong> — and a deterministic payoff engine computes your debt-free date, total interest, and a month-by-month journey across avalanche, snowball, and lower-bills strategies. Claude explains every number in plain English — the engine decides them. Includes a scenario simulator, an honest option comparison (even the options we earn nothing on), and an offer checker that tells you plainly whether a loan offer beats your plan.</p>
+                    <div class="featured-highlights">
+                        <span>No Bank Logins</span>
+                        <span>3 Payoff Strategies</span>
+                        <span>Scenario Simulator</span>
+                        <span>30+ Currencies</span>
+                    </div>
+                    <div class="featured-launch-pill">🐢 In App Review · launching on the iOS App Store</div>
+                    <div class="featured-cta-row">
+                        <a href="blog/honest-debt.html" class="featured-cta">Explore Honest Debt →</a>
+                        <a href="support/honest-debt.html" class="featured-cta-secondary">Support &amp; FAQ →</a>
+                    </div>
+                </div>
+                <div class="featured-visual">
+                    <div class="featured-visual-icon">🐢</div>
                 </div>
             </div>
         </div>
@@ -2870,6 +2891,22 @@
                 </div>
             </div>
 
+            <div class="product-card border-lime accent-lime" data-category="intelligence">
+                <div class="product-header">
+                    <div class="product-icon">🐢</div>
+                    <div class="product-category">Finance / AI</div>
+                    <h3 class="product-title">Honest Debt: AI Payoff Manager</h3>
+                    <p class="product-desc">Your debt-free date in minutes — no bank logins, no money movement. Avalanche, snowball &amp; lower-bills payoff plans with a scenario simulator, honest option comparison, and AI that explains every number the engine computes.</p>
+                </div>
+                <div class="product-platforms">
+                    <span class="platform-chip ios"><span class="platform-icon">📱</span>iOS</span>
+                    <span class="platform-chip web"><span class="platform-icon">🌍</span>30+ currencies</span>
+                </div>
+                <div class="product-footer">
+                    <span class="product-badge">In App Review</span>
+                    <a href="blog/honest-debt.html" class="product-btn">Learn More →</a>
+                </div>
+            </div>
             <div class="product-card border-orange accent-orange" data-category="health">
                 <div class="product-header">
                     <div class="product-icon">📡</div>
@@ -4328,73 +4365,4 @@ Platform summary: FABS Chip Tracker and the Ads Engine API are LIVE and accessib
                 for (let i = 0; i < sectionTips.length; i++) {
                     const sec = document.getElementById(sectionTips[i].id);
                     if (!sec || tipShown[sectionTips[i].id]) continue;
-                    const rect = sec.getBoundingClientRect();
-                    if (rect.top < viewMid && rect.bottom > viewMid) {
-                        if (currentTipIdx !== i) {
-                            currentTipIdx = i;
-                            orb.classList.add('has-tip');
-                            // Don't auto-open — just show the orange dot. User clicks orb to see tip.
-                        }
-                        return;
-                    }
-                }
-                orb.classList.remove('has-tip');
-            }
-
-            // Orb click — show current section tip or nav menu
-            orb.addEventListener('click', () => {
-                if (isBubbleOpen) {
-                    closeBubble();
-                    return;
-                }
-                if (currentTipIdx >= 0 && !tipShown[sectionTips[currentTipIdx].id]) {
-                    tipShown[sectionTips[currentTipIdx].id] = true;
-                    showBubble(sectionTips[currentTipIdx].tip, null);
-                    orb.classList.remove('has-tip');
-                } else {
-                    showBubble('Where would you like to go?', [
-                        { label: '🚀 Flagship', action: () => scrollTo('featured') },
-                        { label: '🎮 Products', action: () => scrollTo('products') },
-                        { label: '🤖 AI Tech', action: () => scrollTo('ai-powers') },
-                        { label: '📖 Blog', action: () => scrollTo('blog') },
-                        { label: '📬 Contact', action: () => scrollTo('contact') },
-                        { label: '💬 Chat', action: () => document.getElementById('chatFab')?.click() }
-                    ]);
-                }
-            });
-
-            bubbleClose.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeBubble();
-            });
-
-            // Long-press orb to permanently dismiss
-            let pressTimer;
-            orb.addEventListener('mousedown', () => {
-                pressTimer = setTimeout(() => {
-                    localStorage.setItem(DISMISSED_KEY, 'true');
-                    closeBubble();
-                    orb.classList.add('hidden');
-                }, 1500);
-            });
-            orb.addEventListener('mouseup', () => clearTimeout(pressTimer));
-            orb.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-
-            // Throttled scroll listener
-            let scrollTick = false;
-            window.addEventListener('scroll', () => {
-                if (!scrollTick) {
-                    scrollTick = true;
-                    requestAnimationFrame(() => { checkScrollTips(); scrollTick = false; });
-                }
-            });
-
-            // Launch — fade in after page loads
-            setTimeout(() => {
-                orb.classList.remove('hidden');
-                runIntro();
-            }, 1500);
-        })();
-    </script>
-</body>
-</html>
+                    const rect = sec
