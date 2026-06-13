@@ -24,9 +24,9 @@
         }
 
         body {
-            font-family: 'Manrope', sans-serif;
-            background: #240331;
-            color: #fad7ff;
+            font-family: 'Inter', sans-serif;
+            background: #06070A;
+            color: #F2F4F8;
             line-height: 1.6;
             scroll-behavior: smooth;
             font-feature-settings: 'kern' 1, 'liga' 1;
@@ -42,7 +42,7 @@
         }
 
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Clash Display', sans-serif;
         }
 
         /* Reading Progress Bar */
@@ -51,7 +51,7 @@
             top: 0;
             left: 0;
             height: 3px;
-            background: linear-gradient(90deg, #7B2FBE, #C94080, #F5943A);
+            background: linear-gradient(90deg, #2bb98a, #3CF2B4, #FFB347);
             width: 0%;
             z-index: 1000;
         }
@@ -62,7 +62,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 40px;
-            background: rgba(36, 3, 49, 0.8);
+            background: rgba(6, 7, 10, 0.8);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: sticky;
@@ -73,14 +73,14 @@
         .logo {
             font-weight: 700;
             font-size: 20px;
-            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            background: linear-gradient(135deg, #2bb98a, #3CF2B4, #FFB347);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .nav-link {
-            color: #8a7a94;
+            color: #767E90;
             text-decoration: none;
             font-size: 14px;
             display: flex;
@@ -90,7 +90,7 @@
         }
 
         .nav-link:hover {
-            color: #C94080;
+            color: #3CF2B4;
         }
 
         /* Hero Section */
@@ -98,7 +98,7 @@
             position: relative;
             padding: 80px 40px;
             text-align: center;
-            background: linear-gradient(135deg, rgba(123, 47, 190, 0.15), rgba(201, 64, 128, 0.1));
+            background: linear-gradient(135deg, rgba(43, 185, 138, 0.15), rgba(60, 242, 180, 0.1));
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
             overflow: hidden;
@@ -110,7 +110,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at top right, rgba(155, 48, 255, 0.2), transparent);
+            background: radial-gradient(circle at top right, rgba(60, 242, 180, 0.2), transparent);
             pointer-events: none;
         }
 
@@ -128,7 +128,7 @@
             font-weight: 700;
             margin-bottom: 24px;
             line-height: 1.2;
-            background: linear-gradient(135deg, #ffffff, #e0c3ff, #C94080);
+            background: linear-gradient(135deg, #ffffff, #cdd3df, #3CF2B4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -138,7 +138,7 @@
             display: flex;
             justify-content: center;
             gap: 24px;
-            color: #8a7a94;
+            color: #767E90;
             font-size: 14px;
             margin-top: 24px;
         }
@@ -150,12 +150,12 @@
         }
 
         .category-badge {
-            background: rgba(155, 48, 255, 0.2);
-            color: #dcb8ff;
+            background: rgba(60, 242, 180, 0.2);
+            color: #cdd3df;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 13px;
-            border: 1px solid rgba(155, 48, 255, 0.3);
+            border: 1px solid rgba(60, 242, 180, 0.3);
         }
 
         /* Product Hunt Featured Badge */
@@ -165,8 +165,8 @@
             gap: 0.7rem;
             padding: 0.6rem 1rem 0.6rem 0.6rem;
             margin-bottom: 28px;
-            background: linear-gradient(135deg, rgba(255, 92, 0, 0.18), rgba(255, 138, 76, 0.08));
-            border: 1px solid rgba(255, 92, 0, 0.42);
+            background: linear-gradient(135deg, rgba(255, 179, 71, 0.18), rgba(255, 179, 71, 0.08));
+            border: 1px solid rgba(255, 179, 71, 0.42);
             border-radius: 999px;
             text-decoration: none;
             transition: transform 0.2s ease, border-color 0.3s, box-shadow 0.3s;
@@ -175,8 +175,8 @@
 
         .ph-badge:hover {
             transform: translateY(-2px);
-            border-color: rgba(255, 92, 0, 0.85);
-            box-shadow: 0 8px 24px rgba(255, 92, 0, 0.25);
+            border-color: rgba(255, 179, 71, 0.85);
+            box-shadow: 0 8px 24px rgba(255, 179, 71, 0.25);
         }
 
         .ph-badge-icon {
@@ -186,12 +186,12 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #DA552F;
+            background: #FFB347;
             color: #fff;
             font-weight: 800;
             font-size: 1.05rem;
             font-family: 'Inter', sans-serif;
-            box-shadow: 0 2px 6px rgba(218, 85, 47, 0.45);
+            box-shadow: 0 2px 6px rgba(255, 179, 71, 0.45);
             flex-shrink: 0;
         }
 
@@ -216,7 +216,7 @@
         }
 
         .ph-badge-arrow {
-            color: rgba(255, 92, 0, 0.85);
+            color: rgba(255, 179, 71, 0.85);
             font-size: 0.95rem;
             margin-left: 0.15rem;
             font-weight: 700;
@@ -240,8 +240,8 @@
             font-weight: 700;
             margin-top: 48px;
             margin-bottom: 24px;
-            color: #fad7ff;
-            background: linear-gradient(135deg, #C94080, #F5943A);
+            color: #F2F4F8;
+            background: linear-gradient(135deg, #3CF2B4, #FFB347);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -252,12 +252,12 @@
             font-weight: 600;
             margin-top: 36px;
             margin-bottom: 16px;
-            color: #dcb8ff;
+            color: #cdd3df;
         }
 
         article p {
             font-size: 18px;
-            color: #fad7ff;
+            color: #F2F4F8;
             margin-bottom: 20px;
             text-align: justify;
         }
@@ -265,7 +265,7 @@
         article ul, article ol {
             margin: 24px 0 24px 24px;
             font-size: 18px;
-            color: #fad7ff;
+            color: #F2F4F8;
         }
 
         article li {
@@ -274,13 +274,13 @@
         }
 
         article strong {
-            color: #fad7ff;
+            color: #F2F4F8;
             font-weight: 600;
         }
 
         /* Code Block */
         .code-block {
-            background: rgba(73, 39, 85, 0.35);
+            background: rgba(18, 20, 28, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             padding: 24px;
@@ -289,7 +289,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
             line-height: 1.6;
-            color: #dcb8ff;
+            color: #cdd3df;
         }
 
         .code-block code {
@@ -299,7 +299,7 @@
 
         .code-label {
             font-size: 12px;
-            color: #8a7a94;
+            color: #767E90;
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -307,8 +307,8 @@
 
         /* Feature List */
         .feature-list {
-            background: rgba(155, 48, 255, 0.08);
-            border-left: 4px solid #9B30FF;
+            background: rgba(60, 242, 180, 0.08);
+            border-left: 4px solid #3CF2B4;
             padding: 24px;
             border-radius: 8px;
             margin: 24px 0;
@@ -319,13 +319,13 @@
         }
 
         .feature-list strong {
-            color: #C94080;
+            color: #3CF2B4;
         }
 
         /* Highlight Box */
         .highlight-box {
-            background: rgba(201, 64, 128, 0.08);
-            border: 1px solid rgba(201, 64, 128, 0.15);
+            background: rgba(60, 242, 180, 0.08);
+            border: 1px solid rgba(60, 242, 180, 0.15);
             padding: 24px;
             border-radius: 8px;
             margin: 24px 0;
@@ -337,7 +337,7 @@
 
         /* CTA Section */
         .cta-section {
-            background: linear-gradient(135deg, rgba(155, 48, 255, 0.1), rgba(201, 64, 128, 0.1));
+            background: linear-gradient(135deg, rgba(60, 242, 180, 0.1), rgba(60, 242, 180, 0.1));
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 48px 40px;
             border-radius: 12px;
@@ -353,8 +353,8 @@
         .cta-link {
             display: inline-block;
             padding: 12px 32px;
-            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
-            color: #fad7ff;
+            background: linear-gradient(135deg, #2bb98a, #3CF2B4, #FFB347);
+            color: #F2F4F8;
             text-decoration: none;
             border-radius: 9999px;
             font-weight: 600;
@@ -366,7 +366,7 @@
 
         .cta-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(155, 48, 255, 0.3);
+            box-shadow: 0 12px 24px rgba(60, 242, 180, 0.3);
         }
 
         /* GitHub Link */
@@ -375,8 +375,8 @@
             margin-left: 12px;
             padding: 12px 24px;
             background: transparent;
-            border: 1px solid rgba(100, 200, 255, 0.3);
-            color: #64c8ff;
+            border: 1px solid rgba(60, 242, 180, 0.3);
+            color: #3CF2B4;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 600;
@@ -385,14 +385,14 @@
         }
 
         .github-link:hover {
-            background: rgba(100, 200, 255, 0.08);
-            border-color: rgba(100, 200, 255, 0.6);
+            background: rgba(60, 242, 180, 0.08);
+            border-color: rgba(60, 242, 180, 0.6);
         }
 
         /* Related Posts Section */
         .related-posts {
-            background: rgba(155, 48, 255, 0.05);
-            border: 1px solid rgba(155, 48, 255, 0.15);
+            background: rgba(60, 242, 180, 0.05);
+            border: 1px solid rgba(60, 242, 180, 0.15);
             padding: 40px;
             border-radius: 12px;
             margin-top: 60px;
@@ -411,35 +411,35 @@
         }
 
         .related-post-card {
-            background: rgba(73, 39, 85, 0.35);
+            background: rgba(18, 20, 28, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 20px;
             border-radius: 8px;
             text-decoration: none;
-            color: #fad7ff;
+            color: #F2F4F8;
             transition: all 0.3s ease;
         }
 
         .related-post-card:hover {
-            border-color: rgba(201, 64, 128, 0.4);
-            background: rgba(201, 64, 128, 0.1);
+            border-color: rgba(60, 242, 180, 0.4);
+            background: rgba(60, 242, 180, 0.1);
         }
 
         .related-post-card h4 {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #dcb8ff;
+            color: #cdd3df;
         }
 
         /* Footer */
         footer {
-            background: rgba(50, 16, 62, 0.95);
+            background: rgba(12, 14, 20, 0.95);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.04);
             padding: 40px;
             text-align: center;
-            color: #8a7a94;
+            color: #767E90;
             font-size: 14px;
             position: relative;
             z-index: 1;
@@ -459,7 +459,7 @@
         .footer-logo {
             font-weight: 700;
             font-size: 18px;
-            background: linear-gradient(135deg, #7B2FBE, #C94080, #F5943A);
+            background: linear-gradient(135deg, #2bb98a, #3CF2B4, #FFB347);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -471,14 +471,14 @@
         }
 
         .footer-link {
-            color: #8a7a94;
+            color: #767E90;
             text-decoration: none;
             margin: 0 12px;
             transition: color 0.3s ease;
         }
 
         .footer-link:hover {
-            color: #C94080;
+            color: #3CF2B4;
         }
 
         /* Responsive */
@@ -562,6 +562,7 @@
       }
     }
     </script>
+    <link rel="stylesheet" href="/assets/css/inner.css">
 </head>
 <body>
     <!-- Reading Progress Bar -->
@@ -606,7 +607,7 @@
             <!-- Introduction -->
             <h2>Introduction</h2>
             <p>FastAI - Fasting Weight Loss Pro is EXAFABS' first health and wellness app — an AI-powered intermittent fasting companion built with React Native (Expo) and Claude AI. Rather than a generic timer app, FastAI combines metabolic zone tracking, a coach that genuinely <em>remembers</em> your habits across weeks, multi-angle meal photo analysis, machine learning weight predictions, and a Daily Insight that learns what matters to <em>you</em>.</p>
-            <p>FastAI - Fasting Weight Loss Pro is <strong>LIVE globally on iOS App Store + Google Play</strong> (v1.0 shipped 2026-05-10, Android v2.13 shipped 2026-05-14; v2.23 in review with Health Connect, multi-protocol fasting, and challenges). Just launched on <a href="https://www.producthunt.com/products/fastai-health-coach" target="_blank" rel="noopener" style="color:#dcb8ff;">Product Hunt</a> on 2026-05-12. This post explores the architecture, how Claude powers truly personalized coaching, and how the team built — and hardened — a production AI health app over more than a hundred releases.</p>
+            <p>FastAI - Fasting Weight Loss Pro is <strong>LIVE globally on iOS App Store + Google Play</strong> (v1.0 shipped 2026-05-10, Android v2.13 shipped 2026-05-14; v2.23 in review with Health Connect, multi-protocol fasting, and challenges). Just launched on <a href="https://www.producthunt.com/products/fastai-health-coach" target="_blank" rel="noopener" style="color:#cdd3df;">Product Hunt</a> on 2026-05-12. This post explores the architecture, how Claude powers truly personalized coaching, and how the team built — and hardened — a production AI health app over more than a hundred releases.</p>
 
             <!-- The Problem: Why Intermittent Fasting is Hard to Sustain -->
             <h2>The Problem: Why Intermittent Fasting is Hard to Sustain</h2>
@@ -647,7 +648,7 @@
 
             <h3>Coach that Remembers: Long-Term Memory Across Sessions</h3>
             <p>Most AI chatbots forget you between sessions. FastAI's Coach doesn't. We built a memory pipeline using <strong>Voyage 3.5-lite</strong> embeddings and Convex's vector search so that what you tell the Coach in week one informs what it says in week six. Tell it once that you train fasted on Tuesdays and avoid dairy, and that context flows into every future conversation — meal suggestions, fasting window advice, milestone celebrations — without you having to repeat yourself.</p>
-            <p>A nightly Convex cron extracts the most useful long-term signals from your conversation and meal history, embeds them, and stores them as searchable memory. When you next open the Coach, the relevant memories are pulled in alongside your live data — the same retrieval-augmented-generation pattern used by enterprise AI, but tuned for personal health instead of corporate documents. Want to read the engineering story? <a href="coach-that-remembers.html" style="color: var(--accent-lime, #a3e635);">We wrote it up here</a>.</p>
+            <p>A nightly Convex cron extracts the most useful long-term signals from your conversation and meal history, embeds them, and stores them as searchable memory. When you next open the Coach, the relevant memories are pulled in alongside your live data — the same retrieval-augmented-generation pattern used by enterprise AI, but tuned for personal health instead of corporate documents. Want to read the engineering story? <a href="coach-that-remembers.html" style="color: var(--accent-lime, #3CF2B4);">We wrote it up here</a>.</p>
 
             <h3>Daily Insight: A Personalized Score That Knows Your Goal</h3>
             <p>Every morning, FastAI generates a Daily Insight — a short personalized read on yesterday's fasting, meals, and trajectory. It's not a generic "great job!" — the AI references your specific goal (e.g. "lose 10 lb by July"), your stated constraints (e.g. "no dairy, vegetarian"), and any health conditions you've shared. Hit a 16-hour fast on a high-protein day? It tells you why that particular combination accelerates your timeline. Drift off-plan two days in a row? It flags the pattern before it becomes a habit.</p>
@@ -696,11 +697,11 @@
             <!-- Tech Stack -->
             <h2>Tech Stack: Building a Production AI Health App</h2>
 
-            <p>Before the deep dive, here's the full production architecture in one diagram — every layer from the App Store down to PostHog event ingest. <a href="../assets/fastai-architecture.svg" target="_blank" style="color: var(--accent-lime, #C94080);">Open the SVG in a new tab</a> for full detail.</p>
+            <p>Before the deep dive, here's the full production architecture in one diagram — every layer from the App Store down to PostHog event ingest. <a href="../assets/fastai-architecture.svg" target="_blank" style="color: var(--accent-lime, #3CF2B4);">Open the SVG in a new tab</a> for full detail.</p>
 
-            <figure style="margin: 24px 0; padding: 20px; background: rgba(36, 3, 49, 0.5); border-radius: 12px; border: 1px solid rgba(123, 47, 190, 0.3);">
+            <figure style="margin: 24px 0; padding: 20px; background: rgba(6, 7, 10, 0.5); border-radius: 12px; border: 1px solid rgba(43, 185, 138, 0.3);">
                 <img src="../assets/fastai-architecture.svg" alt="FastAI - Fasting Weight Loss Pro production architecture diagram showing five tiers: distribution via App Store and Play Store, React Native Expo mobile app, Clerk authentication, Convex serverless backend with database mutations queries HTTP actions and crons, and external services including Anthropic Claude AI Voyage embeddings RevenueCat payments Sentry PostHog and FCM" loading="lazy" style="width: 100%; height: auto; display: block; border-radius: 8px;"/>
-                <figcaption style="margin-top: 28px; color: #8a7a94; font-size: 14px; text-align: center; font-style: italic;">FastAI - Fasting Weight Loss Pro — production architecture · 5 tiers · 14 Convex tables · built solo with Claude as pair programmer</figcaption>
+                <figcaption style="margin-top: 28px; color: #767E90; font-size: 14px; text-align: center; font-style: italic;">FastAI - Fasting Weight Loss Pro — production architecture · 5 tiers · 14 Convex tables · built solo with Claude as pair programmer</figcaption>
             </figure>
 
             <h3>Mobile Architecture</h3>
@@ -717,7 +718,7 @@
 
             <h3>Trust, Safety & Engineering Discipline</h3>
             <ul>
-                <li><strong>Prompt-injection guard on every AI surface:</strong> Five Convex AI endpoints share a single hardening helper that wraps user content in unique delimiters and appends an explicit injection guard. Even if a user pastes adversarial text, it can't override the system prompt. <a href="audit-and-trust.html" style="color: var(--accent-lime, #a3e635);">Read the audit close-out story →</a></li>
+                <li><strong>Prompt-injection guard on every AI surface:</strong> Five Convex AI endpoints share a single hardening helper that wraps user content in unique delimiters and appends an explicit injection guard. Even if a user pastes adversarial text, it can't override the system prompt. <a href="audit-and-trust.html" style="color: var(--accent-lime, #3CF2B4);">Read the audit close-out story →</a></li>
                 <li><strong>Rate limiting + reconciliation crons:</strong> Per-user rate limits stop runaway AI cost; nightly RC reconciliation catches any entitlement drift between the store and our DB.</li>
                 <li><strong>Account deletion that actually deletes:</strong> Cascade across nine tables, validated end-to-end by real testers — not a "request" form that takes 30 days.</li>
             </ul>
@@ -730,7 +731,7 @@
 
             <h3>Ads Engine API</h3>
             <ul>
-                <li><strong>FastAPI + Claude AI:</strong> Production-grade REST API at <a href="https://api.exafabs.ai/docs" target="_blank" style="color: var(--accent-lime, #a3e635);">api.exafabs.ai</a> with 15 AI-powered endpoints for complete ad campaign automation — audience targeting, keyword strategy, ad copy generation, creative specs, video scripts, funnel mapping, landing page optimization, budget allocation, competitor analysis, A/B testing frameworks, campaign audits, and more.</li>
+                <li><strong>FastAPI + Claude AI:</strong> Production-grade REST API at <a href="https://api.exafabs.ai/docs" target="_blank" style="color: var(--accent-lime, #3CF2B4);">api.exafabs.ai</a> with 15 AI-powered endpoints for complete ad campaign automation — audience targeting, keyword strategy, ad copy generation, creative specs, video scripts, funnel mapping, landing page optimization, budget allocation, competitor analysis, A/B testing frameworks, campaign audits, and more.</li>
                 <li><strong>Deployed on Railway:</strong> Auto-deploys from GitHub with API key authentication, CORS support, and production-grade error handling.</li>
             </ul>
 

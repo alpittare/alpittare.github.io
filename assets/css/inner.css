@@ -1,0 +1,44 @@
+/* ==========================================================================
+   EXAFABS inner pages — shared brand layer for the "Signal in the dark"
+   re-skin. Loaded by blog/support/legal/pricing pages AFTER their inline
+   styles. Supplies the self-hosted fonts plus small global polish only —
+   page palettes are remapped in each page's own CSS, so if this file ever
+   fails to load the pages still render fully.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/assets/fonts/ClashDisplay-Medium.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/assets/fonts/ClashDisplay-Semibold.woff2') format('woff2');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/assets/fonts/ClashDisplay-Semibold.woff2') format('woff2');
+  font-weight: 700 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter-latin.woff2') format('woff2');
+  font-weight: 100 900; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/assets/fonts/JetBrainsMono-latin.woff2') format('woff2');
+  font-weight: 100 800; font-style: normal; font-display: swap;
+}
+
+::selection { background: rgba(60, 242, 180, 0.28); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid #3CF2B4;
+  outline-offset: 3px;
+}
+
+/* Old gradient CTAs now resolve to green ramps — their text must be ink,
+   not white, to keep contrast. Color only; no layout properties here. */
+a[class*="btn"], button[class*="btn"], [class*="cta"] a { text-shadow: none; }
