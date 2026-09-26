@@ -375,7 +375,7 @@
   }
 
   /* ---- Phase 2 morph track: one scrubbed trigger spanning Products->Games
-     sequences the field through ring -> tortoise -> chip -> gamepad (each
+     sequences the field through ring -> tortoise -> play -> chip -> gamepad (each
      forms, holds, dissolves back to free network), then a second trigger
      pauses + fades the field once you scroll past Games. Layout-independent:
      both the glyph and its strength are pure functions of scroll progress. ---- */
@@ -391,8 +391,8 @@
       return v < 0 ? 0 : v > 1 ? 1 : v;
     }
 
-    // Products section sequences the three products' glyphs as it scrolls past.
-    var PG = ['ring', 'tortoise', 'chip'];    // FastAI, Honest Debt, FABS
+    // Products section sequences the four products' glyphs as it scrolls past.
+    var PG = ['ring', 'tortoise', 'play', 'chip'];  // FastAI, Honest Debt, Vidoby, FABS
     var lastG = -1;
     ST.create({
       trigger: products, start: 'top center', end: 'bottom center', scrub: true,

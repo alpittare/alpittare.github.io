@@ -484,7 +484,7 @@ html.preload.preload-done .preloader {
 /* ---- Product cards ----
    Reveal (.rv) lives on a wrapper: a view() animation's transform fill
    would override the JS tilt transform if both sat on .card. */
-.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
 .cards > .rv { display: flex; }
 .card {
   position: relative; display: flex; flex: 1; flex-direction: column;
