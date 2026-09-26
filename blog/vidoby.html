@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidoby: Find the Hook That's Breaking Out, Then Make the Video — No Filming | ExaFabs</title>
+    <meta name="description" content="Vidoby is EXAFABS' short-form video studio: it ranks hooks that are outperforming their creator's size, then turns the winner into a finished, lip-synced AI video with captions, voice and your product demo. Plus the YouTube channel built with it.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://exafabs.ai/blog/vidoby.html">
+    <meta property="og:image" content="https://exafabs.ai/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://exafabs.ai/og-image.png">
+    <link rel="canonical" href="https://exafabs.ai/blog/vidoby.html">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #06070A;
+            color: #F2F4F8;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img, svg {
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        canvas {
+            image-rendering: crisp-edges;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Clash Display', sans-serif;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2bb98a, #3CF2B4, #FFB347);
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(6, 7, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #2bb98a, #3CF2B4, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: #767E90;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #3CF2B4;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(43, 185, 138, 0.15), rgba(60, 242, 180, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(60, 242, 180, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #cdd3df, #3CF2B4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: #767E90;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-badge {
+            background: rgba(60, 242, 180, 0.2);
+            color: #cdd3df;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(60, 242, 180, 0.3);
+        }
+
+        /* Product Hunt Featured Badge */
+        .ph-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.6rem 1rem 0.6rem 0.6rem;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, rgba(255, 179, 71, 0.18), rgba(255, 179, 71, 0.08));
+            border: 1px solid rgba(255, 179, 71, 0.42);
+            border-radius: 999px;
+            text-decoration: none;
+            transition: transform 0.2s ease, border-color 0.3s, box-shadow 0.3s;
+            max-width: max-content;
+        }
+
+        .ph-badge:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 179, 71, 0.85);
+            box-shadow: 0 8px 24px rgba(255, 179, 71, 0.25);
+        }
+
+        .ph-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #FFB347;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.05rem;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 6px rgba(255, 179, 71, 0.45);
+            flex-shrink: 0;
+        }
+
+        .ph-badge-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .ph-badge-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.62);
+            font-weight: 600;
+        }
+
+        .ph-badge-name {
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .ph-badge-arrow {
+            color: rgba(255, 179, 71, 0.85);
+            font-size: 0.95rem;
+            margin-left: 0.15rem;
+            font-weight: 700;
+        }
+
+        /* Article Container */
+        .article-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #F2F4F8;
+            background: linear-gradient(135deg, #3CF2B4, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        article h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            color: #cdd3df;
+        }
+
+        article p {
+            font-size: 18px;
+            color: #F2F4F8;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        article ul, article ol {
+            margin: 24px 0 24px 24px;
+            font-size: 18px;
+            color: #F2F4F8;
+        }
+
+        article li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        article strong {
+            color: #F2F4F8;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(18, 20, 28, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cdd3df;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #767E90;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: rgba(60, 242, 180, 0.08);
+            border-left: 4px solid #3CF2B4;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 16px;
+        }
+
+        .feature-list strong {
+            color: #3CF2B4;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(60, 242, 180, 0.08);
+            border: 1px solid rgba(60, 242, 180, 0.15);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(60, 242, 180, 0.1), rgba(60, 242, 180, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 48px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 24px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #2bb98a, #3CF2B4, #FFB347);
+            color: #F2F4F8;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(60, 242, 180, 0.3);
+        }
+
+        /* GitHub Link */
+        .github-link {
+            display: inline-block;
+            margin-left: 12px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid rgba(60, 242, 180, 0.3);
+            color: #3CF2B4;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .github-link:hover {
+            background: rgba(60, 242, 180, 0.08);
+            border-color: rgba(60, 242, 180, 0.6);
+        }
+
+        /* Related Posts Section */
+        .related-posts {
+            background: rgba(60, 242, 180, 0.05);
+            border: 1px solid rgba(60, 242, 180, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .related-posts h3 {
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .related-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-post-card {
+            background: rgba(18, 20, 28, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #F2F4F8;
+            transition: all 0.3s ease;
+        }
+
+        .related-post-card:hover {
+            border-color: rgba(60, 242, 180, 0.4);
+            background: rgba(60, 242, 180, 0.1);
+        }
+
+        .related-post-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #cdd3df;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(12, 14, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px;
+            text-align: center;
+            color: #767E90;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+
+            z-index: 2;
+
+            position: relative;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #2bb98a, #3CF2B4, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: #767E90;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #3CF2B4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 50px 24px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .meta-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .article-container {
+                padding: 40px 24px;
+            }
+
+            article h2 {
+                font-size: 26px;
+            }
+
+            article h3 {
+                font-size: 20px;
+            }
+
+            article p, article ul, article ol {
+                font-size: 16px;
+            }
+
+            .code-block {
+                padding: 16px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 32px 24px;
+                margin: 40px 0;
+            }
+
+            .related-posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Vidoby: Find the Hook That's Breaking Out, Then Make the Video — No Filming",
+      "datePublished": "2026-09-26",
+      "author": { "@type": "Organization", "name": "EXAFABS" },
+      "publisher": { "@type": "Organization", "name": "EXAFABS", "url": "https://exafabs.ai" },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://exafabs.ai/blog/vidoby.html" }
+    }
+    </script>
+    <link rel="stylesheet" href="/assets/css/inner.css">
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EXAFABS.AI</div>
+        <a href="../index.html" class="nav-link">← Back to Home</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Vidoby: Find the Hook That&#8217;s Breaking Out, Then Make the Video &#8212; No Filming</h1>
+            <div class="meta-info">
+                <div class="meta-badge">
+                    <span>&#128214; 6 min read</span>
+                </div>
+                <div class="meta-badge">
+                    <span class="category-badge">AI / Video</span>
+                </div>
+                <div class="meta-badge">
+                    <span>2026-09-26</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article -->
+    <div class="article-container">
+        <article>
+            <h2>Introduction</h2>
+            <p>Vidoby is EXAFABS' short-form video studio, live on the web at <a href="https://www.vidoby.com/?utm_source=exafabs&amp;utm_medium=blog&amp;utm_campaign=vidoby-post" style="color:#cdd3df;">vidoby.com</a>. It does two jobs that usually live in two different tools: it <strong>finds the hooks that are breaking out right now</strong>, and it <strong>turns the winning hook into a finished vertical video</strong> &mdash; script, AI presenter, voice, lip-sync and captions &mdash; without a camera or an editor.</p>
+            <p>It was built for the same reason the rest of this studio exists: one person shipping several products needs short-form video for all of them, every week, and does not have a film crew.</p>
+
+            <h2>The Problem: Short-Form Video Is a Volume Game</h2>
+            <p>Short video rewards consistency and a strong first second. Both are expensive. Filming takes time, editing takes more, and most of what gets made starts from a guess about what people will watch. Big accounts can afford to guess; a small product team cannot.</p>
+            <p>The useful signal already exists: some videos pull far more views than their creator's audience size would predict. That gap is the hook doing the work &mdash; and it is the thing worth learning from.</p>
+
+            <h2>How It Works</h2>
+            <ul>
+                <li><strong>Goldmine</strong> &mdash; ranks short-form hooks by how far they outperform their creator's typical reach, so a small account doing big numbers surfaces ahead of big-account noise. Filter by niche, format and length; the feed refreshes daily.</li>
+                <li><strong>Remix, don't copy</strong> &mdash; Vidoby analyses a reference hook's structure (the scroll-stopper, the build, the payoff) and rewrites that shape for your product. It never republishes someone else's footage or words.</li>
+                <li><strong>Your facts, not invented ones</strong> &mdash; scripts only state what you write in your product description, and only link the address you give it. Or skip generation entirely and paste your own script, used word for word.</li>
+                <li><strong>AI presenter</strong> &mdash; a generated presenter (or your own consented face) in the scene you choose, lip-synced to the voiceover, in 23 languages.</li>
+                <li><strong>Your product in the shot</strong> &mdash; up to three demo clips play after the hook, with an optional slow zoom so a static screen recording still moves.</li>
+                <li><strong>Word-by-word captions</strong> &mdash; timed to the voiceover's own pauses, so the highlighted word lands when it is spoken.</li>
+                <li><strong>A/B variations and batches</strong> &mdash; up to four variations of one idea, or a batch across several hooks.</li>
+            </ul>
+
+            <h2>Honest by Design</h2>
+            <ul>
+                <li><strong>AI is disclosed.</strong> Outputs are AI-generated and labelled that way; the presenter never claims to be a real person or the founder.</li>
+                <li><strong>No impersonation.</strong> Prompts that name a real person or describe unsafe scenes are blocked before any credits are spent, and an uploaded face requires the uploader's consent.</li>
+                <li><strong>A quality check before delivery.</strong> Every render is inspected for problems like distorted hands, floating objects or lips out of sync, and failed jobs are never charged.</li>
+                <li><strong>Straightforward pricing.</strong> Everything is priced in credits, and new accounts start with 150 free credits.</li>
+            </ul>
+
+            <h2>Tech Stack</h2>
+            <ul>
+                <li><strong>Web:</strong> Next.js on Vercel</li>
+                <li><strong>Backend:</strong> Convex &mdash; real-time database, the job pipeline and credit accounting</li>
+                <li><strong>Auth:</strong> Clerk</li>
+                <li><strong>Render worker:</strong> Python + FFmpeg for composition, captions and audio</li>
+                <li><strong>AI:</strong> Google Gemini for analysis, scripts, voice and images; Kling for the talking presenter</li>
+                <li><strong>Storage:</strong> Cloudflare R2</li>
+            </ul>
+
+            <h2>The YouTube Channel: Built With Vidoby</h2>
+            <p>The best test of a video tool is using it every week. <strong>The One Man Tech Startup</strong> &mdash; <a href="https://www.youtube.com/@theonemantechstartup" target="_blank" rel="noopener" style="color:#cdd3df;">youtube.com/@theonemantechstartup</a> &mdash; is EXAFABS' own channel, and every Short on it is made with Vidoby.</p>
+            <p>The channel teaches one practical thing per video and shows the product that does it. Each Short starts from a hook that is already working, keeps the lesson to about 25 seconds, and backs it with real numbers stated on screen with their assumptions:</p>
+            <ul>
+                <li><strong>Money:</strong> <a href="https://youtube.com/shorts/ar_2gziqRAQ" target="_blank" rel="noopener" style="color:#cdd3df;">The credit card minimum payment trap</a> &mdash; why the minimum shrinks, and the one-line fix (Honest Debt).</li>
+                <li><strong>Nutrition:</strong> <a href="https://youtube.com/shorts/NUeqz96F4S0" target="_blank" rel="noopener" style="color:#cdd3df;">The hidden calories you never count</a> &mdash; mayo, oil and dressing add up fast (FastAI).</li>
+                <li><strong>Creators:</strong> <a href="https://youtube.com/shorts/IPNZOEBwNfs" target="_blank" rel="noopener" style="color:#cdd3df;">Is promoting YouTube Shorts worth it?</a> &mdash; our own paid-promotion results, and the metric that matters instead (Vidoby).</li>
+            </ul>
+            <p>Every video carries YouTube's AI label and says in its description that the presenter and voice are AI-generated. What the channel teaches us about hooks, retention and swipe-away rates feeds straight back into Vidoby.</p>
+
+            <h2>Try It</h2>
+            <p>Vidoby is live at <a href="https://www.vidoby.com/?utm_source=exafabs&amp;utm_medium=blog&amp;utm_campaign=vidoby-post" style="color:#cdd3df;">vidoby.com</a> with 150 free credits to start. Follow the channel at <a href="https://www.youtube.com/@theonemantechstartup" target="_blank" rel="noopener" style="color:#cdd3df;">@theonemantechstartup</a> to see what it makes.</p>
+            <p><em>Vidoby &middot; find the breakout &middot; make the video &middot; AI-generated and labelled</em></p>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">EXAFABS.AI</div>
+            <div class="footer-links">
+                <a href="../index.html" class="footer-link">Home</a>
+                <a href="../index.html#blog" class="footer-link">Blog</a>
+                <a href="mailto:alpit@exafabs.ai" class="footer-link">Contact</a>
+            </div>
+            <p>&copy; 2026 ExaFabs&trade;. All rights reserved. EXAFABS&trade; is a trademark of Alpit Tare, India trademark application filed 2026-04-26 (Class 9 + Class 42).</p>
+            <p><a href="mailto:alpit@exafabs.ai" class="footer-link">alpit@exafabs.ai</a></p>
+        </div>
+    </footer>
+
+    <!-- Reading Progress Bar Script -->
+    <script>
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+    </script>
+
+    <script>
+(function(){
+    const colors = [[155,48,255],[201,64,128],[245,148,58],[100,200,255]];
+    const depthConfigs = [
+        { sel: '.hero', density: 10000, maxP: 140, connDist: 150, speed: 0.32, lineOp: 0.16, sDensity: 2200, sMax: 350,
+          layers: [{w:.5,rr:[.3,.7],ar:[.18,.33],sm:.3,gm:1.5},{w:.35,rr:[.8,1.8],ar:[.38,.6],sm:.7,gm:3},{w:.15,rr:[2,3],ar:[.5,.85],sm:1,gm:5}] },
+        { sel: '.article-container', density: 18000, maxP: 80, connDist: 130, speed: 0.2, lineOp: 0.1, sDensity: 3500, sMax: 220,
+          layers: [{w:.55,rr:[.2,.6],ar:[.1,.25],sm:.35,gm:1.5},{w:.35,rr:[.7,1.4],ar:[.28,.48],sm:.65,gm:2.5},{w:.1,rr:[1.5,2.4],ar:[.4,.65],sm:1,gm:3.5}] },
+        { sel: 'footer', density: 30000, maxP: 40, connDist: 110, speed: 0.15, lineOp: 0.06, sDensity: 5000, sMax: 120,
+          layers: [{w:.6,rr:[.2,.5],ar:[.08,.2],sm:.3,gm:1.5},{w:.3,rr:[.6,1.2],ar:[.2,.35],sm:.6,gm:2},{w:.1,rr:[1.3,2],ar:[.3,.5],sm:1,gm:3}] }
+    ];
+    function pickLayer(layers){const r=Math.random();let c=0;for(const l of layers){c+=l.w;if(r<=c)return l;}return layers[0];}
+    depthConfigs.forEach(cfg => {
+        const section = document.querySelector(cfg.sel);
+        if (!section) return;
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+        section.style.position=section.style.position||'relative';
+        section.style.overflow='hidden';
+        section.insertBefore(canvas,section.firstChild);
+        const ctx=canvas.getContext('2d');
+        const dpr=Math.min(window.devicePixelRatio||1,3);
+        let particles=[],statics=[],frame=0,animId=null,visible=false;
+        let mouse={x:-1e3,y:-1e3};
+        if(!('ontouchstart' in window)){
+            section.addEventListener('mousemove',e=>{const r=section.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+            section.addEventListener('mouseleave',()=>{mouse.x=-1e3;mouse.y=-1e3;});
+        }
+        function seed(){
+            particles=[];statics=[];
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            const sC=Math.min(Math.floor((w*h)/cfg.sDensity),cfg.sMax);
+            for(let i=0;i<sC;i++) statics.push({x:Math.random()*w,y:Math.random()*h,r:.2+Math.random()*.5,a:.08+Math.random()*.2,tp:Math.random()*Math.PI*2,ts:.002+Math.random()*.006,c:colors[Math.floor(Math.random()*colors.length)]});
+            const count=Math.min(Math.floor((w*h)/cfg.density),cfg.maxP);
+            for(let i=0;i<count;i++){
+                const L=pickLayer(cfg.layers);
+                particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*cfg.speed*L.sm,vy:(Math.random()-.5)*cfg.speed*L.sm,r:L.rr[0]+Math.random()*(L.rr[1]-L.rr[0]),c:colors[Math.floor(Math.random()*colors.length)],a:L.ar[0]+Math.random()*(L.ar[1]-L.ar[0]),pp:Math.random()*Math.PI*2,ps:.004+Math.random()*.014,gm:L.gm,d:L.sm});
+            }
+        }
+        function draw(){
+            if(!visible){animId=null;return;}
+            const w=canvas.width/dpr,h=canvas.height/dpr;
+            ctx.clearRect(0,0,w,h);frame++;
+            for(const s of statics){const t=.5+Math.sin(frame*s.ts+s.tp)*.5;const[r,g,b]=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${s.a*t})`;ctx.fill();}
+            for(const p of particles){p.x+=p.vx;p.y+=p.vy;const dx=p.x-mouse.x,dy=p.y-mouse.y,md=Math.sqrt(dx*dx+dy*dy);if(md<120&&md>0){const f=((120-md)/120)*.05*p.d;p.vx+=(dx/md)*f;p.vy+=(dy/md)*f;}p.vx*=.997;p.vy*=.997;if(p.x<-10)p.x=w+10;if(p.x>w+10)p.x=-10;if(p.y<-10)p.y=h+10;if(p.y>h+10)p.y=-10;}
+            for(let i=0;i<particles.length;i++){if(particles[i].d<.5)continue;for(let j=i+1;j<particles.length;j++){if(particles[j].d<.5)continue;const a=particles[i],b=particles[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<cfg.connDist){const op=(1-dist/cfg.connDist)*cfg.lineOp*Math.min(a.d,b.d);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${(a.c[0]+b.c[0])>>1},${(a.c[1]+b.c[1])>>1},${(a.c[2]+b.c[2])>>1},${op})`;ctx.lineWidth=.4+a.d*.3;ctx.stroke();}}}
+            for(const p of particles){const pulse=.6+Math.sin(frame*p.ps+p.pp)*.4;const[r,g,b]=p.c;const gr=p.r*p.gm*pulse;const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,gr);grd.addColorStop(0,`rgba(${r},${g},${b},${p.a*pulse*.3})`);grd.addColorStop(.4,`rgba(${r},${g},${b},${p.a*pulse*.08})`);grd.addColorStop(1,`rgba(${r},${g},${b},0)`);ctx.beginPath();ctx.arc(p.x,p.y,gr,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},${p.a*pulse})`;ctx.fill();if(p.d>=1&&p.r>2){ctx.beginPath();ctx.arc(p.x,p.y,p.r*.3*pulse,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.a*pulse*.5})`;ctx.fill();}}
+            if(mouse.x>0&&mouse.y>0){const mg=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,120);mg.addColorStop(0,'rgba(100,200,255,0.06)');mg.addColorStop(.5,'rgba(155,48,255,0.03)');mg.addColorStop(1,'rgba(155,48,255,0)');ctx.beginPath();ctx.arc(mouse.x,mouse.y,120,0,Math.PI*2);ctx.fillStyle=mg;ctx.fill();}
+            animId=requestAnimationFrame(draw);
+        }
+        new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(visible&&!animId)draw();},{threshold:.02}).observe(section);
+        function resize(){const w=section.offsetWidth,h=section.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);seed();}
+        resize();window.addEventListener('resize',resize);
+    });
+})();
+</script>
+</body>
+</html>
